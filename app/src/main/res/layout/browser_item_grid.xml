@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+    <!--<CheckBox-->
+        <!--android:id="@+id/browserItemSelectedCheckbox"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_alignParentTop="true"-->
+        <!--android:layout_alignParentEnd="true"-->
+        <!--android:focusable="false" />-->
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/fileTypeImage"
+            android:layout_weight="5"
+            android:layout_height="0dp"
+            android:layout_width="match_parent" />
+
+        <TextView
+            android:id="@+id/browserItemFilename"
+            android:textSize="15sp"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:layout_weight="2"
+            android:layout_width="match_parent"
+            android:layout_height="0dp" />
+
+    </LinearLayout>
+</RelativeLayout>

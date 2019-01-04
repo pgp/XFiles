@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <Button
+        android:onClick="multiSelectAction"
+        android:id="@+id/itemsSelectAll"
+        android:text="@string/select_all"
+        android:textSize="10sp"
+        android:drawableTop="@android:drawable/checkbox_on_background"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:maxLines="2" />
+
+    <Button
+        android:onClick="multiSelectAction"
+        android:id="@+id/itemsSelectNone"
+        android:text="@string/select_none"
+        android:textSize="10sp"
+        android:drawableTop="@android:drawable/checkbox_off_background"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:maxLines="2" />
+
+    <Button
+        android:onClick="multiSelectAction"
+        android:id="@+id/itemsInvertSelection"
+        android:text="@string/invert_selection"
+        android:textSize="10sp"
+        android:drawableTop="@android:drawable/checkbox_on_background"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:maxLines="2" />
+
+    <Button
+        android:onClick="multiSelectAction"
+        android:id="@+id/itemsFilterSelection"
+        android:text="@string/filter_selection"
+        android:textSize="10sp"
+        android:drawableTop="@android:drawable/checkbox_on_background"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:maxLines="2" />
+
+    <Button
+        android:onClick="multiSelectAction"
+        android:id="@+id/itemsFilterDeselection"
+        android:text="@string/filter_deselection"
+        android:textSize="10sp"
+        android:drawableTop="@android:drawable/checkbox_off_background"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:maxLines="2" />
+
+</LinearLayout>

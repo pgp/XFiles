@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:text="Target path:"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    <EditText
+        android:id="@+id/linkCreate_targetPath"
+        android:inputType="text"
+        android:imeOptions="actionDone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <RadioGroup
+        android:id="@+id/linkCreate_type"
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
+
+        <RadioButton
+            android:id="@+id/linkCreate_type_hard"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="hard link" />
+
+        <RadioButton
+            android:id="@+id/linkCreate_type_soft"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="symbolic link" />
+    </RadioGroup>
+
+    <Button
+        android:id="@+id/linkCreate_OkButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="OK"/>
+
+</LinearLayout>

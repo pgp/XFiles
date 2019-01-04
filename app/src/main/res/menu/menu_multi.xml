@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:id="@+id/itemsCopy"
+        android:title="Copy" />
+
+    <item android:id="@+id/itemsMove"
+        android:title="Move" />
+
+    <item android:id="@+id/itemsCompress"
+        android:title="Compress" />
+
+    <item android:id="@+id/itemsExtract"
+        android:title="Extract" />
+
+    <item android:id="@+id/itemsDelete"
+        android:title="Delete" />
+
+    <item android:id="@+id/itemsChecksum"
+        android:title="Checksum" />
+
+    <item android:id="@+id/itemsShare"
+        android:title="Share" />
+
+    <item android:id="@+id/itemsProperties"
+        android:title="Properties" />
+</menu>

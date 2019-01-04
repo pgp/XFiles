@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <GridView
+        android:id="@+id/hashSelectorView"
+        android:numColumns="auto_fit"
+        android:columnWidth="100dp"
+        android:layout_weight="3"
+        android:layout_width="match_parent"
+        android:layout_height="0dp" >
+    </GridView>
+
+    <ScrollView
+        android:scrollbars="horizontal|vertical"
+        android:layout_height="0dp"
+        android:layout_width="match_parent"
+        android:layout_weight="6"
+        android:layout_marginTop="5dip"
+        android:scrollbarStyle="outsideInset"
+        android:fillViewport="true">
+        <HorizontalScrollView
+            android:layout_height="wrap_content"
+            android:scrollbars="horizontal|vertical"
+            android:layout_width="wrap_content"
+            android:layout_marginTop="5dip">
+            <TableLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/standardResultsLayout" >
+            </TableLayout>
+        </HorizontalScrollView>
+    </ScrollView>
+
+    <Button
+        android:id="@+id/computeChecksumsButton"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:text="Compute checksums" />
+
+
+</LinearLayout>

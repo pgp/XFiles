@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Stored users:"
+        android:textSize="18sp" />
+
+    <Spinner
+        android:id="@+id/connectionStoredUsersSpinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:drawable/btn_dropdown"
+        android:spinnerMode="dropdown" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="User:"
+        android:textSize="18sp" />
+
+    <EditText
+        android:id="@+id/connectionUserEditText"
+        android:inputType="text"
+        android:imeOptions="actionDone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Password:"
+        android:textSize="18sp" />
+
+    <EditText
+        android:id="@+id/connectionPasswordEditText"
+        android:inputType="textPassword"
+        android:imeOptions="actionDone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Domain:"
+        android:textSize="18sp" />
+
+    <EditText
+        android:id="@+id/connectionDomainEditText"
+        android:inputType="text"
+        android:imeOptions="actionDone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Port:"
+        android:textSize="18sp" />
+
+    <EditText
+        android:id="@+id/connectionPortEditText"
+        android:inputType="number"
+        android:imeOptions="actionDone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Remote directory:"
+        android:textSize="18sp" />
+
+    <!-- auto-complete using remote path favorites for the chosen auth data -->
+    <AutoCompleteTextView
+        android:id="@+id/remoteDirEditText"
+        android:inputType="text"
+        android:imeOptions="actionDone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+</LinearLayout>

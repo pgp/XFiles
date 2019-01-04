@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- TODO for when multi-selection in FindResultsAdapter will be available -->
+    <!--expected commands: copy/move, compress, properties -->
+</menu>

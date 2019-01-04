@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!--
+    No explicit header here,
+    override getView in sftpFavoritesAdapter with a boolean (header/content)
+    header contains: user, domain, port, addButton (for adding a favorite to that credentials)
+    content contains: remote path
+    (structure is not a matrix!)
+    structure is: [header_1, content_11, content_12, ..., content_1m,
+                   header_2, content_21, content_22, ..., content_2n,
+                   ..................................................
+                   header_t, content_t1, content_t2, ..., content_tp]
+    -->
+
+    <ListView android:id="@+id/favorites_sftp_list"
+        android:fastScrollEnabled="true"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <TextView
+        android:id="@+id/favorites_sftp_list_empty_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Please add sftp credentials from manager before adding favorite paths for them" />
+
+</LinearLayout>

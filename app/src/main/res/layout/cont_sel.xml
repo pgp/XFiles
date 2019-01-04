@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:background="@color/transparentBlue"
+        android:id="@+id/padLayout"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:background="@color/black"
+        android:id="@+id/barLayout"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <CheckBox
+            android:id="@+id/toggleSelectMode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:textColor="@color/white"
+            android:text="Select"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <CheckBox
+            android:id="@+id/invertSelection"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:textColor="@color/green"
+            android:text="Invert"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <CheckBox
+            android:id="@+id/stickySelection"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:textColor="@color/green"
+            android:text="Sticky"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_above="@id/barLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:onClick="multiSelectAction"
+            android:id="@+id/itemsSelectAll"
+            android:text="@string/select_all"
+            android:textSize="10sp"
+            android:drawableTop="@android:drawable/checkbox_on_background"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:maxLines="2" />
+
+        <Button
+            android:onClick="multiSelectAction"
+            android:id="@+id/itemsSelectNone"
+            android:text="@string/select_none"
+            android:textSize="10sp"
+            android:drawableTop="@android:drawable/checkbox_off_background"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:maxLines="2" />
+
+        <Button
+            android:onClick="multiSelectAction"
+            android:id="@+id/itemsInvertSelection"
+            android:text="@string/invert_selection"
+            android:textSize="10sp"
+            android:drawableTop="@android:drawable/checkbox_on_background"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:maxLines="2" />
+
+        <Button
+            android:onClick="multiSelectAction"
+            android:id="@+id/itemsFilterSelection"
+            android:text="@string/filter_selection"
+            android:textSize="10sp"
+            android:drawableTop="@android:drawable/checkbox_on_background"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:maxLines="2" />
+
+        <Button
+            android:onClick="multiSelectAction"
+            android:id="@+id/itemsFilterDeselection"
+            android:text="@string/filter_deselection"
+            android:textSize="10sp"
+            android:drawableTop="@android:drawable/checkbox_off_background"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:maxLines="2" />
+
+    </LinearLayout>
+
+</RelativeLayout>

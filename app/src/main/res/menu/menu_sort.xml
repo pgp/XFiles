@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:id="@+id/sortByFilename"
+        android:title="Sort by name" />
+
+    <item android:id="@+id/sortByFilenameDesc"
+        android:title="Sort by name (descending)" />
+
+    <item android:id="@+id/sortByDate"
+        android:title="Sort by date" />
+
+    <item android:id="@+id/sortByDateDesc"
+        android:title="Sort by date (descending)" />
+
+    <item android:id="@+id/sortBySize"
+        android:title="Sort by size" />
+
+    <item android:id="@+id/sortBySizeDesc"
+        android:title="Sort by size (descending)" />
+
+    <item android:id="@+id/sortByType"
+        android:title="Sort by type" />
+
+    <item android:id="@+id/sortByTypeDesc"
+        android:title="Sort by type (descending)" />
+</menu>

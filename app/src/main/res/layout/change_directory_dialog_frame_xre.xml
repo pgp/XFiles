@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!--<TextView-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="Stored servers:"-->
+        <!--android:textSize="18sp" />-->
+
+    <Spinner
+        android:id="@+id/xreConnectionStoredDataSpinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:drawable/btn_dropdown"
+        android:spinnerMode="dropdown" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Domain:"
+        android:textSize="18sp" />
+
+    <EditText
+        android:id="@+id/xreConnectionDomainEditText"
+        android:inputType="text"
+        android:text="192.168.43.1"
+        android:imeOptions="actionDone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <!--<TextView-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="Port:"-->
+        <!--android:textSize="18sp" />-->
+
+    <!--<EditText-->
+        <!--android:id="@+id/xreConnectionPortEditText"-->
+        <!--android:inputType="number"-->
+        <!--android:text="11111"-->
+        <!--android:imeOptions="actionDone"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content" />-->
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Remote directory:"
+        android:textSize="18sp" />
+
+    <!-- auto-complete using remote path favorites for the chosen auth data -->
+    <EditText
+        android:id="@+id/xreRemoteDirEditText"
+        android:inputType="text"
+        android:text="/sdcard"
+        android:imeOptions="actionDone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+</LinearLayout>

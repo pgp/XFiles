@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".PermissionManagementActivity">
+
+    <TextView
+        android:textSize="15dp"
+        android:gravity="center_horizontal"
+        android:text="@string/permission_storage_explain"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:onClick="requestStoragePermissions"
+        android:id="@+id/storagePermissions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Request Storage permission" />
+
+    <TextView
+        android:textSize="15dp"
+        android:gravity="center_horizontal"
+        android:text="@string/permission_sysSettings_explain"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:onClick="openSystemSettingsPermissionsManagement"
+        android:id="@+id/sysSettingsPermissions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Request System Settings permission" />
+
+    <TextView
+        android:textSize="15dp"
+        android:gravity="center_horizontal"
+        android:text="@string/permission_overlay_explain"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:onClick="openOverlayPermissionsManagement"
+        android:id="@+id/overlayPermissions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Request Overlay permission" />
+
+    <!--<TextView-->
+        <!--android:textSize="15dp"-->
+        <!--android:gravity="center_horizontal"-->
+        <!--android:text="@string/permission_extsd_explain"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content" />-->
+
+    <!--<Button-->
+        <!--android:onClick="requestExternalSDWritePermissions"-->
+        <!--android:id="@+id/extSdPermissions"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="Request external SD permissions" />-->
+
+    <!--<Button-->
+        <!--android:onClick="testExternalSDWritePermissions"-->
+        <!--android:id="@+id/testExtSdPermissions"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="Test external SD permissions" />-->
+
+    <Button
+        android:onClick="completePermissions"
+        android:id="@+id/completePermissions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="OK" />
+
+</LinearLayout>

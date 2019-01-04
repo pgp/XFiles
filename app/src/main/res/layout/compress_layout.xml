@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:text="File path:"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <!--absolute path of LocalPathContent of file-->
+        <EditText
+            android:id="@+id/outputArchiveFilePath"
+            android:layout_weight="9"
+            android:layout_width="0dp"
+            android:layout_height="match_parent" />
+
+        <!--onclick: open file chooser for save -->
+        <ImageButton
+            android:id="@+id/selectOutputArchiveFilePath"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:src="@android:drawable/ic_menu_gallery"
+            />
+    </LinearLayout>
+
+    <RadioGroup
+        android:id="@+id/archiveTypeRadioGroup"
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
+
+        <RadioButton
+            android:id="@+id/_7zRadioButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="7Z"
+            android:checked="true"/>
+
+        <RadioButton
+            android:id="@+id/zipRadioButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ZIP" />
+
+        <RadioButton
+            android:id="@+id/tarRadioButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TAR" />
+    </RadioGroup>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <CheckBox
+            android:id="@+id/solidMode"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
+
+        <TextView
+            android:text="Solid archive"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:text="Compression level"
+            android:layout_width="0dp"
+            android:layout_weight="3"
+            android:layout_height="match_parent" />
+
+        <SeekBar
+            android:id="@+id/compressionLevel"
+            android:layout_width="0dp"
+            android:layout_weight="6"
+            android:layout_height="match_parent" />
+
+        <!-- to show the current value of the SeekBar -->
+        <TextView
+            android:id="@+id/compressionLevelNum"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:text="Password:"
+            android:layout_weight="3"
+            android:layout_width="0dp"
+            android:layout_height="match_parent" />
+
+        <EditText
+            android:id="@+id/outputArchivePassword"
+            android:inputType="textPassword"
+            android:imeOptions="actionDone"
+            android:layout_weight="7"
+            android:layout_width="0dp"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <CheckBox
+            android:id="@+id/encryptFilenames"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
+
+        <TextView
+            android:text="Encrypt filenames"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+
+    <Button
+        android:text="OK"
+        android:onClick="compress_ok"
+        android:id="@+id/compressDialogOKButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+</LinearLayout>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="AppTheme" parent="android:Theme.Holo">
+        <item name="android:contextPopupMenuStyle">@style/myContextPopupMenuStyle</item>
+        <item name="android:windowActivityTransitions">true</item>
+    </style>
+    <style name="myContextPopupMenuStyle" parent="@android:style/Widget.Holo.PopupMenu">
+        <item name="android:overlapAnchor">true</item>
+    </style>
+</resources>

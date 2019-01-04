@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="URL to download:"
+        android:textSize="18sp" />
+
+    <EditText
+        android:id="@+id/httpUrlEditText"
+        android:inputType="textUri"
+        android:imeOptions="actionDone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Destination directory (optional):"
+        android:textSize="18sp" />
+
+    <EditText
+        android:id="@+id/httpDestDirEditText"
+        android:inputType="text"
+        android:imeOptions="actionDone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Target filename (optional):"
+        android:textSize="18sp" />
+
+    <EditText
+        android:id="@+id/httpTargetFilenameEditText"
+        android:inputType="text"
+        android:imeOptions="actionDone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+
+</LinearLayout>

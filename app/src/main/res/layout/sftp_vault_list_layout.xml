@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:vaultActivity="it.pgp.xfiles.sftpclient.VaultActivity" >
+
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight=".25"
+            android:text="User"
+            android:textColor="#0061d6"
+            android:textSize="15sp"
+            android:gravity="center_horizontal" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight=".25"
+            android:text="Domain"
+            android:textColor="#008d69"
+            android:textSize="15sp"
+            android:gravity="center_horizontal" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight=".15"
+            android:text="Port"
+            android:textColor="#557733"
+            android:textSize="15sp"
+            android:gravity="center_horizontal" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight=".1"
+            android:text="Edit"
+            android:textColor="#ff4d00"
+            android:textSize="15sp"
+            android:gravity="center_horizontal" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight=".1"
+            android:text="Delete"
+            android:textColor="#ff4d00"
+            android:textSize="15sp"
+            android:gravity="center_horizontal" />
+
+    </LinearLayout>
+
+    <ListView android:id="@+id/sftp_passitem_List"
+        android:fastScrollEnabled="true"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" >
+    </ListView>
+
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight=".25"
+            android:text="Filename"
+            android:textColor="#0061d6"
+            android:textSize="15sp"
+            android:gravity="center_horizontal" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight=".25"
+            android:text="Type"
+            android:textColor="#775eff"
+            android:textSize="15sp"
+            android:gravity="center_horizontal" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight=".25"
+            android:text="Hash"
+            android:textColor="#008d69"
+            android:textSize="15sp"
+            android:gravity="center_horizontal" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight=".1"
+            android:text="Show"
+            android:textColor="#ff4d00"
+            android:textSize="15sp"
+            android:gravity="center_horizontal" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight=".1"
+            android:text="Delete"
+            android:textColor="#ff4d00"
+            android:textSize="15sp"
+            android:gravity="center_horizontal" />
+
+    </LinearLayout>
+
+    <ListView android:id="@+id/sftp_ids_List"
+        android:fastScrollEnabled="true"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+    </ListView>
+
+    <LinearLayout
+        style="?android:attr/buttonBarStyle"
+        android:orientation="horizontal"
+        android:id="@+id/masterButtonsLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            style="?android:attr/buttonBarButtonStyle"
+            android:id="@+id/sftpAddNewIdentityBtn"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:text="Add identity"
+            android:layout_height="wrap_content" />
+        <Button
+            style="?android:attr/buttonBarButtonStyle"
+            android:id="@+id/sftpGenNewIdentityBtn"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:text="Generate identity"
+            android:layout_height="wrap_content" />
+        <Button
+            style="?android:attr/buttonBarButtonStyle"
+            android:id="@+id/sftpAddNewCredsBtn"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:text="Add credentials"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+</LinearLayout>

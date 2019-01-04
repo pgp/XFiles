@@ -1,0 +1,30 @@
+<resources>
+    <string name="app_name">XFiles</string>
+    <string name="tag_fragment_FileSelect">Select file</string>
+    <string name="alert_OK">OK</string>
+    <string name="alert_cancel">Cancel</string>
+    <string name="alert_file_select">Select file</string>
+    <string name="select_all">Select\nall</string>
+    <string name="select_none">Select\nnone</string>
+    <string name="invert_selection">Invert\nselection</string>
+    <string name="filter_selection">Filter\nselection</string>
+    <string name="filter_deselection">Filter\ndeselection</string>
+    <string name="alert_supply_filename">Please supply a valid filename</string>
+    <string name="alert_bad_filename_chars">Characters not allowed in filename</string>
+    <string name="alert_file_exists">File already exists, please choose a different name</string>
+    <string name="tag_fragment_FileSave">Save file</string>
+    <string name="edit_hint">Insert file name</string>
+    <string name="empty_string" />
+    <string name="start_rhss_description">Click on the main button to start/stop the remote RH server; additionally you can manage WiFi and WiFi hotspot status</string>
+    <string name="ssh_default_port">22</string>
+    <string name="dest_archive_filename_header">archive</string>
+    <string name="serve_only_current_directory">Serve only current directory:</string>
+    <string name="appwidget_text">EXAMPLE</string>
+    <string name="add_widget">Add widget</string>
+    <string name="permission_storage_explain">XFiles is a file explorer, so it obviously needs permissions to access storage. Without this permission, the app will not start</string>
+    <string name="permission_sysSettings_explain"><![CDATA[Optional permission, on devices < Android Oreo it allows to toggle the hotspot state without having to open the system UI every time]]></string>
+    <string name="permission_overlay_explain">Optional permission, on file transfers it allows to show an overlay with progress bars (otherwise you would have to check from the service foreground notification)</string>
+    <string name="close">Close</string>
+    <string name="active_servers_on_close_explain">Some remote servers are currently active. You can close them from here if needed, and then press Back once more to exit. Any active transfers will be canceled if servers are closed</string>
+    <string name="permission_extsd_explain">Optional permission, for devices having external memory card, requests write access (you have to manually pick the external SD card from the file browser that opens)</string>
+</resources>

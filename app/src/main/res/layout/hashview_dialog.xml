@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/hashview_window_background" >
+
+    <TextView
+        android:id="@+id/hashview_timeout_alert_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:text="Will disappear shortly, click to keep" />
+
+    <LinearLayout
+        android:id="@+id/hvLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_below="@id/hashview_timeout_alert_textview"
+        android:orientation="vertical" />
+
+    <TextView
+        android:id="@+id/hvTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_below="@id/hvLayout" />
+
+    <Button
+        android:id="@+id/hashview_close_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_below="@+id/hvTextView"
+        android:text="Close" />
+
+</RelativeLayout>

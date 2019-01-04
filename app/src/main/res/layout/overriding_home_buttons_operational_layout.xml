@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_weight=".1"
+    android:layout_width="match_parent"
+    android:layout_height="0dp">
+
+    <ImageButton
+        android:onClick="operationBarOnClick"
+        android:scaleType="fitCenter"
+        android:adjustViewBounds="true"
+        android:background="@null"
+        android:src="@drawable/xfiles_system_back"
+        android:id="@+id/androidGoBackButton"
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content" />
+
+    <ImageButton
+        android:onClick="operationBarOnClick"
+        android:scaleType="fitCenter"
+        android:adjustViewBounds="true"
+        android:background="@null"
+        android:id="@+id/upOneLevelButton"
+        android:src="@drawable/xf_up_dir"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1" />
+
+    <ImageButton
+        android:onClick="operationBarOnClick"
+        android:scaleType="fitCenter"
+        android:adjustViewBounds="true"
+        android:background="@null"
+        android:src="@drawable/xfiles_paste"
+        android:id="@+id/pasteButton"
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content" />
+
+    <ImageButton
+        android:onClick="operationBarOnClick"
+        android:scaleType="fitCenter"
+        android:adjustViewBounds="true"
+        android:background="@null"
+        android:src="@drawable/xf_arrow_left"
+        android:id="@+id/goBackButton"
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content" />
+
+    <ImageButton
+        android:onClick="operationBarOnClick"
+        android:scaleType="fitCenter"
+        android:adjustViewBounds="true"
+        android:background="@null"
+        android:src="@drawable/xfiles_system_home"
+        android:id="@+id/androidGoHomeButton"
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content" />
+
+    <ImageButton
+        android:onClick="operationBarOnClick"
+        android:scaleType="fitCenter"
+        android:adjustViewBounds="true"
+        android:background="@null"
+        android:src="@drawable/xf_arrow_right"
+        android:id="@+id/goAheadButton"
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content" />
+
+    <ImageButton
+        android:onClick="operationBarOnClick"
+        android:scaleType="fitCenter"
+        android:adjustViewBounds="true"
+        android:background="@null"
+        android:src="@drawable/xf_new_file"
+        android:id="@+id/newFileButton"
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content" />
+
+    <ImageButton
+        android:onClick="operationBarOnClick"
+        android:scaleType="fitCenter"
+        android:adjustViewBounds="true"
+        android:background="@null"
+        android:src="@drawable/xf_new_dir"
+        android:id="@+id/newDirectoryButton"
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content" />
+
+    <include layout="@layout/recents_button" />
+
+</LinearLayout>

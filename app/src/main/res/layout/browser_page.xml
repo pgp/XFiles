@@ -1,0 +1,83 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    >
+
+    <LinearLayout
+        android:id="@+id/pathViewLayout"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight=".1">
+
+        <!--empty padder for operationButtonsLayoutSwitcher -->
+        <View
+            android:scaleType="fitCenter"
+            android:adjustViewBounds="true"
+            android:background="@null"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            >
+        </View>
+
+        <TextView
+            android:id="@+id/currentDirectoryTextView"
+            android:ellipsize="end"
+            android:singleLine="false"
+            android:maxLines="3"
+            android:clickable="true"
+            android:onClick="showChangeDirectoryDialog"
+            android:layout_weight="4"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+
+        <!-- dummy view for padding -->
+        <Space
+            android:layout_weight="5"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+    <!-- dynamically populated by layout inflater for multi select mode -->
+    <!-- REMOVED FROM HERE, INFLATED WITH ADDVIEW OVER mainBrowserViewLayout-->
+    <!--<LinearLayout
+        android:id="@+id/multiSelectModeLayout"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0">
+    </LinearLayout>-->
+
+    <!-- dynamically populated by layout inflater for quick find mode -->
+    <LinearLayout
+        android:id="@+id/quickFindModeLayout"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0">
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/mainBrowserViewLayoutParent"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <it.pgp.xfiles.SwipeRefreshLayoutChildCanScroll
+            android:id="@+id/activity_main_swipe_refresh_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" >
+            <RelativeLayout
+                android:orientation="vertical"
+                android:id="@+id/mainBrowserViewLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </it.pgp.xfiles.SwipeRefreshLayoutChildCanScroll>
+
+    </RelativeLayout>
+
+</LinearLayout>

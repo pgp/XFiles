@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Web source: https://inthecheesefactory.com/blog/how-to-share-access-to-file-with-fileprovider-on-android-nougat/en -->
+<!-- not needed with StrictMode.VmPolicy.LAX -->
+<paths>
+    <external-path name="x" path="."/>
+</paths>

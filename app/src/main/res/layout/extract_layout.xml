@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <EditText
+            android:id="@+id/extractDirectoryEditText"
+            android:inputType="text"
+            android:imeOptions="actionDone"
+            android:layout_weight="8"
+            android:layout_width="0dp"
+            android:layout_height="match_parent" />
+
+        <ImageButton
+            android:src="@android:drawable/ic_menu_gallery"
+            android:id="@+id/extractDirectorySelectorButton"
+            android:onClick="openDestinationFolderSelector"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent" />
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/extractOkButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="extract_ok"
+        android:text="OK"/>
+
+</LinearLayout>

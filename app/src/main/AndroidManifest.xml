@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="it.pgp.xfiles">
+
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /> -->
+    <!-- for (local) wifi hotspot toggle from Android O onwards -->
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/xfiles_new_app_icon"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+
+        <!-- not needed with StrictMode.VmPolicy.LAX -->
+        <!-- <provider -->
+        <!-- android:name="android.support.v4.content.FileProvider" -->
+        <!-- android:authorities="${applicationId}.provider" -->
+        <!-- android:exported="false" -->
+        <!-- android:grantUriPermissions="true" > -->
+        <!-- <meta-data -->
+        <!-- android:name="android.support.FILE_PROVIDER_PATHS" -->
+        <!-- android:resource="@xml/provider_paths" /> -->
+        <!-- </provider> -->
+
+        <activity
+            android:name=".MainActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:launchMode="singleTask"
+            android:windowSoftInputMode="stateHidden">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="*"
+                    android:mimeType="*/*" />
+                <data android:mimeType="application/rar" />
+                <data android:mimeType="application/x-rar-compressed" />
+                <data android:mimeType="application/zip" />
+                <data android:mimeType="application/x-zip" />
+                <data android:mimeType="application/x-zip-compressed" />
+                <data android:mimeType="application/x-7z-compressed" />
+                <data android:mimeType="application/x-tar" />
+                <data android:mimeType="application/x-bzip2" />
+                <data android:mimeType="application/x-gzip" />
+                <data android:mimeType="application/x-xz" />
+                <data android:mimeType="application/octet-stream" />
+                <data android:mimeType="application/x-compress" />
+                <data android:mimeType="application/x-compressed" />
+                <data android:mimeType="text/html" />
+                <data android:mimeType="text/plain" />
+                <data android:mimeType="application/xhtml+xml" />
+                <data android:scheme="file" />
+                <data android:scheme="content" />
+                <data android:scheme="http" />
+                <data android:scheme="https" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="file" />
+                <data android:scheme="content" />
+                <data
+                    android:host="*"
+                    android:mimeType="*/*" />
+                <data android:pathPattern=".*\.RAR" />
+                <data android:pathPattern=".*\..*\.RAR" />
+                <data android:pathPattern=".*\..*\..*\.RAR" />
+                <data android:pathPattern=".*\..*\..*\..*\.RAR" />
+                <data android:pathPattern=".*\.rar" />
+                <data android:pathPattern=".*\..*\.rar" />
+                <data android:pathPattern=".*\..*\..*\.rar" />
+                <data android:pathPattern=".*\..*\..*\..*\.rar" />
+                <data android:pathPattern=".*\..*\..*\..*\..*\.rar" />
+                <data android:pathPattern=".*\..*\..*\..*\..*\..*\.rar" />
+                <data android:pathPattern=".*\..*\..*\..*\..*\..*\..*\.rar" />
+                <data android:pathPattern=".*\.ZIP" />
+                <data android:pathPattern=".*\..*\.ZIP" />
+                <data android:pathPattern=".*\..*\..*\.ZIP" />
+                <data android:pathPattern=".*\..*\..*\..*\.ZIP" />
+                <data android:pathPattern=".*\.zip" />
+                <data android:pathPattern=".*\..*\.zip" />
+                <data android:pathPattern=".*\..*\..*\.zip" />
+                <data android:pathPattern=".*\..*\..*\..*\.zip" />
+                <data android:pathPattern=".*\..*\..*\..*\..*\.zip" />
+                <data android:pathPattern=".*\..*\..*\..*\..*\..*\.zip" />
+                <data android:pathPattern=".*\..*\..*\..*\..*\..*\..*\.zip" />
+                <data android:pathPattern=".*\.CAB" />
+                <data android:pathPattern=".*\..*\.CAB" />
+                <data android:pathPattern=".*\..*\..*\.CAB" />
+                <data android:pathPattern=".*\..*\..*\..*\.CAB" />
+                <data android:pathPattern=".*\.cab" />
+                <data android:pathPattern=".*\..*\.cab" />
+                <data android:pathPattern=".*\..*\..*\.cab" />
+                <data android:pathPattern=".*\..*\..*\..*\.cab" />
+                <data android:pathPattern=".*\..*\..*\..*\..*\.cab" />
+                <data android:pathPattern=".*\..*\..*\..*\..*\..*\.cab" />
+                <data android:pathPattern=".*\..*\..*\..*\..*\..*\..*\.cab" />
+                <data android:pathPattern=".*\.7Z" />
+                <data android:pathPattern=".*\..*\.7Z" />
+                <data android:pathPattern=".*\..*\..*\.7Z" />
+                <data android:pathPattern=".*\..*\..*\..*\.7Z" />
+                <data android:pathPattern=".*\.7z" />
+                <data android:pathPattern=".*\..*\.7z" />
+                <data android:pathPattern=".*\..*\..*\.7z" />
+                <data android:pathPattern=".*\..*\..*\..*\.7z" />
+                <data android:pathPattern=".*\..*\..*\..*\..*\.7z" />
+                <data android:pathPattern=".*\..*\..*\..*\..*\..*\.7z" />
+                <data android:pathPattern=".*\..*\..*\..*\..*\..*\..*\.7z" />
+                <data android:pathPattern=".*\.BZ2" />
+                <data android:pathPattern=".*\..*\.BZ2" />
+                <data android:pathPattern=".*\..*\..*\.BZ2" />
+                <data android:pathPattern=".*\..*\..*\..*\.BZ2" />
+                <data android:pathPattern=".*\.bz2" />
+                <data android:pathPattern=".*\..*\.bz2" />
+                <data android:pathPattern=".*\..*\..*\.bz2" />
+                <data android:pathPattern=".*\..*\..*\..*\.bz2" />
+                <data android:pathPattern=".*\..*\..*\..*\..*\.bz2" />
+                <data android:pathPattern=".*\..*\..*\..*\..*\..*\.bz2" />
+                <data android:pathPattern=".*\..*\..*\..*\..*\..*\..*\.bz2" />
+                <data android:pathPattern=".*\.GZ" />
+                <data android:pathPattern=".*\..*\.GZ" />
+                <data android:pathPattern=".*\..*\..*\.GZ" />
+                <data android:pathPattern=".*\..*\..*\..*\.GZ" />
+                <data android:pathPattern=".*\.gz" />
+                <data android:pathPattern=".*\..*\.gz" />
+                <data android:pathPattern=".*\..*\..*\.gz" />
+                <data android:pathPattern=".*\..*\..*\..*\.gz" />
+                <data android:pathPattern=".*\..*\..*\..*\..*\.gz" />
+                <data android:pathPattern=".*\..*\..*\..*\..*\..*\.gz" />
+                <data android:pathPattern=".*\..*\..*\..*\..*\..*\..*\.gz" />
+                <data android:pathPattern=".*\.TAR" />
+                <data android:pathPattern=".*\..*\.TAR" />
+                <data android:pathPattern=".*\..*\..*\.TAR" />
+                <data android:pathPattern=".*\..*\..*\..*\.TAR" />
+                <data android:pathPattern=".*\.tar" />
+                <data android:pathPattern=".*\..*\.tar" />
+                <data android:pathPattern=".*\..*\..*\.tar" />
+                <data android:pathPattern=".*\..*\..*\..*\.tar" />
+                <data android:pathPattern=".*\..*\..*\..*\..*\.tar" />
+                <data android:pathPattern=".*\..*\..*\..*\..*\..*\.tar" />
+                <data android:pathPattern=".*\..*\..*\..*\..*\..*\..*\.tar" />
+                <data android:pathPattern=".*\.XZ" />
+                <data android:pathPattern=".*\..*\.XZ" />
+                <data android:pathPattern=".*\..*\..*\.XZ" />
+                <data android:pathPattern=".*\..*\..*\..*\.XZ" />
+                <data android:pathPattern=".*\.xz" />
+                <data android:pathPattern=".*\..*\.xz" />
+                <data android:pathPattern=".*\..*\..*\.xz" />
+                <data android:pathPattern=".*\..*\..*\..*\.xz" />
+                <data android:pathPattern=".*\..*\..*\..*\..*\.xz" />
+                <data android:pathPattern=".*\..*\..*\..*\..*\..*\.xz" />
+                <data android:pathPattern=".*\..*\..*\..*\..*\..*\..*\.xz" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".RestarterActivity"
+            android:process=":anotherProcess" />
+        <activity android:name=".SettingsLauncherActivity" />
+        <activity
+            android:name=".sftpclient.VaultActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden" />
+        <activity
+            android:name=".FavoritesActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden" />
+        <activity
+            android:name=".XREDirectShareActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden">
+            <intent-filter
+                android:icon="@drawable/xf_share"
+                android:label="Share with XFiles">
+                <action android:name="android.intent.action.SEND" />
+                <action android:name="android.intent.action.SEND_MULTIPLE" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:mimeType="*/*" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".dialogs.compress.CompressActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden">
+            <intent-filter
+                android:icon="@drawable/xfiles_archive"
+                android:label="Compress with XFiles">
+                <action android:name="android.intent.action.SEND" />
+                <action android:name="android.intent.action.SEND_MULTIPLE" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:mimeType="*/*" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".dialogs.compress.ExtractActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden" />
+        <activity
+            android:name=".dialogs.XFilesRemoteSessionsManagementActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden" />
+        <activity
+            android:name=".FindActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden" />
+        <activity
+            android:name=".dialogs.ChecksumActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden" />
+        <activity
+            android:name=".PermissionManagementActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden" />
+
+        <service
+            android:name=".service.NonInteractiveXFilesRemoteTransferService"
+            android:enabled="true"
+            android:exported="true" />
+        <service
+            android:name=".service.FindService"
+            android:enabled="true"
+            android:exported="true" />
+
+        <!-- TODO before using standalone processes for service classes, need to remove dependency from static fields and/or activity methods (e.g. access dirCommander and browserAdapter) -->
+
+        <service
+            android:name=".service.CopyMoveService"
+            android:enabled="true"
+            android:exported="true" />
+        <service
+            android:name=".service.CompressService"
+            android:enabled="true"
+            android:exported="true" />
+        <service
+            android:name=".service.ExtractService"
+            android:enabled="true"
+            android:exported="true" />
+        <service
+            android:name=".service.NonInteractiveSftpService"
+            android:enabled="true"
+            android:exported="true" />
+        <service
+            android:name=".service.HTTPDownloadService"
+            android:enabled="true"
+            android:exported="true" />
+
+        <receiver android:name=".XRE_RHSS_Widget">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="it.pgp.xfiles.appwidget.action.STANDARD_UPDATE" />
+                <action android:name="it.pgp.xfiles.appwidget.action.ON_DEMAND_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/xre_rhss_widget_info" />
+        </receiver>
+    </application>
+
+</manifest>

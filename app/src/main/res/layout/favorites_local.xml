@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight=".25"
+            android:text="Path"
+            android:textColor="#0061d6"
+            android:textSize="15sp"
+            android:gravity="center_horizontal" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight=".1"
+            android:text="Edit"
+            android:textColor="#ff4d00"
+            android:textSize="15sp"
+            android:gravity="center_horizontal" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight=".1"
+            android:text="Delete"
+            android:textColor="#ff4d00"
+            android:textSize="15sp"
+            android:gravity="center_horizontal" />
+
+    </LinearLayout>
+
+    <ListView android:id="@+id/favorites_local_list"
+        android:fastScrollEnabled="true"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="8" >
+    </ListView>
+
+    <Button
+        android:text="Add local favorite"
+        android:id="@+id/favorites_local_add_button"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+</LinearLayout>

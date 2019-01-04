@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:id="@+id/itemCopy"
+        android:icon="@android:drawable/ic_menu_edit"
+        android:title="Copy" />
+
+    <item android:id="@+id/itemMove"
+        android:icon="@android:drawable/ic_menu_edit"
+        android:title="Move" />
+
+    <item android:id="@+id/itemCreateLink"
+        android:icon="@android:drawable/ic_menu_edit"
+        android:title="Create link" />
+
+    <item android:id="@+id/itemDelete"
+        android:icon="@android:drawable/ic_menu_delete"
+        android:title="Delete" />
+
+    <item android:id="@+id/itemRename"
+        android:icon="@android:drawable/ic_menu_edit"
+        android:title="Rename" />
+
+    <item android:id="@+id/itemChecksum"
+        android:icon="@android:drawable/ic_menu_edit"
+        android:title="Checksum" />
+
+    <item android:id="@+id/itemProperties"
+        android:icon="@android:drawable/ic_menu_info_details"
+        android:title="Properties" />
+</menu>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+        <!--<item android:id="@+id/itemsEnableMultiSelectMode"-->
+            <!--android:title="Enable multi-select" />-->
+
+        <item android:id="@+id/itemsSelectAll"
+            android:icon="@android:drawable/checkbox_on_background"
+            android:title="Select all" />
+
+        <item android:id="@+id/itemsSelectNone"
+            android:icon="@android:drawable/checkbox_off_background"
+            android:title="Select none" />
+
+        <item android:id="@+id/itemsInvertSelection"
+            android:title="Invert selection" />
+
+        <item android:id="@+id/itemsFilterSelection"
+            android:title="Filter selection" />
+
+        <item android:id="@+id/itemsFilterDeselection"
+            android:title="Filter deselection" />
+</menu>

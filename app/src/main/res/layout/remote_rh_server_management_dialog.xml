@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/remote_rh_server_management_dialog"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/editText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:text="@string/start_rhss_description" />
+
+    <!--toggle hotspot and wifi icons are in WifiButtonsLayout-->
+    <LinearLayout
+        android:orientation="vertical"
+        android:id="@+id/targetWifiButtonsLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <!--temporary layout for testing HTTP/FTP file servers, once ready this dialog will contain a ViewFlipper, as well as the widget-->
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/ftpServerButton"
+            android:text="FTP Server"
+            android:textSize="12sp"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/httpServerButton"
+            android:text="HTTP Server"
+            android:textSize="12sp"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:text="Exposed HTTP/FTP base path:"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <EditText
+            android:id="@+id/ftpHttpRootPath"
+            android:text="/sdcard"
+            android:inputType="text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+    <include layout="@layout/xre_rhss_button_and_active_ips" />
+</LinearLayout>
