@@ -9,10 +9,10 @@ Two main components:
 - Roothelper native executable (embedded as binaries in the libs folder)
 
 ### Releases
-Prebuilt APKs and RootHelper binaries will be available soon.
+Prebuilt APKs are available in the Release section of this repo. RootHelper standalone binaries will be available soon.
 
 ### Demos
-Usage demos will be available soon.
+Usage demos are available [here](https://github.com/pgp/XFilesDemos).
 
 ### Building from source 
 ## Prerequisites
