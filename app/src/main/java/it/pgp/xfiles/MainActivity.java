@@ -879,8 +879,9 @@ public class MainActivity extends EffectActivity {
         // new AdvancedSortingDialog(MainActivity.this,getCurrentBrowserAdapter()).show();
     }
 
+    public static GenericChangeDirectoryDialog cdd;
     public void showChangeDirectoryDialog(View v) {
-        GenericChangeDirectoryDialog cdd = new GenericChangeDirectoryDialog(
+        cdd = new GenericChangeDirectoryDialog(
                 MainActivity.this,
                 getCurrentDirCommander().getCurrentDirectoryPathname()
         );

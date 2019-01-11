@@ -14,14 +14,13 @@ public class XTransferListener implements TransferListener {
 
     @Override
     public TransferListener directory(String name) {
-        progressIndicator.incrementOuterProgressThenPublish(1); // increment dir progress at the beginning - avoid division by zero with dummy size of 1
+//        progressIndicator.incrementOuterProgressThenPublish(1); // increment dir progress at the beginning - avoid division by zero with dummy size of 1
         return this;
     }
 
     @Override
     public StreamCopier.Listener file(String name, long size) {
         progressIndicator.incrementOuterProgressThenPublish(size);
-//        return transferred -> task.publishInnerProgress(transferred);
         return progressIndicator::publishInnerProgress;
     }
 }

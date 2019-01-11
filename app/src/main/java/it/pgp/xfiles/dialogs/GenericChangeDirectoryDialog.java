@@ -382,6 +382,7 @@ public class GenericChangeDirectoryDialog extends Dialog {
 
     public GenericChangeDirectoryDialog(MainActivity mainActivity, BasePathContent curDirPath) {
         super(mainActivity);
+        MainActivity.cdd = this;
         this.mainActivity = mainActivity;
         this.curDirPath = curDirPath;
         dbh = new GenericDBHelper(mainActivity);
@@ -408,7 +409,10 @@ public class GenericChangeDirectoryDialog extends Dialog {
         target.addView(wbl);
 
         wbl.registerListeners();
-        setOnDismissListener(dialog->wbl.unregisterListeners());
+        setOnDismissListener(dialog->{
+            wbl.unregisterListeners();
+            MainActivity.cdd = null;
+        });
     }
 
     private boolean basicNonEmptyValidation(EditText... fields) {

@@ -5,8 +5,7 @@ import android.content.DialogInterface;
 import android.widget.Toast;
 
 import it.pgp.xfiles.MainActivity;
-import it.pgp.xfiles.dialogs.SSHAlreadyInKnownHostsDialog;
-import it.pgp.xfiles.dialogs.SSHNotInKnownHostsDialog;
+import it.pgp.xfiles.dialogs.SSHKnownHostsBaseDialog;
 
 /**
  * Created by pgp on 09/03/17
@@ -17,6 +16,7 @@ import it.pgp.xfiles.dialogs.SSHNotInKnownHostsDialog;
  */
 
 public class SftpRetryLsListener implements Dialog.OnDismissListener {
+
     MainActivity activity;
 
     public SftpRetryLsListener(MainActivity activity) {
@@ -25,30 +25,11 @@ public class SftpRetryLsListener implements Dialog.OnDismissListener {
 
     @Override
     public void onDismiss(DialogInterface dialog) {
-        SSHNotInKnownHostsDialog nd;
-        SSHAlreadyInKnownHostsDialog ad;
-
-        if (dialog instanceof SSHNotInKnownHostsDialog) {
-            nd = (SSHNotInKnownHostsDialog) dialog;
-
-            // TODO refactor common superclass out of SSHAlreadyInKnownHostsDialog and SSHNotInKnownHostsDialog
-            // re-do ls request
-            if (nd.pendingLsPath == null) {
-                Toast.makeText(activity.getApplicationContext(),"No pending request in SFTP retry",Toast.LENGTH_LONG).show();
-                return;
-            }
-
-            activity.goDir(nd.pendingLsPath);
+        SSHKnownHostsBaseDialog d = (SSHKnownHostsBaseDialog)dialog;
+        if (d.pendingLsPath == null) {
+            Toast.makeText(activity.getApplicationContext(),"No pending request in SFTP retry",Toast.LENGTH_LONG).show();
+            return;
         }
-        else if (dialog instanceof SSHAlreadyInKnownHostsDialog) {
-            ad = (SSHAlreadyInKnownHostsDialog) dialog;
-
-            if (ad.pendingLsPath == null) {
-                Toast.makeText(activity.getApplicationContext(),"No pending request in SFTP retry",Toast.LENGTH_LONG).show();
-                return;
-            }
-
-            activity.goDir(ad.pendingLsPath);
-        }
+        activity.goDir(d.pendingLsPath);
     }
 }

@@ -19,15 +19,11 @@ public class XProgress extends MovingRibbonTwoBars {
 
     public boolean cancelled = false;
 
-    private static final long SIZE_THRESHOLD = 1000000;
+    protected static final long SIZE_THRESHOLD = 1000000;
 
     public XProgress(Service service, WindowManager wm) {
         super(service, wm);
     }
-
-//    public XProgress() {
-//        clear();
-//    }
 
     public void clear() {
         this.totalFiles = 0;
@@ -37,26 +33,23 @@ public class XProgress extends MovingRibbonTwoBars {
         this.lastShownSize = 0;
     }
 
-//    public XProgress(long totalFiles) {
-//        super();
-//        this.totalFiles = totalFiles;
-//        this.currentFiles = 0;
-//        this.totalSize = 0;
-//        this.currentSize = 0;
-//        this.lastShownSize = 0;
-//    }
+    // detailed progress variables and methods
+    protected long completedFilesSizeSoFar;
+    protected long totalFilesSize; // set only in case of upload
 
-    private void publish() {
-        setProgress(
-                (int)Math.floor(currentFiles*100/totalFiles),
-                (int)Math.floor(currentSize*100/totalSize)
-        );
-    }
+    public boolean isDetailedProgress = false; // set to true in case of upload
 
-    public void publishProgress(long outerProgress, long innerProgress) {
-        currentFiles = outerProgress;
-        currentSize = innerProgress;
-        publish();
+    protected void publish() {
+        if(isDetailedProgress)
+            setProgress(
+                    (int)Math.floor((completedFilesSizeSoFar + currentSize)*100/totalFilesSize),
+                    (int)Math.floor(currentSize*100/totalSize)
+            );
+        else
+            setProgress(
+                    (int)Math.floor(currentFiles*100/totalFiles),
+                    (int)Math.floor(currentSize*100/totalSize)
+            );
     }
 
     public void publishInnerProgress(long innerProgress) throws IOException {
@@ -68,16 +61,10 @@ public class XProgress extends MovingRibbonTwoBars {
         }
     }
 
-    public void publishOuterProgress(long outerProgress, long newFileSize) {
-        currentFiles = outerProgress;
-        totalSize = newFileSize;
-        currentSize = 0;
-        lastShownSize = 0;
-        publish();
-    }
-
     public void incrementOuterProgressThenPublish(long newFileSize) {
-        currentFiles++;
+        if(isDetailedProgress) completedFilesSizeSoFar += totalSize;  // increment of last completed file size
+        else currentFiles++;
+
         totalSize = newFileSize;
         currentSize = 0;
         lastShownSize = 0;

@@ -1,8 +1,6 @@
 package it.pgp.xfiles.dialogs;
 
-import android.app.Dialog;
 import android.content.Context;
-import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -12,12 +10,10 @@ import net.schmizz.sshj.common.KeyType;
 import java.io.IOException;
 import java.security.PublicKey;
 
-import it.pgp.xfiles.MainActivity;
 import it.pgp.xfiles.R;
 import it.pgp.xfiles.sftpclient.AuthData;
 import it.pgp.xfiles.sftpclient.SFTPProviderUsingPathContent;
 import it.pgp.xfiles.utils.pathcontent.BasePathContent;
-import it.pgp.xfiles.utils.pathcontent.RemotePathContent;
 
 /**
  * Created by pgp on 03/03/17
@@ -29,22 +25,15 @@ import it.pgp.xfiles.utils.pathcontent.RemotePathContent;
  *    - (not really necessary: temporarily accept new host key, but don't remove old one)
  */
 
-public class SSHAlreadyInKnownHostsDialog extends Dialog {
+public class SSHAlreadyInKnownHostsDialog extends SSHKnownHostsBaseDialog {
 
-    public RemotePathContent pendingLsPath;
-
-    public void resetPath() {
-        pendingLsPath = null;
-    }
     public SSHAlreadyInKnownHostsDialog(final Context context,
                                         final AuthData authData,
                                         final PublicKey oldHostKey,
                                         final PublicKey newHostKey,
                                         final SFTPProviderUsingPathContent provider,
                                         final BasePathContent pendingLsPath) {
-        super(context);
-        this.pendingLsPath = (RemotePathContent) pendingLsPath;
-        setOnDismissListener(MainActivity.sftpRetryLsListener);
+        super(context,pendingLsPath);
 
         setTitle("Conflicting host key");
         setContentView(R.layout.ssh_already_in_known_hosts_dialog);

@@ -1,6 +1,5 @@
 package it.pgp.xfiles.service;
 
-import android.util.Log;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -34,6 +33,7 @@ public class NonInteractiveSftpTask extends BaseBackgroundTask {
 
     private BasePathContent currentDir; // for refreshing dir listview (if not changed meanwhile) on operation end
     FileOpsErrorCodes result;
+    Exception lastException;
 
     public NonInteractiveSftpTask(Serializable params_) {
         super(params_);
@@ -71,6 +71,7 @@ public class NonInteractiveSftpTask extends BaseBackgroundTask {
         catch (IOException e) {
             if (!(e instanceof InterruptedTransferAsIOException)) {
                 e.printStackTrace();
+                lastException = e;
                 result = FileOpsErrorCodes.TRANSFER_ERROR;
             }
             else result = FileOpsErrorCodes.TRANSFER_CANCELLED;
@@ -104,7 +105,8 @@ public class NonInteractiveSftpTask extends BaseBackgroundTask {
             Toast.makeText(service,params.list.copyOrMove.name().toLowerCase()+" cancelled",Toast.LENGTH_LONG).show();
         }
         else {
-            Toast.makeText(service,params.list.copyOrMove.name().toLowerCase()+" error: "+result.getValue(),Toast.LENGTH_LONG).show();
+            Toast.makeText(service,params.list.copyOrMove.name().toLowerCase()+" error: "+result.getValue()+
+                    "\nReason: "+(lastException==null?"null":lastException.getMessage()),Toast.LENGTH_LONG).show();
         }
     }
 }

@@ -41,20 +41,24 @@ public class XSSHClient extends SSHClient implements AutoCloseable {
         return new XSFTPClient(new SFTPEngine(this).init());
     }
 
-    public long countTotalFilesAndFoldersInItems(Iterable<Map.Entry<String,Boolean>> paths) {
+    /**
+     * Accumulates the count of regular files in a list of items (that can contain both files and directories)
+     * by recursing on subdirectories if necessary
+     */
+    public long countTotalRegularFilesInItems(Iterable<Map.Entry<String,Boolean>> paths) {
         long totalFirstLevelRegularFiles = 0;
         long total = -1;
         try (Session helperSession = startSession()) {
             StringBuilder builder = new StringBuilder("(");
             for (Map.Entry<String,Boolean> path : paths) {
                 if (path.getValue()) // launch find command only if is directory
-                    builder.append("find ").append(path.getKey()).append(";");
+                    builder.append("find ").append(path.getKey()).append(" -type f;"); // seek recursively for all files in the directory
                 else totalFirstLevelRegularFiles++;
             }
             builder.append(") | wc -l");
             try (Session.Command cmd = helperSession.exec(builder.toString());
                  InputStream is = cmd.getInputStream()) {
-                String output = IOUtils.readFully(is).toString().replace("\n","");
+                String output = IOUtils.readFully(is).toString().trim();
                 long exitStatus = cmd.getExitStatus();
                 if (exitStatus==0) {
                     total = Long.valueOf(output);

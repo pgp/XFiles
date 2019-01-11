@@ -561,17 +561,24 @@ public class SFTPProviderUsingPathContent implements FileOperationHelperUsingPat
             sftpClient.setProgressIndicator(xp);
 
             // count local files via local roothelper or xfilesopshelper and set them in xprogress
-            long totalLocalFiles = 0;
+//            long totalLocalFiles = 0;
+            long totalLocalSize = 0;
             for (BrowserItem localItem : files.files) {
                 BasePathContent bpc = files.parentDir.concat(localItem.getFilename());
                 if (MainActivity.xFilesUtils.isDir(bpc)) {
                     folderStats_resp fsr = MainActivity.xFilesUtils.statFolder(bpc);
-                    totalLocalFiles+=fsr.totalFiles;
-                    totalLocalFiles+=fsr.totalDirs;
+//                    totalLocalFiles+=fsr.totalFiles;
+//                    totalLocalFiles+=fsr.totalDirs;
+                    totalLocalSize+=fsr.totalSize;
                 }
-                else totalLocalFiles++;
+                else {
+//                    totalLocalFiles++;
+                    totalLocalSize+=MainActivity.xFilesUtils.statFile(bpc).size;
+                }
             }
-            xp.totalFiles = totalLocalFiles;
+
+            xp.totalFilesSize = totalLocalSize;
+            xp.isDetailedProgress = true;
             for (BrowserItem localItem : files.files)
                 sftpClient.put(files.parentDir.concat(localItem.getFilename()).toString(),dstFolder.dir+"/"+localItem.getFilename());
         }
@@ -585,9 +592,9 @@ public class SFTPProviderUsingPathContent implements FileOperationHelperUsingPat
             xp.clear();
             sftpClient.setProgressIndicator(xp);
 
-            xp.totalFiles = xsshClient.countTotalFilesAndFoldersInItems(files.getSFTPProgressHelperIterable());
+            xp.totalFiles = xsshClient.countTotalRegularFilesInItems(files.getSFTPProgressHelperIterable());
             if (xp.totalFiles < 0) {
-                Log.e(this.getClass().getName(),"Unable to count remote files, external progress will not be available");
+                MainActivity.showToastOnUIWithHandler("Unable to count remote files, external progress will not be available");
                 xp.totalFiles = Long.MAX_VALUE;
             }
 
