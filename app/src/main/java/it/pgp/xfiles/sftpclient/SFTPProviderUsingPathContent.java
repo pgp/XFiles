@@ -587,15 +587,29 @@ public class SFTPProviderUsingPathContent implements FileOperationHelperUsingPat
             AuthData authData = ((RemotePathContent)files.parentDir).authData;
             XSFTPClient sftpClient = getChannelIfAlreadyExists(authData);
             XSSHClient xsshClient = xsshclients.get(authData.toString()); // needed for remote file counting, must exist if the previous line doesn't throw exception
+            if (xsshClient == null) throw new IOException("Unexpected null: xsshclient");
 
             XProgress xp = (XProgress) task.mr;
             xp.clear();
             sftpClient.setProgressIndicator(xp);
 
-            xp.totalFiles = xsshClient.countTotalRegularFilesInItems(files.getSFTPProgressHelperIterable());
-            if (xp.totalFiles < 0) {
-                MainActivity.showToastOnUIWithHandler("Unable to count remote files, external progress will not be available");
+
+            // LEGACY
+//            xp.totalFiles = xsshClient.countTotalRegularFilesInItems(files.getSFTPProgressHelperIterable());
+//            if (xp.totalFiles < 0) {
+//                MainActivity.showToastOnUIWithHandler("Unable to count remote files, external progress will not be available");
+//                xp.totalFiles = Long.MAX_VALUE;
+//            }
+
+            // first attempt: launch external commands (du, python, dir) to count remote files
+            long totalRemoteSize = xsshClient.countTotalSizeInItems(files.getSFTPProgressHelperIterableFilenamesOnly(),files.parentDir.dir);
+            if (totalRemoteSize < 0) {
+                MainActivity.showToastOnUIWithHandler("All external commands for remote size count failed, external progress won't be available");
                 xp.totalFiles = Long.MAX_VALUE;
+            }
+            else {
+                xp.totalFilesSize = totalRemoteSize;
+                xp.isDetailedProgress = true;
             }
 
             for (BrowserItem remoteItemName : files.files) { // iterator over filenames only

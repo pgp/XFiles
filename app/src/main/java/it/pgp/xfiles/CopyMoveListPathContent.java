@@ -84,4 +84,19 @@ public class CopyMoveListPathContent implements Serializable,Iterable<String> {
             }
         };
     }
+
+    public Iterable<Map.Entry<String,Boolean>> getSFTPProgressHelperIterableFilenamesOnly() {
+        return () -> new Iterator<Map.Entry<String, Boolean>>() {
+            final Iterator<BrowserItem> i = files.iterator();
+            @Override
+            public boolean hasNext() {
+                return i.hasNext();
+            }
+            @Override
+            public Map.Entry<String, Boolean> next() {
+                BrowserItem b = i.next();
+                return new AbstractMap.SimpleEntry<>(b.filename, b.isDirectory);
+            }
+        };
+    }
 }

@@ -3,11 +3,13 @@ package it.pgp.xfiles.utils;
 import android.util.Log;
 
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -181,6 +183,19 @@ public class Misc {
         int i = s.lastIndexOf('/');
         if (i < 0) throw new RuntimeException("Malformed common path prefix");
         return s.substring(0,i); // also valid for single selection, if not malformed (e.g. ending with /)
+    }
+
+    public static List<String> splitByteArrayOverByteAndEncode(byte[] b, byte targetByte) {
+        List<String> outs = new ArrayList<>();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        for (int j=0;j<b.length;j++) {
+            if (b[j] != targetByte) baos.write(b[j]);
+            else {
+                outs.add(new String(baos.toByteArray())); // assumed default charset: UTF-8
+                baos.reset();
+            }
+        }
+        return outs;
     }
 
 }

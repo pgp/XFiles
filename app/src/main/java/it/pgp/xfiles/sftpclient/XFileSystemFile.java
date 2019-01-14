@@ -134,20 +134,26 @@ public class XFileSystemFile implements LocalSourceFile, LocalDestFile {
 
     @Override
     public void setLastAccessedTime(long t) throws IOException {
-        if (rhc.setDates(new LocalPathContent(file),new Date(t),null) != 0)
-            throw new IOException("Unable to set last access time");
+        if (rhc.setDates(new LocalPathContent(file),new Date(t),null) != 0) {
+//            throw new IOException("Unable to set last access time");
+            Log.e(getClass().getName(),"Unable to set last access time");
+        }
     }
 
     @Override
     public void setLastModifiedTime(long t) throws IOException {
-        if (rhc.setDates(new LocalPathContent(file),null,new Date(t)) != 0)
-            throw new IOException("Unable to set last modified time");
+        if (rhc.setDates(new LocalPathContent(file),null,new Date(t)) != 0) {
+//            throw new IOException("Unable to set last modified time");
+            Log.e(getClass().getName(),"Unable to set last modified time");
+        }
     }
 
     @Override
     public void setPermissions(int perms) throws IOException {
-        if (rhc.setPermissions(new LocalPathContent(file),perms) != 0)
-            throw new IOException("Unable to set permissions"); // FIXME [NonInteractiveSftpTask] treat as warning or avoid to call completely, since perms are are very limited by default on Android filesystems
+        if (rhc.setPermissions(new LocalPathContent(file),perms) != 0) {
+//            throw new IOException("Unable to set permissions"); // just treat as warning or avoid to call completely, since perms are very limited by default on Android filesystems
+            Log.e(getClass().getName(),"Unable to set permissions");
+        }
     }
 
     @Override
