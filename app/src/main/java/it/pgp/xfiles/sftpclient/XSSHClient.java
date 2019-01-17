@@ -14,6 +14,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import it.pgp.xfiles.roothelperclient.resps.folderStats_resp;
 import it.pgp.xfiles.utils.Misc;
@@ -142,6 +144,57 @@ public class XSSHClient extends SSHClient implements AutoCloseable {
         return -1;
     }
 
+    protected long countTotalSizeInItems_dirMethod(Iterable<Map.Entry<String,Boolean>> filenames, String parentDir) {
+        long total = 0;
+        long totalFiles = 0;
+        if (!filenames.iterator().hasNext()) return total;
+
+        // TODO to be checked, parentDir should be in unix format, convert in Windows one
+        String pdwf = parentDir.substring((parentDir.startsWith("/")?1:0),parentDir.length()-((parentDir.endsWith("/")?1:0)));
+        pdwf = pdwf.replace("/","\\");
+        if (pdwf.charAt(1) != ':') pdwf = ""+pdwf.charAt(0)+":"+pdwf.substring(1);
+        //   C:\example\path or C\example\path
+        //   C:\                C               C\
+
+        Pattern pattern = Pattern.compile("([0-9]+)([^0-9]+)([0-9]+)"); // dir output format: nnnnnnnn files, MMMMMMMM bytes
+
+        for (Map.Entry<String,Boolean> path : filenames) {
+            try (Session helperSession = startSession()) {
+                final String dircmd = "cmd /V:ON /c \"@echo off & " +
+                        "@cd \"" + pdwf + "\" & " +
+                        "@set pline=na & @set cline=na & " +
+                        "(@for /F \"delims=\" %i in ( ' dir /s /a /-c \"" + path.getKey() + "\" ' ) do " +
+                        "@( @set pline=!cline! & @set cline=%i)) & " +
+                        "@echo !pline!\"";
+                Log.e(getClass().getName(),"dir cmd is: "+dircmd);
+
+                try (Session.Command cmd = helperSession.exec(dircmd);
+                     InputStream is = cmd.getInputStream()) {
+                    String commandOutput = IOUtils.readFully(is).toString().trim();
+                    Log.e(getClass().getName(),"dir cmd output is: "+commandOutput);
+                    long exitStatus = cmd.getExitStatus();
+                    if (exitStatus != 0) return -1;
+                    else {
+                        Matcher matcher = pattern.matcher(commandOutput);
+                        if (matcher.find()) {
+                            totalFiles += Long.valueOf(matcher.group(1));
+                            total += Long.valueOf(matcher.group(3));
+                        }
+                        else Log.e(getClass().getName(),"No match found for dir cmd output: "+commandOutput);
+                    }
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            catch (ConnectionException | TransportException e) {
+                e.printStackTrace();
+                return -1;
+            }
+        }
+        return total;
+    }
+
     /**
      * Tries to invoke external commands du, python with os.walk script, and dir (in case remote host is a Windows one)
      */
@@ -155,8 +208,10 @@ public class XSSHClient extends SSHClient implements AutoCloseable {
             if (total >= 0) return total;
             Log.e("TOTALSIZE","python command failed, trying with dir command...");
 
-            // try with dir command (for windows remote hosts running a SSH server, e.g. Bitvise SSH Server)
-            // TODO
+            // try with dir command (for windows remote hosts running a SSH server, e.g. Windows 10 >=1803 built-in OpenSSH, or Bitvise SSH Server)
+            total = countTotalSizeInItems_dirMethod(filenames, parentDir);
+            if (total >= 0) return total;
+            Log.e("TOTALSIZE","dir command failed, external progress won't be available");
 
             return -1;
         }
