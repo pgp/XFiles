@@ -149,7 +149,6 @@ public class XSSHClient extends SSHClient implements AutoCloseable {
         long totalFiles = 0;
         if (!filenames.iterator().hasNext()) return total;
 
-        // TODO to be checked, parentDir should be in unix format, convert in Windows one
         String pdwf = parentDir.substring((parentDir.startsWith("/")?1:0),parentDir.length()-((parentDir.endsWith("/")?1:0)));
         pdwf = pdwf.replace("/","\\");
         if (pdwf.charAt(1) != ':') pdwf = ""+pdwf.charAt(0)+":"+pdwf.substring(1);
