@@ -148,50 +148,58 @@ public class XSSHClient extends SSHClient implements AutoCloseable {
         long total = 0;
         long totalFiles = 0;
         if (!filenames.iterator().hasNext()) return total;
+        try {
+            String pdwf = parentDir.substring((parentDir.startsWith("/")?1:0),parentDir.length()-((parentDir.endsWith("/")?1:0)));
+            pdwf = pdwf.replace("/","\\");
+            if (pdwf.length()<=1 || pdwf.charAt(1) != ':') pdwf = ""+pdwf.charAt(0)+":"+pdwf.substring(1); // actually the operator should be == for length, <= only to avoid app crash in case of malformed paths
+            //   C:\example\path or C\example\path
+            //   C:\                C               C\
 
-        String pdwf = parentDir.substring((parentDir.startsWith("/")?1:0),parentDir.length()-((parentDir.endsWith("/")?1:0)));
-        pdwf = pdwf.replace("/","\\");
-        if (pdwf.charAt(1) != ':') pdwf = ""+pdwf.charAt(0)+":"+pdwf.substring(1);
-        //   C:\example\path or C\example\path
-        //   C:\                C               C\
+            String changeUnitCommand = pdwf.substring(0,2);
 
-        Pattern pattern = Pattern.compile("([0-9]+)([^0-9]+)([0-9]+)"); // dir output format: nnnnnnnn files, MMMMMMMM bytes
+            Pattern pattern = Pattern.compile("([0-9]+)([^0-9]+)([0-9]+)"); // dir output format: nnnnnnnn files, MMMMMMMM bytes
 
-        for (Map.Entry<String,Boolean> path : filenames) {
-            try (Session helperSession = startSession()) {
-                final String dircmd = "cmd /V:ON /c \"@echo off & " +
-                        "@cd \"" + pdwf + "\" & " +
-                        "@set pline=na & @set cline=na & " +
-                        "(@for /F \"delims=\" %i in ( ' dir /s /a /-c \"" + path.getKey() + "\" ' ) do " +
-                        "@( @set pline=!cline! & @set cline=%i)) & " +
-                        "@echo !pline!\"";
-                Log.e(getClass().getName(),"dir cmd is: "+dircmd);
+            for (Map.Entry<String,Boolean> path : filenames) {
+                try (Session helperSession = startSession()) {
+                    final String dircmd = "cmd /V:ON /c \"@echo off & " +
+                            changeUnitCommand + " & " +
+                            "@cd \"" + pdwf + "\\\" & " + // additional final slash for avoiding cases like |cd "c:"| that don't work (while |cd "c:\"| does work )
+                            "@set pline=na & @set cline=na & " +
+                            "(@for /F \"delims=\" %i in ( ' dir /s /a /-c \"" + path.getKey() + "\" ' ) do " +
+                            "@( @set pline=!cline! & @set cline=%i)) & " +
+                            "@echo !pline!\"";
+                    Log.e(getClass().getName(),"dir cmd is: "+dircmd);
 
-                try (Session.Command cmd = helperSession.exec(dircmd);
-                     InputStream is = cmd.getInputStream()) {
-                    String commandOutput = IOUtils.readFully(is).toString().trim();
-                    Log.e(getClass().getName(),"dir cmd output is: "+commandOutput);
-                    long exitStatus = cmd.getExitStatus();
-                    if (exitStatus != 0) return -1;
-                    else {
-                        Matcher matcher = pattern.matcher(commandOutput);
-                        if (matcher.find()) {
-                            totalFiles += Long.valueOf(matcher.group(1));
-                            total += Long.valueOf(matcher.group(3));
+                    try (Session.Command cmd = helperSession.exec(dircmd);
+                         InputStream is = cmd.getInputStream()) {
+                        String commandOutput = IOUtils.readFully(is).toString().trim();
+                        Log.e(getClass().getName(),"dir cmd output is: "+commandOutput);
+                        long exitStatus = cmd.getExitStatus();
+                        if (exitStatus != 0) return -1;
+                        else {
+                            Matcher matcher = pattern.matcher(commandOutput);
+                            if (matcher.find()) {
+                                totalFiles += Long.valueOf(matcher.group(1));
+                                total += Long.valueOf(matcher.group(3));
+                            }
+                            else Log.e(getClass().getName(),"No match found for dir cmd output: "+commandOutput);
                         }
-                        else Log.e(getClass().getName(),"No match found for dir cmd output: "+commandOutput);
+                    }
+                    catch (Exception e) {
+                        e.printStackTrace();
                     }
                 }
-                catch (Exception e) {
+                catch (ConnectionException | TransportException e) {
                     e.printStackTrace();
+                    return -1;
                 }
             }
-            catch (ConnectionException | TransportException e) {
-                e.printStackTrace();
-                return -1;
-            }
+            return total;
         }
-        return total;
+        catch (Exception e) {
+            Log.e(getClass().getName(),"Unhandled exception, leaving size count", e);
+            return -1;
+        }
     }
 
     /**
