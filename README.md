@@ -2,6 +2,19 @@
 
 A general-purpose file explorer for (rooted) Android, with support for compressed archives, remote file servers, device-to-device file transfers, checksums, etc...
 
+[<img src="https://i.ibb.co/74VcyM3/00mainview.jpg" alt="00mainview" width="120" border="0">](https://ibb.co/wsCH6Gn)
+[<img src="https://i.ibb.co/HG8Fz6r/00mainviewgrid.jpg" alt="00mainviewgrid" width="120" border="0">](https://ibb.co/nQJgc9D)
+[<img src="https://i.ibb.co/tDDGPZH/001quicksearch.jpg" alt="001quicksearch" width="120" border="0">](https://ibb.co/899C4zm)
+[<img src="https://i.ibb.co/nDDWbKL/002xreserver.jpg" alt="002xreserver" width="120" border="0">](https://ibb.co/LCCG8sZ)
+[<img src="https://i.ibb.co/58qddy6/003advancedsort.jpg" alt="003advancedsort" width="120" border="0">](https://ibb.co/bBpxxZP)
+[<img src="https://i.ibb.co/wJDhJzj/004compress.jpg" alt="004compress" width="120" border="0">](https://ibb.co/jV7kVrs)
+[<img src="https://i.ibb.co/566G6H4/005compressbrowse.jpg" alt="005compressbrowse" width="120" border="0">](https://ibb.co/pxxbxFw)
+[<img src="https://i.ibb.co/sHYmZjx/006contsel.jpg" alt="006contsel" width="120" border="0">](https://ibb.co/ySjfr0v)
+[<img src="https://i.ibb.co/XjFMPtv/007contselgrid.jpg" alt="007contselgrid" width="120" border="0">](https://ibb.co/gmth8JB)
+[<img src="https://i.ibb.co/6RX3Zvq/008advancedsearch.jpg" alt="008advancedsearch" width="120" border="0">](https://ibb.co/5WKN9YJ)
+[<img src="https://i.ibb.co/JHLMnKS/009checksum.jpg" alt="009checksum" width="120" border="0">](https://ibb.co/M7T3nsJ)
+[<img src="https://i.ibb.co/7YrwsnB/010godir.jpg" alt="010godir" width="120" border="0">](https://ibb.co/SsVhFtH)
+
 ## Getting Started
 
 Two main components:
