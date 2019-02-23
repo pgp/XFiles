@@ -1,8 +1,12 @@
 package it.pgp.xfiles.utils.pathcontent;
 
+import java.net.MalformedURLException;
+
 import it.pgp.xfiles.enums.FileOpsErrorCodes;
 import it.pgp.xfiles.enums.ProviderType;
 import it.pgp.xfiles.smbclient.SmbAuthData;
+import jcifs.CIFSContext;
+import jcifs.smb.SmbFile;
 
 public class SmbRemotePathContent extends BasePathContent {
 
@@ -30,10 +34,18 @@ public class SmbRemotePathContent extends BasePathContent {
         return "smb://"+smbAuthData+dir;
     }
 
-    public String toConnString() { // canonical, can be fed as input into JCFIS SMbClient constructor
+    public String toConnStringFull() { // canonical, can be fed as input into JCFIS SMbClient constructor
         return "smb://"+smbAuthData.username+"@"+
                 smbAuthData.host+":"+smbAuthData.port+ // TODO check if access by custom port is canonical
                 dir+"/";
+    }
+
+    public String toConnString(boolean isDirectory) { // TODO check if port in address is canonical
+        return "smb://"+smbAuthData.host+":"+smbAuthData.port+dir+(isDirectory?"/":"");
+    }
+
+    public SmbFile getSmbFile(CIFSContext context, boolean isDirectory) throws MalformedURLException {
+        return new SmbFile(toConnString(isDirectory),context);
     }
 
     @Override

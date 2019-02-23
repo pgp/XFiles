@@ -52,6 +52,8 @@ public class DirCommanderCUsingBrowserItemsAndPathContent {
                 return MainActivity.getRootHelperClient().listArchive(dir);
             case SFTP:
                 return MainActivity.sftpProvider.listDirectory(dir);
+            case SMB:
+                return MainActivity.smbProvider.listDirectory(dir);
             default: // URL_DOWNLOAD is not a goDir label
                 throw new RuntimeException("Invalid BasePathContent subclass type");
         }
@@ -67,6 +69,9 @@ public class DirCommanderCUsingBrowserItemsAndPathContent {
         }
         else if (dir.startsWith("xre://")) {
             return ProviderType.XFILES_REMOTE;
+        }
+        else if (dir.startsWith("smb://")) {
+            return ProviderType.SMB;
         }
         else throw new RuntimeException("Unknown data provider");
     }

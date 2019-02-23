@@ -90,6 +90,7 @@ import it.pgp.xfiles.service.visualization.ProgressIndicator;
 import it.pgp.xfiles.sftpclient.SFTPProviderUsingPathContent;
 import it.pgp.xfiles.sftpclient.SftpRetryLsListener;
 import it.pgp.xfiles.sftpclient.VaultActivity;
+import it.pgp.xfiles.smbclient.SmbProviderUsingPathContent;
 import it.pgp.xfiles.utils.ContentProviderUtils;
 import it.pgp.xfiles.utils.DirCommanderCUsingBrowserItemsAndPathContent;
 import it.pgp.xfiles.utils.FileOperationHelperUsingPathContent;
@@ -125,6 +126,7 @@ public class MainActivity extends EffectActivity {
     public BrowserPagerAdapter browserPagerAdapter;
 
     // File Operations Helpers
+    public static SmbProviderUsingPathContent smbProvider; // TODO add entry points in MainActivity
     public static SFTPProviderUsingPathContent sftpProvider;
     public static SftpRetryLsListener sftpRetryLsListener;
 
@@ -767,6 +769,7 @@ public class MainActivity extends EffectActivity {
         xFilesUtils = new XFilesUtilsUsingPathContent();
         currentHelper = xFilesUtils; // start with non-root (Java) file ops helper
 
+        smbProvider = new SmbProviderUsingPathContent(mainActivityContext,this);
         sftpProvider = new SFTPProviderUsingPathContent(mainActivityContext,this);
         sftpRetryLsListener = new SftpRetryLsListener(this);
 
@@ -1290,22 +1293,29 @@ public class MainActivity extends EffectActivity {
             if (f == null) {
                 // close all
                 if (sftpProvider != null) sftpProvider.closeAllSessions();
+                if (smbProvider != null) smbProvider.closeAllSessions();
                 rootHelperRemoteClientManager.closeAllSessions();
                 if (RemoteServerManager.rhssManagerThreadRef.get() == null)
                     killRHWrapper();
             }
             else {
+                // TODO apply a better construct for set exclusion
                 switch (f) {
                     case FILE_TRANSFER:
                     case FILE_ARCHIVING:
                     case XRE_TRANSFER:
                     case URL_DOWNLOAD:
                         if (sftpProvider != null) sftpProvider.closeAllSessions();
+                        if (smbProvider != null) smbProvider.closeAllSessions();
                         break;
                     case SFTP_TRANSFER:
-                        rootHelperRemoteClientManager.closeAllSessions();
+                        if (smbProvider != null) smbProvider.closeAllSessions();
+                        rootHelperRemoteClientManager.closeAllSessions(); // FIXME this shouldn't be done anymore since the use of RobustLocal file streams, to be checked
                         if (RemoteServerManager.rhssManagerThreadRef.get() == null)
                             killRHWrapper();
+                        break;
+                    case SMB_TRANSFER:
+                        if (sftpProvider != null) sftpProvider.closeAllSessions();
                         break;
                 }
             }

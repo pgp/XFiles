@@ -10,6 +10,7 @@ import it.pgp.xfiles.service.visualization.MovingRibbonTwoBars;
 
 /**
  * Adapter class preserving external progress state to be used with SSHJ progress listeners
+ * 23/02/2018: used also for SMB task, create separate class if needed later
  */
 
 public class XProgress extends MovingRibbonTwoBars {
@@ -35,7 +36,7 @@ public class XProgress extends MovingRibbonTwoBars {
 
     // detailed progress variables and methods
     protected long completedFilesSizeSoFar;
-    protected long totalFilesSize; // set only in case of upload
+    public long totalFilesSize; // set only in case of upload
 
     public boolean isDetailedProgress = false; // set to true in case of upload
 

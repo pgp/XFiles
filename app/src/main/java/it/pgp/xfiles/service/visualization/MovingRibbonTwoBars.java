@@ -1,7 +1,6 @@
 package it.pgp.xfiles.service.visualization;
 
 import android.app.Service;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;

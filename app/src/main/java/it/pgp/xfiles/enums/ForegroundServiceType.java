@@ -11,6 +11,7 @@ public enum ForegroundServiceType {
     XRE_TRANSFER,
     XRE_HASH, // currently without overlay usage, only resource locking for long term tls connection, enable overlay when progress indication will be implemented in rh's hashFile
     SFTP_TRANSFER,
+    SMB_TRANSFER,
     URL_DOWNLOAD,
     FIND
 }
