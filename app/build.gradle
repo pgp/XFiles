@@ -7,7 +7,7 @@ android {
         minSdkVersion 19
         targetSdkVersion 28
         multiDexEnabled true
-        versionCode 101190118
+        versionCode 101190223
         versionName "1.0.1-alpha"
         externalNativeBuild {
             cmake {
@@ -46,4 +46,5 @@ dependencies {
     implementation group: 'org.apache.ftpserver', name: 'ftpserver-core', version: '1.1.0'
     // newest version of ftpserver.core causes manifest merge error
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.8.1'
+    implementation group: 'eu.agno3.jcifs', name: 'jcifs-ng', version: '2.1.1'
 }

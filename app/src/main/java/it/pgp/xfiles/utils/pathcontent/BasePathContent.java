@@ -6,6 +6,8 @@ import java.nio.ByteBuffer;
 import it.pgp.xfiles.enums.FileOpsErrorCodes;
 import it.pgp.xfiles.enums.ProviderType;
 import it.pgp.xfiles.sftpclient.AuthData;
+import it.pgp.xfiles.smbclient.SmbAuthData;
+
 import static it.pgp.Native.nHashCode;
 
 /**
@@ -21,6 +23,7 @@ public abstract class BasePathContent implements Serializable {
         - LOCAL_WITHIN_ARCHIVE: absolute path of the compressed directory in the archive defined in the subclass
         - SFTP: absolute path of the directory in the remote filesystem
         - XFILES_REMOTE: absolute path of the directory in the remote filesystem
+        - SMB: absolute path of the directory in the remote filesystem
      */
     public String dir;
 
@@ -69,6 +72,10 @@ public abstract class BasePathContent implements Serializable {
                     ((XFilesRemotePathContent)content).serverPort == ((XFilesRemotePathContent)this).serverPort &&
                     content.dir.startsWith(this.dir);
 
+        if (this.providerType==ProviderType.SMB && content.providerType==ProviderType.SMB)
+            return ((SmbRemotePathContent)content).smbAuthData.equals(((SmbRemotePathContent)this).smbAuthData)
+                    && content.dir.startsWith(this.dir);
+
         return false;
     }
 
@@ -100,6 +107,11 @@ public abstract class BasePathContent implements Serializable {
                 if ((!xre.serverHost.equals(xreobj.serverHost)) ||
                         (xre.serverPort != xreobj.serverPort))
                     return false;
+                break;
+            case SMB:
+                SmbRemotePathContent smbc = (SmbRemotePathContent) this;
+                SmbRemotePathContent smbobj = (SmbRemotePathContent) obj;
+                if (!smbc.smbAuthData.equals(smbobj.smbAuthData)) return false;
                 break;
         }
         return dir.equals(obj.dir);
@@ -134,6 +146,17 @@ public abstract class BasePathContent implements Serializable {
                 byte[] h = (xpc.serverHost==null)?new byte[0]:xpc.serverHost.getBytes();
                 bb = ByteBuffer.allocate(h.length+4+d.length);
                 bb.put(h);bb.putInt(xpc.serverPort);bb.put(d);
+                return nHashCode(bb.array());
+            case SMB:
+                SmbAuthData smb_ad = ((SmbRemotePathContent)this).smbAuthData;
+                // it is fine to have same hash code for null fields and empty string fields
+                u = (smb_ad.username==null)?new byte[0]:smb_ad.username.getBytes();
+                dm = (smb_ad.domain==null)?new byte[0]:smb_ad.domain.getBytes();
+                h = (smb_ad.host==null)?new byte[0]:smb_ad.host.getBytes();
+                // ignore password, store on db without it (stored in smbCredentials) so ignore in hashcode
+                // since for connection, smbCredentials table is queried anyway
+                bb = ByteBuffer.allocate(u.length+dm.length+h.length+4+d.length);
+                bb.put(u);bb.put(dm);bb.put(h);bb.putInt(smb_ad.port);bb.put(d);
                 return nHashCode(bb.array());
             default:
                 throw new RuntimeException("Unexpected path content type");
