@@ -42,16 +42,19 @@ public class CloseActiveServersDialog extends Dialog {
         Bxre.setOnClickListener(v->{
             RemoteServerManager.rhss_action(RemoteServerManager.RHSS_ACTION.STOP);
             Txre.setTextColor(red);
+            Bxre.setEnabled(false);
         });
 
         Bftp.setOnClickListener(v-> {
             FileServer.FTP.stop();
             Tftp.setTextColor(red);
+            Bftp.setEnabled(false);
         });
 
         Bhttp.setOnClickListener(v-> {
             FileServer.HTTP.stop();
             Thttp.setTextColor(red);
+            Bhttp.setEnabled(false);
         });
 
     }
