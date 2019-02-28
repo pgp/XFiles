@@ -2,6 +2,8 @@
 
 A general-purpose file explorer for (rooted) Android, with support for compressed archives, remote file servers, device-to-device file transfers, checksums, etc...
 
+[![Build Status](https://travis-ci.org/pgp/XFiles.svg?branch=master)](https://travis-ci.org/pgp/XFiles)
+
 [<img src="https://i.ibb.co/74VcyM3/00mainview.jpg" alt="00mainview" width="120" border="0">](https://ibb.co/wsCH6Gn)
 [<img src="https://i.ibb.co/HG8Fz6r/00mainviewgrid.jpg" alt="00mainviewgrid" width="120" border="0">](https://ibb.co/nQJgc9D)
 [<img src="https://i.ibb.co/tDDGPZH/001quicksearch.jpg" alt="001quicksearch" width="120" border="0">](https://ibb.co/899C4zm)
