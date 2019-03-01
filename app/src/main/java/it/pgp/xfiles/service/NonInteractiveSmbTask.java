@@ -63,6 +63,7 @@ public class NonInteractiveSmbTask extends BaseBackgroundTask {
                     this.params.list,this.params.destPath);
         }
         catch (Exception e) {
+            e.printStackTrace();
             lastException = e;
             result = FileOpsErrorCodes.TRANSFER_ERROR;
         }

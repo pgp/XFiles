@@ -154,16 +154,13 @@ public class RootHandler {
             if (rh != null) {
                 isRootAvailableAndGranted = true;
                 Log.i(RootHandler.class.getName(),"Started roothelper in root mode");
-                // here started RH in root mode and connection ok, now add pid to Services map
+                // here started RH in root mode and connection ok
 
-                if (pid > 0) /*Services.activePids.put(socketName,pid)*/;
-                else Log.e(RootHandler.class.getName(),"Failed to get roothelper pid: "+pid);
+                if (pid <= 0) Log.e(RootHandler.class.getName(),"Failed to get roothelper pid: "+pid);
                 return rh;
             }
         }
-        catch (IOException ignored) {
-//            e.printStackTrace();
-        }
+        catch (IOException ignored) {}
 
         // start in normal mode, if starting as root failed
         Log.i(RootHandler.class.getName(),"Root privileges not available, starting roothelper in standard mode...");
@@ -191,10 +188,9 @@ public class RootHandler {
             }
 
             if (rh != null) {
-                // here started RH in normal mode and connection ok, now add pid to Services map
+                // here started RH in normal mode and connection ok
 
-                if (pid > 0) /*Services.activePids.put(socketName,pid)*/;
-                else Log.e(RootHandler.class.getName(),"Failed to get roothelper pid: "+pid);
+                if (pid <= 0) Log.e(RootHandler.class.getName(),"Failed to get roothelper pid: "+pid);
             }
         }
         catch (IOException e) {

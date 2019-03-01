@@ -9,7 +9,8 @@ import android.widget.Toast;
 
 import it.pgp.xfiles.R;
 import it.pgp.xfiles.adapters.SftpFavoritesAdapter;
-import it.pgp.xfiles.sftpclient.AuthDataWithFavorites;
+import it.pgp.xfiles.sftpclient.AuthData;
+import it.pgp.xfiles.utils.FavoritesList;
 import it.pgp.xfiles.utils.GenericDBHelper;
 
 /**
@@ -30,7 +31,7 @@ public class InsertEditSftpFavoritesDialog extends Dialog {
     public InsertEditSftpFavoritesDialog(final Context context,
                                          final SftpFavoritesAdapter adapter,
                                          final long currentOid,
-                                         final AuthDataWithFavorites currentFavorites,
+                                         final FavoritesList<AuthData> currentFavorites,
                                          final @Nullable String currentFavoritePath) {
         super(context);
         setContentView(R.layout.single_filename_dialog);

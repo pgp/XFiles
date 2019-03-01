@@ -256,6 +256,10 @@
             android:enabled="true"
             android:exported="true" />
         <service
+            android:name=".service.NonInteractiveSmbService"
+            android:enabled="true"
+            android:exported="true" />
+        <service
             android:name=".service.HTTPDownloadService"
             android:enabled="true"
             android:exported="true" />

@@ -7,8 +7,10 @@ import java.util.TreeSet;
 
 /**
  * Created by pgp on 04/07/17
+ * replaced by {@link it.pgp.xfiles.utils.FavoritesList} FavoritesList<AuthData>
  */
 
+@Deprecated
 public class AuthDataWithFavorites {
     public AuthData a;
     public Set<String> paths; // favorites as remote paths

@@ -14,12 +14,13 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.util.AbstractMap;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
 import it.pgp.xfiles.sftpclient.AuthData;
-import it.pgp.xfiles.sftpclient.AuthDataWithFavorites;
+import it.pgp.xfiles.smbclient.SmbAuthData;
 import it.pgp.xfiles.sftpclient.InsertFailedException;
 
 /**
@@ -234,35 +235,39 @@ public class GenericDBHelper extends SQLiteOpenHelper {
         return m;
     }
 
-    public Map<Long,AuthDataWithFavorites> getAllSftpCredsWithFavs() {
+    public Map<Long,FavoritesList<AuthData>> getAllSftpCredsWithFavs() {
         String[] cols = new String[] {"oid",username_field,domain_field,port_field,password_field,listOfFavorites_field};
-        HashMap<Long,AuthDataWithFavorites> m = new HashMap<>();
+        HashMap<Long,FavoritesList<AuthData>> m = new HashMap<>();
         Cursor mCursor = db.query(true, credentialsVaultTableName,cols,null,null, null, null, null, null);
         if (mCursor!=null) {
             while (mCursor.moveToNext()) {
                 AuthData a = new AuthData(mCursor.getString(1),mCursor.getString(2),mCursor.getInt(3),mCursor.getString(4));
                 byte[] b = mCursor.getBlob(5);
                 if (b == null || b.length == 0) {
-                    m.put(mCursor.getLong(0),new AuthDataWithFavorites(a));
+                    m.put(mCursor.getLong(0),new FavoritesList<>(a));
                 }
                 else {
                     ObjectInputStream ois;
-                    Set favs;
+                    Set<String> favs;
                     try {
                         ois = new ObjectInputStream(new ByteArrayInputStream(b));
                         favs = (Set) ois.readObject();
-                        m.put(mCursor.getLong(0),new AuthDataWithFavorites(a,favs));
+                        m.put(mCursor.getLong(0),new FavoritesList<>(a,favs));
                     }
                     catch (IOException | ClassNotFoundException e) {
                         Log.e(this.getClass().getName(),"Exception: "+e.getMessage());
                         e.printStackTrace();
-                        m.put(mCursor.getLong(0),new AuthDataWithFavorites(a));
+                        m.put(mCursor.getLong(0),new FavoritesList<>(a));
                     }
                 }
             }
             mCursor.close();
         }
         return m;
+    }
+
+    public Map<Long, FavoritesList<SmbAuthData>> getAllSmbCredsWithFavs() {
+        return Collections.emptyMap(); // TODO
     }
 
     public Map.Entry<Long,AuthData> insertSftpCred(String username, String domain, int port, String password) throws InsertFailedException {

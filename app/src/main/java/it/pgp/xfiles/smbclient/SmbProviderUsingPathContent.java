@@ -21,6 +21,8 @@ import it.pgp.xfiles.MainActivity;
 import it.pgp.xfiles.enums.FileMode;
 import it.pgp.xfiles.enums.FileOpsErrorCodes;
 import it.pgp.xfiles.enums.ProviderType;
+import it.pgp.xfiles.io.RobustLocalFileInputStream;
+import it.pgp.xfiles.io.RobustLocalFileOutputStream;
 import it.pgp.xfiles.items.FileCreationAdvancedOptions;
 import it.pgp.xfiles.items.SingleStatsItem;
 import it.pgp.xfiles.roothelperclient.HashRequestCodes;
@@ -35,8 +37,11 @@ import it.pgp.xfiles.utils.pathcontent.BasePathContent;
 import it.pgp.xfiles.utils.pathcontent.SmbRemotePathContent;
 import jcifs.CIFSContext;
 import jcifs.CIFSException;
+import jcifs.Configuration;
+import jcifs.config.DelegatingConfiguration;
 import jcifs.config.PropertyConfiguration;
 import jcifs.context.BaseContext;
+import jcifs.context.CIFSContextWrapper;
 import jcifs.smb.NtlmPasswordAuthentication;
 import jcifs.smb.SmbFile;
 import jcifs.smb.SmbFileInputStream;
@@ -45,6 +50,15 @@ import jcifs.smb.SmbFileOutputStream;
 public class SmbProviderUsingPathContent implements FileOperationHelperUsingPathContent {
 
     BaseBackgroundTask task;
+    @Override
+    public void initProgressSupport(BaseBackgroundTask task) {
+        this.task = task;
+    }
+
+    @Override
+    public void destroyProgressSupport() {
+        task = null;
+    }
 
     private final CIFSContext baseCtx;
     private final Map<String, CIFSContext> smbclients = new ConcurrentHashMap<>();
@@ -56,6 +70,32 @@ public class SmbProviderUsingPathContent implements FileOperationHelperUsingPath
         StrictMode.setThreadPolicy(StrictMode.ThreadPolicy.LAX);
     }
 
+    // BEGIN copied from JCIFS source
+    private static final class CIFSConfigContextWrapper extends CIFSContextWrapper {
+        private final DelegatingConfiguration cfg;
+
+        CIFSConfigContextWrapper ( CIFSContext delegate, DelegatingConfiguration cfg ) {
+            super(delegate);
+            this.cfg = cfg;
+        }
+
+        @Override
+        protected CIFSContext wrap ( CIFSContext newContext ) {
+            return new CIFSConfigContextWrapper(super.wrap(newContext), this.cfg);
+        }
+
+        @Override
+        public Configuration getConfig () {
+            return this.cfg;
+        }
+    }
+
+
+    protected static CIFSContext withConfig ( CIFSContext ctx, final DelegatingConfiguration cfg ) {
+        return new CIFSConfigContextWrapper(ctx, cfg);
+    }
+    // END copied from JCIFS source
+
     public void closeAllSessions() {
         for (CIFSContext x : smbclients.values())
             try {x.close();} catch (Exception ignored) {}
@@ -66,7 +106,23 @@ public class SmbProviderUsingPathContent implements FileOperationHelperUsingPath
         this.mainActivity = mainActivity;
         this.dbh = new GenericDBHelper(context);
         try {
-            this.baseCtx = new BaseContext(new PropertyConfiguration(System.getProperties()));
+            CIFSContext ctx = new BaseContext(new PropertyConfiguration(System.getProperties()));
+            baseCtx = withConfig(ctx,new DelegatingConfiguration(ctx.getConfig()) {
+                @Override
+                public int getSoTimeout () {
+                    return 1000;
+                }
+
+                @Override
+                public int getConnTimeout () {
+                    return 1000;
+                }
+
+                @Override
+                public int getSessionTimeout () {
+                    return 1000;
+                }
+            });
         } catch (CIFSException e) {
             throw new RuntimeException(e);
         }
@@ -79,41 +135,43 @@ public class SmbProviderUsingPathContent implements FileOperationHelperUsingPath
         return new SmbFile(a+"/"+filename+((isDirectory.length>0 && isDirectory[0])?"/":""),dir.getContext());
     }
 
-    public static void downloadSingleFile(SmbFile file, File localPath) {
+    public void downloadSingleFile(SmbFile file, File localPath) throws IOException {
         try (SmbFileInputStream smbfis = new SmbFileInputStream(file);
-             FileOutputStream fos = new FileOutputStream(localPath)) {
+             RobustLocalFileOutputStream fos = new RobustLocalFileOutputStream(localPath.getAbsolutePath())) {
             byte[] b = new byte[1048576];
+            long prg = 0;
+            ((XProgress)(task.mr)).incrementOuterProgressThenPublish(file.getContentLength());
             for(;;) {
                 int readbytes = smbfis.read(b);
                 if (readbytes <= 0) break;
                 System.out.println("Read "+readbytes+" bytes");
                 fos.write(b,0,readbytes);
                 System.out.println("Written "+readbytes+" bytes");
+                prg+=readbytes;
+                ((XProgress)(task.mr)).publishInnerProgress(prg);
             }
-        }
-        catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
-    public static void uploadSingleFile(File localPath, SmbFile file) throws IOException {
-        try (FileInputStream fis = new FileInputStream(localPath);
+    public void uploadSingleFile(File localFile, SmbFile file) throws IOException {
+        try (RobustLocalFileInputStream fis = new RobustLocalFileInputStream(localFile.getAbsolutePath());
              SmbFileOutputStream smbfos = new SmbFileOutputStream(file)) {
             byte[] b = new byte[1048576];
+            long prg = 0;
+            ((XProgress)(task.mr)).incrementOuterProgressThenPublish(localFile.length());
             for(;;) {
                 int readbytes = fis.read(b);
                 if (readbytes <= 0) break;
                 System.out.println("Read "+readbytes+" bytes");
                 smbfos.write(b,0,readbytes);
                 System.out.println("Written "+readbytes+" bytes");
+                prg+=readbytes;
+                ((XProgress)(task.mr)).publishInnerProgress(prg);
             }
-        }
-        catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
-    public static void uploadFileOrDirectory(String localPath_, SmbFile remotePath) throws IOException {
+    public void uploadFileOrDirectory(String localPath_, SmbFile remotePath) throws IOException {
         File localPath = new File(localPath_);
         if (localPath.isDirectory()) {
             remotePath.mkdirs();
@@ -125,7 +183,7 @@ public class SmbProviderUsingPathContent implements FileOperationHelperUsingPath
         else uploadSingleFile(localPath,remotePath);
     }
 
-    public static void downloadFileOrDirectory(SmbFile remotePath, String localPath_) throws IOException {
+    public void downloadFileOrDirectory(SmbFile remotePath, String localPath_) throws IOException {
         File localPath = new File(localPath_);
         if(remotePath.isDirectory()) {
             if (!localPath.exists() && !localPath.mkdirs()) {
@@ -193,18 +251,20 @@ public class SmbProviderUsingPathContent implements FileOperationHelperUsingPath
 
             try (SmbFile dst = ((SmbRemotePathContent) dstFolder).getSmbFile(cSMB,true)){
                 for (BrowserItem localItem : files.files) {
-                    uploadFileOrDirectory(files.parentDir.concat(localItem.getFilename()).dir, smbfileConcat(dst,localItem.getFilename(), localItem.isDirectory)); // TODO progress handling
+                    String localName = localItem.getFilename();
+                    uploadFileOrDirectory(files.parentDir.concat(localName).dir, smbfileConcat(dst,localName, localItem.isDirectory));
                 }
             }
         }
         else if (files.parentDir.providerType == ProviderType.SMB && dstFolder.providerType == ProviderType.LOCAL) { // download
             CIFSContext cSMB = getChannel(((SmbRemotePathContent)files.parentDir).smbAuthData);
-            // TODO XProgress allocation and progress handling
+            ((XProgress)(task.mr)).totalFiles = Long.MAX_VALUE; // FIXME external progress disabled for now
             for (BrowserItem remoteItemName : files.files) { // iterator over filenames only
                 // remote dir as local path string
-                // ending "/" in order to paste a folder as a child of the destination folder // TODO check if it works also for SMB
+                // ending "/" in order to paste a folder as a child of the destination folder
                 try(SmbFile src = ((SmbRemotePathContent)files.parentDir).getSmbFile(cSMB,true)){
-                    downloadFileOrDirectory(smbfileConcat(src,remoteItemName.getFilename()),dstFolder.dir+"/");
+                    String remoteName = remoteItemName.getFilename();
+                    downloadFileOrDirectory(smbfileConcat(src,remoteName),dstFolder.dir+"/"+remoteName);
                 }
             }
         }
@@ -309,15 +369,5 @@ public class SmbProviderUsingPathContent implements FileOperationHelperUsingPath
     @Override
     public int setOwnership(BasePathContent file, @Nullable Integer ownerId, @Nullable Integer groupId) {
         return 0;
-    }
-
-    @Override
-    public void initProgressSupport(BaseBackgroundTask task) {
-
-    }
-
-    @Override
-    public void destroyProgressSupport() {
-
     }
 }

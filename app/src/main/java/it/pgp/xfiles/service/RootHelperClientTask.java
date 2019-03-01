@@ -32,24 +32,6 @@ public abstract class RootHelperClientTask extends BaseBackgroundTask {
         rh = new RootHelperClientUsingPathContent();
     }
 
-//    @Override
-//    public void cancelTask() {
-//        super.cancelTask();
-//        // connect to main roothelper and send kill -INT request to this task's long-term rh process
-//        // cannot use android.os.Process.killProcess because it wouldn't work if RH server is run as root
-//        Long pid = Services.activePids.get(rh.address);
-//        if (pid != null) {
-//            int ret = MainActivity.rootHelperClient.killRHProcess(pid,rh.address);
-//            if (ret != 0) {
-//                Log.e(this.getClass().getName(),"Error interrupting long-term rh, pid: "+pid);
-//            }
-//            else {
-//                Log.e(this.getClass().getName(),"Interrupted long-term rh, pid: "+pid);
-//            }
-//        }
-//
-//    }
-
 
     @Override
     public void cancelTask() {
@@ -64,9 +46,6 @@ public abstract class RootHelperClientTask extends BaseBackgroundTask {
     @Override
     protected void onPostExecute(Object o) {
         super.onPostExecute(o);
-        // not needed anymore, rh server is multithreaded
-//        try { rh.killServer(); }
-//        catch (IOException|NullPointerException ignored) {}
 
         // if main activity has been closed meanwhile, stop the main RH server instance as well
         if (MainActivity.mainActivity == null) {

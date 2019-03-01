@@ -1,24 +1,23 @@
-package it.pgp.xfiles.smbclient;
+package it.pgp.xfiles.utils;
 
 import java.util.Arrays;
 import java.util.Set;
 import java.util.TreeSet;
 
 /**
- * replaced by {@link it.pgp.xfiles.utils.FavoritesList} FavoritesList<SmbAuthData>
+ * TODO will replace {@link it.pgp.xfiles.sftpclient.AuthDataWithFavorites} and {@link it.pgp.xfiles.smbclient.SmbAuthDataWithFavorites}
  */
 
-@Deprecated
-public class SmbAuthDataWithFavorites {
-    public SmbAuthData a;
+public class FavoritesList<T> {
+    public T a;
     public Set<String> paths; // favorites as remote paths
 
-    public SmbAuthDataWithFavorites(SmbAuthData a, String... paths) {
+    public FavoritesList(T a, String... paths) {
         this.a = a;
         this.paths = new TreeSet<>(Arrays.asList(paths));
     }
 
-    public SmbAuthDataWithFavorites(SmbAuthData a, Iterable<String> paths) {
+    public FavoritesList(T a, Iterable<String> paths) {
         this.a = a;
 
         if(paths instanceof TreeSet)

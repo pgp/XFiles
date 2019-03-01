@@ -17,6 +17,8 @@
     <string name="empty_string" />
     <string name="start_rhss_description">Click on the main button to start/stop the remote RH server; additionally you can manage WiFi and WiFi hotspot status</string>
     <string name="ssh_default_port">22</string>
+    <string name="smb_default_port">445</string>
+    <string name="smb_default_domain">WORKGROUP</string>
     <string name="dest_archive_filename_header">archive</string>
     <string name="serve_only_current_directory">Serve only current directory:</string>
     <string name="appwidget_text">EXAMPLE</string>

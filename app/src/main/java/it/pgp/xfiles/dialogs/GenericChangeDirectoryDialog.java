@@ -30,13 +30,15 @@ import it.pgp.xfiles.service.BaseBackgroundService;
 import it.pgp.xfiles.service.HTTPDownloadService;
 import it.pgp.xfiles.service.params.DownloadParams;
 import it.pgp.xfiles.sftpclient.AuthData;
-import it.pgp.xfiles.sftpclient.AuthDataWithFavorites;
+import it.pgp.xfiles.smbclient.SmbAuthData;
+import it.pgp.xfiles.utils.FavoritesList;
 import it.pgp.xfiles.utils.GenericDBHelper;
 import it.pgp.xfiles.utils.legacy.ChangeDirectoryDialog;
 import it.pgp.xfiles.utils.pathcontent.ArchivePathContent;
 import it.pgp.xfiles.utils.pathcontent.BasePathContent;
 import it.pgp.xfiles.utils.pathcontent.LocalPathContent;
 import it.pgp.xfiles.utils.pathcontent.RemotePathContent;
+import it.pgp.xfiles.utils.pathcontent.SmbRemotePathContent;
 import it.pgp.xfiles.utils.pathcontent.XFilesRemotePathContent;
 import it.pgp.xfiles.utils.wifi.WifiButtonsLayout;
 
@@ -77,7 +79,7 @@ public class GenericChangeDirectoryDialog extends Dialog {
     EditText password;
     AutoCompleteTextView remotePath;
 
-    AuthDataWithFavorites[] credsWithFavs;
+    FavoritesList<AuthData>[] credsWithFavs;
 
     // xfiles remote dir
     Spinner xreStoredData;
@@ -85,6 +87,17 @@ public class GenericChangeDirectoryDialog extends Dialog {
 //    EditText xreServerPort;
     EditText xreRemotePath;
     Map.Entry<String,String>[] xreItems;
+
+    // smb remote dir
+    Spinner smbStoredUsers;
+    EditText smbUser;
+    EditText smbDomain;
+    EditText smbHost;
+    EditText smbPort;
+    EditText smbPassword;
+    AutoCompleteTextView smbRemotePath;
+
+    FavoritesList<SmbAuthData>[] smbCredsWithFavs;
 
     // http download params
     EditText httpUrlToDownload;
@@ -102,7 +115,7 @@ public class GenericChangeDirectoryDialog extends Dialog {
                         pathContentTypeSelector.getCheckedRadioButtonId()));
 
         // empty base path means root path (/), so don't validate it
-        if (idx < 4) {
+        if (idx < 5) {
             switch (idx) {
                 case 0: // LOCAL
                     path = new LocalPathContent(localPath.getText().toString());
@@ -113,7 +126,7 @@ public class GenericChangeDirectoryDialog extends Dialog {
                             inArchivePath.getText().toString()
                     );
                     break;
-                case 2: // REMOTE
+                case 2: // SFTP
                 /*
                  TODO call tryConnectAndGetPath, which returns the default remote home
                  (in order, on success, to perform listDir from SftpProvider and update dir commander)
@@ -138,12 +151,26 @@ public class GenericChangeDirectoryDialog extends Dialog {
 //                        Integer.valueOf(xreServerPort.getText().toString()),
                             xreRemotePath.getText().toString()
                     );
+                case 4: // SMB
+                    if (!basicNonEmptyValidation(smbUser,smbDomain,smbHost,smbPort,smbPassword)) return; // password cannot be empty (no pubkey authentication for SMB)
+                    path = new SmbRemotePathContent(
+                            new SmbAuthData(
+                                    smbUser.getText().toString(),
+                                    smbDomain.getText().toString(),
+                                    smbHost.getText().toString(),
+                                    Integer.valueOf(smbPort.getText().toString()),
+                                    smbPassword.getText().toString()
+                            ),
+                            smbRemotePath.getText().toString()
+                    );
+                    break;
+
             }
             FileOpsErrorCodes ret = mainActivity.goDir(path);
             if (ret == FileOpsErrorCodes.OK ||
                     ret == FileOpsErrorCodes.NULL_OR_WRONG_PASSWORD) dismiss();
         }
-        else if (idx == 4) {
+        else if (idx == 5) {
             // start download service
             DownloadParams params = new DownloadParams(
                     httpUrlToDownload.getText().toString(),
@@ -189,7 +216,7 @@ public class GenericChangeDirectoryDialog extends Dialog {
                 password = findViewById(R.id.connectionPasswordEditText);
                 domain = findViewById(R.id.connectionDomainEditText);
                 port = findViewById(R.id.connectionPortEditText);
-                port.setText(R.string.ssh_default_port); // TODO to be tested against subsequent setLayout and choose item from spinner
+                port.setText(R.string.ssh_default_port);
                 remotePath = findViewById(R.id.remoteDirEditText);
                 break;
             case XFILES_REMOTE:
@@ -199,6 +226,18 @@ public class GenericChangeDirectoryDialog extends Dialog {
                 xreServerHost = findViewById(R.id.xreConnectionDomainEditText);
 //                xreServerPort = findViewById(R.id.xreConnectionPortEditText);
                 xreRemotePath = findViewById(R.id.xreRemoteDirEditText);
+                break;
+            case SMB:
+                targetLayout = layoutInflater.inflate(R.layout.change_directory_dialog_frame_smb, null);
+                containerLayout.addView(targetLayout);
+                smbStoredUsers = findViewById(R.id.connectionStoredUsersSpinner);
+                smbUser = findViewById(R.id.connectionUserEditText);
+                smbPassword = findViewById(R.id.connectionPasswordEditText);
+                smbDomain = findViewById(R.id.connectionDomainEditText);
+                smbHost = findViewById(R.id.connectionHostEditText);
+                smbPort = findViewById(R.id.connectionPortEditText);
+                smbPort.setText(R.string.smb_default_port);
+                smbRemotePath = findViewById(R.id.remoteDirEditText);
                 break;
             case URL_DOWNLOAD:
                 targetLayout = layoutInflater.inflate(R.layout.change_directory_dialog_frame_http, null);
@@ -252,12 +291,12 @@ public class GenericChangeDirectoryDialog extends Dialog {
                 ArrayList<String> items = new ArrayList<>();
 
                 Collection cwf = dbh.getAllSftpCredsWithFavs().values();
-                credsWithFavs = new AuthDataWithFavorites[cwf.size()];
+                credsWithFavs = new FavoritesList[cwf.size()];
                 cwf.toArray(credsWithFavs);
 
                 // add empty spinner for no selection
                 items.add("");
-                for (AuthDataWithFavorites awf : credsWithFavs) items.add(awf.a.toString());
+                for (FavoritesList<AuthData> awf : credsWithFavs) items.add(awf.a.toString());
                 ArrayAdapter<String> adapter = new ArrayAdapter<>(mainActivity, android.R.layout.simple_spinner_dropdown_item, items);
                 storedUsers.setAdapter(adapter);
                 //////////////////////////////
@@ -344,6 +383,70 @@ public class GenericChangeDirectoryDialog extends Dialog {
                 });
 
                 break;
+            case SMB:
+                items = new ArrayList<>();
+
+                cwf = dbh.getAllSmbCredsWithFavs().values();
+                smbCredsWithFavs = new FavoritesList[cwf.size()];
+                cwf.toArray(smbCredsWithFavs);
+
+                // add empty spinner for no selection
+                items.add("");
+                for (FavoritesList<SmbAuthData> awf : smbCredsWithFavs) items.add(awf.a.toString());
+                adapter = new ArrayAdapter<>(mainActivity, android.R.layout.simple_spinner_dropdown_item, items);
+                smbStoredUsers.setAdapter(adapter);
+                //////////////////////////////
+                smbStoredUsers.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                        if (currentDirAutofillOverride) {
+                            currentDirAutofillOverride = false;
+                            return;
+                        }
+
+                        // query database with that (user,domain,port) tuple, get password, and fill fields
+                        String item = (String) parent.getItemAtPosition(position);
+                        if (item.equals("")) {
+                            smbUser.setText("");
+                            smbPassword.setText("");
+                            smbDomain.setText(R.string.smb_default_domain);
+                            smbHost.setText("");
+                            smbPort.setText(R.string.smb_default_port);
+                            return;
+                        }
+
+                        // no db update expected from this dialog, use adapter position to access data
+                        SmbAuthData a = smbCredsWithFavs[position-1].a; // pos-1 cause first item is empty item
+                        smbUser.setText(a.username);
+                        if (a.password != null) smbPassword.setText(a.password);
+                        smbDomain.setText(a.domain);
+                        smbHost.setText(a.host);
+                        smbPort.setText(a.port+"");
+
+                        // populate auto-complete list for remote path's AutoCompleteTextView
+                        Collection paths = credsWithFavs[position-1].paths; // pos-1: idem as before
+                        String[] autoCompleteSupport;
+                        if (paths != null) {
+                            autoCompleteSupport = new String[paths.size()];
+                            paths.toArray(autoCompleteSupport);
+                        }
+                        else {
+                            autoCompleteSupport = new String[0];
+                        }
+
+                        ArrayAdapter<String> autoCompleteAdapter = new ArrayAdapter<>(
+                                mainActivity,
+                                android.R.layout.select_dialog_item,
+                                autoCompleteSupport);
+                        smbRemotePath.setAdapter(autoCompleteAdapter);
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) {}
+                });
+                smbRemotePath.setThreshold(1); // auto-completing from first character
+                smbRemotePath.setOnClickListener(v -> smbRemotePath.showDropDown());
+                break;
             // useless to insert throw branch here, already thrown if necessary in previous switch construct
         }
 
@@ -372,6 +475,17 @@ public class GenericChangeDirectoryDialog extends Dialog {
                     XFilesRemotePathContent xrpc = (XFilesRemotePathContent)currentDir[0];
                     xreServerHost.setText(xrpc.serverHost);
                     xreRemotePath.setText(xrpc.dir);
+                    break;
+                case SMB:
+                    SmbRemotePathContent srpc = (SmbRemotePathContent) currentDir[0];
+                    if (srpc.smbAuthData != null) {
+                        user.setText(srpc.smbAuthData.username==null?"":srpc.smbAuthData.username);
+                        // ignore setText of password, which may not be present, SmbAuthData hashcode ignores it, so on login attempt, if any credential is present, it will work anyway
+                        smbDomain.setText(srpc.smbAuthData.domain==null?"":srpc.smbAuthData.domain);
+                        smbHost.setText(srpc.smbAuthData.host==null?"":srpc.smbAuthData.host);
+                        smbPort.setText(srpc.smbAuthData.port==0?"":srpc.smbAuthData.port+"");
+                    }
+                    smbRemotePath.setText(srpc.dir);
                     break;
             }
         }

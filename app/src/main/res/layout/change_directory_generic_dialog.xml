@@ -9,6 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp">
 
+        <!--TODO smaller radiobuttons-->
         <RadioGroup
             android:id="@+id/pathContentRadioGroup"
             android:orientation="vertical"
@@ -40,6 +41,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="XFiles remote directory" />
+
+            <RadioButton
+                android:id="@+id/smbRemoteFolderRadioButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="SMB directory" />
 
             <RadioButton
                 android:id="@+id/httpUrlRadioButton"

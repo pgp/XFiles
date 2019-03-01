@@ -83,6 +83,7 @@ import it.pgp.xfiles.service.BaseBackgroundService;
 import it.pgp.xfiles.service.HTTPDownloadService;
 import it.pgp.xfiles.service.CopyMoveService;
 import it.pgp.xfiles.service.NonInteractiveSftpService;
+import it.pgp.xfiles.service.NonInteractiveSmbService;
 import it.pgp.xfiles.service.NonInteractiveXFilesRemoteTransferService;
 import it.pgp.xfiles.service.params.CopyMoveParams;
 import it.pgp.xfiles.service.params.DownloadParams;
@@ -369,6 +370,7 @@ public class MainActivity extends EffectActivity {
                         break;
                     case SFTP:
                     case XFILES_REMOTE:
+                    case SMB:
                         // allowed operations: copy, move, delete, rename, properties
                         inflater.inflate(R.menu.menu_single_remote, menu);
                         break;
@@ -384,6 +386,7 @@ public class MainActivity extends EffectActivity {
                         break;
                     case SFTP:
                     case XFILES_REMOTE:
+                    case SMB:
                         inflater.inflate(R.menu.menu_multi_remote, menu);
                         break;
                 }
@@ -1147,7 +1150,7 @@ public class MainActivity extends EffectActivity {
             //*/*/*/*/*/*/*/*/
             return;
         }
-        // remote to remote file transfer
+        // SFTP to SFTP file transfer
         else if (copyMoveList.parentDir.providerType == ProviderType.SFTP &&
                 destPath.providerType == ProviderType.SFTP) {
             // remote transfer on the same remote host
@@ -1184,6 +1187,19 @@ public class MainActivity extends EffectActivity {
             startIntent.setAction(BaseBackgroundService.START_ACTION);
             startIntent.putExtra("params",new CopyMoveParams(copyMoveList,destPath));
             startService(startIntent);
+        }
+        // SMB upload or download
+        else if ((copyMoveList.parentDir.providerType == ProviderType.LOCAL &&
+                destPath.providerType == ProviderType.SMB) ||
+                ((copyMoveList.parentDir.providerType == ProviderType.SMB &&
+                        destPath.providerType == ProviderType.LOCAL))) {
+            //*/*/*/*/*/*/*/*/ 1 - with service and task
+            Intent startIntent = new Intent(MainActivity.this, NonInteractiveSmbService.class);
+            startIntent.setAction(BaseBackgroundService.START_ACTION);
+            startIntent.putExtra("params",new CopyMoveParams(copyMoveList,destPath));
+            startService(startIntent);
+            //*/*/*/*/*/*/*/*/
+            return;
         }
         else {
             Toast.makeText(mainActivity, "Unknown data provider pair", Toast.LENGTH_LONG).show();

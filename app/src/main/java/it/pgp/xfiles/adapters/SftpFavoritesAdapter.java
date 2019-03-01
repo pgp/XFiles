@@ -18,7 +18,7 @@ import java.util.TreeMap;
 import it.pgp.xfiles.R;
 import it.pgp.xfiles.dialogs.InsertEditSftpFavoritesDialog;
 import it.pgp.xfiles.sftpclient.AuthData;
-import it.pgp.xfiles.sftpclient.AuthDataWithFavorites;
+import it.pgp.xfiles.utils.FavoritesList;
 import it.pgp.xfiles.utils.GenericDBHelper;
 
 /**
@@ -38,7 +38,7 @@ public class SftpFavoritesAdapter extends BaseAdapter {
     ArrayList<Object> adapterItems; // objects can be AuthData (header) or String (content)
     ArrayList<Long> adapterDbIds;
 
-    TreeMap<Long,AuthDataWithFavorites> sfDbMap; // for preserving explicit position ordering
+    TreeMap<Long, FavoritesList<AuthData>> sfDbMap; // for preserving explicit position ordering
 
     GenericDBHelper dbh;
 
@@ -60,7 +60,7 @@ public class SftpFavoritesAdapter extends BaseAdapter {
         adapterDbIds = new ArrayList<>();
         adapterItems = new ArrayList<>();
         notifyDataSetChanged(); // this additional notify is needed for making edit mode working (on edit, number of items remains the same, and since positions are not changed as well, observers of base adapter wouldn't notice the difference, leaving old values in the views)
-        for (Map.Entry<Long,AuthDataWithFavorites>  entry : sfDbMap.entrySet()) {
+        for (Map.Entry<Long,FavoritesList<AuthData>>  entry : sfDbMap.entrySet()) {
             adapterDbIds.add(entry.getKey());
             adapterItems.add(entry.getValue().a); // add header
 
@@ -165,7 +165,7 @@ public class SftpFavoritesAdapter extends BaseAdapter {
                 });
                 deleteBtn.setOnClickListener(v -> {
                     // remove row from db
-                    AuthDataWithFavorites currentFavorites = sfDbMap.get(getItemId(position));
+                    FavoritesList<AuthData> currentFavorites = sfDbMap.get(getItemId(position));
                     currentFavorites.paths.remove(getItem(position));
 
                     // update only, leave oid unchanged
