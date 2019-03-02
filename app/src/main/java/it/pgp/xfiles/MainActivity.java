@@ -663,6 +663,8 @@ public class MainActivity extends EffectActivity {
             }
         }
         else if (intent.getData() !=null) {
+            boolean launchedFromHistory = (intent.getFlags() & Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY) != 0;
+            if(launchedFromHistory) return; // avoid spurious download intents when re-opening from Recent Apps menu
             try {
                 Uri data = intent.getData();
                 String path = ContentProviderUtils.getPathFromUri(this, data);
