@@ -5,7 +5,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 /**
- * TODO will replace {@link it.pgp.xfiles.sftpclient.AuthDataWithFavorites} and {@link it.pgp.xfiles.smbclient.SmbAuthDataWithFavorites}
+ * replaces {@link it.pgp.xfiles.sftpclient.AuthDataWithFavorites} and {@link it.pgp.xfiles.smbclient.SmbAuthDataWithFavorites}
  */
 
 public class FavoritesList<T> {

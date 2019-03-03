@@ -151,6 +151,7 @@ public class GenericChangeDirectoryDialog extends Dialog {
 //                        Integer.valueOf(xreServerPort.getText().toString()),
                             xreRemotePath.getText().toString()
                     );
+                    break;
                 case 4: // SMB
                     if (!basicNonEmptyValidation(smbUser,smbDomain,smbHost,smbPort,smbPassword)) return; // password cannot be empty (no pubkey authentication for SMB)
                     path = new SmbRemotePathContent(
