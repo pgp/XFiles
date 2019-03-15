@@ -30,7 +30,6 @@ import android.view.LayoutInflater;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
 import android.webkit.MimeTypeMap;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
@@ -50,6 +49,7 @@ import java.util.List;
 
 import it.pgp.xfiles.adapters.BrowserAdapter;
 import it.pgp.xfiles.adapters.BrowserPagerAdapter;
+import it.pgp.xfiles.dialogs.AboutDialog;
 import it.pgp.xfiles.dialogs.AdvancedSortingDialog;
 import it.pgp.xfiles.dialogs.ChecksumActivity;
 import it.pgp.xfiles.dialogs.CloseActiveServersDialog;
@@ -562,7 +562,9 @@ public class MainActivity extends EffectActivity {
             case R.id.openFavsManager:
                 openFavsManager();
                 return true;
-
+            case R.id.openAboutDialog:
+                openAboutDialog();
+                return true;
             default:
                 return true; // No action
         }
@@ -878,6 +880,10 @@ public class MainActivity extends EffectActivity {
     public void openFavsManager() {
         Intent intent = new Intent(MainActivity.this,FavoritesActivity.class);
         startActivity(intent);
+    }
+
+    public void openAboutDialog() {
+        new AboutDialog(this).show();
     }
 
     public void showAdvancedSortingDialogOrMenu(View v) {
