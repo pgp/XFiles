@@ -9,14 +9,13 @@ import android.widget.Toast;
 
 import it.pgp.xfiles.R;
 import it.pgp.xfiles.adapters.SftpFavoritesAdapter;
-import it.pgp.xfiles.sftpclient.AuthData;
 import it.pgp.xfiles.utils.FavoritesList;
 import it.pgp.xfiles.utils.GenericDBHelper;
 
 /**
  * Created by pgp on 05/07/17
  * Insert and edit mode are equal here, they both translate into an update to the serialized list blob
- * of an existing sftp credential record
+ * of an existing sftp/smb credential record
  */
 
 public class InsertEditSftpFavoritesDialog extends Dialog {
@@ -28,11 +27,13 @@ public class InsertEditSftpFavoritesDialog extends Dialog {
     // currentFavoritePath is unique
     // currentFavorites is a reference contained in the sfdbMap, so its modification
     // need not be explicitly passed back, it is sufficent to refill the positional arrays in syncEditFromDialog
-    public InsertEditSftpFavoritesDialog(final Context context,
-                                         final SftpFavoritesAdapter adapter,
-                                         final long currentOid,
-                                         final FavoritesList<AuthData> currentFavorites,
-                                         final @Nullable String currentFavoritePath) {
+    public InsertEditSftpFavoritesDialog(
+            final Object ref,
+            final Context context,
+            final SftpFavoritesAdapter adapter,
+            final long currentOid,
+            final FavoritesList currentFavorites,
+            final @Nullable String currentFavoritePath) {
         super(context);
         setContentView(R.layout.single_filename_dialog);
         EditText favorite = findViewById(R.id.singleFilenameEditText);
@@ -48,7 +49,8 @@ public class InsertEditSftpFavoritesDialog extends Dialog {
             currentFavorites.paths.add(favorite.getText().toString());
 
             // update only, leave oid unchanged
-            if (dbh.updateSftpFavs(currentOid,currentFavorites.paths)) {
+//            if (dbh.updateSftpFavs(currentOid,currentFavorites.paths)) {
+            if (dbh.updateFavs(ref,currentOid,currentFavorites.paths)) {
                 // update visualization
                 adapter.syncEditFromDialog();
                 Toast.makeText(context,"Edit successful",Toast.LENGTH_SHORT).show();

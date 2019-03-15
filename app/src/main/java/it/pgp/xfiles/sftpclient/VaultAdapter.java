@@ -22,28 +22,29 @@ import it.pgp.xfiles.utils.GenericDBHelper;
  */
 
 public class VaultAdapter extends BaseAdapter implements ListAdapter {
-    final Context context;
-    final Activity mainActivity;
-    ArrayList<AuthData> loginItems;
-    ArrayList<Long> dbIds;
-    GenericDBHelper dbh;
+    public final Context context;
+    public final Activity mainActivity;
+    public ArrayList loginItems;
+    public ArrayList<Long> dbIds;
+    public GenericDBHelper dbh;
 
 
-    public VaultAdapter(final Context context, final Activity mainActivity, Map<Long,AuthData> loginItemsDbMap) {
+    // TODO generalize or extend class
+    public VaultAdapter(final Context context, final Activity mainActivity, Map<Long,?> loginItemsDbMap) {
         this.context = context;
         this.mainActivity = mainActivity;
         this.dbh = new GenericDBHelper(context);
-        this.loginItems = new ArrayList<>(loginItemsDbMap.values());
+        this.loginItems = new ArrayList(loginItemsDbMap.values());
         this.dbIds = new ArrayList<>(loginItemsDbMap.keySet());
     }
 
-    public void syncInsertFromDialog(Long oid, AuthData u) {
+    public void syncInsertFromDialog(Long oid, Object u) {
         dbIds.add(oid);
         loginItems.add(u);
         notifyDataSetChanged();
     }
 
-    public void syncEditFromDialog(Long oldOid, Long newOid, AuthData oldU, AuthData newU) {
+    public void syncEditFromDialog(Long oldOid, Long newOid, Object oldU, Object newU) {
         dbIds.add(newOid);
         loginItems.add(newU);
         dbIds.remove(oldOid);
@@ -73,7 +74,7 @@ public class VaultAdapter extends BaseAdapter implements ListAdapter {
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             view = inflater.inflate(R.layout.sftp_list_item, null);
         }
-        final AuthData loginItem = loginItems.get(position);
+        final AuthData loginItem = (AuthData) loginItems.get(position);
 
         //Handle TextView and display string from your list
         TextView user = view.findViewById(R.id.sftp_listitem_user);
@@ -91,12 +92,13 @@ public class VaultAdapter extends BaseAdapter implements ListAdapter {
         ImageButton deleteBtn = view.findViewById(R.id.passitem_delete);
 
         editBtn.setOnClickListener(v -> {
-            InsertEditDialog insertEditDialog = new InsertEditDialog(mainActivity,VaultAdapter.this,dbIds.get(position),loginItems.get(position));
+            InsertEditDialog insertEditDialog = new InsertEditDialog(mainActivity,VaultAdapter.this,dbIds.get(position), (AuthData) loginItems.get(position));
             insertEditDialog.show();
         });
         deleteBtn.setOnClickListener(v -> {
             // remove row from db
-            boolean deleted = dbh.deleteRowFromSftpTable(dbIds.get(position));
+//            boolean deleted = dbh.deleteRowFromSftpTable(dbIds.get(position));
+            boolean deleted = dbh.deleteRowFromTable(AuthData.ref,dbIds.get(position));
             if(deleted) {
                 // remove row from loginItems
                 dbIds.remove(position);

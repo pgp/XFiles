@@ -23,8 +23,8 @@ public class FavoritesPagerAdapter extends PagerAdapter {
     private final Context context;
 
 //    private final ProviderType[] allowedValues = new ProviderType[]{ProviderType.LOCAL,ProviderType.SFTP};
-    private final int[] allowedLayouts = {R.layout.favorites_local,R.layout.favorites_sftp,R.layout.favorites_xfiles_remote};
-    private final String[] titles = new String[]{"Local favorites","Sftp favorites","XFiles remote favorites"};
+    private final int[] allowedLayouts = {R.layout.favorites_local,R.layout.favorites_sftp,R.layout.favorites_xfiles_remote,R.layout.favorites_smb};
+    private final String[] titles = new String[]{"Local favorites","Sftp favorites","XFiles remote favorites", "SMB favorites"};
 
     // page one widgets
     private ListView localFavoritesListView; // mapped to "@+id/favorites_local_list"
@@ -41,6 +41,11 @@ public class FavoritesPagerAdapter extends PagerAdapter {
     private XreFavoritesAdapter xreFavoritesAdapter;
     private InsertEditXreFavoritesDialog insertXreFavoritesDialog;
     private Button xreFavoritesAddButton;
+
+    // page four widgets
+    private ListView smbFavoritesListView; // TODO to be mapped to "@+id/favorites_smb_list"
+    private SmbFavoritesAdapter smbFavoritesAdapter;
+
 
     public FavoritesPagerAdapter(final Context context) {
         this.context = context;
@@ -68,8 +73,7 @@ public class FavoritesPagerAdapter extends PagerAdapter {
                 sftpFavoritesListView = layout.findViewById(R.id.favorites_sftp_list);
                 sftpFavoritesAdapter = new SftpFavoritesAdapter(context);
                 sftpFavoritesListView.setAdapter(sftpFavoritesAdapter);
-                TextView empty = layout.findViewById(R.id.favorites_sftp_list_empty_view);
-                sftpFavoritesListView.setEmptyView(empty);
+                sftpFavoritesListView.setEmptyView(layout.findViewById(R.id.favorites_sftp_list_empty_view));
                 break;
 
             case 2: // xfiles_remote
@@ -83,7 +87,12 @@ public class FavoritesPagerAdapter extends PagerAdapter {
                 xreFavoritesAdapter = new XreFavoritesAdapter(context);
                 xreFavoritesListView.setAdapter(xreFavoritesAdapter);
                 break;
-
+            case 3: // smb
+                smbFavoritesListView = layout.findViewById(R.id.favorites_smb_list);
+                smbFavoritesAdapter = new SmbFavoritesAdapter(context);
+                smbFavoritesListView.setAdapter(smbFavoritesAdapter);
+                smbFavoritesListView.setEmptyView(layout.findViewById(R.id.favorites_smb_list_empty_view));
+                break;
             default:
                 Toast.makeText(context,"Position not available in the adapter",Toast.LENGTH_SHORT).show();
                 throw new RuntimeException("Position not available in the adapter");

@@ -183,6 +183,9 @@
             android:name=".sftpclient.VaultActivity"
             android:configChanges="orientation|screenSize|keyboardHidden" />
         <activity
+            android:name=".smbclient.SmbVaultActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden" />
+        <activity
             android:name=".FavoritesActivity"
             android:configChanges="orientation|screenSize|keyboardHidden" />
         <activity

@@ -6,6 +6,8 @@ import java.io.Serializable;
 
 public class SmbAuthData implements Serializable {
 
+    public static final SmbAuthData ref = new SmbAuthData(null,null,null,0,null);  // just for type checking in generic method
+
     public static final String defaultDomain = "WORKGROUP";
     public static final int defaultPort = 445;
 
@@ -37,9 +39,9 @@ public class SmbAuthData implements Serializable {
                        int port,
                        @Nullable String password) {
         this.username = username;
-        this.domain = domain==null?defaultDomain:domain;
+        this.domain = (domain==null||"".equals(domain))?defaultDomain:domain;
         this.host = host;
-        this.port = port;
+        this.port = port<=0?defaultPort:port;
         this.password = password;
     }
 

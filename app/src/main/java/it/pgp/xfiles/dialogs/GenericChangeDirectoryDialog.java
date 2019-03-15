@@ -291,7 +291,8 @@ public class GenericChangeDirectoryDialog extends Dialog {
                 // fill spinner from database
                 ArrayList<String> items = new ArrayList<>();
 
-                Collection cwf = dbh.getAllSftpCredsWithFavs().values();
+//                Collection cwf = dbh.getAllSftpCredsWithFavs().values();
+                Collection cwf = dbh.getAllCredsWithFavs(AuthData.ref).values();
                 credsWithFavs = new FavoritesList[cwf.size()];
                 cwf.toArray(credsWithFavs);
 
@@ -387,8 +388,9 @@ public class GenericChangeDirectoryDialog extends Dialog {
             case SMB:
                 items = new ArrayList<>();
 
-                cwf = dbh.getAllSmbCredsWithFavs().values();
-                smbCredsWithFavs = new FavoritesList[cwf.size()];
+//                cwf = dbh.getAllSmbCredsWithFavs().values();
+                cwf = dbh.getAllCredsWithFavs(SmbAuthData.ref).values();
+                smbCredsWithFavs = new FavoritesList[cwf.size()]; // TODO replace with return value from toArray of size 0
                 cwf.toArray(smbCredsWithFavs);
 
                 // add empty spinner for no selection
@@ -425,7 +427,7 @@ public class GenericChangeDirectoryDialog extends Dialog {
                         smbPort.setText(a.port+"");
 
                         // populate auto-complete list for remote path's AutoCompleteTextView
-                        Collection paths = credsWithFavs[position-1].paths; // pos-1: idem as before
+                        Collection paths = smbCredsWithFavs[position-1].paths; // pos-1: idem as before
                         String[] autoCompleteSupport;
                         if (paths != null) {
                             autoCompleteSupport = new String[paths.size()];

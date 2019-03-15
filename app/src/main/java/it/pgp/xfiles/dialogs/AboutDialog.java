@@ -15,7 +15,7 @@ public class AboutDialog extends Dialog {
     private void styleIt() {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         Window w = getWindow();
-        w.setBackgroundDrawableResource(R.color.transparentBlue);
+        w.setBackgroundDrawableResource(android.R.color.transparent);
     }
 
     public AboutDialog(Context context) {

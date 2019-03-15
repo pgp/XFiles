@@ -25,18 +25,18 @@ import it.pgp.xfiles.utils.XFilesUtilsUsingPathContent;
 
 public class VaultActivity extends EffectActivity implements FileSelectFragment.Callbacks {
 
-    public static Map<Long,AuthData> vault;
+    public static Map<Long,?> vault;
     public GenericDBHelper dbh;
 
-    ListView vaultListView;
-    ListView idVaultListView;
+    public ListView vaultListView;
+    public ListView idVaultListView;
 
-    VaultAdapter vaultAdapter;
-    IdentitiesVaultAdapter idVaultAdapter;
+    public VaultAdapter vaultAdapter;
+    public IdentitiesVaultAdapter idVaultAdapter;
 
     public Button addNewItemBtn, addNewIdBtn, genNewIdBtn;
 
-    InsertEditDialog insertEditDialog;
+    public InsertEditDialog insertEditDialog;
 
     public void openFileSelector() {
         String fragTag = getResources().getString(R.string.tag_fragment_FileSelect);
@@ -66,13 +66,6 @@ public class VaultActivity extends EffectActivity implements FileSelectFragment.
         addNewIdBtn = findViewById(R.id.sftpAddNewIdentityBtn);
         genNewIdBtn = findViewById(R.id.sftpGenNewIdentityBtn);
 
-//        addNewItemBtn.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                insertEditDialog = new InsertEditDialog(VaultActivity.this,vaultAdapter);
-//                insertEditDialog.show();
-//            }
-//        });
         addNewItemBtn.setOnClickListener(
             view -> {
                 insertEditDialog = new InsertEditDialog(VaultActivity.this,vaultAdapter);
@@ -87,7 +80,7 @@ public class VaultActivity extends EffectActivity implements FileSelectFragment.
     @Override
     protected void onResume() {
         super.onResume();
-        vault = dbh.getAllSftpCreds();
+        vault = dbh.getAllCreds(AuthData.ref);
         vaultAdapter = new VaultAdapter(getApplicationContext(),VaultActivity.this,vault);
         vaultListView.setAdapter(vaultAdapter);
         idVaultAdapter = new IdentitiesVaultAdapter(this);

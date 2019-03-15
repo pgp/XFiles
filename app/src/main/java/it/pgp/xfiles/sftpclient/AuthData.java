@@ -8,6 +8,11 @@ import java.io.Serializable;
  * Created by pgp on 11/02/17
  */
 public class AuthData implements Serializable {
+
+    // TODO when refactoring SmbAuthData as subclass of AuthData, remember to convert the "instanceof AuthData" checks against the subclass instead of the superclass
+
+    public static final AuthData ref = new AuthData(null,null,0,null); // just for type checking in generic method
+
     public String username;
     public String domain;
     public int port;

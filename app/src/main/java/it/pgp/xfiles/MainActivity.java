@@ -1,5 +1,6 @@
 package it.pgp.xfiles;
 
+import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
@@ -92,6 +93,7 @@ import it.pgp.xfiles.sftpclient.SFTPProviderUsingPathContent;
 import it.pgp.xfiles.sftpclient.SftpRetryLsListener;
 import it.pgp.xfiles.sftpclient.VaultActivity;
 import it.pgp.xfiles.smbclient.SmbProviderUsingPathContent;
+import it.pgp.xfiles.smbclient.SmbVaultActivity;
 import it.pgp.xfiles.utils.ContentProviderUtils;
 import it.pgp.xfiles.utils.DirCommanderCUsingBrowserItemsAndPathContent;
 import it.pgp.xfiles.utils.FileOperationHelperUsingPathContent;
@@ -557,7 +559,10 @@ public class MainActivity extends EffectActivity {
 
             // sftp credentials or favorites
             case R.id.openSftpCredManager:
-                openCredManager();
+                openCredManager(VaultActivity.class);
+                return true;
+            case R.id.openSmbCredManager:
+                openCredManager(SmbVaultActivity.class);
                 return true;
             case R.id.openFavsManager:
                 openFavsManager();
@@ -872,8 +877,8 @@ public class MainActivity extends EffectActivity {
         browserPagerAdapter.changeBrowserViewMode(browserPager.getCurrentItem());
     }
 
-    public void openCredManager() {
-        Intent intent = new Intent(MainActivity.this,VaultActivity.class);
+    public void openCredManager(Class activity) {
+        Intent intent = new Intent(MainActivity.this,activity);
         startActivity(intent);
     }
 
