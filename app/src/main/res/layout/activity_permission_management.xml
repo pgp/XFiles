@@ -10,6 +10,7 @@
         android:textSize="15dp"
         android:gravity="center_horizontal"
         android:text="@string/permission_storage_explain"
+        android:textColor="@color/green"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
@@ -47,6 +48,20 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Request Overlay permission" />
+
+    <TextView
+        android:textSize="15dp"
+        android:gravity="center_horizontal"
+        android:text="@string/permission_install_unknown_apps_explain"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:onClick="openInstallUnknownAppsPermissionsManagement"
+        android:id="@+id/installUnknownAppsPermissions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Request Install Unknown Apps permission" />
 
     <!--<TextView-->
         <!--android:textSize="15dp"-->

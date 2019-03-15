@@ -21,7 +21,7 @@ import java.io.File;
 
 public class PermissionManagementActivity extends Activity {
 
-    public enum PermReqCodes { STORAGE, SYSTEM_SETTINGS, OVERLAYS, STORAGE_READ /*, EXTERNAL_SD*/ }
+    public enum PermReqCodes { STORAGE, SYSTEM_SETTINGS, OVERLAYS, STORAGE_READ /*, EXTERNAL_SD*/, INSTALL_UNKNOWN_APPS }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -76,6 +76,12 @@ public class PermissionManagementActivity extends Activity {
             case OVERLAYS:
                 Toast.makeText(this, "Overlay permission "+
                         (Settings.canDrawOverlays(this)?"granted":"denied"), Toast.LENGTH_SHORT).show();
+                break;
+            case INSTALL_UNKNOWN_APPS:
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    Toast.makeText(this, "Install unknown apps permission "+
+                            (getPackageManager().canRequestPackageInstalls()?"granted":"denied"), Toast.LENGTH_SHORT).show();
+                }
                 break;
 
 //            case EXTERNAL_SD:
@@ -154,6 +160,14 @@ public class PermissionManagementActivity extends Activity {
     @RequiresApi(api = Build.VERSION_CODES.M)
     public void openOverlayPermissionsManagement(View unused) {
         startActivityForResult(new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION),PermReqCodes.OVERLAYS.ordinal());
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void openInstallUnknownAppsPermissionsManagement(View unused) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+            startActivityForResult(new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES),PermReqCodes.INSTALL_UNKNOWN_APPS.ordinal());
+        else
+            Toast.makeText(this, "Request not needed on Android < Oreo", Toast.LENGTH_LONG).show();
     }
 
     public void completePermissions(View unused) {
