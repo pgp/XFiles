@@ -218,7 +218,7 @@ public class XSSHClient extends SSHClient implements AutoCloseable {
             // try with dir command (for windows remote hosts running a SSH server, e.g. Windows 10 >=1803 built-in OpenSSH, or Bitvise SSH Server)
             total = countTotalSizeInItems_dirMethod(filenames, parentDir);
             if (total >= 0) return total;
-            Log.e("TOTALSIZE","dir command failed, external progress won't be available");
+            Log.e("TOTALSIZE","dir command failed, external progress or total size for stats won't be available");
 
             return -1;
         }

@@ -90,20 +90,6 @@ public class CompressActivity extends EffectActivity implements FileSaveFragment
         dirPath = me.getKey();
         selectedItems = me.getValue();
 
-        /*selectedItems = new ArrayList<>();
-        for (Uri uri : imageUris) {
-            String tmp = PathUtil.getPath(this,uri);
-            selectedItems.add(tmp);
-            Log.e(getClass().getName(),uri.toString()+"\t"+tmp);
-        }
-
-        dirPath = new LocalPathContent(Misc.getLongestCommonPathFromPrefix(
-                Misc.getLongestCommonPrefix(selectedItems)
-        ));
-        // trim prefixes from selectedItems once extracted dirPath
-        for (int i=0;i<selectedItems.size();i++)
-            selectedItems.set(i,selectedItems.get(i).substring(dirPath.dir.length()+1));*/
-
     }
 
     public void compress_ok(View unused) {

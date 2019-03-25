@@ -71,7 +71,7 @@ public class SftpFavoritesAdapter extends BaseAdapter {
         refillArrays();
     }
 
-    // only edit here, every favorite insert/add/update is an update to the AuthDataWithFavorites bean
+    // only edit here, every favorite insert/add/update is an update to the FavoritesList bean
     public void syncEditFromDialog() {
         refillArrays(); // inefficient, but avoids passing delta params for updating views
 //        notifyDataSetChanged();

@@ -50,6 +50,11 @@ public class CopyMoveListPathContent implements Serializable,Iterable<String> {
         this.files = files;
     }
 
+    // for handling received content URIs from third-party apps
+    public CopyMoveListPathContent() {
+        copyOrMove = CopyMoveMode.COPY;
+    }
+
     @NonNull
     @Override
     public Iterator<String> iterator() {

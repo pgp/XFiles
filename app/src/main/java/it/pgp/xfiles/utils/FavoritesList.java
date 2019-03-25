@@ -4,10 +4,6 @@ import java.util.Arrays;
 import java.util.Set;
 import java.util.TreeSet;
 
-/**
- * replaces {@link it.pgp.xfiles.sftpclient.AuthDataWithFavorites} and {@link it.pgp.xfiles.smbclient.SmbAuthDataWithFavorites}
- */
-
 public class FavoritesList<T> {
     public T a;
     public Set<String> paths; // favorites as remote paths

@@ -33,6 +33,7 @@ import java.security.PublicKey;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
@@ -730,8 +731,13 @@ public class SFTPProviderUsingPathContent implements FileOperationHelperUsingPat
         catch (IOException e) {
             e.printStackTrace();
         }
+
+        // total size
+        fs.totalSize = xsshClient.countTotalSizeInItems(
+                Collections.singletonList(new AbstractMap.SimpleEntry<>(pathname.dir, null)),
+                pathname.getParent().dir);
+
         return fs;
-        // TODO totalSize of directory
     }
 
     @Override

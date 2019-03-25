@@ -19,7 +19,7 @@ public class RemoteManager extends StreamsPair {
     private static final SocketNames defaultaddress = SocketNames.theroothelper;
 
     // streams connected to local socket
-    protected final LocalSocket ls;
+    public final LocalSocket ls;
 
     public final byte[] tlsSessionHash = new byte[32]; // hex string of SHA256
 

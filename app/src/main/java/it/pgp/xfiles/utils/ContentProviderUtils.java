@@ -1,5 +1,6 @@
 package it.pgp.xfiles.utils;
 
+import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
@@ -8,6 +9,7 @@ import android.os.Build;
 import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
+import android.provider.OpenableColumns;
 
 /**
  * Created by pgp on 17/07/17
@@ -26,7 +28,11 @@ public class ContentProviderUtils {
      * @param uri The Uri to query.
      * @author paulburke
      */
+
+    public static ContentResolver contentResolver;
+
     public static String getPathFromUri(final Context context, final Uri uri) {
+        ContentResolver resolver = context.getContentResolver();
 
         final boolean isKitKat = Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT;
 
@@ -51,7 +57,7 @@ public class ContentProviderUtils {
                 final Uri contentUri = ContentUris.withAppendedId(
                         Uri.parse("content://downloads/public_downloads"), Long.valueOf(id));
 
-                return getDataColumn(context, contentUri, null, null);
+                return getDataColumn(resolver, contentUri, null, null);
             }
             // MediaProvider
             else if (isMediaDocument(uri)) {
@@ -73,12 +79,12 @@ public class ContentProviderUtils {
                         split[1]
                 };
 
-                return getDataColumn(context, contentUri, selection, selectionArgs);
+                return getDataColumn(resolver, contentUri, selection, selectionArgs);
             }
         }
         // MediaStore (and general)
         else if ("content".equalsIgnoreCase(uri.getScheme())) {
-            return getDataColumn(context, uri, null, null);
+            return getDataColumn(resolver, uri, null, null);
         }
         // File
         else if ("file".equalsIgnoreCase(uri.getScheme())) {
@@ -88,22 +94,62 @@ public class ContentProviderUtils {
         return null;
     }
 
+    public static String getName(ContentResolver resolver, Uri uri) {
+        String fileName = null;
+        try (Cursor cursor = resolver
+                .query(uri, null, null, null, null, null)) {
+            if (cursor != null && cursor.moveToFirst()) {
+                // get file name
+                fileName = cursor.getString(
+                        cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+            }
+        }
+        if (fileName == null) {
+            fileName = uri.getPath();
+            int cut = fileName.lastIndexOf('/');
+            if (cut != -1) {
+                fileName = fileName.substring(cut + 1);
+            }
+        }
+        return fileName;
+    }
+
+    public static long getSize(ContentResolver resolver, Uri uri) {
+        String fileSize = null;
+        try (Cursor cursor = resolver
+                .query(uri, null, null, null, null, null)) {
+            if (cursor != null && cursor.moveToFirst()) {
+
+                // get file size
+                int sizeIndex = cursor.getColumnIndex(OpenableColumns.SIZE);
+                if (!cursor.isNull(sizeIndex)) {
+                    fileSize = cursor.getString(sizeIndex);
+                }
+            }
+            return Long.valueOf(fileSize);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            return Long.MAX_VALUE; // avoid division by zero errors in progress management
+        }
+    }
+
     /**
      * Get the value of the data column for this Uri. This is useful for
      * MediaStore Uris, and other file-based ContentProviders.
      *
-     * @param context The context.
+     * @param resolver The content resolver.
      * @param uri The Uri to query.
      * @param selection (Optional) Filter used in the query.
      * @param selectionArgs (Optional) Selection arguments used in the query.
      * @return The value of the _data column, which is typically a file path.
      */
-    public static String getDataColumn(Context context, Uri uri, String selection,
+    public static String getDataColumn(ContentResolver resolver, Uri uri, String selection,
                                        String[] selectionArgs) {
         final String column = "_data";
         final String[] projection = {column};
 
-        try (Cursor cursor = context.getContentResolver().query(uri, projection, selection, selectionArgs,
+        try (Cursor cursor = resolver.query(uri, projection, selection, selectionArgs,
                 null)) {
             if (cursor != null && cursor.moveToFirst()) {
                 final int column_index = cursor.getColumnIndexOrThrow(column);

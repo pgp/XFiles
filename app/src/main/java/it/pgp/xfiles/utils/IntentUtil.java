@@ -31,7 +31,7 @@ public class IntentUtil {
     public static Map.Entry<BasePathContent,List<String>> getCommonAncestorAndItems(Context context, List<Uri> uris) {
         List<String> selectedItems = new ArrayList<>();
         for (Uri uri : uris) {
-            String tmp = PathUtil.getPath(context,uri);
+            String tmp = ContentProviderUtils.getPathFromUri(context,uri);
             selectedItems.add(tmp);
             Log.e("getPath",uri.toString()+"\t"+tmp);
         }

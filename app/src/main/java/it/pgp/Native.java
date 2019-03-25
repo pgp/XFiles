@@ -16,6 +16,7 @@ public class Native {
 //    public static native void c20StreamGen(byte[] key, byte[] output);
 //    public static native void spongeForHashView(byte[] input, byte[] output);
 //    public static native void spongeForHashViewInPlace(byte[] input, int inputLen, byte[] output, int outputLen);
+    public static native int sendDetachedFD(int udsToSendFdOver, int fdToSend);
 
     /***/
     public static native String nonExisting();

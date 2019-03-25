@@ -1,37 +1,31 @@
 package it.pgp.xfiles.roothelperclient;
 
+import android.content.ContentResolver;
+import android.net.Uri;
 import android.util.Log;
 
+import java.io.FileDescriptor;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
+import it.pgp.Native;
 import it.pgp.xfiles.BrowserItem;
+import it.pgp.xfiles.CopyListUris;
 import it.pgp.xfiles.CopyMoveListPathContent;
 import it.pgp.xfiles.MainActivity;
 import it.pgp.xfiles.R;
 import it.pgp.xfiles.dialogs.XFilesRemoteSessionsManagementActivity;
-import it.pgp.xfiles.enums.FileMode;
 import it.pgp.xfiles.enums.FileOpsErrorCodes;
-import it.pgp.xfiles.enums.ForegroundServiceType;
-import it.pgp.xfiles.items.FileCreationAdvancedOptions;
 import it.pgp.xfiles.roothelperclient.reqs.ListOfPathPairs_rq;
-import it.pgp.xfiles.roothelperclient.reqs.SinglePath_rq;
-import it.pgp.xfiles.roothelperclient.reqs.create_rq;
-import it.pgp.xfiles.roothelperclient.reqs.hash_rq;
-import it.pgp.xfiles.roothelperclient.reqs.link_rq;
-import it.pgp.xfiles.roothelperclient.reqs.ls_rq;
 import it.pgp.xfiles.service.BaseBackgroundTask;
 import it.pgp.xfiles.service.NonInteractiveXFilesRemoteTransferTask;
-import it.pgp.xfiles.service.visualization.ProgressIndicator;
+import it.pgp.xfiles.utils.ContentProviderUtils;
 import it.pgp.xfiles.utils.Misc;
 import it.pgp.xfiles.utils.ProgressConflictHandler;
-import it.pgp.xfiles.utils.dircontent.GenericDirWithContent;
-import it.pgp.xfiles.utils.dircontent.LocalDirWithContent;
-import it.pgp.xfiles.utils.dircontent.XFilesRemoteDirWithContent;
 import it.pgp.xfiles.utils.pathcontent.BasePathContent;
 import it.pgp.xfiles.utils.pathcontent.XFilesRemotePathContent;
 import it.pgp.xfiles.utils.popupwindow.PopupWindowUtils;
@@ -64,6 +58,7 @@ public class RemoteClientManager {
     // progress methods and task field put here in order to avoid putting them also in RemoteServerManager, which extends RemoteManager and doesn't publish progress
 
     public BaseBackgroundTask progressTask;
+    public ContentResolver contentResolver;
 
     private void initProgressSupport(BaseBackgroundTask task) {
         this.progressTask = task;
@@ -96,7 +91,7 @@ public class RemoteClientManager {
 
             // receive TLS session hash
             client.i.readFully(client.tlsSessionHash);
-            Log.d(this.getClass().getName(),"Client TLS session shared secret hash: "+new String(client.tlsSessionHash));
+            Log.d(this.getClass().getName(),"Client TLS session shared secret hash: "+Misc.toHexString(client.tlsSessionHash));
 
             // show the visual hash of the shared TLS master secret
             if (MainActivity.mainActivity != null) {
@@ -136,11 +131,21 @@ public class RemoteClientManager {
         return client;
     }
 
+    private void publishReceivedProgress(long progress, long totalSizeSoFar, long totalSize, long currentFileSize) {
+        Log.e("XREProgress","It's progress: "+progress);
+        if (this.progressTask != null) {
+            this.progressTask.publishProgressWrapper(
+                    (int) Math.round((totalSizeSoFar+progress) * 100.0 / totalSize),
+                    (int) Math.round(progress * 100.0 / currentFileSize)
+            );
+        }
+    }
+
     // TODO make RemoteClientManager implementor of FileOperationHelperUsingPathContent and remove duplicated code in RootHelperClientUsingPathContent
     // TODO use StreamsPair and getStreams(...) in RootHelperClientUsingPathContent, remove duplicated methods from here
 
-    public FileOpsErrorCodes transferItems(CopyMoveListPathContent items, BasePathContent destDir, ControlCodes action, NonInteractiveXFilesRemoteTransferTask progressTask) {
-
+    public FileOpsErrorCodes transferItems(CopyMoveListPathContent items, BasePathContent destDir, ControlCodes action, NonInteractiveXFilesRemoteTransferTask progressTask, ContentResolver contentResolver) {
+        this.contentResolver = contentResolver;
         // get communication endpoint
         String clientKey;
         switch (action) {
@@ -162,106 +167,141 @@ public class RemoteClientManager {
 
         initProgressSupport(progressTask);
 
-        ArrayList<String> v_fx = new ArrayList<>();
-        ArrayList<String> v_fy = new ArrayList<>();
+        if (items instanceof CopyListUris) {
+            /* - customize ACTION_UPLOAD request byte with flags 111
+             * - query size for each uri, accumulate total size and list with individual sizes
+             * - get file descriptors one by one with content resolver and send them via UDS (LocalSocket)
+             * - receive progress for each file
+             */
+            byte customizedRq = action.getValue();
+            customizedRq ^= (7 << 5); // flags: 111
 
-        for (BrowserItem fname : items.files) {
-            v_fx.add(items.parentDir.dir+"/"+fname.getFilename());
-            v_fy.add(destDir.dir+"/"+fname.getFilename());
-        }
+            try {
+                FileDescriptor uds = client.ls.getFileDescriptor();
+                Field nativeField = uds.getClass().getDeclaredField("descriptor");
+                nativeField.setAccessible(true);
+                int nativeUds = (int)nativeField.get(uds);
 
-        ListOfPathPairs_rq r = new ListOfPathPairs_rq(v_fx,v_fy);
-        r.requestType = action;
+                List<Uri> uris = new ArrayList<>();
+                List<String> names = new ArrayList<>();
+                List<Long> sizes = new ArrayList<>();
+                long totalSize = 0;
+                long currentFileSize = 0;
+                for (String uriString : ((CopyListUris)items).contentUris) {
+                    Uri uri = Uri.parse(uriString);
+                    uris.add(uri);
+                    names.add(ContentProviderUtils.getName(contentResolver,uri));
+                    currentFileSize = ContentProviderUtils.getSize(contentResolver,uri);
+                    sizes.add(currentFileSize);
+                    totalSize += currentFileSize;
+                }
 
-        try {
-            r.write(client.o);
+                client.o.write(customizedRq);
+                client.o.write(Misc.castUnsignedNumberToBytes(totalSize,8));
+                long totalSizeSoFar = 0;
 
-            // receive total number of files for outer progress
-            final long totalFileCount = Misc.receiveTotalOrProgress(client.i);
-            final long totalSize = Misc.receiveTotalOrProgress(client.i);
-            Log.e("XREProgress","Total size is "+totalSize);
-            long currentFileCount = 0;
-            long totalSizeSoFar = 0; // rounded to last completed file
-//            long currentFileSize = EOF_ind; // legacy, maybe breaks things
-            long currentFileSize = 0; // placeholder, just to avoid uninitialized error
 
-            boolean hasReceivedSizeForCurrentFile = false;
+                for (int i=0;i<uris.size();i++) {
+                    Log.e("XREProgress","Sending file info and descriptor for "+names.get(i));
+                    Misc.sendStringWithLen(client.o,destDir.dir+"/"+names.get(i));
+                    client.o.write(Misc.castUnsignedNumberToBytes(sizes.get(i),8));
+                    int fdToSend = contentResolver.openFileDescriptor(uris.get(i),"r").detachFd();
+                    Native.sendDetachedFD(nativeUds,fdToSend);
 
-            // receive progress for single files, increment outer progress bar by 1 on EOF_ind progress
-
-            for (;;) {
-                long tmp = Misc.receiveTotalOrProgress(client.i);
-
-                if (tmp == EOF_ind) {
-                    Log.e("XREProgress","Received EOF, file count before: "+currentFileCount);
-                    hasReceivedSizeForCurrentFile = false;
-                    currentFileCount++;
+                    // receive progress
+                    long tmp;
+                    do {
+                        tmp = Misc.receiveTotalOrProgress(client.i);
+                        publishReceivedProgress(tmp,totalSizeSoFar,totalSize,currentFileSize);
+                    }
+                    while(tmp!=EOF_ind);
                     totalSizeSoFar += currentFileSize;
-                    // LEGACY
-                    /*this.progressTask.publishProgressWrapper(
-                            (int)Math.round(currentFileCount*100.0/totalFileCount),
-                            0
-                    );*/
-
-                    // NEW
-                    this.progressTask.publishProgressWrapper(
-                            (int)Math.round(totalSizeSoFar*100.0/totalSize),
-                            0
-                    );
-
                 }
-                else if (tmp == EOFs_ind) {
-                    Log.e("XREProgress","Received EOFs");
-                    break;
-                }
-                else {
-                    Log.e("XREProgress","Received progress or size");
-                    if (hasReceivedSizeForCurrentFile) {
-                        Log.e("XREProgress","It's progress: "+tmp);
-                        if (this.progressTask != null) {
-                            // LEGACY
-                            /*this.progressTask.publishProgressWrapper(
-                                    (int) Math.round(currentFileCount * 100.0 / totalFileCount),
-                                    (int) Math.round(tmp * 100.0 / currentFileSize)
-                            );*/
+                client.o.write(new byte[2]); // EOL
 
-                            // NEW
-                            this.progressTask.publishProgressWrapper(
-                                    (int) Math.round((totalSizeSoFar+tmp) * 100.0 / totalSize),
-                                    (int) Math.round(tmp * 100.0 / currentFileSize)
-                            );
-                        }
-                    }
-                    else {
-                        Log.e("XREProgress","It's size: "+tmp);
-                        // here, tmp is current file's size, before starting copying current file
-                        currentFileSize = tmp;
-                        hasReceivedSizeForCurrentFile = true;
-                        if (this.progressTask != null) {
-                            // LEGACY
-                            /*this.progressTask.publishProgressWrapper(
-                                    (int)Math.round(currentFileCount*100.0/totalFileCount),
-                                    0
-                            );*/
-
-                            // NEW
-                            this.progressTask.publishProgressWrapper(
-                                    (int) Math.round(totalSizeSoFar * 100.0 / totalSize),
-                                    0
-                            );
-                        }
-                    }
-                }
             }
+            catch (Exception e) {
+                e.printStackTrace();
+                return FileOpsErrorCodes.TRANSFER_ERROR;
+            }
+
             return FileOpsErrorCodes.TRANSFER_OK;
         }
-        catch (IOException e) {
-            client.close();
-            longTermClients.remove(clientKey);
-            return FileOpsErrorCodes.TRANSFER_ERROR;
-        }
-        finally {
-            destroyProgressSupport();
+        else {
+            ArrayList<String> v_fx = new ArrayList<>();
+            ArrayList<String> v_fy = new ArrayList<>();
+
+            for (BrowserItem fname : items.files) {
+                v_fx.add(items.parentDir.dir+"/"+fname.getFilename());
+                v_fy.add(destDir.dir+"/"+fname.getFilename());
+            }
+
+            ListOfPathPairs_rq r = new ListOfPathPairs_rq(v_fx,v_fy);
+            r.requestType = action;
+
+            try {
+                r.write(client.o);
+
+                // receive total number of files for outer progress
+                final long totalFileCount = Misc.receiveTotalOrProgress(client.i);
+                final long totalSize = Misc.receiveTotalOrProgress(client.i);
+                Log.e("XREProgress","Total size is "+totalSize);
+                long currentFileCount = 0;
+                long totalSizeSoFar = 0; // rounded to last completed file
+//            long currentFileSize = EOF_ind; // legacy, maybe breaks things
+                long currentFileSize = 0; // placeholder, just to avoid uninitialized error
+
+                boolean hasReceivedSizeForCurrentFile = false;
+
+                // receive progress for single files, increment outer progress bar by 1 on EOF_ind progress
+
+                for (;;) {
+                    long tmp = Misc.receiveTotalOrProgress(client.i);
+
+                    if (tmp == EOF_ind) {
+                        Log.e("XREProgress","Received EOF, file count before: "+currentFileCount);
+                        hasReceivedSizeForCurrentFile = false;
+                        currentFileCount++;
+                        totalSizeSoFar += currentFileSize;
+                        this.progressTask.publishProgressWrapper(
+                                (int)Math.round(totalSizeSoFar*100.0/totalSize),
+                                0
+                        );
+                    }
+                    else if (tmp == EOFs_ind) {
+                        Log.e("XREProgress","Received EOFs");
+                        break;
+                    }
+                    else {
+                        Log.e("XREProgress","Received progress or size");
+                        if (hasReceivedSizeForCurrentFile) {
+                            Log.e("XREProgress","It's progress: "+tmp);
+                            publishReceivedProgress(tmp,totalSizeSoFar,totalSize,currentFileSize);
+                        }
+                        else {
+                            Log.e("XREProgress","It's size: "+tmp);
+                            // here, tmp is current file's size, before starting copying current file
+                            currentFileSize = tmp;
+                            hasReceivedSizeForCurrentFile = true;
+                            if (this.progressTask != null) {
+                                this.progressTask.publishProgressWrapper(
+                                        (int) Math.round(totalSizeSoFar * 100.0 / totalSize),
+                                        0
+                                );
+                            }
+                        }
+                    }
+                }
+                return FileOpsErrorCodes.TRANSFER_OK;
+            }
+            catch (IOException e) {
+                client.close();
+                longTermClients.remove(clientKey);
+                return FileOpsErrorCodes.TRANSFER_ERROR;
+            }
+            finally {
+                destroyProgressSupport();
+            }
         }
     }
 }

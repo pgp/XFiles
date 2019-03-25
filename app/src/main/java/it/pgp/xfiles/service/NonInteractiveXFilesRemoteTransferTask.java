@@ -1,10 +1,12 @@
 package it.pgp.xfiles.service;
 
+import android.content.ContentResolver;
 import android.util.Log;
 import android.widget.Toast;
 
 import java.io.Serializable;
 
+import it.pgp.xfiles.CopyListUris;
 import it.pgp.xfiles.MainActivity;
 import it.pgp.xfiles.enums.FileOpsErrorCodes;
 import it.pgp.xfiles.enums.ProviderType;
@@ -34,18 +36,26 @@ public class NonInteractiveXFilesRemoteTransferTask extends RootHelperClientTask
     public ControlCodes action;
 
     private BasePathContent currentDir; // for refreshing dir listview (if not changed meanwhile) on operation end
+    private ContentResolver resolver;
 
     NonInteractiveXFilesRemoteTransferTask(Serializable params_) {
         super(params_);
         params = (CopyMoveParams) params_;
 
-        if (params.list.parentDir.providerType == ProviderType.XFILES_REMOTE &&
-                params.destPath.providerType == ProviderType.LOCAL)
-            action = ControlCodes.ACTION_DOWNLOAD;
-        else if (params.list.parentDir.providerType == ProviderType.LOCAL &&
-                params.destPath.providerType == ProviderType.XFILES_REMOTE)
+        try {
+            if (params.list.parentDir.providerType == ProviderType.XFILES_REMOTE &&
+                    params.destPath.providerType == ProviderType.LOCAL)
+                action = ControlCodes.ACTION_DOWNLOAD;
+            else if (params.list.parentDir.providerType == ProviderType.LOCAL &&
+                    params.destPath.providerType == ProviderType.XFILES_REMOTE)
+                action = ControlCodes.ACTION_UPLOAD;
+            else throw new RuntimeException("Unexpected CopyMoveParams content");
+        }
+        catch (NullPointerException n) {
+            if (!(params.list instanceof CopyListUris)) throw n;
+            Log.e("XRETASK", "params contain content uris, defaulting action to upload...");
             action = ControlCodes.ACTION_UPLOAD;
-        else throw new RuntimeException("Unexpected CopyMoveParams content");
+        }
     }
 
     /**
@@ -81,6 +91,7 @@ public class NonInteractiveXFilesRemoteTransferTask extends RootHelperClientTask
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
+        resolver = service.getApplicationContext().getContentResolver();
         try {
             currentDir = MainActivity.mainActivity.getCurrentDirCommander().getCurrentDirectoryPathname();
         }
@@ -91,7 +102,7 @@ public class NonInteractiveXFilesRemoteTransferTask extends RootHelperClientTask
 
     @Override
     protected Object doInBackground(Object[] unusedParams) {
-        result = MainActivity.rootHelperRemoteClientManager.transferItems(this.params.list,this.params.destPath,action,this);
+        result = MainActivity.rootHelperRemoteClientManager.transferItems(this.params.list,this.params.destPath,action,this, resolver);
         return result;
     }
 
@@ -116,7 +127,7 @@ public class NonInteractiveXFilesRemoteTransferTask extends RootHelperClientTask
             if (activity == null) return; // activity closed while service active, nothing to refresh
             BasePathContent cd = activity.getCurrentDirCommander().getCurrentDirectoryPathname();
             if (cd.equals(currentDir))
-                activity.browserPagerAdapter.showDirContent(activity.getCurrentDirCommander().refresh(),activity.browserPager.getCurrentItem(),params.list.files.get(0).getFilename());
+                activity.browserPagerAdapter.showDirContent(activity.getCurrentDirCommander().refresh(),activity.browserPager.getCurrentItem(),params.getFirstFilename(resolver));
         }
         else {
             Toast.makeText(service,params.list.copyOrMove.name().toLowerCase()+" error: "+result.getValue(),Toast.LENGTH_LONG).show();

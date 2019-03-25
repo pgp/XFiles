@@ -4,10 +4,10 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
@@ -35,7 +35,6 @@ public class XREDirectShareActivity extends EffectActivity {
 
     WifiButtonsLayout wbl;
     LinearLayout xre_embedded_layout;
-    Button ok;
 
     GenericDBHelper dbh;
 
@@ -52,7 +51,7 @@ public class XREDirectShareActivity extends EffectActivity {
     private boolean currentDirAutofillOverride = true;
 
     private void ok(View unused) {
-        BasePathContent path = null;
+        BasePathContent path;
 
         // empty base path means root path (/), so don't validate it
         if (!basicNonEmptyValidation(xreServerHost)) return;
@@ -87,7 +86,7 @@ public class XREDirectShareActivity extends EffectActivity {
 
         // CHECK SHARE INTENT
         List<Uri> uris = IntentUtil.getShareSelectionFromIntent(getIntent());
-        if (uris == null) {
+        if (uris == null || uris.isEmpty()) {
             Toast.makeText(this, "Unable to get URI selection", Toast.LENGTH_SHORT).show();
             finish();
             return;
@@ -95,40 +94,36 @@ public class XREDirectShareActivity extends EffectActivity {
             web source: https://developer.android.com/reference/android/app/Activity#onCreate(android.os.Bundle)
             */
         }
-        Map.Entry<BasePathContent,List<String>> me = IntentUtil.getCommonAncestorAndItems(this,uris);
-        filesToUpload_ = me.getValue();
-        srcPath = me.getKey();
 
-        RootHelperClientUsingPathContent rh = MainActivity.getRootHelperClient();
+        // TODO bugfix: on Oreo, intent is redirected to compressActivity instead of arriving here
+        if ("content".equals(uris.get(0).getScheme())) { // TODO check if condition is well written
+            Log.e("DIRECTSHARE", "Populating from content uris");
+            filesToUpload = CopyListUris.getFromUriList(uris);
+        }
+        else {
+            Log.e("DIRECTSHARE", "Populating from path uris");
+            Map.Entry<BasePathContent,List<String>> me = IntentUtil.getCommonAncestorAndItems(this,uris);
+            filesToUpload_ = me.getValue();
+            srcPath = me.getKey();
 
-        // NOT SERIALIZABLE???
-        /*List<BrowserItem> lb = new ArrayList<BrowserItem>(){{
+            RootHelperClientUsingPathContent rh = MainActivity.getRootHelperClient();
+
+            // anonymous local classes are not serializable, so should populate it the standard way
+            List<BrowserItem> lb = new ArrayList<>();
             try {
                 for (String path : filesToUpload_) {
                     // FIXME not optimized, one stat request for item
                     SingleStatsItem ssi = rh.statFile(srcPath.concat(path));
-                    add(new BrowserItem(path,ssi.size,ssi.modificationTime,ssi.isDir,false));
+                    lb.add(new BrowserItem(path,ssi.size,ssi.modificationTime,ssi.isDir,false));
                 }
             }
             catch (IOException e) {
                 e.printStackTrace();
             }
-        }};*/
 
-        List<BrowserItem> lb = new ArrayList<>();
-        try {
-            for (String path : filesToUpload_) {
-                // FIXME not optimized, one stat request for item
-                SingleStatsItem ssi = rh.statFile(srcPath.concat(path));
-                lb.add(new BrowserItem(path,ssi.size,ssi.modificationTime,ssi.isDir,false));
-            }
+
+            filesToUpload = new CopyMoveListPathContent(lb,CopyMoveMode.COPY,srcPath);
         }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-
-
-        filesToUpload = new CopyMoveListPathContent(lb,CopyMoveMode.COPY,srcPath);
 
         setContentView(R.layout.activity_xre_direct_share);
         dbh = new GenericDBHelper(this);
@@ -153,8 +148,8 @@ public class XREDirectShareActivity extends EffectActivity {
         xreitems_.add(new AbstractMap.SimpleEntry<>("","")); // empty item for no selection
         xreitems_.add(new AbstractMap.SimpleEntry<>("192.168.43.1","/sdcard")); // default remote server and path when server provides network access with its WiFi hotspot
         xreitems_.addAll(dbh.getAllRowsOfXreFavoritesTable().values());
-        xreItems = new Map.Entry[xreitems_.size()];
-        xreitems_.toArray(xreItems);
+        xreItems = xreitems_.toArray(new Map.Entry[0]);
+
 
         ArrayAdapter<Map.Entry<String,String>> xreAdapter = new ArrayAdapter<>(
                 this,
@@ -178,10 +173,7 @@ public class XREDirectShareActivity extends EffectActivity {
             public void onNothingSelected(AdapterView<?> parent) {}
         });
 
-        ///////////////////////////////////////
-
-        ok = findViewById(R.id.xreDirectShareOkButton);
-        ok.setOnClickListener(this::ok);
+        findViewById(R.id.xreDirectShareOkButton).setOnClickListener(this::ok);
     }
 
     @Override
