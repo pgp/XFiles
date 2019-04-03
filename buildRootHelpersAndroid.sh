@@ -27,13 +27,13 @@ cd $FORMAT7ZDIR
 # rm -rf ../obj/*
 # rm -rf ../libs/*
 
-if [ -z "$LOWPERF" ]; then ndk-build -j2; else ndk-build -j4; fi
+if [ -z "$LOWPERF" ]; then echo LOWPERF $LOWPERF && ndk-build -j2; else echo STANDARD BUILD && ndk-build -j4; fi
 
 # build roothelper executable shared object (r)
 cd $RHDIR
 # rm -rf ../obj/*
 # rm -rf ../libs/*
-if [ -z "$LOWPERF" ]; then ndk-build -j2; else ndk-build -j4; fi
+if [ -z "$LOWPERF" ]; then echo LOWPERF $LOWPERF && ndk-build -j1; else echo STANDARD BUILD && ndk-build -j4; fi
 
 # rename to libr.so (for gradle to accept it as embeddable in apk)
 cd $RHLIBDIR
