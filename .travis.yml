@@ -21,4 +21,5 @@ before_install:
   - echo y | sdkmanager "lldb;3.1"
 
 script:
+- export PATH=$PATH:$ANDROID_HOME/ndk-bundle
 - ./gradlew clean assemble
