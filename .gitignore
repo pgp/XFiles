@@ -1,3 +1,9 @@
+# ignore roothelper subfolder, which is automatically cloned by custom build.gradle task for performing the native build
+XFilesRootHelper
+
+# ignore binary files (libraries)
+libs/*/*.so
+
 # Built application files
 *.apk
 *.ap_

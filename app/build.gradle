@@ -7,7 +7,7 @@ android {
         minSdkVersion 19
         targetSdkVersion 28
         multiDexEnabled true
-        versionCode 103190325
+        versionCode 103190403
         versionName "1.0.3-alpha"
         externalNativeBuild {
             cmake {
@@ -20,6 +20,19 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+
+    task rhTask {
+        println("Cloning and building XFilesRootHelper native library for Android")
+        def sout = new StringBuilder(), serr = new StringBuilder()
+        def proc = ((System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows'))?"buildRootHelpersAndroid.bat":"./buildRootHelpersAndroid.sh").execute()
+        proc.consumeProcessOutput(sout, serr)
+        proc.waitFor()
+        println "out> $sout err> $serr"
+    }
+
+    project.afterEvaluate {
+        build.dependsOn rhTask
     }
 
     sourceSets {
