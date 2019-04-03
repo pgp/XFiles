@@ -26,13 +26,14 @@ export PATH=$PATH:$NDKDIR
 cd $FORMAT7ZDIR
 # rm -rf ../obj/*
 # rm -rf ../libs/*
-ndk-build -j4
+
+if [ -z "$LOWPERF" ]; then ndk-build -j2; else ndk-build -j4; fi
 
 # build roothelper executable shared object (r)
 cd $RHDIR
 # rm -rf ../obj/*
 # rm -rf ../libs/*
-ndk-build -j4
+if [ -z "$LOWPERF" ]; then ndk-build -j2; else ndk-build -j4; fi
 
 # rename to libr.so (for gradle to accept it as embeddable in apk)
 cd $RHLIBDIR

@@ -23,13 +23,13 @@ REM build lib7z.so
 cd %FORMAT7ZDIR%
 REM rd /s /q ..\obj\*
 REM rd /s /q ..\libs\*
-call %NDKDIR%\ndk-build -j4
+if defined LOWPERF (call %NDKDIR%\ndk-build -j2) else (call %NDKDIR%\ndk-build -j4)
 
 REM build roothelper executable shared object (r)
 cd %RHDIR%
 REM rd /s /q ..\obj\*
 REM rd /s /q ..\libs\*
-call %NDKDIR%\ndk-build -j4
+if defined LOWPERF (call %NDKDIR%\ndk-build -j2) else (call %NDKDIR%\ndk-build -j4)
 
 REM rename to libr.so (for gradle to accept it as embeddable in apk)
 cd %RHLIBDIR%

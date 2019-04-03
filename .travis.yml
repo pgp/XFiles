@@ -22,4 +22,5 @@ before_install:
 
 script:
 - export PATH=$PATH:$ANDROID_HOME/ndk-bundle
-- travis_wait 30 ./gradlew clean assemble
+- export LOWPERF=true
+- ./gradlew clean assemble
