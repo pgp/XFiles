@@ -24,7 +24,12 @@ android {
 
     task rhTask {
         println("Cloning and building XFilesRootHelper native library for Android")
-        def proc = ((System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows'))?"buildRootHelpersAndroid.bat":"./buildRootHelpersAndroid.sh").execute()
+        def lp = System.getenv("LOWPERF")
+        def path = "PATH="+System.getenv("PATH")
+        def lparg = lp?"LOWPERF="+lp:""
+        def workingDir = new File(".")
+		def proc = ((System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows'))?"buildRootHelpersAndroid.bat":"./buildRootHelpersAndroid.sh").execute([path,lparg],workingDir)
+			
         proc.consumeProcessOutput(System.out, System.err)
         proc.waitFor()
     }
