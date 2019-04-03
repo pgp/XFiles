@@ -22,4 +22,4 @@ before_install:
 
 script:
 - export PATH=$PATH:$ANDROID_HOME/ndk-bundle
-- ./gradlew clean assemble
+- travis_wait 30 ./gradlew clean assemble
