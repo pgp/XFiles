@@ -7,7 +7,7 @@ android {
         minSdkVersion 19
         targetSdkVersion 28
         multiDexEnabled true
-        versionCode 103190403
+        versionCode 103190404
         versionName "1.0.3-alpha"
         externalNativeBuild {
             cmake {
@@ -24,11 +24,13 @@ android {
 
     task rhTask {
         println("Cloning and building XFilesRootHelper native library for Android")
-        def lp = System.getenv("LOWPERF")
+        def lp = System.getenv("LOWPERF") // used only for Travis CI, used to discriminate against explicit PATH import as well
         def path = "PATH="+System.getenv("PATH")
         def lparg = lp?"LOWPERF="+lp:""
         def workingDir = new File(".")
-		def proc = ((System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows'))?"buildRootHelpersAndroid.bat":"./buildRootHelpersAndroid.sh").execute([path,lparg],workingDir)
+		def proc = lp?
+                ((System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows'))?"buildRootHelpersAndroid.bat":"./buildRootHelpersAndroid.sh").execute([path,lparg],workingDir)
+                :((System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows'))?"buildRootHelpersAndroid.bat":"./buildRootHelpersAndroid.sh").execute()
 			
         proc.consumeProcessOutput(System.out, System.err)
         proc.waitFor()
