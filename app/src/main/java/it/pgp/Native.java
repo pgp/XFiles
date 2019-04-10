@@ -18,6 +18,5 @@ public class Native {
 //    public static native void spongeForHashViewInPlace(byte[] input, int inputLen, byte[] output, int outputLen);
     public static native int sendDetachedFD(int udsToSendFdOver, int fdToSend);
 
-    /***/
-    public static native String nonExisting();
+    public static native long sendfstat(int udsToSendStatOver, int fd, String filename_);
 }

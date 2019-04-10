@@ -4,12 +4,17 @@ import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
+import android.net.LocalSocket;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
+
+import java.io.FileDescriptor;
+import java.io.IOException;
+import java.lang.reflect.Field;
 
 /**
  * Created by pgp on 17/07/17
@@ -19,6 +24,26 @@ import android.provider.OpenableColumns;
  */
 
 public class ContentProviderUtils {
+
+    /**
+     * Extracts a native descriptor from a LocalSocket
+     * @param localSocket the Local socket
+     * @return the native descriptor which can be used by the JNI layer
+     * @throws NoSuchFieldException
+     * @throws IllegalAccessException
+     */
+    public static int getNativeDescriptor(LocalSocket localSocket) throws IOException {
+        try {
+            FileDescriptor uds = localSocket.getFileDescriptor();
+            Field nativeField = uds.getClass().getDeclaredField("descriptor");
+            nativeField.setAccessible(true);
+            return (int)nativeField.get(uds);
+        }
+        catch (Exception e) {
+            throw new IOException(e);
+        }
+    }
+
     /**
      * Get a file path from a Uri. This will get the the path for Storage Access
      * Framework Documents, as well as the _data field for the MediaStore and
@@ -28,9 +53,6 @@ public class ContentProviderUtils {
      * @param uri The Uri to query.
      * @author paulburke
      */
-
-    public static ContentResolver contentResolver;
-
     public static String getPathFromUri(final Context context, final Uri uri) {
         ContentResolver resolver = context.getContentResolver();
 

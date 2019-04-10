@@ -1,5 +1,6 @@
 package it.pgp.xfiles.service;
 
+import android.content.ContentResolver;
 import android.util.Log;
 
 import java.io.IOException;
@@ -18,6 +19,7 @@ import it.pgp.xfiles.roothelperclient.RootHelperClientUsingPathContent;
 public abstract class RootHelperClientTask extends BaseBackgroundTask {
 
     public RootHelperClientUsingPathContent rh;
+    public ContentResolver resolver; // for XRE direct share and compress from 3rd party providers
 
     public FileOpsErrorCodes result;
 

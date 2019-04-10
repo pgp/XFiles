@@ -36,7 +36,6 @@ public class NonInteractiveXFilesRemoteTransferTask extends RootHelperClientTask
     public ControlCodes action;
 
     private BasePathContent currentDir; // for refreshing dir listview (if not changed meanwhile) on operation end
-    private ContentResolver resolver;
 
     NonInteractiveXFilesRemoteTransferTask(Serializable params_) {
         super(params_);

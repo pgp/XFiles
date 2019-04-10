@@ -1,7 +1,9 @@
 package it.pgp.xfiles.roothelperclient;
 
+import android.content.ContentResolver;
 import android.net.LocalSocket;
 import android.net.LocalSocketAddress;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -22,7 +24,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import it.pgp.Native;
 import it.pgp.xfiles.BrowserItem;
+import it.pgp.xfiles.CopyListUris;
 import it.pgp.xfiles.CopyMoveListPathContent;
 import it.pgp.xfiles.MainActivity;
 import it.pgp.xfiles.enums.CopyMoveMode;
@@ -36,6 +40,7 @@ import it.pgp.xfiles.items.SingleStatsItem;
 import it.pgp.xfiles.roothelperclient.reqs.ListOfPathPairs_rq;
 import it.pgp.xfiles.roothelperclient.reqs.SinglePath_rq;
 import it.pgp.xfiles.roothelperclient.reqs.compress_rq;
+import it.pgp.xfiles.roothelperclient.reqs.compress_rq_options;
 import it.pgp.xfiles.roothelperclient.reqs.copylist_rq;
 import it.pgp.xfiles.roothelperclient.reqs.create_rq;
 import it.pgp.xfiles.roothelperclient.reqs.del_rq;
@@ -62,6 +67,7 @@ import it.pgp.xfiles.service.BaseBackgroundTask;
 import it.pgp.xfiles.service.SocketNames;
 import it.pgp.xfiles.service.visualization.ProgressIndicator;
 import it.pgp.xfiles.utils.ArchiveVMap;
+import it.pgp.xfiles.utils.ContentProviderUtils;
 import it.pgp.xfiles.utils.FileOperationHelperUsingPathContent;
 import it.pgp.xfiles.utils.GenericMRU;
 import it.pgp.xfiles.utils.Misc;
@@ -446,6 +452,132 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
         return new ArchiveSubDirWithContent(path,subpath,content);
     }
 
+    private int handleCompressProgressAfterConfOK(StreamsPair rs, final long total) throws IOException {
+        long last_progress = 0;
+        int ret = 0;
+        // receive progress (end progress is -1 as uint64)
+        for(;;) {
+            long progress = Misc.receiveTotalOrProgress(rs.i);
+            if (progress == EOF_ind) {
+                if (last_progress == total) {
+                    // OK
+                }
+                else {
+                    // Warning, last progress before termination value differs from total
+                }
+                break;
+            }
+            last_progress = progress;
+//            builder.setProgress((int) total, (int) progress,false);
+//            notifyManager.notify(NOTIF_ID, builder.build());
+            task.publishProgressWrapper((int)Math.round(progress*100.0/total));
+
+//            Log.e("setCompleted ","publishProgressWrapper progress:\t"+progress+"\ttotal: "+total);
+//            Log.e("setCompleted ","publishProgressWrapper round:\t"+Math.round(progress*100.0/total));
+        }
+
+        // receive 1-byte final OK or error response
+        ret = receiveBaseResponse(rs.i);
+        if (ret != 0) {
+            Log.e("setCompleted ","Received error code after complete: "+ret);
+        }
+        rs.close();
+        return ret;
+    }
+
+    private int handleCompressProgressAfterConfOK(StreamsPair rs, final long total, ContentResolver resolver, List<Uri> uris, int nativeUds) throws IOException {
+        long last_progress = 0;
+        int ret = 0;
+        // receive progress (end progress is -1 as uint64)
+        for(Uri uri : uris) {
+            // extract and sendfd
+            if(uri!=null) {
+                int fdToSend = resolver.openFileDescriptor(uri,"r").detachFd(); // will be closed internally by p7zip back-end in rh forked process
+                Native.sendDetachedFD(nativeUds,fdToSend);
+            }
+
+            long progress = Misc.receiveTotalOrProgress(rs.i);
+            if (progress == EOF_ind) {
+                if (last_progress == total) {
+                    // OK
+                }
+                else {
+                    // Warning, last progress before termination value differs from total
+                }
+                break;
+            }
+            last_progress = progress;
+//            builder.setProgress((int) total, (int) progress,false);
+//            notifyManager.notify(NOTIF_ID, builder.build());
+            task.publishProgressWrapper((int)Math.round(progress*100.0/total));
+
+//            Log.e("setCompleted ","publishProgressWrapper progress:\t"+progress+"\ttotal: "+total);
+//            Log.e("setCompleted ","publishProgressWrapper round:\t"+Math.round(progress*100.0/total));
+        }
+
+        // receive 1-byte final OK or error response
+        ret = receiveBaseResponse(rs.i);
+        if (ret != 0) {
+            Log.e("setCompleted ","Received error code after complete: "+ret);
+        }
+        rs.close();
+        return ret;
+    }
+
+    public int compressToArchiveFromFds(CopyListUris contentUris,
+                                        BasePathContent destArchive,
+                                        @Nullable Integer compressionLevel,
+                                        @Nullable Boolean encryptHeaders,
+                                        @Nullable Boolean solidMode,
+                                        @Nullable String password,
+                                        ContentResolver resolver) throws IOException {
+        if (destArchive.providerType!=ProviderType.LOCAL)
+            throw new RuntimeException("Unexpected path content type"); // abuse of exception
+
+        rs = getStreams();
+
+        // send request byte with flags
+        byte customizedRq = ControlCodes.ACTION_COMPRESS.getValue();
+        customizedRq ^= (7 << 5); // flags: 111
+        rs.o.write(customizedRq);
+
+        int nativeUds = ContentProviderUtils.getNativeDescriptor(((RootHelperStreams)rs).ls);
+
+        long total = 0;
+
+        // compute file stats in JNI and send them all
+        List<Uri> parsedUris = new ArrayList<>();
+        for (String uri_ : contentUris.contentUris) {
+            Uri uri = Uri.parse(uri_);
+            parsedUris.add(uri);
+            String filename = ContentProviderUtils.getName(resolver,uri);
+            int fd = resolver.openFileDescriptor(uri,"r").detachFd();
+            long fileSize = Native.sendfstat(nativeUds,fd,filename); // fd will be closed here after fstat
+            if (fileSize < 0) throw new IOException("Unable to fstat "+filename);
+            total += fileSize;
+        }
+        rs.o.write(new byte[]{0,0}); // EOL indication
+
+        Misc.sendStringWithLen(rs.o, destArchive.dir); // destArchive
+
+        new compress_rq_options(compressionLevel,encryptHeaders,solidMode).writecompress_rq_options(rs.o); // compress options
+
+        byte[] password_ = (password == null)?new byte[0]:password.getBytes();
+        rs.o.write(password_.length); // single byte
+        if (password_.length != 0)
+            rs.o.write(password_);
+
+        // OK response means archive init has been successful, and actual compression starts now, so start receiving progress
+        int ret = receiveBaseResponse(rs.i);
+        if (ret != 0) {
+            rs.close();
+            Log.e("setCompleted ","Received error code: "+ret);
+            return ret;
+        }
+
+        return handleCompressProgressAfterConfOK(rs,total,resolver,parsedUris,nativeUds);
+    }
+
     @Override
     public int compressToArchive(BasePathContent srcDirectory,
                                   BasePathContent destArchive,
@@ -480,39 +612,10 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
         }
 
         // receive total
-        long last_progress = 0;
         long total = Misc.receiveTotalOrProgress(rs.i);
-
 //        Log.e("setCompleted ","Received total size: "+total);
 
-        // receive progress (end progress is -1 as uint64)
-        for(;;) {
-            long progress = Misc.receiveTotalOrProgress(rs.i);
-            if (progress == EOF_ind) {
-                if (last_progress == total) {
-                    // OK
-                }
-                else {
-                    // Warning, last progress before termination value differs from total
-                }
-                break;
-            }
-            last_progress = progress;
-//            builder.setProgress((int) total, (int) progress,false);
-//            notifyManager.notify(NOTIF_ID, builder.build());
-            task.publishProgressWrapper((int)Math.round(progress*100.0/total));
-
-//            Log.e("setCompleted ","publishProgressWrapper progress:\t"+progress+"\ttotal: "+total);
-//            Log.e("setCompleted ","publishProgressWrapper round:\t"+Math.round(progress*100.0/total));
-        }
-
-        // receive 1-byte final OK or error response
-        ret = receiveBaseResponse(rs.i);
-        if (ret != 0) {
-            Log.e("setCompleted ","Received error code after complete: "+ret);
-        }
-        rs.close();
-        return ret;
+        return handleCompressProgressAfterConfOK(rs,total);
     }
 
     /*

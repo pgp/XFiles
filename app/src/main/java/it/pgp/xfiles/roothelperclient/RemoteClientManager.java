@@ -177,10 +177,7 @@ public class RemoteClientManager {
             customizedRq ^= (7 << 5); // flags: 111
 
             try {
-                FileDescriptor uds = client.ls.getFileDescriptor();
-                Field nativeField = uds.getClass().getDeclaredField("descriptor");
-                nativeField.setAccessible(true);
-                int nativeUds = (int)nativeField.get(uds);
+                int nativeUds = ContentProviderUtils.getNativeDescriptor(client.ls);
 
                 List<Uri> uris = new ArrayList<>();
                 List<String> names = new ArrayList<>();

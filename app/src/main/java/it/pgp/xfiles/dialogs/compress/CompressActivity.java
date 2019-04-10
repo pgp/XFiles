@@ -3,6 +3,7 @@ package it.pgp.xfiles.dialogs.compress;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
@@ -18,6 +19,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import it.pgp.xfiles.CopyListUris;
 import it.pgp.xfiles.EffectActivity;
 import it.pgp.xfiles.MainActivity;
 import it.pgp.xfiles.R;
@@ -57,9 +59,10 @@ public class CompressActivity extends EffectActivity implements FileSaveFragment
     RadioGroup archiveTypeSelector;
 
     List<String> selectedItems;
+    CopyListUris contentUris;
 
     private void populateSelectedItems(Intent intent) {
-        List<Uri> imageUris = IntentUtil.getShareSelectionFromIntent(getIntent());
+        List<Uri> imageUris = IntentUtil.getShareSelectionFromIntent(intent);
 
         if (imageUris == null) {
             Log.e(getClass().getName(), "both extras are null, assuming CompressActivity was started by MainActivity...");
@@ -86,10 +89,17 @@ public class CompressActivity extends EffectActivity implements FileSaveFragment
 
         standaloneMode = true;
 
-        Map.Entry<BasePathContent,List<String>> me = IntentUtil.getCommonAncestorAndItems(this,imageUris);
-        dirPath = me.getKey();
-        selectedItems = me.getValue();
-
+        try { // standard mode, deduce paths from uris
+            Map.Entry<BasePathContent,List<String>> me = IntentUtil.getCommonAncestorAndItems(this,imageUris);
+            dirPath = me.getKey();
+            selectedItems = me.getValue();
+        }
+        catch(Exception e) { // content provider mode, open fds from uris
+            Log.e("COMPRESS","Path extraction from uri failed, entering content provider mode...",e);
+            dirPath = new LocalPathContent(Environment.getExternalStorageDirectory().getAbsolutePath());
+            selectedItems = null;
+            contentUris = CopyListUris.getFromUriList(imageUris);
+        }
     }
 
     public void compress_ok(View unused) {
@@ -109,16 +119,27 @@ public class CompressActivity extends EffectActivity implements FileSaveFragment
         startIntent.setAction(BaseBackgroundService.START_ACTION);
         startIntent.putExtra(
                 "params",
-                new CompressParams(
-                        new LocalPathContent(srcFolder),
-                        new LocalPathContent(destArchive),
-                        compressionLevel.getProgress(),
-                        encryptHeaders.isChecked(),
-                        solidMode.isChecked(),
-                        outputArchivePassword.getText().toString(),
-                        selectedItems,
-                        standaloneMode
-                ));
+                contentUris==null?
+                        new CompressParams(
+                                new LocalPathContent(srcFolder),
+                                new LocalPathContent(destArchive),
+                                compressionLevel.getProgress(),
+                                encryptHeaders.isChecked(),
+                                solidMode.isChecked(),
+                                outputArchivePassword.getText().toString(),
+                                selectedItems,
+                                standaloneMode
+                        ):
+                        new CompressParams(
+                                contentUris,
+                                new LocalPathContent(destArchive),
+                                compressionLevel.getProgress(),
+                                encryptHeaders.isChecked(),
+                                solidMode.isChecked(),
+                                outputArchivePassword.getText().toString(),
+                                standaloneMode
+                        )
+        );
         startService(startIntent);
         finish();
     }

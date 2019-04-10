@@ -29,11 +29,7 @@ public class compress_rq extends PairOfPaths_rq {
                        @Nullable List<String> filenames) {
         super(fx, fy);
         requestType = ControlCodes.ACTION_COMPRESS;
-        compress_options = new compress_rq_options(
-                compressionLevel==null?(byte)9:(byte)compressionLevel.intValue(), // max 7z compression by default
-                (encryptHeaders==null|| !encryptHeaders)?(byte)0:(byte)1, // do not encrypt headers by default
-                (solidMode==null|| solidMode)?(byte)1:(byte)0 // solid by default
-        );
+        compress_options = new compress_rq_options(compressionLevel,encryptHeaders,solidMode);
 
         if (password == null) this.password = new byte[0];
         else this.password = password.getBytes();

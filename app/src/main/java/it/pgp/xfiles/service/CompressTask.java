@@ -45,7 +45,7 @@ public class CompressTask extends RootHelperClientTask {
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-
+        resolver = service.getApplicationContext().getContentResolver();
         try {
             currentDir = MainActivity.mainActivity.getCurrentDirCommander().getCurrentDirectoryPathname();
         }
@@ -55,31 +55,32 @@ public class CompressTask extends RootHelperClientTask {
     }
 
     @Override
-    protected Object doInBackground(Object[] params) {
+    protected Object doInBackground(Object[] unused) {
         if (rh == null) {
             result = FileOpsErrorCodes.ROOTHELPER_INIT_ERROR;
             return null;
         }
         try {
 
-//            Log.e(this.getClass().getName(),"Sleeping before executing...");
-//            try {
-//                for (int i=5;i>=0;i--) {
-//                    Log.e(this.getClass().getName(),""+i);
-//                    Thread.currentThread().sleep(1000);
-//                }
-//            } catch (InterruptedException ignored) {}
-
             rh.initProgressSupport(this);
 
-            int ret = rh.compressToArchive(
-                    this.params.srcDirectory,
-                    this.params.destArchive,
-                    this.params.compressionLevel,
-                    this.params.encryptHeaders,
-                    this.params.solidMode,
-                    this.params.password,
-                    this.params.filenames);
+            int ret = (params.uris==null)?
+                    rh.compressToArchive(
+                            params.srcDirectory,
+                            params.destArchive,
+                            params.compressionLevel,
+                            params.encryptHeaders,
+                            params.solidMode,
+                            params.password,
+                            params.filenames):
+                    rh.compressToArchiveFromFds(
+                            params.uris,
+                            params.destArchive,
+                            params.compressionLevel,
+                            params.encryptHeaders,
+                            params.solidMode,
+                            params.password,
+                            resolver);
             if (ret != 0) result = FileOpsErrorCodes.COMPRESS_ERROR;
         } catch (IOException e) {
             e.printStackTrace();
