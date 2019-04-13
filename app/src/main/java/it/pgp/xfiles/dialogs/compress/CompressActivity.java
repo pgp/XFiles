@@ -15,6 +15,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +32,7 @@ import it.pgp.xfiles.service.params.CompressParams;
 import it.pgp.xfiles.service.visualization.ProgressIndicator;
 import it.pgp.xfiles.utils.FileSaveFragment;
 import it.pgp.xfiles.utils.IntentUtil;
+import it.pgp.xfiles.utils.dircontent.GenericDirWithContent;
 import it.pgp.xfiles.utils.pathcontent.BasePathContent;
 import it.pgp.xfiles.utils.pathcontent.LocalPathContent;
 
@@ -93,13 +95,32 @@ public class CompressActivity extends EffectActivity implements FileSaveFragment
             Map.Entry<BasePathContent,List<String>> me = IntentUtil.getCommonAncestorAndItems(this,imageUris);
             dirPath = me.getKey();
             selectedItems = me.getValue();
+            return;
         }
-        catch(Exception e) { // content provider mode, open fds from uris
-            Log.e("COMPRESS","Path extraction from uri failed, entering content provider mode...",e);
-            dirPath = new LocalPathContent(Environment.getExternalStorageDirectory().getAbsolutePath());
-            selectedItems = null;
-            contentUris = CopyListUris.getFromUriList(imageUris);
+        catch(Exception e) { // content provider mode, extract paths from fds opened from uris,
+            Log.e("COMPRESS","Path extraction from uri failed, trying with /proc/self/fd trick...",e);
         }
+
+        try {
+            Map.Entry<BasePathContent,List<String>> me = IntentUtil.getCommonAncestorAndItems_mode2(this,imageUris);
+            dirPath = me.getKey();
+            selectedItems = me.getValue();
+
+            // try to access the resolved dirPath
+            GenericDirWithContent dircontent = MainActivity.getRootHelperClient().listDirectory(dirPath);
+            if (dircontent.errorCode != null) {
+                throw new IOException("Common path extraction from /proc/self/fd succeeded, but resolved path is not accessible (e.g. ext sdcard original mount point, and no root access)");
+            }
+        }
+        catch(IOException e) {
+            Log.e("COMPRESS","Path extraction from /proc/self/fd failed",e);
+            Toast.makeText(this,"Unable to extract paths from content uris, reverting to limited content provider mode",Toast.LENGTH_SHORT).show();
+        }
+
+        Log.e("COMPRESS", "entering limited content provider mode, only zip output format available");
+        dirPath = new LocalPathContent(Environment.getExternalStorageDirectory().getAbsolutePath());
+        selectedItems = null;
+        contentUris = CopyListUris.getFromUriList(imageUris);
     }
 
     public void compress_ok(View unused) {
@@ -141,7 +162,9 @@ public class CompressActivity extends EffectActivity implements FileSaveFragment
                         )
         );
         startService(startIntent);
-        finish();
+//        finish(); // Security Manager prevents using content provider's file objects after the activity has ended
+        if(contentUris==null) finish(); // back to MainActivity, or actually finishAffinity if in standalone mode, and not in limited content provider mode
+        else MainActivity.simulateHomePress(this); // else, pause activity instead of finishing it
     }
 
     @Override
@@ -152,6 +175,7 @@ public class CompressActivity extends EffectActivity implements FileSaveFragment
         setActivityIcon(R.drawable.xfiles_archive);
         setContentView(R.layout.compress_layout);
         MainActivity.mainActivityContext = getApplicationContext();
+        MainActivity.getRootHelperClient();
 
         Intent intent = getIntent();
 
@@ -190,34 +214,46 @@ public class CompressActivity extends EffectActivity implements FileSaveFragment
         selectOutputArchiveFilePath.setOnClickListener(this::openDestinationArchiveSelector);
 
         archiveTypeSelector = findViewById(R.id.archiveTypeRadioGroup);
-        archiveTypeSelector.setOnCheckedChangeListener((radioGroup, i) -> {
-            int idx = archiveTypeSelector.indexOfChild(
-                    archiveTypeSelector.findViewById(
-                            archiveTypeSelector.getCheckedRadioButtonId()));
-            switch (OutputArchiveType.values()[idx]) {
-                case _7Z:
-                    // enable all
-                    outputArchivePassword.setEnabled(true);
-                    compressionLevel.setEnabled(true);
-                    encryptHeaders.setEnabled(true);
-                    solidMode.setEnabled(true);
-                    break;
-                case ZIP:
-                    // no solid mode nor encrypt headers supported
-                    outputArchivePassword.setEnabled(true);
-                    compressionLevel.setEnabled(true);
-                    encryptHeaders.setEnabled(false);
-                    solidMode.setEnabled(false);
-                    break;
-                case TAR:
-                    // no option supported
-                    outputArchivePassword.setEnabled(false);
-                    compressionLevel.setEnabled(false);
-                    encryptHeaders.setEnabled(false);
-                    solidMode.setEnabled(false);
-                    break;
-            }
-        });
+        if (contentUris==null)
+            archiveTypeSelector.setOnCheckedChangeListener((radioGroup, i) -> {
+                int idx = archiveTypeSelector.indexOfChild(
+                        archiveTypeSelector.findViewById(
+                                archiveTypeSelector.getCheckedRadioButtonId()));
+                switch (OutputArchiveType.values()[idx]) {
+                    case _7Z:
+                        // enable all
+                        outputArchivePassword.setEnabled(true);
+                        compressionLevel.setEnabled(true);
+                        encryptHeaders.setEnabled(true);
+                        solidMode.setEnabled(true);
+                        break;
+                    case ZIP:
+                        // no solid mode nor encrypt headers supported
+                        outputArchivePassword.setEnabled(true);
+                        compressionLevel.setEnabled(true);
+                        encryptHeaders.setEnabled(false);
+                        solidMode.setEnabled(false);
+                        break;
+                    case TAR:
+                        // no option supported
+                        outputArchivePassword.setEnabled(false);
+                        compressionLevel.setEnabled(false);
+                        encryptHeaders.setEnabled(false);
+                        solidMode.setEnabled(false);
+                        break;
+                }
+            });
+
+        // set format to ZIP and disable all the settings widgets when in limited content provider mode
+        if(contentUris != null) {
+            archiveTypeSelector.check(R.id.zipRadioButton);
+            for (OutputArchiveType t : OutputArchiveType.values())
+                findViewById(t.getId()).setEnabled(false);
+            outputArchivePassword.setEnabled(false);
+            encryptHeaders.setEnabled(false);
+            compressionLevel.setEnabled(false);
+            solidMode.setEnabled(false);
+        }
 
     }
 

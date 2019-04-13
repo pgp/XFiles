@@ -193,15 +193,17 @@ public class RemoteClientManager {
                     totalSize += currentFileSize;
                 }
 
+                Log.e("XREProgress","Total size computed using content provider is "+totalSize);
+
                 client.o.write(customizedRq);
                 client.o.write(Misc.castUnsignedNumberToBytes(totalSize,8));
                 long totalSizeSoFar = 0;
 
-
                 for (int i=0;i<uris.size();i++) {
                     Log.e("XREProgress","Sending file info and descriptor for "+names.get(i));
+                    currentFileSize = sizes.get(i);
                     Misc.sendStringWithLen(client.o,destDir.dir+"/"+names.get(i));
-                    client.o.write(Misc.castUnsignedNumberToBytes(sizes.get(i),8));
+                    client.o.write(Misc.castUnsignedNumberToBytes(currentFileSize,8));
                     int fdToSend = contentResolver.openFileDescriptor(uris.get(i),"r").detachFd();
                     Native.sendDetachedFD(nativeUds,fdToSend);
 
@@ -272,7 +274,6 @@ public class RemoteClientManager {
                     else {
                         Log.e("XREProgress","Received progress or size");
                         if (hasReceivedSizeForCurrentFile) {
-                            Log.e("XREProgress","It's progress: "+tmp);
                             publishReceivedProgress(tmp,totalSizeSoFar,totalSize,currentFileSize);
                         }
                         else {

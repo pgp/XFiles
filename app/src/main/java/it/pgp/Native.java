@@ -19,4 +19,5 @@ public class Native {
     public static native int sendDetachedFD(int udsToSendFdOver, int fdToSend);
 
     public static native long sendfstat(int udsToSendStatOver, int fd, String filename_);
+    public static native String getPathFromFd(String fdNumAsString);
 }

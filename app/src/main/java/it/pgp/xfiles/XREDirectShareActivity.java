@@ -66,7 +66,9 @@ public class XREDirectShareActivity extends EffectActivity {
         startIntent.setAction(BaseBackgroundService.START_ACTION);
         startIntent.putExtra("params",new CopyMoveParams(filesToUpload,path));
         startService(startIntent);
-        finish();
+//        finish(); // Security Manager prevents using content provider's file objects after the activity has ended
+        if(filesToUpload instanceof CopyListUris) MainActivity.simulateHomePress(this); // pause activity instead of finishing it
+        else finish();
     }
 
     private boolean basicNonEmptyValidation(EditText... fields) {

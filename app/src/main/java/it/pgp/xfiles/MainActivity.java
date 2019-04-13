@@ -951,11 +951,11 @@ public class MainActivity extends EffectActivity {
         }
     }
 
-    public void simulateHomePress() {
+    public static void simulateHomePress(Activity activity) {
         Intent startMain = new Intent(Intent.ACTION_MAIN);
         startMain.addCategory(Intent.CATEGORY_HOME);
         startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(startMain);
+        activity.startActivity(startMain);
     }
 
     public void simulateRecentPress() {
@@ -1446,7 +1446,7 @@ public class MainActivity extends EffectActivity {
             case R.id.androidGoBackButton:
                 onBackPressed();break;
             case R.id.androidGoHomeButton:
-                simulateHomePress();break;
+                simulateHomePress(this);break;
             case R.id.androidGoRecentButton:
                 simulateRecentPress();break;
 
