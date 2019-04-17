@@ -102,6 +102,11 @@ public class CompressTask extends RootHelperClientTask {
                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         intent.putExtra("STARTDIR",params.destArchive.getParent().dir);
                         service.startActivity(intent);
+
+                        new Thread(()->{
+                            try {Thread.sleep(1000);} catch (InterruptedException ignored) {}
+                            MainActivity.showToastOnUI("Compress completed");
+                        }).start();
                     }
                     // activity closed while service active and not in standalone mode, nothing to refresh
                 }

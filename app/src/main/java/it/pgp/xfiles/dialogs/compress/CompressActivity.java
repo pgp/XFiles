@@ -214,45 +214,48 @@ public class CompressActivity extends EffectActivity implements FileSaveFragment
         selectOutputArchiveFilePath.setOnClickListener(this::openDestinationArchiveSelector);
 
         archiveTypeSelector = findViewById(R.id.archiveTypeRadioGroup);
-        if (contentUris==null)
-            archiveTypeSelector.setOnCheckedChangeListener((radioGroup, i) -> {
-                int idx = archiveTypeSelector.indexOfChild(
-                        archiveTypeSelector.findViewById(
-                                archiveTypeSelector.getCheckedRadioButtonId()));
-                switch (OutputArchiveType.values()[idx]) {
-                    case _7Z:
-                        // enable all
-                        outputArchivePassword.setEnabled(true);
-                        compressionLevel.setEnabled(true);
-                        encryptHeaders.setEnabled(true);
-                        solidMode.setEnabled(true);
-                        break;
-                    case ZIP:
-                        // no solid mode nor encrypt headers supported
-                        outputArchivePassword.setEnabled(true);
-                        compressionLevel.setEnabled(true);
-                        encryptHeaders.setEnabled(false);
-                        solidMode.setEnabled(false);
-                        break;
-                    case TAR:
-                        // no option supported
-                        outputArchivePassword.setEnabled(false);
-                        compressionLevel.setEnabled(false);
-                        encryptHeaders.setEnabled(false);
-                        solidMode.setEnabled(false);
-                        break;
-                }
-            });
+        archiveTypeSelector.setOnCheckedChangeListener((radioGroup, i) -> {
+            int idx = archiveTypeSelector.indexOfChild(
+                    archiveTypeSelector.findViewById(
+                            archiveTypeSelector.getCheckedRadioButtonId()));
+            switch (OutputArchiveType.values()[idx]) {
+                case _7Z:
+                    // enable all
+                    outputArchivePassword.setEnabled(true);
+                    compressionLevel.setEnabled(true);
+                    encryptHeaders.setEnabled(true);
+                    solidMode.setEnabled(true);
+                    break;
+                case ZIP:
+                    // no solid mode nor encrypt headers supported
+                    outputArchivePassword.setEnabled(true);
+                    compressionLevel.setEnabled(true);
+                    encryptHeaders.setEnabled(false);
+                    solidMode.setEnabled(false);
+                    break;
+                case TAR:
+                    // no option supported
+                    outputArchivePassword.setEnabled(false);
+                    compressionLevel.setEnabled(false);
+                    encryptHeaders.setEnabled(false);
+                    solidMode.setEnabled(false);
+                    break;
+            }
+        });
 
-        // set format to ZIP and disable all the settings widgets when in limited content provider mode
+        // disable ZIP format (Update error in roothelper)
         if(contentUris != null) {
-            archiveTypeSelector.check(R.id.zipRadioButton);
-            for (OutputArchiveType t : OutputArchiveType.values())
-                findViewById(t.getId()).setEnabled(false);
-            outputArchivePassword.setEnabled(false);
-            encryptHeaders.setEnabled(false);
-            compressionLevel.setEnabled(false);
-            solidMode.setEnabled(false);
+            archiveTypeSelector.check(R.id._7zRadioButton);
+            findViewById(OutputArchiveType.ZIP.getId()).setEnabled(false);
+
+        // LEGACY, java zip backend, set format to ZIP and disable all the settings widgets when in limited content provider mode
+//            for (OutputArchiveType t : OutputArchiveType.values())
+//                if(t != OutputArchiveType.ZIP)
+//                    findViewById(t.getId()).setEnabled(false);
+//            outputArchivePassword.setEnabled(false);
+//            encryptHeaders.setEnabled(false);
+//            compressionLevel.setEnabled(false);
+//            solidMode.setEnabled(false);
         }
 
     }
