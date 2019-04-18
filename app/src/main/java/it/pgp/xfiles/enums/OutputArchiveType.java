@@ -10,11 +10,11 @@ import it.pgp.xfiles.R;
 public enum OutputArchiveType {
     // no need to use explicit numberings, ordinal() is enough
     _7Z("7z", R.id._7zRadioButton),
-//    XZ("xz"), // need to add single-file check
     ZIP("zip", R.id.zipRadioButton),
-//    GZ("gz"), // need to add single-file check
-//    BZ2("bz2"), // need to add single-file check
-    TAR("tar", R.id.tarRadioButton) // with offset
+    TAR("tar", R.id.tarRadioButton), // with offset
+    GZ("gz", R.id.gzRadioButton),
+    BZ2("bz2", R.id.bz2RadioButton),
+    XZ("xz", R.id.xzRadioButton)
     ;
 
     final String s;

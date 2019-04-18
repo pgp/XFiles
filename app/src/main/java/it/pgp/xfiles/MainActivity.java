@@ -466,7 +466,7 @@ public class MainActivity extends EffectActivity {
 //                compressDialog.show();
                 // with CompressActivity
                 Intent i = new Intent(MainActivity.this,CompressActivity.class);
-                i.putExtra("filename", b.filename);
+                i.putExtra("filename", b);
                 startActivity(i);
                 return true;
             case R.id.itemExtract:

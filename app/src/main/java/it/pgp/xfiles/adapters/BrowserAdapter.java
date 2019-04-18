@@ -135,6 +135,17 @@ public class BrowserAdapter extends ArrayAdapter<BrowserItem> {
 //        return selectedItems;
 //    }
 
+    public List<BrowserItem> getSelectedItems() {
+        List<BrowserItem> selectedItems = new ArrayList<>();
+        for(int i=0; i<getCount() ; i++) {
+            BrowserItem b = getItem(i);
+            if (b.isChecked()) {
+                selectedItems.add(b);
+            }
+        }
+        return selectedItems;
+    }
+
     public List<String> getSelectedItemsAsNameOnlyStrings() {
         List<String> selectedItems = new ArrayList<>();
         for(int i=0; i<getCount() ; i++) {

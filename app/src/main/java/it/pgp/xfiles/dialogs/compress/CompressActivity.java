@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import it.pgp.xfiles.BrowserItem;
 import it.pgp.xfiles.CopyListUris;
 import it.pgp.xfiles.EffectActivity;
 import it.pgp.xfiles.MainActivity;
@@ -45,7 +46,7 @@ public class CompressActivity extends EffectActivity implements FileSaveFragment
 
     boolean standaloneMode = false; // true if not started by MainActivity
 
-    @Nullable String filename;
+    @Nullable BrowserItem filename;
 
     BasePathContent dirPath; // source dir path
 
@@ -63,6 +64,9 @@ public class CompressActivity extends EffectActivity implements FileSaveFragment
     List<String> selectedItems;
     CopyListUris contentUris;
 
+
+    boolean streamingArchivesEnabled = false;
+
     private void populateSelectedItems(Intent intent) {
         List<Uri> imageUris = IntentUtil.getShareSelectionFromIntent(intent);
 
@@ -74,8 +78,14 @@ public class CompressActivity extends EffectActivity implements FileSaveFragment
 
             // compress one single item, only if no other item is selected
             if (selectedItems.size()==0 && filename != null)
-                selectedItems = Collections.singletonList(filename);
+                selectedItems = Collections.singletonList(filename.getFilename());
 
+            // enable flag for streaming archive support only if single selection and the item is a file
+            if(selectedItems.size() == 1) {
+                List<BrowserItem> x = MainActivity.mainActivity.getCurrentBrowserAdapter().getSelectedItems();
+                if((x.size()!=0 && !x.get(0).isDirectory)|| (x.size()==0 && !filename.isDirectory))
+                    streamingArchivesEnabled = true;
+            }
 
             ///////////////
             dirPath = MainActivity.mainActivity.getCurrentDirCommander().getCurrentDirectoryPathname();
@@ -121,6 +131,10 @@ public class CompressActivity extends EffectActivity implements FileSaveFragment
         dirPath = new LocalPathContent(Environment.getExternalStorageDirectory().getAbsolutePath());
         selectedItems = null;
         contentUris = CopyListUris.getFromUriList(imageUris);
+
+        // here, it's assumed 3rd party apps won't send URIs of directories via content provider
+        if ((selectedItems!=null && selectedItems.size()==1) || (contentUris!=null && contentUris.contentUris.size()==1))
+            streamingArchivesEnabled = true;
     }
 
     public void compress_ok(View unused) {
@@ -179,7 +193,7 @@ public class CompressActivity extends EffectActivity implements FileSaveFragment
 
         Intent intent = getIntent();
 
-        filename = intent.getStringExtra("filename"); // single file to be compressed, if null use adapter selection
+        filename = (BrowserItem)intent.getSerializableExtra("filename"); // single file to be compressed, if null use adapter selection
 
         populateSelectedItems(intent);
 
@@ -240,6 +254,14 @@ public class CompressActivity extends EffectActivity implements FileSaveFragment
                     encryptHeaders.setEnabled(false);
                     solidMode.setEnabled(false);
                     break;
+                case GZ:
+                case BZ2:
+                case XZ:
+                    outputArchivePassword.setEnabled(false);
+                    compressionLevel.setEnabled(true);
+                    encryptHeaders.setEnabled(false);
+                    solidMode.setEnabled(false);
+                    break;
             }
         });
 
@@ -256,6 +278,13 @@ public class CompressActivity extends EffectActivity implements FileSaveFragment
 //            encryptHeaders.setEnabled(false);
 //            compressionLevel.setEnabled(false);
 //            solidMode.setEnabled(false);
+        }
+
+        // disable streaming archive formats for multiple selection (lazy fail if single directory is passed)
+        if(!streamingArchivesEnabled) {
+            findViewById(OutputArchiveType.GZ.getId()).setEnabled(false);
+            findViewById(OutputArchiveType.BZ2.getId()).setEnabled(false);
+            findViewById(OutputArchiveType.XZ.getId()).setEnabled(false);
         }
 
     }

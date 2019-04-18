@@ -55,6 +55,24 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="TAR" />
+
+        <RadioButton
+            android:id="@+id/gzRadioButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="GZ" />
+
+        <RadioButton
+            android:id="@+id/bz2RadioButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="BZ2" />
+
+        <RadioButton
+            android:id="@+id/xzRadioButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="XZ" />
     </RadioGroup>
 
     <LinearLayout
