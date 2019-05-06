@@ -45,10 +45,13 @@ public enum ControlCodes {
 
     ACTION_LINK((byte)0x17),
 
+    ACTION_HTTPS_URL_DOWNLOAD((byte)0x18),
+
 //    ACTION_CANCEL((byte)0x1E),
     ACTION_EXIT((byte)0x1F),
 
     // responses (full byte)
+    RESPONSE_HTTPS_END_OF_REDIRECTS((byte)0x11),
     RESPONSE_OK((byte)0x00),
     RESPONSE_ERROR((byte)0xFF);
 

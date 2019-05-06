@@ -39,6 +39,7 @@ import it.pgp.xfiles.enums.FileMode;
 import it.pgp.xfiles.enums.FileOpsErrorCodes;
 import it.pgp.xfiles.enums.ForegroundServiceType;
 import it.pgp.xfiles.enums.ProviderType;
+import it.pgp.xfiles.io.NetworkBufferedChunk;
 import it.pgp.xfiles.items.FileCreationAdvancedOptions;
 import it.pgp.xfiles.items.SingleStatsItem;
 import it.pgp.xfiles.roothelperclient.reqs.ListOfPathPairs_rq;
@@ -1318,8 +1319,7 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
     public int killRHProcess(long pid, SocketNames name) {
         Log.e("RHClient","kill invoked on pid "+pid);
         try (StreamsPair rs = getStreams()) {
-            byte end = ControlCodes.ACTION_KILL.getValue();
-            rs.o.write(end);
+            rs.o.write(ControlCodes.ACTION_KILL.getValue());
             rs.o.write(Misc.castUnsignedNumberToBytes(pid,4)); // PID
             rs.o.write(Misc.castUnsignedNumberToBytes(2,4)); // SIGNUM (SIGINT = 2)
             return receiveBaseResponse(rs.i);
@@ -1327,6 +1327,48 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
         catch (IOException e) {
             e.printStackTrace();
             return -1;
+        }
+    }
+
+    // Using RH's internal HTTPS client, fileLength
+    public void downloadHttpsUrl(String url, int port, String destPath, String targetFilename) throws IOException {
+        try(StreamsPair rs = getStreams()) {
+            try (NetworkBufferedChunk nbf = new NetworkBufferedChunk(rs.o)) { // send a single packet instead of multiple ones
+                nbf.write(ControlCodes.ACTION_HTTPS_URL_DOWNLOAD.getValue());
+                Misc.sendStringWithLen(nbf,url);
+                nbf.write(Misc.castUnsignedNumberToBytes(port,2));
+                Misc.sendStringWithLen(nbf,destPath);
+                Misc.sendStringWithLen(nbf,targetFilename);
+            }
+
+            for(;;) {
+                byte resp = rs.i.readByte();
+                if (resp != ControlCodes.RESPONSE_OK.getValue()) {
+                    if (resp == ControlCodes.RESPONSE_HTTPS_END_OF_REDIRECTS.getValue()) {
+                        Log.e("RHHttpsClient","End of redirects");
+                        break;
+                    }
+                    byte[] errno_ = new byte[4];
+                    rs.i.readFully(errno_);
+                    int errno = (int) Misc.castBytesToUnsignedNumber(errno_,4);
+                    Log.e("RHHttpsClient", "Error returned from roothelper server: " + errno);
+                    return;
+                }
+                byte[] tlsSessionHash = new byte[64];
+                rs.i.readFully(tlsSessionHash);
+                Log.e("RHHttpsClient","Client TLS session shared secret hash: "+Misc.toHexString(tlsSessionHash));
+            }
+
+            long downloadSize = Misc.receiveTotalOrProgress(rs.i);
+            Log.e("RHHttpsClient","Received download size is: "+downloadSize);
+
+            for(;;) {
+                long progress = Misc.receiveTotalOrProgress(rs.i);
+                if (progress == EOF_ind) break;
+                if (downloadSize > 0)
+                    task.publishProgressWrapper((int) (progress * 100 / downloadSize));
+            }
+            Log.e("RHHttpsClient","Download completed");
         }
     }
 
