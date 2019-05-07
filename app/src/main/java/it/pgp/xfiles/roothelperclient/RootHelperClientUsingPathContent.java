@@ -4,7 +4,6 @@ import android.content.ContentResolver;
 import android.net.LocalSocket;
 import android.net.LocalSocketAddress;
 import android.net.Uri;
-import android.os.ParcelFileDescriptor;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -12,7 +11,6 @@ import android.util.Log;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -25,8 +23,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 import it.pgp.Native;
 import it.pgp.xfiles.BrowserItem;
@@ -39,7 +35,7 @@ import it.pgp.xfiles.enums.FileMode;
 import it.pgp.xfiles.enums.FileOpsErrorCodes;
 import it.pgp.xfiles.enums.ForegroundServiceType;
 import it.pgp.xfiles.enums.ProviderType;
-import it.pgp.xfiles.io.NetworkBufferedChunk;
+import it.pgp.xfiles.io.FlushingBufferedOutputStream;
 import it.pgp.xfiles.items.FileCreationAdvancedOptions;
 import it.pgp.xfiles.items.SingleStatsItem;
 import it.pgp.xfiles.roothelperclient.reqs.ListOfPathPairs_rq;
@@ -898,6 +894,9 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
             case LOCAL_WITHIN_ARCHIVE:
                 // TODO check existence in VMap
                 return ret;
+            case XFILES_REMOTE:
+                // FIXME add exist request for XRE remote checksum request on single file
+                return ret;
             default:
                 throw new RuntimeException("Unsupported BasePathContent subtype in roothelperclient exists call");
         }
@@ -1333,7 +1332,7 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
     // Using RH's internal HTTPS client, fileLength
     public void downloadHttpsUrl(String url, int port, String destPath, String targetFilename) throws IOException {
         try(StreamsPair rs = getStreams()) {
-            try (NetworkBufferedChunk nbf = new NetworkBufferedChunk(rs.o)) { // send a single packet instead of multiple ones
+            try (FlushingBufferedOutputStream nbf = new FlushingBufferedOutputStream(rs.o)) { // send a single packet instead of multiple ones
                 nbf.write(ControlCodes.ACTION_HTTPS_URL_DOWNLOAD.getValue());
                 Misc.sendStringWithLen(nbf,url);
                 nbf.write(Misc.castUnsignedNumberToBytes(port,2));
@@ -1354,7 +1353,7 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
                     Log.e("RHHttpsClient", "Error returned from roothelper server: " + errno);
                     return;
                 }
-                byte[] tlsSessionHash = new byte[64];
+                byte[] tlsSessionHash = new byte[32];
                 rs.i.readFully(tlsSessionHash);
                 Log.e("RHHttpsClient","Client TLS session shared secret hash: "+Misc.toHexString(tlsSessionHash));
             }

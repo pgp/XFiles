@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 
+import it.pgp.xfiles.io.FlushingBufferedOutputStream;
 import it.pgp.xfiles.roothelperclient.ControlCodes;
 import it.pgp.xfiles.roothelperclient.RelativeExtractEntries;
 import it.pgp.xfiles.utils.Misc;
@@ -37,27 +38,23 @@ public class extract_rq extends PairOfPaths_rq {
     @Override
     public void write(OutputStream outputStream) throws IOException {
         super.write(outputStream);
-
-        if (password == null) {
-            outputStream.write(new byte[]{0}); // password length 0, 1 byte
-        }
-        else {
-            byte[] password_len_bytes = Misc.castUnsignedNumberToBytes(password.length,1);
-            outputStream.write(password_len_bytes);
-            outputStream.write(password);
-        }
-
-        if (entries == null) {
-            outputStream.write(new byte[]{0,0,0,0}); // 0-length as integer, 4 byte
-        }
-        else {
-            byte[] intVal = Misc.castUnsignedNumberToBytes(entries.entries.size(),4);
-            outputStream.write(intVal);
-            for (Integer entry : entries.entries) {
-                intVal = Misc.castUnsignedNumberToBytes(entry,4);
-                outputStream.write(intVal);
+        try(FlushingBufferedOutputStream nbf = new FlushingBufferedOutputStream(outputStream)) {
+            if (password == null) {
+                nbf.write(new byte[]{0}); // password length 0, 1 byte
             }
-            outputStream.write(Misc.castUnsignedNumberToBytes(entries.stripPathLen,4));
+            else {
+                nbf.write(Misc.castUnsignedNumberToBytes(password.length,1));
+                nbf.write(password);
+            }
+            if (entries == null) {
+                nbf.write(new byte[]{0,0,0,0}); // 0-length as integer, 4 byte
+            }
+            else {
+                nbf.write(Misc.castUnsignedNumberToBytes(entries.entries.size(),4));
+                for (Integer entry : entries.entries)
+                    nbf.write(Misc.castUnsignedNumberToBytes(entry,4));
+                nbf.write(Misc.castUnsignedNumberToBytes(entries.stripPathLen,4));
+            }
         }
     }
 }

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import it.pgp.xfiles.enums.FileMode;
+import it.pgp.xfiles.io.FlushingBufferedOutputStream;
 import it.pgp.xfiles.items.FileCreationAdvancedOptions;
 import it.pgp.xfiles.roothelperclient.ControlCodes;
 import it.pgp.xfiles.utils.Misc;
@@ -43,21 +44,15 @@ public class create_rq extends SinglePath_rq {
 
     @Override
     public void write(OutputStream outputStream) throws IOException {
-        byte[] tmp;
-        tmp = Misc.castUnsignedNumberToBytes(this.pathname_len,2);
-
-        // write request byte
-        outputStream.write(getRequestByteWithFlags());
-
-        // write len and field
-        outputStream.write(tmp);
-        outputStream.write(this.pathname);
-
-        // write mode
-        tmp = Misc.castUnsignedNumberToBytes(fileMode.getDefaultMask(),4);
-        outputStream.write(tmp);
-
-        if(fileOptions != null)
-            outputStream.write(fileOptions.toRootHelperRequestOptions());
+        try(FlushingBufferedOutputStream nbf = new FlushingBufferedOutputStream(outputStream)) {
+            // write request byte
+            nbf.write(getRequestByteWithFlags());
+            // write len and field
+            nbf.write(Misc.castUnsignedNumberToBytes(this.pathname_len,2));
+            nbf.write(this.pathname);
+            // write mode
+            nbf.write(Misc.castUnsignedNumberToBytes(fileMode.getDefaultMask(),4));
+            if(fileOptions != null) nbf.write(fileOptions.toRootHelperRequestOptions());
+        }
     }
 }

@@ -493,7 +493,7 @@ public class MainActivity extends EffectActivity {
                 }
                 b = getCurrentBrowserAdapter().getItem(info.position);
                 path = path.concat(b.filename);
-                if (currentHelper.isDir(path)) { // TODO to be tested
+                if (b.isDirectory) {
                     Toast.makeText(this, "File is a directory", Toast.LENGTH_SHORT).show();
                     return true;
                 }

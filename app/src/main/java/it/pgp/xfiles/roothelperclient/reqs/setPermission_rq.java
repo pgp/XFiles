@@ -3,6 +3,7 @@ package it.pgp.xfiles.roothelperclient.reqs;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import it.pgp.xfiles.io.FlushingBufferedOutputStream;
 import it.pgp.xfiles.utils.Misc;
 
 /**
@@ -19,23 +20,21 @@ public class setPermission_rq extends setAttributes_rq {
 
     @Override
     public void write(OutputStream outputStream) throws IOException {
-        additionalByte = SubRequest.SET_PERMISSIONS.ordinal() << setAttributes_rq.bitOffsetForSubrequest;
+        try(FlushingBufferedOutputStream nbf = new FlushingBufferedOutputStream(outputStream)) {
+            additionalByte = SubRequest.SET_PERMISSIONS.ordinal() << setAttributes_rq.bitOffsetForSubrequest;
 
-        byte[] tmp;
-        tmp = Misc.castUnsignedNumberToBytes(this.pathname_len,2);
+            // write request byte
+            nbf.write(requestType.getValue());
 
-        // write request byte
-        outputStream.write(requestType.getValue());
+            // write additional byte
+            nbf.write(additionalByte); // writes only LSB 8 bits of integer, as expected
 
-        // write additional byte
-        outputStream.write(additionalByte); // writes only LSB 8 bits of integer, as expected
+            // write len and filename
+            nbf.write(Misc.castUnsignedNumberToBytes(pathname_len,2));
+            nbf.write(pathname);
 
-        // write len and filename
-        outputStream.write(tmp);
-        outputStream.write(this.pathname);
-
-        // write permission
-        tmp = Misc.castUnsignedNumberToBytes(permissions,4);
-        outputStream.write(tmp);
+            // write permission
+            nbf.write(Misc.castUnsignedNumberToBytes(permissions,4));
+        }
     }
 }

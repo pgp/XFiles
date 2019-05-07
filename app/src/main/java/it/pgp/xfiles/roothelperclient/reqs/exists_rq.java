@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.BitSet;
 
+import it.pgp.xfiles.io.FlushingBufferedOutputStream;
 import it.pgp.xfiles.roothelperclient.ControlCodes;
 import it.pgp.xfiles.utils.Misc;
 
@@ -12,7 +13,6 @@ import it.pgp.xfiles.utils.Misc;
  */
 
 public class exists_rq extends SinglePath_rq {
-    // TODO to be tested
     public BitSet flags;
     public exists_rq(Object pathname, boolean exists, boolean isFile, boolean isDir) {
         super(pathname);
@@ -36,13 +36,11 @@ public class exists_rq extends SinglePath_rq {
 
     @Override
     public void write(OutputStream outputStream) throws IOException {
-        byte[] pathname_len_bytes;
-        pathname_len_bytes = Misc.castUnsignedNumberToBytes(this.pathname_len,2);
-
-        outputStream.write(getRequestByteWithFlags());
-
-        // write len and field
-        outputStream.write(pathname_len_bytes);
-        outputStream.write(this.pathname);
+        try(FlushingBufferedOutputStream nbf = new FlushingBufferedOutputStream(outputStream)) {
+            nbf.write(getRequestByteWithFlags());
+            // write len and field
+            nbf.write(Misc.castUnsignedNumberToBytes(this.pathname_len,2));
+            nbf.write(this.pathname);
+        }
     }
 }

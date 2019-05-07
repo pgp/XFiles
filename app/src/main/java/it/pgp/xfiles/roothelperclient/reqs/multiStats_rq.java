@@ -6,6 +6,7 @@ import java.nio.charset.Charset;
 import java.util.BitSet;
 import java.util.List;
 
+import it.pgp.xfiles.io.FlushingBufferedOutputStream;
 import it.pgp.xfiles.roothelperclient.ControlCodes;
 import it.pgp.xfiles.utils.Misc;
 
@@ -29,25 +30,27 @@ public class multiStats_rq {
     }
 
     public void write(OutputStream outputStream) throws IOException {
-        byte[] entry,entryLen;
-        // entry = castUnsignedNumberToBytes(this.pathname_len,2);
+        try(FlushingBufferedOutputStream nbf = new FlushingBufferedOutputStream(outputStream)) {
+            byte[] entry,entryLen;
+            // entry = castUnsignedNumberToBytes(this.pathname_len,2);
 
-        // write request byte (customized with flags)
-        byte rq = requestType.getValue();
-        // customize with flag bits
-        for (int i=0;i<flags_bit_length;i++) {
-            rq ^= ((flags.get(i)?1:0) << (i+rq_bit_length));
-        }
-        outputStream.write(rq);
+            // write request byte (customized with flags)
+            byte rq = requestType.getValue();
+            // customize with flag bits
+            for (int i=0;i<flags_bit_length;i++) {
+                rq ^= ((flags.get(i)?1:0) << (i+rq_bit_length));
+            }
+            nbf.write(rq);
 
-        for (String pathname : pathnames) {
-            // write len and field
-            entry = pathname.getBytes(UTF8);
-            entryLen = Misc.castUnsignedNumberToBytes(entry.length,2);
-            outputStream.write(entryLen);
-            outputStream.write(entry);
+            for (String pathname : pathnames) {
+                // write len and field
+                entry = pathname.getBytes(UTF8);
+                entryLen = Misc.castUnsignedNumberToBytes(entry.length,2);
+                nbf.write(entryLen);
+                nbf.write(entry);
+            }
+            // list termination (length 0)
+            nbf.write(new byte[2]);
         }
-        // list termination (length 0)
-        outputStream.write(new byte[2]);
     }
 }

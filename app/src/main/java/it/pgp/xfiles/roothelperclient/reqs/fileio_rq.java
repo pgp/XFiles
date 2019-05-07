@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import it.pgp.xfiles.enums.FileIOMode;
+import it.pgp.xfiles.io.FlushingBufferedOutputStream;
 import it.pgp.xfiles.roothelperclient.ControlCodes;
 import it.pgp.xfiles.utils.Misc;
 
@@ -30,13 +31,11 @@ public class fileio_rq extends SinglePath_rq {
 
     @Override
     public void write(OutputStream outputStream) throws IOException {
-        byte[] tmp;
-        tmp = Misc.castUnsignedNumberToBytes(this.pathname_len,2);
-
-        outputStream.write(getRequestByteWithFlags());
-
-        // write len and field
-        outputStream.write(tmp);
-        outputStream.write(this.pathname);
+        try(FlushingBufferedOutputStream nbf = new FlushingBufferedOutputStream(outputStream)) {
+            nbf.write(getRequestByteWithFlags());
+            // write len and field
+            nbf.write(Misc.castUnsignedNumberToBytes(this.pathname_len,2));
+            nbf.write(this.pathname);
+        }
     }
 }

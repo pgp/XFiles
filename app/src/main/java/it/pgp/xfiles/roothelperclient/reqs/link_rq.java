@@ -3,6 +3,7 @@ package it.pgp.xfiles.roothelperclient.reqs;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import it.pgp.xfiles.io.FlushingBufferedOutputStream;
 import it.pgp.xfiles.roothelperclient.ControlCodes;
 import it.pgp.xfiles.utils.Misc;
 
@@ -27,16 +28,13 @@ public class link_rq extends PairOfPaths_rq {
 
     @Override
     public void write(OutputStream outputStream) throws IOException {
-        byte[] tmpx,tmpy;
-        tmpx = Misc.castUnsignedNumberToBytes(this.lx,2);
-        tmpy = Misc.castUnsignedNumberToBytes(this.ly,2);
-
-        outputStream.write(getRequestByteWithFlags());
-
-        // write lengths and fields
-        outputStream.write(tmpx);
-        outputStream.write(tmpy);
-        outputStream.write(fx);
-        outputStream.write(fy);
+        try(FlushingBufferedOutputStream nbf = new FlushingBufferedOutputStream(outputStream)) {
+            nbf.write(getRequestByteWithFlags());
+            // write lengths and fields
+            nbf.write(Misc.castUnsignedNumberToBytes(lx,2));
+            nbf.write(Misc.castUnsignedNumberToBytes(ly,2));
+            nbf.write(fx);
+            nbf.write(fy);
+        }
     }
 }

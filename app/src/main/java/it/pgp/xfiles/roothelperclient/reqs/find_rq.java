@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import it.pgp.xfiles.io.FlushingBufferedOutputStream;
 import it.pgp.xfiles.roothelperclient.ControlCodes;
 import it.pgp.xfiles.utils.Misc;
 
@@ -113,21 +114,19 @@ public class find_rq {
     }
 
     public void writefind_rq(OutputStream outputStream) throws IOException {
-        byte rq = requestType.getValue();
-        rq ^= (flagBits.getFlagBits() << (rq_bit_length));
-        outputStream.write(rq);
-        if (flagBits.cancelCurrentSearch) return;
-        outputStream.write(searchBits.getSearchBits());
+        try(FlushingBufferedOutputStream nbf = new FlushingBufferedOutputStream(outputStream)) {
+            byte rq = requestType.getValue();
+            rq ^= (flagBits.getFlagBits() << (rq_bit_length));
+            nbf.write(rq);
+            if (flagBits.cancelCurrentSearch) return;
+            nbf.write(searchBits.getSearchBits());
 
-        byte[] tmp;
-        tmp = Misc.castUnsignedNumberToBytes(basepath.length,2);
-        outputStream.write(tmp);
-        outputStream.write(basepath);
-        tmp = Misc.castUnsignedNumberToBytes(filenamePattern.length,2);
-        outputStream.write(tmp);
-        if (filenamePattern.length!=0) outputStream.write(filenamePattern);
-        tmp = Misc.castUnsignedNumberToBytes(contentPattern.length,2);
-        outputStream.write(tmp);
-        if (contentPattern.length!=0) outputStream.write(contentPattern);
+            nbf.write(Misc.castUnsignedNumberToBytes(basepath.length,2));
+            nbf.write(basepath);
+            nbf.write(Misc.castUnsignedNumberToBytes(filenamePattern.length,2));
+            if (filenamePattern.length!=0) nbf.write(filenamePattern);
+            nbf.write(Misc.castUnsignedNumberToBytes(contentPattern.length,2));
+            if (contentPattern.length!=0) nbf.write(contentPattern);
+        }
     }
 }

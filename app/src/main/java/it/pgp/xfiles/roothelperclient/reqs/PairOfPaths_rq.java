@@ -6,6 +6,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.Charset;
 
+import it.pgp.xfiles.io.FlushingBufferedOutputStream;
 import it.pgp.xfiles.roothelperclient.ControlCodes;
 import it.pgp.xfiles.utils.Misc;
 
@@ -46,18 +47,14 @@ public abstract class PairOfPaths_rq {
     }
 
     public void write(OutputStream outputStream) throws IOException {
-        byte[] tmpx,tmpy;
-        tmpx = Misc.castUnsignedNumberToBytes(this.lx,2);
-        tmpy = Misc.castUnsignedNumberToBytes(this.ly,2);
-
-
-        // write control byte
-        outputStream.write(requestType.getValue());
-
-        // write lengths and fields
-        outputStream.write(tmpx);
-        outputStream.write(tmpy);
-        outputStream.write(fx);
-        outputStream.write(fy);
+        try(FlushingBufferedOutputStream nbf = new FlushingBufferedOutputStream(outputStream)) {
+            // write control byte
+            nbf.write(requestType.getValue());
+            // write lengths and fields
+            nbf.write(Misc.castUnsignedNumberToBytes(lx,2));
+            nbf.write(Misc.castUnsignedNumberToBytes(ly,2));
+            nbf.write(fx);
+            nbf.write(fy);
+        }
     }
 }

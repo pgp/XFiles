@@ -7,6 +7,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import it.pgp.xfiles.io.FlushingBufferedOutputStream;
 import it.pgp.xfiles.roothelperclient.ControlCodes;
 import it.pgp.xfiles.utils.Misc;
 
@@ -43,22 +44,23 @@ public class compress_rq extends PairOfPaths_rq {
     @Override
     public void write(OutputStream outputStream) throws IOException {
         super.write(outputStream);
+        try(FlushingBufferedOutputStream nbf = new FlushingBufferedOutputStream(outputStream)) {
+            compress_options.writecompress_rq_options(nbf);
 
-        compress_options.writecompress_rq_options(outputStream);
+            nbf.write(password.length); // single byte (8 least significant bits of the 32-bit integer)
+            if (password.length != 0)
+                nbf.write(password);
 
-        outputStream.write(password.length); // single byte (8 least significant bits of the 32-bit integer)
-        if (password.length != 0)
-            outputStream.write(password);
-
-        if (filenames == null) { // filenames not initialized, compress entire source directory content
-            outputStream.write(new byte[]{0,0,0,0}); // n. of filenames is 0
-        }
-        else {
-            // send n. of filenames
-            outputStream.write(Misc.castUnsignedNumberToBytes(filenames.size(),4)); // send as 4-byte integer
-            for (byte[] x : filenames) {
-                outputStream.write(Misc.castUnsignedNumberToBytes(x.length,2));
-                outputStream.write(x);
+            if (filenames == null) { // filenames not initialized, compress entire source directory content
+                nbf.write(new byte[]{0,0,0,0}); // n. of filenames is 0
+            }
+            else {
+                // send n. of filenames
+                nbf.write(Misc.castUnsignedNumberToBytes(filenames.size(),4)); // send as 4-byte integer
+                for (byte[] x : filenames) {
+                    nbf.write(Misc.castUnsignedNumberToBytes(x.length,2));
+                    nbf.write(x);
+                }
             }
         }
     }

@@ -5,7 +5,7 @@ import android.support.annotation.Nullable;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import it.pgp.xfiles.roothelperclient.reqs.setAttributes_rq;
+import it.pgp.xfiles.io.FlushingBufferedOutputStream;
 import it.pgp.xfiles.utils.Misc;
 
 /**
@@ -24,31 +24,25 @@ public class setOwnership_rq extends setAttributes_rq {
 
     @Override
     public void write(OutputStream outputStream) throws IOException {
-        this.additionalByte = ((ownerId==null)?0:1) + ((groupId==null)?0:2);
+        try(FlushingBufferedOutputStream nbf = new FlushingBufferedOutputStream(outputStream)) {
+            additionalByte = ((ownerId==null)?0:1) + ((groupId==null)?0:2);
+            additionalByte += (SubRequest.SET_OWNERSHIP.ordinal() << setAttributes_rq.bitOffsetForSubrequest);
 
-        additionalByte += (SubRequest.SET_OWNERSHIP.ordinal() << setAttributes_rq.bitOffsetForSubrequest);
+            // write request byte
+            nbf.write(requestType.getValue());
 
-        byte[] tmp;
-        tmp = Misc.castUnsignedNumberToBytes(this.pathname_len,2);
+            // write additional byte
+            nbf.write(additionalByte); // writes only LSB 8 bits of integer, as expected
 
-        // write request byte
-        outputStream.write(requestType.getValue());
+            // write len and filename
+            nbf.write(Misc.castUnsignedNumberToBytes(pathname_len,2));
+            nbf.write(pathname);
 
-        // write additional byte
-        outputStream.write(additionalByte); // writes only LSB 8 bits of integer, as expected
-
-        // write len and filename
-        outputStream.write(tmp);
-        outputStream.write(this.pathname);
-
-        // write ownerships
-        if (ownerId != null) {
-            tmp = Misc.castUnsignedNumberToBytes(ownerId,4);
-            outputStream.write(tmp);
-        }
-        if (groupId != null) {
-            tmp = Misc.castUnsignedNumberToBytes(groupId,4);
-            outputStream.write(tmp);
+            // write ownerships
+            if (ownerId != null)
+                nbf.write(Misc.castUnsignedNumberToBytes(ownerId,4));
+            if (groupId != null)
+                nbf.write(Misc.castUnsignedNumberToBytes(groupId,4));
         }
     }
 }

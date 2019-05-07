@@ -3,6 +3,7 @@ package it.pgp.xfiles.roothelperclient.reqs;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import it.pgp.xfiles.io.FlushingBufferedOutputStream;
 import it.pgp.xfiles.roothelperclient.ControlCodes;
 import it.pgp.xfiles.utils.Misc;
 
@@ -40,16 +41,12 @@ public class ls_archive_rq extends SinglePath_rq {
     }
 
     public void write(OutputStream outputStream) throws IOException {
-        byte[] archivePath_len_bytes;
-        archivePath_len_bytes = Misc.castUnsignedNumberToBytes(this.pathname_len,2);
-        byte[] password_len_bytes;
-        password_len_bytes = Misc.castUnsignedNumberToBytes(this.password_len,1);
-
-        outputStream.write(getRequestByteWithFlags());
-
-        outputStream.write(archivePath_len_bytes);
-        outputStream.write(this.pathname);
-        outputStream.write(password_len_bytes);
-        outputStream.write(this.password);
+        try(FlushingBufferedOutputStream nbf = new FlushingBufferedOutputStream(outputStream)) {
+            nbf.write(getRequestByteWithFlags());
+            nbf.write(Misc.castUnsignedNumberToBytes(this.pathname_len,2));
+            nbf.write(this.pathname);
+            nbf.write(Misc.castUnsignedNumberToBytes(this.password_len,1));
+            nbf.write(this.password);
+        }
     }
 }

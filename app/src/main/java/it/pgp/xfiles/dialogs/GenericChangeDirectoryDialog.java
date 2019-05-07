@@ -246,7 +246,7 @@ public class GenericChangeDirectoryDialog extends Dialog {
                 httpUrlToDownload = findViewById(R.id.httpUrlEditText);
                 httpDestPath = findViewById(R.id.httpDestDirEditText);
                 httpTargetFilename = findViewById(R.id.httpTargetFilenameEditText);
-                httpUrlToDownload.setText("http://");
+                httpUrlToDownload.setText("https://");
                 break;
             default:
                 throw new RuntimeException("Unknown subtype layout");

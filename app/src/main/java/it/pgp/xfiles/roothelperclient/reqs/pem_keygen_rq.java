@@ -3,6 +3,7 @@ package it.pgp.xfiles.roothelperclient.reqs;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import it.pgp.xfiles.io.FlushingBufferedOutputStream;
 import it.pgp.xfiles.roothelperclient.ControlCodes;
 import it.pgp.xfiles.utils.Misc;
 
@@ -21,9 +22,10 @@ public class pem_keygen_rq {
     }
 
     public void write(OutputStream outputStream) throws IOException {
-        byte[] b = Misc.castUnsignedNumberToBytes(keySize,4);
-        outputStream.write(requestType.getValue());
-        outputStream.write(b);
+        try(FlushingBufferedOutputStream nbf = new FlushingBufferedOutputStream(outputStream)) {
+            nbf.write(requestType.getValue());
+            nbf.write(Misc.castUnsignedNumberToBytes(keySize,4));
+        }
     }
 }
 
