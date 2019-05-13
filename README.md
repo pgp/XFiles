@@ -21,7 +21,7 @@ A general-purpose file explorer for (rooted) Android, with support for compresse
 
 Two main components:
 - XFiles application (that will be built as APK)
-- Roothelper native executable (embedded as binaries in the libs folder)
+- Roothelper native executable (which gets cloned from [here](https://github.com/pgp/XFilesRootHelper) and built automatically by the Android gradle script)
 
 ### Releases
 Prebuilt APKs are available in the [Releases](https://github.com/pgp/XFiles/releases) section of this repo. RootHelper standalone binaries will be available soon.
@@ -32,23 +32,22 @@ Usage demos are available [here](https://github.com/pgp/XFilesDemos).
 ### Building from source 
 ## Prerequisites
 
-1. [Optional] [Botan 2.9.0](https://botan.randombit.net/releases/Botan-2.9.0.tgz) 
-2. [Python 2.7](https://www.python.org) (already included in any recent Linux distro)
-3. [Android Studio 3.0+](https://developer.android.com/studio/index.html)
-
-Build has been tested on Linux Mint 19 and Manjaro (x64)
+1. Windows, Linux or MacOS with git preinstalled
+1. [Android Studio 3.4+](https://developer.android.com/studio/index.html) with CMake and NDK plugins (it is recommended to install them from SDK Manager BEFORE importing the project)
 
 ### Build instructions
 
 #### Roothelper
-0. Clone the [Roothelper](https://github.com/pgp/XFilesRootHelper) repository
-1. [Optional] Botan amalgamated source code files for all needed target platforms are already provided in the botanAm folder, however if you want to regenerate them after having downloaded the official source: just run the script **_genBotanAmalgamations.sh_** after having set the variables $BOTAN_SRC_DIR to the extracted Botan source dir
-2. Point a terminal to the roothelper source base dir, then run the **_genRootHelpersAndroid.sh_** script, after having set the $NDKDIR variable to the extracted path (the default should already be fine under Linux), and the $XFILES_ASSET_DIR one to the root path of the XFiles project
-3. If you want to build RootHelper for your desktop platform (Windows/Mac/Linux/BSD), just run **_genRootHelperDesktopFull.sh_** which starts a CMake configure+build, or **_genRootHelperDesktop.sh_** which rebuilds a preconfigured CMake project
+0. The build script for RootHelper is invoked automatically as inner task of the Android gradle build script, and the library binaries are put in the lib folder of the project, in order to be packed into the APK. Follow the below steps if you want to perform a manual build instead.
+1. Clone the [Roothelper](https://github.com/pgp/XFilesRootHelper) repository, or change dir into the automatically cloned repo from this project's root.
+1. Botan amalgamated source code files for all needed target platforms are already provided in the botanAm folder, however if you want to regenerate them after having downloaded/cloned the official source from [here](https://github.com/randombit/botan): just run the script **_genBotanAmalgamations.sh_** ( or **_genBotanAmalgamations.bat_** for Windows ) after having set the variables $BOTAN_SRC_DIR to the Botan source dir
+2. Point a terminal to the roothelper source base dir, then run the **_genRootHelpersAndroid.sh_** / **_genRootHelpersAndroid.bat_** script, after having set the $NDKDIR variable to the extracted path (the default should already be fine under Linux), and the $XFILES_ASSET_DIR one to the root path of the XFiles project
+3. If you want instead to build RootHelper for your desktop platform (Windows/Mac/Linux/BSD), just run **_genRootHelperDesktopFull.sh_** / **_genRootHelperDesktopFull.bat_** which starts a CMake configure+build, or **_genRootHelperDesktop.sh_** / **_genRootHelperDesktop.bat_** which rebuilds a preconfigured CMake project
 
 #### XFiles
-1. Open Android Studio, then open the XFiles project (open, not import)
-2. If you plan to build Roothelper from source, ensure to install also latest NDK; install also CMake from the SDK Manager
+1. Open Android Studio, and then the SDK Manager
+2. Install latest NDK and CMake
+3. Open the project (the first sync will last a few minutes, due to the native library build step)
 3. Build the project/Build APK from the IDE
 
 
