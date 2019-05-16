@@ -127,9 +127,9 @@ public class SFTPProviderUsingPathContent implements FileOperationHelperUsingPat
     // reads known_hosts line by line, copying lines to a new file, excluding
     // the one with the given host and host key (if present)
     // then it replaces the old with the new file
-    public void removeHostKey(String hostname, PublicKey key) throws IOException {
+    public void removeHostKey(String adjustedHostname, PublicKey key) throws IOException {
         String keyString = Base64.encodeBytes(new Buffer.PlainBuffer().putPublicKey(key).getCompactData());
-        String s = hostname + " " + KeyType.fromKey(key) + " " + keyString;
+        String s = adjustedHostname + " " + KeyType.fromKey(key) + " " + keyString;
         BufferedReader r = new BufferedReader(new FileReader(knownHostsFile));
         File g = new File(knownHostsFile.getAbsolutePath()+"_new");
         BufferedWriter w = new BufferedWriter(new FileWriter(g));
@@ -151,9 +151,9 @@ public class SFTPProviderUsingPathContent implements FileOperationHelperUsingPat
 
     // replaces the key for the (possibly existing) pair (host, host key algorithm) with the current key
     // TODO string split by space and then split by ',' , hostnames can be concatenated for same algorithm and key (eg. IPs and relative hostnames)
-    public void updateHostKey(String hostname, PublicKey key) throws IOException {
+    public void updateHostKey(String adjustedHostname, PublicKey key) throws IOException {
         String keyString = Base64.encodeBytes(new Buffer.PlainBuffer().putPublicKey(key).getCompactData());
-        String s = hostname + " " + KeyType.fromKey(key);
+        String s = adjustedHostname + " " + KeyType.fromKey(key);
         BufferedReader r = new BufferedReader(new FileReader(knownHostsFile));
         File g = new File(knownHostsFile.getAbsolutePath()+"_new");
         BufferedWriter w = new BufferedWriter(new FileWriter(g));

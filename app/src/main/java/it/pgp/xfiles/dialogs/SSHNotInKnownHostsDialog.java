@@ -43,7 +43,8 @@ public class SSHNotInKnownHostsDialog extends SSHKnownHostsBaseDialog {
 
         accept.setOnClickListener(v -> {
             try {
-                provider.addHostKey(authData.domain,hostKey);
+                final String adjustedHostname = (authData.port != 22) ? "[" + authData.domain + "]:" + authData.port : authData.domain;
+                provider.addHostKey(adjustedHostname,hostKey);
                 Toast.makeText(context,"Host key added to known hosts",Toast.LENGTH_LONG).show();
                 dismiss();
                 if (MainActivity.cdd != null) {

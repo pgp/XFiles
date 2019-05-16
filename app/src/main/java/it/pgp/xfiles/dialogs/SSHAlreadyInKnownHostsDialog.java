@@ -52,7 +52,8 @@ public class SSHAlreadyInKnownHostsDialog extends SSHKnownHostsBaseDialog {
 
         accept.setOnClickListener(v -> {
             try {
-                provider.updateHostKey(authData.domain,newHostKey);
+                final String adjustedHostname = (authData.port != 22) ? "[" + authData.domain + "]:" + authData.port : authData.domain;
+                provider.updateHostKey(adjustedHostname,newHostKey);
                 Toast.makeText(context,"Host key updated in known hosts",Toast.LENGTH_LONG).show();
                 dismiss();
                 // retry getChannel and LS pending request (if any) is done in dismiss listener
