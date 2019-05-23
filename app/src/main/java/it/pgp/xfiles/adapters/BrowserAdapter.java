@@ -46,6 +46,7 @@ public class BrowserAdapter extends ArrayAdapter<BrowserItem> {
         archiveIcons.put(ArchiveType.GZ.getValue(),BitmapFactory.decodeResource(context.getResources(), R.drawable.xfiles_archive_gz));
         archiveIcons.put(ArchiveType.BZ2.getValue(),BitmapFactory.decodeResource(context.getResources(), R.drawable.xfiles_archive_bz2));
         archiveIcons.put(ArchiveType.TAR.getValue(),BitmapFactory.decodeResource(context.getResources(), R.drawable.xfiles_archive_tar));
+        archiveIcons.put(ArchiveType.APK.getValue(),BitmapFactory.decodeResource(context.getResources(), R.drawable.xfiles_archive_apk));
     }
 
     public static Bitmap getBitmapByExtension(BrowserItem item) {

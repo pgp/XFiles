@@ -18,6 +18,7 @@ public enum ArchiveType {
     GZ("gz"),
     BZ2("bz2"),
     TAR("tar"), // with offset
+    APK("apk"),
     UNKNOWN("unknown");
 
     String s;

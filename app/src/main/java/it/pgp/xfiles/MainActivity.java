@@ -662,7 +662,7 @@ public class MainActivity extends EffectActivity {
         // start with custom dir, used at the end of CompressTask if CompressActivity was started by share intent, in order to show the compressed archive in its destination folder
         if(startDir != null) {
             try {
-                goDir(new LocalPathContent(startDir));
+                goDirOrArchive(new LocalPathContent(startDir));
             }
             catch (Exception e) {
                 e.printStackTrace();
@@ -679,7 +679,7 @@ public class MainActivity extends EffectActivity {
                 // treat path as archive, since one cannot do open as on folders
                 // (even sending intent from other apps, it doesn't make sense to "open as" a folder)
                 // obviously, this doesn't work if the path is a in-archive (with relative-to-root subpath not empty) or remote one
-                if (path != null) goDir(new ArchivePathContent(path,""));
+                if (path != null) goDirOrArchive(new LocalPathContent(path));
                 else if ("https".equalsIgnoreCase(data.getScheme()) || "http".equalsIgnoreCase(data.getScheme())) {
                     // start download service
                     DownloadParams params = new DownloadParams(
@@ -1263,6 +1263,11 @@ public class MainActivity extends EffectActivity {
             return;
         }
         goDir(parentFile);
+    }
+
+    public FileOpsErrorCodes goDirOrArchive(LocalPathContent path) {
+        if (getRootHelperClient().isDir(path)) return goDir(path);
+        return goDir(new ArchivePathContent(path.dir,""));
     }
 
     /**
