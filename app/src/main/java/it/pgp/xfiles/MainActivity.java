@@ -129,7 +129,7 @@ public class MainActivity extends EffectActivity {
     public BrowserPagerAdapter browserPagerAdapter;
 
     // File Operations Helpers
-    public static SmbProviderUsingPathContent smbProvider; // TODO add entry points in MainActivity
+    public static SmbProviderUsingPathContent smbProvider;
     public static SFTPProviderUsingPathContent sftpProvider;
     public static SftpRetryLsListener sftpRetryLsListener;
 
@@ -139,6 +139,11 @@ public class MainActivity extends EffectActivity {
     public static RootHelperClientUsingPathContent getRootHelperClient(Context... context) {
         if (rootHelperClient == null) {
             rootHelperClient = RootHandler.startAndGetRH(context);
+            if (rootHelperClient != null)
+                showToastOnUIWithHandler(RootHandler.isRootAvailableAndGranted?
+                        "Started roothelper in root mode":
+                        "Root privileges not available, started roothelper in normal mode");
+            else showToastOnUIWithHandler("Unable to start roothelper");
         }
         return rootHelperClient;
     }
@@ -241,10 +246,20 @@ public class MainActivity extends EffectActivity {
             if (currentFile.providerType != ProviderType.LOCAL) return;
 
             // open local archive
-            if (browserItem.hasExt() && ArchiveType.formats.contains(browserItem.getFileExt())) {
-                ArchivePathContent a = new ArchivePathContent(currentFile.dir,"/");
-                goDir(a);
-                return;
+            if (browserItem.hasExt()) {
+                String arcExt = browserItem.getFileExt();
+                if(ArchiveType.APK.name().equals(arcExt.toUpperCase())) {
+                    AlertDialog.Builder bld = new AlertDialog.Builder(MainActivity.this);
+                    bld.setTitle("Choose APK action");
+                    bld.setNegativeButton("Install", (dialog, which) -> {openWithDefaultApp(new File(currentFile.dir));});
+                    bld.setPositiveButton("Open as archive", (dialog, which) -> {goDir(new ArchivePathContent(currentFile.dir,"/"));});
+                    bld.create().show();
+                    return;
+                }
+                if(ArchiveType.formats.contains(arcExt)) {
+                    goDir(new ArchivePathContent(currentFile.dir,"/"));
+                    return;
+                }
             }
 
             // TODO take BasePathContent as input
@@ -559,13 +574,13 @@ public class MainActivity extends EffectActivity {
 
             // sftp credentials or favorites
             case R.id.openSftpCredManager:
-                openCredManager(VaultActivity.class);
+                openCredOrFavsManager(VaultActivity.class);
                 return true;
             case R.id.openSmbCredManager:
-                openCredManager(SmbVaultActivity.class);
+                openCredOrFavsManager(SmbVaultActivity.class);
                 return true;
             case R.id.openFavsManager:
-                openFavsManager();
+                openCredOrFavsManager(FavoritesActivity.class);
                 return true;
             case R.id.openAboutDialog:
                 openAboutDialog();
@@ -592,19 +607,6 @@ public class MainActivity extends EffectActivity {
         startActivity(i);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
-    public boolean checkSignaturePermissions() {
-        return Settings.canDrawOverlays(this) &&
-                Settings.System.canWrite(this);
-    }
-
-    public void requestSignaturePermissions() {
-        Toast.makeText(this, "Signature permissions not granted", Toast.LENGTH_SHORT).show();
-        Intent i = new Intent(MainActivity.this,SettingsLauncherActivity.class);
-        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        startActivityForResult(i,0);
-    }
-
     public boolean checkDangerousPermissions() {
         EnumSet<Permissions> nonGrantedPerms = EnumSet.noneOf(Permissions.class);
         for (Permissions p : Permissions.values()) {
@@ -614,13 +616,6 @@ public class MainActivity extends EffectActivity {
         }
 
         return nonGrantedPerms.isEmpty();
-    }
-
-    public void requestDangerousPermissions() {
-        ActivityCompat.requestPermissions(
-                mainActivity,
-                new String[]{Permissions.WRITE_EXTERNAL_STORAGE.value()},
-                0x11111);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -828,18 +823,7 @@ public class MainActivity extends EffectActivity {
         credsFavsButton.setOnClickListener(this::openContextMenu);
         registerForContextMenu(chooseBrowserViewButton);
 
-        rootHelperClient = RootHandler.startAndGetRH();
-
-        if (rootHelperClient != null) {
-            if (RootHandler.isRootAvailableAndGranted) {
-                Toast.makeText(mainActivityContext, "Started roothelper in root mode", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(mainActivityContext, "Root privileges not available, started roothelper in normal mode", Toast.LENGTH_SHORT).show();
-            }
-        }
-        else {
-            Toast.makeText(mainActivityContext, "Unable to start roothelper", Toast.LENGTH_SHORT).show();
-        }
+        getRootHelperClient();
 
         browserPagerAdapter = new BrowserPagerAdapter(this,this);
 
@@ -877,13 +861,8 @@ public class MainActivity extends EffectActivity {
         browserPagerAdapter.changeBrowserViewMode(browserPager.getCurrentItem());
     }
 
-    public void openCredManager(Class activity) {
+    public void openCredOrFavsManager(Class activity) {
         Intent intent = new Intent(MainActivity.this,activity);
-        startActivity(intent);
-    }
-
-    public void openFavsManager() {
-        Intent intent = new Intent(MainActivity.this,FavoritesActivity.class);
         startActivity(intent);
     }
 

@@ -23,7 +23,7 @@ public class VMapChildParentIterable extends VMapAbstractIterable {
     class VMapChildParentIterator implements Iterator<Map.Entry<?,?>> {
 
         Stack<Map.Entry> S;
-        HashMap parentMap; // for ancestor list retrieval of nodes traversed so far in DFS iteration
+        Map parentMap; // for ancestor list retrieval of nodes traversed so far in DFS iteration
 
         VMapChildParentIterator() {
             parentMap = new HashMap();

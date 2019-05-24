@@ -17,7 +17,7 @@ import java.util.*;
  */
 public class VMap {
 
-    public HashMap<Object,Object> h; // nested map
+    public Map<Object,Object> h; // nested map
 
     public VMap() {
         h = new HashMap<>();
@@ -37,13 +37,13 @@ public class VMap {
 
     public boolean containsKey(Object[] keys) {
         if (h==null) h = new HashMap<>();
-        HashMap<Object,Object> currentLevelMap = h;
+        Map<Object,Object> currentLevelMap = h;
         for (int i=0;i<keys.length-1;i++) {
             if (currentLevelMap.get(keys[i]) == null) {
                 return false;
             }
             try {
-                currentLevelMap = (HashMap<Object, Object>) currentLevelMap.get(keys[i]);
+                currentLevelMap = (Map<Object, Object>) currentLevelMap.get(keys[i]);
             }
             catch (Exception e) {
                 return false;
@@ -59,14 +59,14 @@ public class VMap {
 
     public void set(Object v, Object[] keys) throws ValueAsKeyException {
         if (h==null) h = new HashMap<>();
-        HashMap<Object,Object> currentLevelMap = h;
+        Map<Object,Object> currentLevelMap = h;
 
         for (int i=0;i<keys.length-1;i++) {
             if (currentLevelMap.get(keys[i]) == null) {
                 currentLevelMap.put(keys[i],new HashMap<>());
             }
             try {
-                currentLevelMap = (HashMap<Object, Object>) currentLevelMap.get(keys[i]);
+                currentLevelMap = (Map<Object, Object>) currentLevelMap.get(keys[i]);
             }
             catch (Exception e) {
                 throw new ValueAsKeyException();
@@ -78,13 +78,13 @@ public class VMap {
 
     public Object get(Object[] keys) throws ValueAsKeyException {
         if (h==null) h = new HashMap<>();
-        HashMap<Object,Object> currentLevelMap = h;
+        Map<Object,Object> currentLevelMap = h;
         for (int i=0;i<keys.length-1;i++) {
             if (currentLevelMap.get(keys[i]) == null) {
                 return null;
             }
             try {
-                currentLevelMap = (HashMap<Object, Object>) currentLevelMap.get(keys[i]);
+                currentLevelMap = (Map<Object, Object>) currentLevelMap.get(keys[i]);
             }
             catch (Exception e) {
                 throw new ValueAsKeyException();
@@ -97,14 +97,14 @@ public class VMap {
     // removes if present, returning the value, otherwise returns null
     public Object remove(Object[] keys) {
         if (h == null) return null;
-        ArrayList<HashMap> mapRefs = new ArrayList<>();
-        HashMap<Object,Object> currentLevelMap = h;
+        List<Map> mapRefs = new ArrayList<>();
+        Map<Object,Object> currentLevelMap = h;
 //        mapRefs.add(currentLevelMap);
         for (int i=0;i<keys.length-1;i++) {
             if (currentLevelMap.get(keys[i]) == null) {
                 return null;
             }
-            currentLevelMap = (HashMap<Object, Object>) currentLevelMap.get(keys[i]);
+            currentLevelMap = (Map<Object, Object>) currentLevelMap.get(keys[i]);
             mapRefs.add(currentLevelMap);
         }
 

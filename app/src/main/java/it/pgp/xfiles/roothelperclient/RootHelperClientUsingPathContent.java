@@ -271,7 +271,7 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
             inArchivePath.addAll(Arrays.asList((new String(resp.filename,"UTF-8")).split("/")));
             inArchivePath.add(ArchiveVMap.sentinelKeyForNodeProperties);
 
-            HashMap<String,Object> nodeProps = new HashMap<>();
+            Map<String,Object> nodeProps = new HashMap<>();
 
             nodeProps.put("i",entryCnt);
             nodeProps.put("size",resp.size);

@@ -6,7 +6,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
-import android.util.LongSparseArray;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -14,9 +13,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
-import java.lang.reflect.Constructor;
 import java.util.AbstractMap;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -237,7 +234,7 @@ public class GenericDBHelper extends SQLiteOpenHelper {
 
 //    public Map<Long,AuthData> getAllSftpCreds() {
 //        String[] cols = new String[] {"oid",username_field,domain_field,port_field,password_field};
-//        HashMap<Long,AuthData> m = new HashMap<>();
+//        Map<Long,AuthData> m = new HashMap<>();
 //        Cursor mCursor = db.query(true, credentialsVaultTableName,cols,null,null, null, null, null, null);
 //        if (mCursor!=null) {
 //            while (mCursor.moveToNext()) {
@@ -255,7 +252,7 @@ public class GenericDBHelper extends SQLiteOpenHelper {
                 new String[] {"oid",username_field,domain_field,port_field,password_field}:
                 new String[] {"oid",username_field,domain_field,host_field,port_field,password_field};
         String srcTableName = (ref instanceof AuthData)?credentialsVaultTableName:smbCredentialsVaultTableName;
-        HashMap<Long,T> m = new HashMap<>();
+        Map<Long,T> m = new HashMap<>();
         Cursor mCursor = db.query(true, srcTableName,cols,null,null, null, null, null, null);
         if (mCursor!=null) {
             while (mCursor.moveToNext()) {
@@ -275,7 +272,7 @@ public class GenericDBHelper extends SQLiteOpenHelper {
                 new String[] {"oid",username_field,domain_field,port_field,password_field,listOfFavorites_field}:
                 new String[] {"oid",username_field,domain_field,host_field,port_field,password_field,listOfFavorites_field};
         String srcTableName = (ref instanceof AuthData)?credentialsVaultTableName:smbCredentialsVaultTableName;
-        HashMap<Long,FavoritesList<T>> m = new HashMap<>();
+        Map<Long,FavoritesList<T>> m = new HashMap<>();
         Cursor mCursor = db.query(true, srcTableName,cols,null,null, null, null, null, null);
         if (mCursor!=null) {
             while (mCursor.moveToNext()) {

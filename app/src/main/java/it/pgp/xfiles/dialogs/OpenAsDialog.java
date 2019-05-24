@@ -11,6 +11,8 @@ import android.widget.SimpleAdapter;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import it.pgp.xfiles.R;
 
@@ -38,9 +40,9 @@ public class OpenAsDialog extends Dialog {
 
         ListView openAsListView = findViewById(R.id.openAsListView);
 
-        ArrayList<HashMap<String, String>> openAsListData = new ArrayList<>();
+        List<Map<String, String>> openAsListData = new ArrayList<>();
         for (int i = 0; i < openAsLabels.length; i++) {
-            HashMap<String, String> h = new HashMap<>();
+            Map<String, String> h = new HashMap<>();
             h.put(columnTags[0], "" + openAsDrawables[i]);
             h.put(columnTags[1], openAsLabels[i]);
             openAsListData.add(h);

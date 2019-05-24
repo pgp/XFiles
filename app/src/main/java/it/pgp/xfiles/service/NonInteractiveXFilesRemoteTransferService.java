@@ -9,7 +9,6 @@ import android.support.v4.app.NotificationCompat;
 import it.pgp.xfiles.MainActivity;
 import it.pgp.xfiles.R;
 import it.pgp.xfiles.enums.ForegroundServiceType;
-import it.pgp.xfiles.service.params.CopyMoveParams;
 
 /**
  * Created by pgp on 07/10/17

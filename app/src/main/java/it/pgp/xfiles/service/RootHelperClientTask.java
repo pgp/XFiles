@@ -1,11 +1,8 @@
 package it.pgp.xfiles.service;
 
 import android.content.ContentResolver;
-import android.util.Log;
 
-import java.io.IOException;
 import java.io.Serializable;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import it.pgp.xfiles.MainActivity;
 import it.pgp.xfiles.enums.FileOpsErrorCodes;

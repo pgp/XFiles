@@ -1,7 +1,6 @@
 package it.pgp.xfiles.comparators;
 
 import java.util.Comparator;
-import java.util.List;
 
 import it.pgp.xfiles.BrowserItem;
 import it.pgp.xfiles.SortingItem;

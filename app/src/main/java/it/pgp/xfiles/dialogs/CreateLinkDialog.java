@@ -13,9 +13,7 @@ import java.util.List;
 import it.pgp.xfiles.MainActivity;
 import it.pgp.xfiles.R;
 import it.pgp.xfiles.enums.FileMode;
-import it.pgp.xfiles.enums.ProviderType;
 import it.pgp.xfiles.utils.pathcontent.BasePathContent;
-import it.pgp.xfiles.utils.pathcontent.XFilesRemotePathContent;
 
 public class CreateLinkDialog extends BaseDialog {
 

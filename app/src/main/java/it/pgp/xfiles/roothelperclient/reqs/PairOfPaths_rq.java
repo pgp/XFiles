@@ -2,8 +2,6 @@ package it.pgp.xfiles.roothelperclient.reqs;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.charset.Charset;
 
 import it.pgp.xfiles.io.FlushingBufferedOutputStream;

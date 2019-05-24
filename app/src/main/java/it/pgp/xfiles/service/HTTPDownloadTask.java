@@ -1,6 +1,5 @@
 package it.pgp.xfiles.service;
 
-import android.os.Environment;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -15,7 +14,6 @@ import it.pgp.xfiles.enums.ProviderType;
 import it.pgp.xfiles.service.params.DownloadParams;
 import it.pgp.xfiles.service.visualization.MovingRibbon;
 import it.pgp.xfiles.utils.pathcontent.BasePathContent;
-import it.pgp.xfiles.utils.pathcontent.LocalPathContent;
 
 /**
  * Created by pgp on 05/11/17

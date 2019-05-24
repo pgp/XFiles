@@ -1,10 +1,10 @@
 package it.pgp.xfiles.utils;
 
-import android.util.Log;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import it.pgp.xfiles.MainActivity;
 import it.pgp.xfiles.enums.FileOpsErrorCodes;
@@ -14,23 +14,22 @@ import it.pgp.xfiles.utils.dircontent.GenericDirWithContent;
 import it.pgp.xfiles.utils.dircontent.LocalDirWithContent;
 import it.pgp.xfiles.utils.pathcontent.BasePathContent;
 import it.pgp.xfiles.utils.pathcontent.LocalPathContent;
-import it.pgp.xfiles.utils.pathcontent.XFilesRemotePathContent;
 
 /**
  * Created by pgp on 13/05/2017 - adapted from DirCommanderCUsingBrowserItems
  */
 public class DirCommanderCUsingBrowserItemsAndPathContent {
-    private HashMap<Integer,BasePathContent> recentDirs;
-    private HashMap<Integer,Integer> previousListViewPositions; // position of list view when previous directory was listed
+    private Map<Integer,BasePathContent> recentDirs;
+    private Map<Integer,Integer> previousListViewPositions; // position of list view when previous directory was listed
     private int currentIndex;
 
     // for cleanup of old commander entries when a series of goBack commands is followed by a goDir
     private void truncateListMaps(int maxIndex) {
-        HashMap<Integer,BasePathContent> tmp1 = new HashMap<>();
+        Map<Integer,BasePathContent> tmp1 = new HashMap<>();
         for (Integer i : recentDirs.keySet()) {
             if (i <= maxIndex) tmp1.put(i,recentDirs.get(i));
         }
-        HashMap<Integer,Integer> tmp2 = new HashMap<>();
+        Map<Integer,Integer> tmp2 = new HashMap<>();
         for (Integer i : previousListViewPositions.keySet()) {
             if (i <= maxIndex) tmp2.put(i,previousListViewPositions.get(i));
         }

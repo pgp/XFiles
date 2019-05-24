@@ -1,16 +1,12 @@
 package it.pgp.xfiles.utils;
 
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -33,7 +29,6 @@ import it.pgp.xfiles.service.ExtractTask;
 import it.pgp.xfiles.utils.dircontent.GenericDirWithContent;
 import it.pgp.xfiles.utils.dircontent.LocalDirWithContent;
 import it.pgp.xfiles.utils.pathcontent.BasePathContent;
-import it.pgp.xfiles.utils.pathcontent.LocalPathContent;
 import it.pgp.xfiles.utils.pathcontent.XFilesRemotePathContent;
 
 /**

@@ -1,6 +1,7 @@
 package it.pgp.xfiles.utils.legacy;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import it.pgp.xfiles.enums.FileOpsErrorCodes;
 import it.pgp.xfiles.enums.ProviderType;
@@ -10,16 +11,16 @@ import it.pgp.xfiles.enums.ProviderType;
  */
 @Deprecated
 public class DirCommanderCUsingBrowserItems {
-    private HashMap<Integer,String> recentDirs;
-    private HashMap<Integer,Integer> previousListViewPositions; // position of list view when previous directory was listed
+    private Map<Integer,String> recentDirs;
+    private Map<Integer,Integer> previousListViewPositions; // position of list view when previous directory was listed
     private int currentIndex;
 
     private void truncateListMaps(int maxIndex) {
-        HashMap<Integer,String> tmp1 = new HashMap<>();
+        Map<Integer,String> tmp1 = new HashMap<>();
         for (Integer i : recentDirs.keySet()) {
             if (i <= maxIndex) tmp1.put(i,recentDirs.get(i));
         }
-        HashMap<Integer,Integer> tmp2 = new HashMap<>();
+        Map<Integer,Integer> tmp2 = new HashMap<>();
         for (Integer i : previousListViewPositions.keySet()) {
             if (i <= maxIndex) tmp2.put(i,previousListViewPositions.get(i));
         }
@@ -34,7 +35,7 @@ public class DirCommanderCUsingBrowserItems {
     private DirWithContentUsingBrowserItems validateDirAccess(String dir) {
 //        File[] content = new File(dir).listFiles();
 //        if (content == null) return null;
-//        ArrayList<BrowserItem> l = new ArrayList<>();
+//        List<BrowserItem> l = new ArrayList<>();
 //        for (File f : content) {
 //            l.add(new BrowserItem(f.getName(),f.length(),new Date(f.lastModified()),f.isDirectory()));
 //        }

@@ -4,9 +4,7 @@ import android.content.ContentResolver;
 import android.net.Uri;
 import android.util.Log;
 
-import java.io.FileDescriptor;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;

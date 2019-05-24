@@ -28,7 +28,6 @@ import it.pgp.xfiles.adapters.HashAlgorithmsAdapter;
 import it.pgp.xfiles.roothelperclient.HashRequestCodes;
 import it.pgp.xfiles.utils.Misc;
 import it.pgp.xfiles.utils.pathcontent.BasePathContent;
-import it.pgp.xfiles.utils.pathcontent.XFilesRemotePathContent;
 
 /**
  * Created by pgp on 21/02/18

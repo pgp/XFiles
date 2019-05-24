@@ -10,7 +10,6 @@ import android.widget.TextView;
 import java.util.List;
 
 import it.pgp.xfiles.BrowserItem;
-import it.pgp.xfiles.MainActivity;
 import it.pgp.xfiles.R;
 
 /**

@@ -5,7 +5,6 @@ import java.util.List;
 import it.pgp.xfiles.BrowserItem;
 import it.pgp.xfiles.enums.FileOpsErrorCodes;
 import it.pgp.xfiles.enums.ProviderType;
-import it.pgp.xfiles.sftpclient.AuthData;
 
 /**
  * Created by pgp on 13/05/17

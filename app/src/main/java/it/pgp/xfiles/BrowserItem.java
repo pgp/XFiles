@@ -4,7 +4,6 @@ import android.widget.Checkable;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 
 import it.pgp.xfiles.roothelperclient.resps.ls_resp;

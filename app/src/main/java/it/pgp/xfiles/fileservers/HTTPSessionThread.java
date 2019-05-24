@@ -16,7 +16,6 @@ import java.util.List;
 import it.pgp.xfiles.BrowserItem;
 import it.pgp.xfiles.MainActivity;
 import it.pgp.xfiles.io.RobustLocalFileInputStream;
-import it.pgp.xfiles.roothelperclient.RootHelperClientUsingPathContent;
 import it.pgp.xfiles.utils.dircontent.GenericDirWithContent;
 import it.pgp.xfiles.utils.pathcontent.LocalPathContent;
 

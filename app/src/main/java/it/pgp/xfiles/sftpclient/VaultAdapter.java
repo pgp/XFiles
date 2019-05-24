@@ -91,10 +91,7 @@ public class VaultAdapter extends BaseAdapter implements ListAdapter {
         ImageButton editBtn = view.findViewById(R.id.passitem_edit);
         ImageButton deleteBtn = view.findViewById(R.id.passitem_delete);
 
-        editBtn.setOnClickListener(v -> {
-            InsertEditDialog insertEditDialog = new InsertEditDialog(mainActivity,VaultAdapter.this,dbIds.get(position), (AuthData) loginItems.get(position));
-            insertEditDialog.show();
-        });
+        editBtn.setOnClickListener(v -> new InsertEditDialog(mainActivity,VaultAdapter.this,dbIds.get(position), loginItems.get(position)).show());
         deleteBtn.setOnClickListener(v -> {
             // remove row from db
 //            boolean deleted = dbh.deleteRowFromSftpTable(dbIds.get(position));

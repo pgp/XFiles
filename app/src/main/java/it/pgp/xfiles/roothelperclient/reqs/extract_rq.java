@@ -4,7 +4,6 @@ import android.support.annotation.Nullable;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.List;
 
 import it.pgp.xfiles.io.FlushingBufferedOutputStream;
 import it.pgp.xfiles.roothelperclient.ControlCodes;

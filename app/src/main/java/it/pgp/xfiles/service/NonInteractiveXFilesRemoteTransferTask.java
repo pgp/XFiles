@@ -1,6 +1,5 @@
 package it.pgp.xfiles.service;
 
-import android.content.ContentResolver;
 import android.util.Log;
 import android.widget.Toast;
 

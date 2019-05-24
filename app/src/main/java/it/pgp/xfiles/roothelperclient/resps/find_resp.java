@@ -2,10 +2,7 @@ package it.pgp.xfiles.roothelperclient.resps;
 
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.util.Arrays;
 
-import it.pgp.Native;
 import it.pgp.xfiles.utils.Misc;
 
 public class find_resp {

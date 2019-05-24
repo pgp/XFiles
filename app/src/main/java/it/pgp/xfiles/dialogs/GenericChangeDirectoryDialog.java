@@ -3,7 +3,6 @@ package it.pgp.xfiles.dialogs;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
-import android.support.annotation.IdRes;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;

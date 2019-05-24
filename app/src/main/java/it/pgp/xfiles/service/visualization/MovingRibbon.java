@@ -7,7 +7,6 @@ package it.pgp.xfiles.service.visualization;
 
 import android.app.Service;
 import android.graphics.PixelFormat;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
