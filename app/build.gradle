@@ -7,8 +7,8 @@ android {
         minSdkVersion 19
         targetSdkVersion 28
         multiDexEnabled true
-        versionCode 107190524
-        versionName "1.0.7-alpha"
+        versionCode 108190617
+        versionName "1.0.8-alpha"
         externalNativeBuild {
             cmake {
                 cppFlags "-std=c++11 -pthread -frtti -fexceptions"
@@ -17,8 +17,12 @@ android {
     }
     buildTypes {
         release {
+            minifyEnabled true
+            shrinkResources true
+        }
+
+        debug {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
 

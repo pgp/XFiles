@@ -8,6 +8,7 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.concurrent.locks.LockSupport;
 
 import it.pgp.xfiles.MainActivity;
 import it.pgp.xfiles.service.SocketNames;
@@ -142,11 +143,8 @@ public class RootHandler {
                     break;
                 }
                 catch (IllegalThreadStateException e) {
-                    try {
-                        Log.e(RootHandler.class.getName(),"Waiting for roothelper process to start...");
-                        Thread.currentThread().sleep(100);
-                    }
-                    catch (InterruptedException ignored) {}
+                    Log.e(RootHandler.class.getName(),"Waiting for roothelper process to start...");
+                    LockSupport.parkNanos(100000000); // sleep 100 ms
                 }
                 pid = rh.checkConnection();
             }
@@ -178,11 +176,9 @@ public class RootHandler {
                     break;
                 }
                 catch (IllegalThreadStateException e) {
-                    try {
-                        Log.e(RootHandler.class.getName(),"Waiting for roothelper process to start...");
-                        Thread.currentThread().sleep(100);
-                    }
-                    catch (InterruptedException ignored) {}
+                    Log.e(RootHandler.class.getName(),"Waiting for roothelper process to start...");
+                    LockSupport.parkNanos(100000000); // sleep 100 ms
+
                 }
                 pid = rh.checkConnection();
             }
