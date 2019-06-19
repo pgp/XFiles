@@ -59,7 +59,6 @@ import it.pgp.xfiles.utils.FileOperationHelperUsingPathContent;
 import it.pgp.xfiles.utils.GenericDBHelper;
 import it.pgp.xfiles.utils.dircontent.GenericDirWithContent;
 import it.pgp.xfiles.utils.dircontent.SftpDirWithContent;
-import it.pgp.xfiles.utils.legacy.SFTPProvider;
 import it.pgp.xfiles.utils.pathcontent.BasePathContent;
 import it.pgp.xfiles.utils.pathcontent.RemotePathContent;
 

@@ -32,7 +32,6 @@ import it.pgp.xfiles.sftpclient.AuthData;
 import it.pgp.xfiles.smbclient.SmbAuthData;
 import it.pgp.xfiles.utils.FavoritesList;
 import it.pgp.xfiles.utils.GenericDBHelper;
-import it.pgp.xfiles.utils.legacy.ChangeDirectoryDialog;
 import it.pgp.xfiles.utils.pathcontent.ArchivePathContent;
 import it.pgp.xfiles.utils.pathcontent.BasePathContent;
 import it.pgp.xfiles.utils.pathcontent.LocalPathContent;
@@ -42,7 +41,7 @@ import it.pgp.xfiles.utils.pathcontent.XFilesRemotePathContent;
 import it.pgp.xfiles.utils.wifi.WifiButtonsLayout;
 
 /**
- * Created by pgp on 14/05/17 (adapted from {@link ChangeDirectoryDialog})
+ * Created by pgp on 14/05/17
  */
 public class GenericChangeDirectoryDialog extends Dialog {
     private MainActivity mainActivity;
