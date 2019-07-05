@@ -37,7 +37,7 @@ public class IntentUtil {
         for (Uri uri : uris) {
             String tmp = ContentProviderUtils.getPathFromUri(context,uri);
             selectedItems.add(tmp);
-            Log.e("getPath",uri.toString()+"\t"+tmp);
+            Log.d("getPath",uri.toString()+"\t"+tmp);
         }
 
         BasePathContent dirPath = new LocalPathContent(Misc.getLongestCommonPathFromPrefix(

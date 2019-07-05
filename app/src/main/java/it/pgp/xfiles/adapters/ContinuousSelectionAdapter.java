@@ -33,7 +33,7 @@ public abstract class ContinuousSelectionAdapter<T> extends ArrayAdapter<T> {
     // this is used by the listener
     public void startSelectMode(int startPos) {
         if (active) {
-            Log.e("MOTION", "Repeated ACTION_DOWN events (multitouch?), ignoring...");
+            Log.d("MOTION", "Repeated ACTION_DOWN events (multitouch?), ignoring...");
             return;
         }
         if (startPos < 0 || startPos >= objects.size()) return;
@@ -46,20 +46,20 @@ public abstract class ContinuousSelectionAdapter<T> extends ArrayAdapter<T> {
     public abstract boolean getInvSel();
 
     public final View.OnTouchListener listener = (v, ev) -> {
-        Log.e("Motion", "Default: " + ev.getActionMasked() + " " + ev.getX() + " " + ev.getY());
+        Log.d("Motion", "Default: " + ev.getActionMasked() + " " + ev.getX() + " " + ev.getY());
         try {
             int ptoPos = getLv().pointToPosition((int) ev.getX(), (int) ev.getY());
             switch(ev.getActionMasked()) {
                 case MotionEvent.ACTION_DOWN:
-                    Log.e("MotionSTART", "Start select mode");
+                    Log.d("MotionSTART", "Start select mode");
                     startSelectMode(ptoPos);
                     break;
                 case MotionEvent.ACTION_UP:
-                    Log.e("MotionEND", "End select mode");
+                    Log.d("MotionEND", "End select mode");
                     endSelectMode(ptoPos);
                     break;
                 case MotionEvent.ACTION_MOVE:
-                    Log.e("MotionCONTINUE", "Ongoing select mode");
+                    Log.d("MotionCONTINUE", "Ongoing select mode");
                     ongoingSelectMode(ptoPos);
                     break;
             }

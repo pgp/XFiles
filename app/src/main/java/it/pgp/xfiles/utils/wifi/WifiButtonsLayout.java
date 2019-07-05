@@ -140,7 +140,7 @@ public class WifiButtonsLayout extends LinearLayout {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.e("BROADCAST","onReceive "+intent.getAction());
+            Log.d("BROADCAST","onReceive "+intent.getAction());
             receiveWifi();
             receiveAp();
             activity.runOnUiThread(()->toggleButtons(true));

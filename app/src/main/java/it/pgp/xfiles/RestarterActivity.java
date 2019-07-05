@@ -15,7 +15,7 @@ public class RestarterActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.e("RESTART","RESTART");
+        Log.d("RESTART","RESTART");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.empty);
 

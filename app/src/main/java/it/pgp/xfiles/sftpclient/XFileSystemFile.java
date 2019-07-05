@@ -61,17 +61,17 @@ public class XFileSystemFile implements LocalSourceFile, LocalDestFile {
 
     @Override
     public boolean isFile() {
-        Log.e(this.getClass().getName(),"isFile");
+        Log.d(this.getClass().getName(),"isFile");
         BitSet x = rhc.existsIsFileIsDir(new LocalPathContent(file),true,true,true);
-        Log.e(this.getClass().getName(),"isFile completed");
+        Log.d(this.getClass().getName(),"isFile completed");
         return x.get(1);
     }
 
     @Override
     public boolean isDirectory() {
-        Log.e(this.getClass().getName(),"isDirectory");
+        Log.d(this.getClass().getName(),"isDirectory");
         BitSet x = rhc.existsIsFileIsDir(new LocalPathContent(file),true,true,true);
-        Log.e(this.getClass().getName(),"isDirectory completed");
+        Log.d(this.getClass().getName(),"isDirectory completed");
         return x.get(2);
     }
 

@@ -37,7 +37,7 @@ public class ContSelListenerList extends ContSelListener {
     public void ongoingSelectMode(int position) {
         Log.d("POSITION", "Current: "+position+" Previous: "+idx_1+" Old: "+idx_2);
         if (position < 0 || position >= objects.size() || position == idx_1) return;
-        Log.e("SelectModeContinue", "SelectModeContinue");
+        Log.d("ContSelMode", "ContSelMode");
 
         atLeastOneMoveAfterDown = true;
 
@@ -90,9 +90,9 @@ public class ContSelListenerList extends ContSelListener {
 
     @Override
     public void endSelectMode(int endPos) {
-        // Log.e("SelectModeEnd", "SelectModeEnd");
+        // Log.d("SelectModeEnd", "SelectModeEnd");
         if (!active) {
-            // Log.e("MOTION", "Repeated ACTION_UP events (multitouch?), ignoring...");
+            // Log.d("MOTION", "Repeated ACTION_UP events (multitouch?), ignoring...");
             return;
         }
         if (startPos == endPos && !atLeastOneMoveAfterDown) {

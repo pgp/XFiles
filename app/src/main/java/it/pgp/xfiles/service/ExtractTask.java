@@ -60,16 +60,7 @@ public class ExtractTask extends RootHelperClientTask {
             return null;
         }
         try {
-//            Log.e(this.getClass().getName(),"Sleeping before executing...");
-//            try {
-//                for (int i=5;i>=0;i--) {
-//                    Log.e(this.getClass().getName(),""+i);
-//                    Thread.currentThread().sleep(1000);
-//                }
-//            } catch (InterruptedException ignored) {}
-
             rh.initProgressSupport(this);
-
             result = rh.extractFromArchive(
                     srcArchive,
                     destDirectory,

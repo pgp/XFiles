@@ -130,7 +130,7 @@ public class RemoteClientManager {
     }
 
     private void publishReceivedProgress(long progress, long totalSizeSoFar, long totalSize, long currentFileSize) {
-        Log.e("XREProgress","It's progress: "+progress);
+        Log.d("XREProgress","It's progress: "+progress);
         if (this.progressTask != null) {
             this.progressTask.publishProgressWrapper(
                     (int) Math.round((totalSizeSoFar+progress) * 100.0 / totalSize),
@@ -191,14 +191,14 @@ public class RemoteClientManager {
                     totalSize += currentFileSize;
                 }
 
-                Log.e("XREProgress","Total size computed using content provider is "+totalSize);
+                Log.d("XREProgress","Total size computed using content provider is "+totalSize);
 
                 client.o.write(customizedRq);
                 client.o.write(Misc.castUnsignedNumberToBytes(totalSize,8));
                 long totalSizeSoFar = 0;
 
                 for (int i=0;i<uris.size();i++) {
-                    Log.e("XREProgress","Sending file info and descriptor for "+names.get(i));
+                    Log.d("XREProgress","Sending file info and descriptor for "+names.get(i));
                     currentFileSize = sizes.get(i);
                     Misc.sendStringWithLen(client.o,destDir.dir+"/"+names.get(i));
                     client.o.write(Misc.castUnsignedNumberToBytes(currentFileSize,8));
@@ -242,7 +242,7 @@ public class RemoteClientManager {
                 // receive total number of files for outer progress
                 final long totalFileCount = Misc.receiveTotalOrProgress(client.i);
                 final long totalSize = Misc.receiveTotalOrProgress(client.i);
-                Log.e("XREProgress","Total size is "+totalSize);
+                Log.d("XREProgress","Total size is "+totalSize);
                 long currentFileCount = 0;
                 long totalSizeSoFar = 0; // rounded to last completed file
 //            long currentFileSize = EOF_ind; // legacy, maybe breaks things
@@ -256,7 +256,7 @@ public class RemoteClientManager {
                     long tmp = Misc.receiveTotalOrProgress(client.i);
 
                     if (tmp == EOF_ind) {
-                        Log.e("XREProgress","Received EOF, file count before: "+currentFileCount);
+                        Log.d("XREProgress","Received EOF, file count before: "+currentFileCount);
                         hasReceivedSizeForCurrentFile = false;
                         currentFileCount++;
                         totalSizeSoFar += currentFileSize;
@@ -266,16 +266,16 @@ public class RemoteClientManager {
                         );
                     }
                     else if (tmp == EOFs_ind) {
-                        Log.e("XREProgress","Received EOFs");
+                        Log.d("XREProgress","Received EOFs");
                         break;
                     }
                     else {
-                        Log.e("XREProgress","Received progress or size");
+                        Log.d("XREProgress","Received progress or size");
                         if (hasReceivedSizeForCurrentFile) {
                             publishReceivedProgress(tmp,totalSizeSoFar,totalSize,currentFileSize);
                         }
                         else {
-                            Log.e("XREProgress","It's size: "+tmp);
+                            Log.d("XREProgress","It's size: "+tmp);
                             // here, tmp is current file's size, before starting copying current file
                             currentFileSize = tmp;
                             hasReceivedSizeForCurrentFile = true;

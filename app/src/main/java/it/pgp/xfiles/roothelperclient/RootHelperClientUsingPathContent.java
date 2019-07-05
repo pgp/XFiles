@@ -133,12 +133,12 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
             LocalSocket clientSocket = new LocalSocket();
             LocalSocketAddress socketAddress = new LocalSocketAddress(address.name(), LocalSocketAddress.Namespace.ABSTRACT);
             clientSocket.connect(socketAddress);
-            Log.e("roothelperclient","Connected");
+            Log.d("roothelperclient","Connected");
 
             ls = clientSocket;
             o = clientSocket.getOutputStream();
             i = new DataInputStream(clientSocket.getInputStream());
-            Log.e("roothelperclient","Streams acquired");
+            Log.d("roothelperclient","Streams acquired");
         }
 
         @Override
@@ -204,11 +204,11 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
             LocalSocket clientSocket = new LocalSocket();
             LocalSocketAddress socketAddress = new LocalSocketAddress(address.name(), LocalSocketAddress.Namespace.ABSTRACT);
             clientSocket.connect(socketAddress);
-            Log.e("roothelperclient","Connected");
+            Log.d("roothelperclient","Connected");
 
             o = clientSocket.getOutputStream();
             i = new DataInputStream(clientSocket.getInputStream());
-            Log.e("roothelperclient","Streams acquired");
+            Log.d("roothelperclient","Streams acquired");
         }
 
         public void close() {
@@ -300,7 +300,7 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
 
             // send request
             req.write(rs.o);
-            Log.e("roothelperclient","Ls request sent");
+            Log.d("roothelperclient","Ls request sent");
 
 
             // read responses (one item per file in directory)
@@ -473,8 +473,8 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
 //            notifyManager.notify(NOTIF_ID, builder.build());
             task.publishProgressWrapper((int)Math.round(progress*100.0/total));
 
-//            Log.e("setCompleted ","publishProgressWrapper progress:\t"+progress+"\ttotal: "+total);
-//            Log.e("setCompleted ","publishProgressWrapper round:\t"+Math.round(progress*100.0/total));
+//            Log.d("setCompleted ","publishProgressWrapper progress:\t"+progress+"\ttotal: "+total);
+//            Log.d("setCompleted ","publishProgressWrapper round:\t"+Math.round(progress*100.0/total));
         }
 
         // receive 1-byte final OK or error response
@@ -502,16 +502,16 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
             long progress = Misc.receiveTotalOrProgress(rs.i);
             if (progress == EOF_ind) {
                 // receive index and send corresponding fd
-                Log.e("setCompleted","[RHClient]receiving index after EOF");
+                Log.d("setCompleted","[RHClient]receiving index after EOF");
                 rs.i.readFully(b_idx);
                 int index = (int) Misc.castBytesToUnsignedNumber(b_idx,4);
-                Log.e("setCompleted","[RHClient]index after EOF is "+index+", now sending fd for that index");
+                Log.d("setCompleted","[RHClient]index after EOF is "+index+", now sending fd for that index");
                 int fdToSend = resolver.openFileDescriptor(uris.get(index),"r").detachFd(); // will be closed internally by p7zip back-end in rh forked process
                 Native.sendDetachedFD(nativeUds,fdToSend);
-                Log.e("setCompleted","[RHClient]fd for index "+index+" sent");
+                Log.d("setCompleted","[RHClient]fd for index "+index+" sent");
             }
             else if (progress == EOFs_ind) {
-                Log.e("setCompleted","End of files");
+                Log.d("setCompleted","End of files");
                 break;
             }
             else {
@@ -671,7 +671,7 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
 
         // receive total
         long total = Misc.receiveTotalOrProgress(rs.i);
-//        Log.e("setCompleted ","Received total size: "+total);
+//        Log.d("setCompleted ","Received total size: "+total);
 
         return handleCompressProgressAfterConfOK(rs,total);
     }
@@ -857,7 +857,7 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
         int errno;
         StreamsPair rs = getStreams(path,true);
         req.write(rs.o);
-        Log.e("roothelperclient","Create request sent");
+        Log.d("roothelperclient","Create request sent");
         errno = receiveBaseResponse(rs.i);
         if (errno != 0) throw new IOException(fileOrDirectory.name().toLowerCase()+" creation error");
     }
@@ -925,7 +925,7 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
 
             // send request
             req.write(rs.o);
-            Log.e("roothelperclient","Del request sent");
+            Log.d("roothelperclient","Del request sent");
 
 
             // read responses (one item per file in directory)
@@ -936,7 +936,7 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
 
             switch(c) {
                 case RESPONSE_OK:
-                    Log.e("roothelper","OK returned from roothelper server for delete file: "+filePath.dir);
+                    Log.d("roothelper","OK returned from roothelper server for delete file: "+filePath.dir);
                     break;
                 case RESPONSE_ERROR:
                     byte[] errno_ = new byte[4];
@@ -1344,7 +1344,7 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
                 byte resp = rs.i.readByte();
                 if (resp != ControlCodes.RESPONSE_OK.getValue()) {
                     if (resp == ControlCodes.RESPONSE_HTTPS_END_OF_REDIRECTS.getValue()) {
-                        Log.e("RHHttpsClient","End of redirects");
+                        Log.d("RHHttpsClient","End of redirects");
                         break;
                     }
                     byte[] errno_ = new byte[4];
@@ -1355,11 +1355,11 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
                 }
                 byte[] tlsSessionHash = new byte[32];
                 rs.i.readFully(tlsSessionHash);
-                Log.e("RHHttpsClient","Client TLS session shared secret hash: "+Misc.toHexString(tlsSessionHash));
+                Log.d("RHHttpsClient","Client TLS session shared secret hash: "+Misc.toHexString(tlsSessionHash));
             }
 
             long downloadSize = Misc.receiveTotalOrProgress(rs.i);
-            Log.e("RHHttpsClient","Received download size is: "+downloadSize);
+            Log.d("RHHttpsClient","Received download size is: "+downloadSize);
 
             for(;;) {
                 long progress = Misc.receiveTotalOrProgress(rs.i);
@@ -1367,7 +1367,7 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
                 if (downloadSize > 0)
                     task.publishProgressWrapper((int) (progress * 100 / downloadSize));
             }
-            Log.e("RHHttpsClient","Download completed");
+            Log.d("RHHttpsClient","Download completed");
         }
     }
 

@@ -195,9 +195,9 @@ public class SFTPProviderUsingPathContent implements FileOperationHelperUsingPat
 //        }
 //    }
 
-    public SFTPProviderUsingPathContent(final Context context, final MainActivity mainActivity) {
+    public SFTPProviderUsingPathContent(final MainActivity mainActivity) {
         this.mainActivity = mainActivity;
-        sshIdsDir = new File(context.getFilesDir(),sshIdsDirName);
+        sshIdsDir = new File(mainActivity.getApplicationContext().getFilesDir(),sshIdsDirName);
         if (!sshIdsDir.exists()) sshIdsDir.mkdirs();
         knownHostsFile = new File(sshIdsDir,knownHostsFilename);
         if (!knownHostsFile.exists()) try {
@@ -208,7 +208,7 @@ public class SFTPProviderUsingPathContent implements FileOperationHelperUsingPat
 
         identities.clear();
         identities.addAll(Arrays.asList(sshIdsDir.listFiles(IdentitiesVaultAdapter.idFilter)));
-        dbh = new GenericDBHelper(context);
+        dbh = new GenericDBHelper(mainActivity.getApplicationContext());
         channels.clear();
     }
 
@@ -523,7 +523,7 @@ public class SFTPProviderUsingPathContent implements FileOperationHelperUsingPat
         for (String x : remotePaths) {
             try {
                 attrs = channelSftp.stat(x);
-//                Log.e(this.getClass().getName(),"item name: "+x+"\tattr type: "+attrs.getType());
+//                Log.d(this.getClass().getName(),"item name: "+x+"\tattr type: "+attrs.getType());
                 if (attrs.getType() == net.schmizz.sshj.sftp.FileMode.Type.DIRECTORY)
                      recursiveFolderDelete(channelSftp.getSFTPEngine(),x);
                 else channelSftp.rm(x);

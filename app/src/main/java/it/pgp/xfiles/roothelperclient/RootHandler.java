@@ -143,7 +143,7 @@ public class RootHandler {
                     break;
                 }
                 catch (IllegalThreadStateException e) {
-                    Log.e(RootHandler.class.getName(),"Waiting for roothelper process to start...");
+                    Log.d(RootHandler.class.getName(),"Waiting for roothelper process to start...");
                     LockSupport.parkNanos(100000000); // sleep 100 ms
                 }
                 pid = rh.checkConnection();
@@ -176,9 +176,8 @@ public class RootHandler {
                     break;
                 }
                 catch (IllegalThreadStateException e) {
-                    Log.e(RootHandler.class.getName(),"Waiting for roothelper process to start...");
+                    Log.d(RootHandler.class.getName(),"Waiting for roothelper process to start...");
                     LockSupport.parkNanos(100000000); // sleep 100 ms
-
                 }
                 pid = rh.checkConnection();
             }

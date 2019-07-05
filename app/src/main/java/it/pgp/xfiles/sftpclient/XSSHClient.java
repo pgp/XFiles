@@ -67,7 +67,7 @@ public class XSSHClient extends SSHClient implements AutoCloseable {
                 if (exitStatus==0) {
                     total = Long.valueOf(output);
                     total += totalFirstLevelRegularFiles;
-                    Log.e("TOTALTOTAL","Current total is "+total);
+                    Log.d("TOTALTOTAL","Current total is "+total);
                 }
             }
             catch (IOException e) {
@@ -100,7 +100,7 @@ public class XSSHClient extends SSHClient implements AutoCloseable {
                     for (String outputLine : outputLines) {
                         String[] sLine = outputLine.split("[ \t]");
                         if (sLine.length > 1) total += Long.valueOf(sLine[0]); // take only first cell, contains size
-                        else Log.e("TOTALSIZE","du returned success, but parsed line with less than 2 cells, ignoring it. Line is:\n"+outputLine);
+                        else Log.w("TOTALSIZE","du returned success, but parsed line with less than 2 cells, ignoring it. Line is:\n"+outputLine);
                     }
                     return total;
                 }

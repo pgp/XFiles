@@ -192,7 +192,7 @@ public class MainActivity extends EffectActivity {
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
                 if (msg.what == toastHandlerTag) {
-                    Log.e("handleMessage", "Received toastmessage");
+                    Log.d("handleMessage", "Received toastmessage");
                     Toast.makeText(context,""+msg.obj,Toast.LENGTH_SHORT).show();
                 }
             }
@@ -777,7 +777,7 @@ public class MainActivity extends EffectActivity {
         currentHelper = xFilesUtils; // start with non-root (Java) file ops helper
 
         smbProvider = new SmbProviderUsingPathContent(mainActivityContext,this);
-        sftpProvider = new SFTPProviderUsingPathContent(mainActivityContext,this);
+        sftpProvider = new SFTPProviderUsingPathContent(this);
         sftpRetryLsListener = new SftpRetryLsListener(this);
 
 
@@ -1099,7 +1099,7 @@ public class MainActivity extends EffectActivity {
 //                    try {
 ////                        for(int k=5;k>=0;k--) {
 ////                            Thread.sleep(1000);
-////                            Log.e("COPYTASK","sleeping... "+k);
+////                            Log.d("COPYTASK","sleeping... "+k);
 ////                        }
 //                        currentHelper.copyMoveFilesToDirectory(copyMoveList, destPath);
 //                        return 0;

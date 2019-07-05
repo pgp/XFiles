@@ -99,11 +99,11 @@ public class XREDirectShareActivity extends EffectActivity {
 
         // TODO bugfix: on Oreo, intent is redirected to compressActivity instead of arriving here
         if ("content".equals(uris.get(0).getScheme())) { // TODO check if condition is well written
-            Log.e("DIRECTSHARE", "Populating from content uris");
+            Log.d("DIRECTSHARE", "Populating from content uris");
             filesToUpload = CopyListUris.getFromUriList(uris);
         }
         else {
-            Log.e("DIRECTSHARE", "Populating from path uris");
+            Log.d("DIRECTSHARE", "Populating from path uris");
             Map.Entry<BasePathContent,List<String>> me = IntentUtil.getCommonAncestorAndItems(this,uris);
             filesToUpload_ = me.getValue();
             srcPath = me.getKey();

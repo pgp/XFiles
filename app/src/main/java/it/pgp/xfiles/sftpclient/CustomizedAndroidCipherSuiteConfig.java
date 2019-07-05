@@ -33,15 +33,6 @@ public class CustomizedAndroidCipherSuiteConfig
 
     @Override
     protected void initCipherFactories() {
-        // sshj 0.21.1
-//        setCipherFactories(
-//                new AES128CTR.Factory(),
-//                new AES192CTR.Factory(),
-//                new AES256CTR.Factory(),
-//                new AES128CBC.Factory(),
-//                new AES192CBC.Factory(),
-//                new AES256CBC.Factory());
-
         setCipherFactories(
                 BlockCiphers.AES128CTR(),
                 BlockCiphers.AES192CTR(),

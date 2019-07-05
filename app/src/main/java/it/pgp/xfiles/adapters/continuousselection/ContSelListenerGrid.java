@@ -37,7 +37,7 @@ public class ContSelListenerGrid extends ContSelListener {
     public void startSelectMode(int startPos) {
         super.startSelectMode(startPos);
         colsInRow = ((GridView)getLv()).getNumColumns();
-        Log.e("AAAAAAAAAAAAAAA", "colNum: "+colsInRow);
+        Log.d("ContSelMode", "colNum: "+colsInRow);
         this.startPos.set(intToPoint(startPos,colsInRow));
         destCheckStatus = !getInvSel();
         fillSelectionBeforeStart();
@@ -57,7 +57,7 @@ public class ContSelListenerGrid extends ContSelListener {
     public void ongoingSelectMode(int position_) {
         if (position_ < 0 || position_ >= objects.size() || position_ == pointToInt(p_1,colsInRow)) return;
 
-        Log.e("EEE", "Abs: "+position_+" p_1: "+p_1+"p_1_flat: "+pointToInt(p_1,colsInRow));
+        Log.d("ContSelMode", "Abs: "+position_+" p_1: "+p_1+"p_1_flat: "+pointToInt(p_1,colsInRow));
 
         atLeastOneMoveAfterDown = true;
         startFromInitialSelection();
