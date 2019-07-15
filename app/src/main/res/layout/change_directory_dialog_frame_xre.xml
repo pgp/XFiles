@@ -59,4 +59,30 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
+    <!-- stub textview for testing XRE announce -->
+
+    <!--<TextView-->
+        <!--android:text="XRE Announce message"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content" />-->
+
+    <!--<TextView-->
+        <!--android:id="@+id/xreAnnounceTextView"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content" />-->
+
+
+    <!-- Accumulates received XRE server announces (backed by a set structure), to be replaced by a more UI-friendly widget -->
+    <TextView
+        android:text="Announced XRE servers"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <Spinner
+        android:id="@+id/xreAnnouncesSpinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:drawable/btn_dropdown"
+        android:spinnerMode="dropdown" />
+
 </LinearLayout>

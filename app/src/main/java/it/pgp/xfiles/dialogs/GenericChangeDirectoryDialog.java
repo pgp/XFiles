@@ -3,6 +3,7 @@ package it.pgp.xfiles.dialogs;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -16,13 +17,19 @@ import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.nio.charset.StandardCharsets;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
+import java.util.zip.CRC32;
 
 import it.pgp.xfiles.MainActivity;
 import it.pgp.xfiles.R;
+import it.pgp.xfiles.adapters.XreAnnouncesAdapter;
 import it.pgp.xfiles.enums.FileOpsErrorCodes;
 import it.pgp.xfiles.enums.ProviderType;
 import it.pgp.xfiles.service.BaseBackgroundService;
@@ -32,6 +39,7 @@ import it.pgp.xfiles.sftpclient.AuthData;
 import it.pgp.xfiles.smbclient.SmbAuthData;
 import it.pgp.xfiles.utils.FavoritesList;
 import it.pgp.xfiles.utils.GenericDBHelper;
+import it.pgp.xfiles.utils.Misc;
 import it.pgp.xfiles.utils.pathcontent.ArchivePathContent;
 import it.pgp.xfiles.utils.pathcontent.BasePathContent;
 import it.pgp.xfiles.utils.pathcontent.LocalPathContent;
@@ -85,6 +93,82 @@ public class GenericChangeDirectoryDialog extends Dialog {
 //    EditText xreServerPort;
     EditText xreRemotePath;
     Map.Entry<String,String>[] xreItems;
+
+    final AdapterView.OnItemSelectedListener defaultSpinnerItemSelectListener = new AdapterView.OnItemSelectedListener() {
+        @Override
+        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            if (currentDirAutofillOverride) {
+                currentDirAutofillOverride = false;
+                return;
+            }
+
+            Map.Entry<String,String> item = (Map.Entry<String, String>) parent.getItemAtPosition(position);
+            xreServerHost.setText(item.getKey());
+            xreRemotePath.setText(item.getValue());
+        }
+
+        @Override
+        public void onNothingSelected(AdapterView<?> parent) {}
+    };
+
+    final AdapterView.OnItemSelectedListener defaultAnnounceSpinnerItemSelectListener = new AdapterView.OnItemSelectedListener() {
+        @Override
+        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            Map.Entry<String,String> item = (Map.Entry<String, String>) parent.getItemAtPosition(position);
+            xreServerHost.setText(item.getKey());
+            xreRemotePath.setText(item.getValue());
+        }
+
+        @Override
+        public void onNothingSelected(AdapterView<?> parent) {}
+    };
+
+    public static XFilesRemotePathContent fromXREAnnounce(DatagramPacket packet) {
+        try {
+            byte[] origin = packet.getData();
+            int o = packet.getOffset();
+            int l = packet.getLength();
+            byte[] receivedChecksum = new byte[4];
+            byte[] payload = new byte[l-4];
+            System.arraycopy(origin,o,receivedChecksum,0,4);
+            System.arraycopy(origin,o+4,payload,0,l-4);
+
+            // verify checksum
+            CRC32 crc = new CRC32();
+            crc.update(payload);
+            long computedChecksum = crc.getValue();
+            if (computedChecksum != Misc.castBytesToUnsignedNumber(receivedChecksum,4)) {
+                Log.e("XREANNOUNCE","Verification failed for XRE announce");
+                return null;
+            }
+
+            // format: 2 bytes for port, 2 bytes string length + host, 2 bytes string length + path
+            byte[] tmp = new byte[2];
+            System.arraycopy(payload,0,tmp,0,2);
+            int port = (int)Misc.castBytesToUnsignedNumber(tmp,2);
+            System.arraycopy(payload,2,tmp,0,2);
+            int hostLength = (int)Misc.castBytesToUnsignedNumber(tmp,2);
+            String host = new String(payload,4,hostLength, StandardCharsets.UTF_8);
+            System.arraycopy(payload,4+hostLength,tmp,0,2);
+            int pathLength = (int)Misc.castBytesToUnsignedNumber(tmp,2);
+            String path = new String(payload,6+hostLength,pathLength, StandardCharsets.UTF_8);
+
+            // while received in the UDP packet, port is still default (11111) hence ignored
+            return new XFilesRemotePathContent(host,path);
+        }
+        catch(Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static DatagramSocket xreAnnounceReceiveSocket;
+//    TextView xreAnnounceTextView; // stub textview for testing xre announce
+    Spinner xreAnnouncesSpinner;
+    final XreAnnouncesAdapter xreAnnouncesAdapter;
+    final Runnable xreAnnounceListenerRunnable;
+    Thread xreAnnounceListener;
+    //------------------------------//
 
     // smb remote dir
     Spinner smbStoredUsers;
@@ -225,6 +309,11 @@ public class GenericChangeDirectoryDialog extends Dialog {
                 xreServerHost = findViewById(R.id.xreConnectionDomainEditText);
 //                xreServerPort = findViewById(R.id.xreConnectionPortEditText);
                 xreRemotePath = findViewById(R.id.xreRemoteDirEditText);
+
+//                xreAnnounceTextView = findViewById(R.id.xreAnnounceTextView);
+                xreAnnouncesSpinner = findViewById(R.id.xreAnnouncesSpinner);
+                xreAnnouncesSpinner.setAdapter(xreAnnouncesAdapter);
+                xreAnnouncesSpinner.setOnItemSelectedListener(defaultAnnounceSpinnerItemSelectListener);
                 break;
             case SMB:
                 targetLayout = layoutInflater.inflate(R.layout.change_directory_dialog_frame_smb, null);
@@ -365,22 +454,7 @@ public class GenericChangeDirectoryDialog extends Dialog {
                         android.R.layout.simple_spinner_dropdown_item,
                         xreItems);
                 xreStoredData.setAdapter(xreAdapter);
-                xreStoredData.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                    @Override
-                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                        if (currentDirAutofillOverride) {
-                            currentDirAutofillOverride = false;
-                            return;
-                        }
-
-                        Map.Entry<String,String> item = (Map.Entry<String, String>) parent.getItemAtPosition(position);
-                        xreServerHost.setText(item.getKey());
-                        xreRemotePath.setText(item.getValue());
-                    }
-
-                    @Override
-                    public void onNothingSelected(AdapterView<?> parent) {}
-                });
+                xreStoredData.setOnItemSelectedListener(defaultSpinnerItemSelectListener);
 
                 break;
             case SMB:
@@ -493,6 +567,12 @@ public class GenericChangeDirectoryDialog extends Dialog {
 
         ((RadioButton)pathContentTypeSelector.getChildAt(providerType.ordinal())).setChecked(true);
 
+        if(providerType == ProviderType.XFILES_REMOTE) {
+            xreAnnounceListener = new Thread(xreAnnounceListenerRunnable);
+            xreAnnounceListener.start();
+        }
+        else if(xreAnnounceReceiveSocket != null)
+            xreAnnounceReceiveSocket.close();
     }
 
     public GenericChangeDirectoryDialog(MainActivity mainActivity, BasePathContent curDirPath) {
@@ -502,6 +582,39 @@ public class GenericChangeDirectoryDialog extends Dialog {
         this.curDirPath = curDirPath;
         dbh = new GenericDBHelper(mainActivity);
         layoutInflater = (LayoutInflater) mainActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+        final Map.Entry<String,String> emptyEntry = new AbstractMap.SimpleEntry<>("","");
+        final List tmp = new ArrayList<>();
+        tmp.add(emptyEntry);
+
+        xreAnnouncesAdapter = new XreAnnouncesAdapter(mainActivity,tmp);
+        xreAnnounceListenerRunnable = () -> {
+            try {
+                xreAnnounceReceiveSocket = new DatagramSocket(11111);
+                for(;;) {
+                    DatagramPacket data = new DatagramPacket(new byte[256], 256);
+                    xreAnnounceReceiveSocket.receive(data);
+                    String received = new String(data.getData(), data.getOffset(), data.getLength(), StandardCharsets.UTF_8);
+                    Log.e(getClass().getName(),received);
+
+                    XFilesRemotePathContent xrpc = fromXREAnnounce(data);
+                    if(xrpc != null) MainActivity.mainActivity.runOnUiThread(()-> {
+//                    xreRemotePath.setText(xrpc.dir);
+//                    xreServerHost.setText(xrpc.serverHost);
+//                        xreAnnounceTextView.setTextColor(R.color.green);
+//                        xreAnnounceTextView.setText("");
+                        xreAnnouncesAdapter.add(new AbstractMap.SimpleEntry<>(xrpc.serverHost,xrpc.dir));
+                    });
+//                    else MainActivity.mainActivity.runOnUiThread(()->{
+//                        xreAnnounceTextView.setTextColor(R.color.red);
+//                        xreAnnounceTextView.setText(received + " " + System.currentTimeMillis());
+//                    });
+                }
+            }
+            catch(Exception e) {
+                e.printStackTrace();
+            }
+        };
 
         setTitle("Change directory");
         setContentView(R.layout.change_directory_generic_dialog);
@@ -527,6 +640,8 @@ public class GenericChangeDirectoryDialog extends Dialog {
         setOnDismissListener(dialog->{
             wbl.unregisterListeners();
             MainActivity.cdd = null;
+            if(xreAnnounceReceiveSocket != null)
+                xreAnnounceReceiveSocket.close();
         });
     }
 

@@ -35,7 +35,8 @@ public class RemoteServerManager extends RemoteManager {
 
     private boolean start_rhss(String... servedDirectory) throws IOException {
         // start RH remote server instance
-        byte rq = (byte)(rq_byte ^ (7 << rq_bit_length)); // flags: 111
+//        byte rq = (byte)(rq_byte ^ (7 << rq_bit_length)); // flags: 111
+        byte rq = (byte)(rq_byte ^ (5 << rq_bit_length)); // flags: 101, start with UDP broadcast announce
         o.write(rq);
 
         byte serveCustom;
