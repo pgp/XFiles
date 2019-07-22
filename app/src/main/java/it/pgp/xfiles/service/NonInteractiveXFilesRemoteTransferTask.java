@@ -51,7 +51,7 @@ public class NonInteractiveXFilesRemoteTransferTask extends RootHelperClientTask
         }
         catch (NullPointerException n) {
             if (!(params.list instanceof CopyListUris)) throw n;
-            Log.e("XRETASK", "params contain content uris, defaulting action to upload...");
+            Log.d("XRETASK", "params contain content uris, defaulting action to upload...");
             action = ControlCodes.ACTION_UPLOAD;
         }
     }
@@ -64,7 +64,7 @@ public class NonInteractiveXFilesRemoteTransferTask extends RootHelperClientTask
     public void cancelTask() {
 //        super.cancelTask();
         status = ServiceStatus.CANCELLED;
-        Log.e("XRETASK","Interrupted, closing XRE client connection...");
+        Log.d("XRETASK","Interrupted, closing XRE client connection...");
         try {
             XFilesRemotePathContent xrePath = (params.destPath instanceof XFilesRemotePathContent)?
                     (XFilesRemotePathContent) params.destPath :

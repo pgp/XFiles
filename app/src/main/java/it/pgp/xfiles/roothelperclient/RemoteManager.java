@@ -29,13 +29,13 @@ public class RemoteManager extends StreamsPair {
                 defaultaddress.name(),
                 LocalSocketAddress.Namespace.ABSTRACT);
         clientSocket.connect(socketAddress);
-        Log.e(this.getClass().getName(),"Connected");
+        Log.d(this.getClass().getName(),"Connected");
 
         ls = clientSocket;
 
         o = clientSocket.getOutputStream();
         i = new DataInputStream(clientSocket.getInputStream());
-        Log.e(this.getClass().getName(),"Streams acquired");
+        Log.d(this.getClass().getName(),"Streams acquired");
     }
 
     @Override
@@ -49,7 +49,7 @@ public class RemoteManager extends StreamsPair {
 
         try {i.close();} catch (Exception ignored) {}
         try {o.close();} catch (Exception ignored) {}
-        Log.e(this.getClass().getName(),"Streams closed");
+        Log.d(this.getClass().getName(),"Streams closed");
     }
 
     int receiveBaseResponse() throws IOException {

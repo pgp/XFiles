@@ -19,7 +19,7 @@ public class XRE_RHSS_Widget extends AppWidgetProvider {
     private static final String onDemand = "it.pgp.xfiles.appwidget.action.ON_DEMAND_UPDATE";
 
     public static void updateAllDirect(Context context) {
-        Log.e(XRE_RHSS_Widget.class.getName(),"updateAllDirect");
+        Log.d(XRE_RHSS_Widget.class.getName(),"updateAllDirect");
         AppWidgetManager widgetManager = AppWidgetManager.getInstance(context);
         int[] ids = widgetManager.getAppWidgetIds(new ComponentName(context, XRE_RHSS_Widget.class));
         widgetManager.notifyAppWidgetViewDataChanged(ids, android.R.id.list);
@@ -57,7 +57,7 @@ public class XRE_RHSS_Widget extends AppWidgetProvider {
     public void onReceive(Context context, Intent intent) {
         super.onReceive(context, intent);
         String a = intent.getAction();
-        Log.e("XRE_RHSS","onReceive action: "+intent.getAction());
+        Log.d("XRE_RHSS","onReceive action: "+intent.getAction());
         if (a == null) return;
         if (MainActivity.mainActivityContext == null) {
             MainActivity.mainActivityContext = context; // hack, to let RHSSUpdateThread be able to refresh widgets without an alive activity
@@ -66,22 +66,22 @@ public class XRE_RHSS_Widget extends AppWidgetProvider {
         try {
             switch (a) {
                 case standard:
-                    Log.e("XRE_RHSS","standard");
+                    Log.d("XRE_RHSS","standard");
                     break;
                 case onDemand:
-                    Log.e("XRE_RHSS","onDemand: toggle server status");
+                    Log.d("XRE_RHSS","onDemand: toggle server status");
                     // FIXME TODO
                     if (RemoteServerManager.rhssManagerThreadRef.get() == null) {
                         MainActivity.getRootHelperClient(context);
-                        int result = RemoteServerManager.rhss_action(RemoteServerManager.RHSS_ACTION.START);
-                        Log.e("XRE_RHSS", "onDemand toggle result (->ON): "+result);
+                        int result = RemoteServerManager.rhss_action(RemoteServerManager.RHSS_ACTION.START_ANNOUNCE);
+                        Log.d("XRE_RHSS", "onDemand toggle result (->ON): "+result);
                     }
                     else {
                         if (MainActivity.mainActivity == null)
                             MainActivity.killRHWrapper();
                         else {
                             int result = RemoteServerManager.rhss_action(RemoteServerManager.RHSS_ACTION.STOP);
-                            Log.e("XRE_RHSS", "onDemand toggle result (->OFF): "+result);
+                            Log.d("XRE_RHSS", "onDemand toggle result (->OFF): "+result);
                         }
 
                     }

@@ -8,7 +8,7 @@
     <!--checkboxes are not inflatable in widgets, cannot use common layout with disabled visibility-->
     <!--<include layout="@layout/xre_rhss_button_and_active_ips" />-->
 
-
+    <!-- In widget mode, XRE announce is enabled by default -->
 
     <LinearLayout
         android:orientation="horizontal"

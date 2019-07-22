@@ -1297,7 +1297,7 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
     }
 
     public void killServer() throws IOException {
-        Log.e("RHClient","killserver invoked!!!!!!!!!!!!!!!");
+        Log.d("RHClient","killserver invoked!!!!!!!!!!!!!!!");
         StreamsPair rs = getStreams();
         byte end = ControlCodes.ACTION_EXIT.getValue();
         rs.o.write(end);
@@ -1316,7 +1316,7 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
      * not used anymore, rh server is multithreaded
      */
     public int killRHProcess(long pid, SocketNames name) {
-        Log.e("RHClient","kill invoked on pid "+pid);
+        Log.d("RHClient","kill invoked on pid "+pid);
         try (StreamsPair rs = getStreams()) {
             rs.o.write(ControlCodes.ACTION_KILL.getValue());
             rs.o.write(Misc.castUnsignedNumberToBytes(pid,4)); // PID

@@ -21,6 +21,7 @@
     <string name="smb_default_domain">WORKGROUP</string>
     <string name="dest_archive_filename_header">archive</string>
     <string name="serve_only_current_directory">Serve only current directory:</string>
+    <string name="send_xre_announce">Send XRE server announce</string>
     <string name="appwidget_text">EXAMPLE</string>
     <string name="add_widget">Add widget</string>
     <string name="permission_storage_explain">XFiles is a file explorer, so it obviously needs permissions to access storage. Without this permission, the app will not start</string>

@@ -79,9 +79,9 @@ public class ContSelListenerGrid extends ContSelListener {
 
     @Override
     public void endSelectMode(int endPos) {
-        // Log.e("SelectModeEnd", "SelectModeEnd");
+        Log.d("SelectModeEnd", "SelectModeEnd");
         if (!active) {
-            // Log.e("MOTION", "Repeated ACTION_UP events (multitouch?), ignoring...");
+            Log.d("MOTION", "Repeated ACTION_UP events (multitouch?), ignoring...");
             return;
         }
         if (startPos.equals(intToPoint(endPos,colsInRow)) && !atLeastOneMoveAfterDown) {

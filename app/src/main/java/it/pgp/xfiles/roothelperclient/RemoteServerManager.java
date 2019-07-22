@@ -33,10 +33,11 @@ public class RemoteServerManager extends RemoteManager {
         super();
     }
 
-    private boolean start_rhss(String... servedDirectory) throws IOException {
+    private boolean start_rhss(boolean announce, String... servedDirectory) throws IOException {
         // start RH remote server instance
-//        byte rq = (byte)(rq_byte ^ (7 << rq_bit_length)); // flags: 111
-        byte rq = (byte)(rq_byte ^ (5 << rq_bit_length)); // flags: 101, start with UDP broadcast announce
+        byte rq = announce?
+                (byte)(rq_byte ^ (5 << rq_bit_length)) : // flags: 101, start with UDP broadcast announce
+                (byte)(rq_byte ^ (7 << rq_bit_length)); // flags: 111, no announce
         o.write(rq);
 
         byte serveCustom;
@@ -101,24 +102,27 @@ public class RemoteServerManager extends RemoteManager {
     ////////////////////////////////////
     // methods with auto-close after request send
 
-    public enum RHSS_ACTION {START,STOP,STATUS}
+    public enum RHSS_ACTION {START,START_ANNOUNCE,STOP,STATUS}
 
     public static int rhss_action(RHSS_ACTION action, String... servedDirectory) {
-        if (action == RHSS_ACTION.START) {
-            // without auto-close
-            try {return (new RemoteServerManager().start_rhss(servedDirectory)) ? 1 : 0;}
-            catch (IOException e) {return -1;}
-        }
-        else {
-            // with auto-close
-            try(RemoteServerManager r = new RemoteServerManager()) {
-                switch (action) {
-                    case STOP: return r.stop_rhss()?1:0;
-                    case STATUS: return r.status_rhss()?1:0;
+        switch (action) {
+            case START:
+            case START_ANNOUNCE:
+                // without auto-close
+                try {return (new RemoteServerManager().start_rhss(action==RHSS_ACTION.START_ANNOUNCE,servedDirectory)) ? 1 : 0;}
+                catch (IOException e) {return -1;}
+            case STOP:
+            case STATUS:
+                // with auto-close
+                try(RemoteServerManager r = new RemoteServerManager()) {
+                    switch (action) {
+                        case STOP: return r.stop_rhss()?1:0;
+                        case STATUS: return r.status_rhss()?1:0;
+                    }
                 }
-            }
-            catch (IOException ignored) {}
-            return -1;
+                catch (IOException ignored) {}
+            default:
+                return -1;
         }
     }
     ////////////////////////////////////
@@ -186,7 +190,7 @@ public class RemoteServerManager extends RemoteManager {
                 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
                 // update on-screen widgets
                 if (MainActivity.mainActivityContext != null) {
-                    Log.e("XRE_RHSS","refreshing XRE widget (-> ON)");
+                    Log.d("XRE_RHSS","refreshing XRE widget (-> ON)");
                     XRE_RHSS_Widget.updateAllDirect(MainActivity.mainActivityContext);
                 }
                 else {
@@ -220,7 +224,7 @@ public class RemoteServerManager extends RemoteManager {
                         onClientDisconnect(clientIP);
                     }
 
-                    Log.e(this.getClass().getName(),message);
+                    Log.d(this.getClass().getName(),message);
                     final String msg = message;
 
                     // to be replaced with onClientUpdate
@@ -229,7 +233,7 @@ public class RemoteServerManager extends RemoteManager {
                 }
             }
             catch (Throwable t) {
-                Log.e(this.getClass().getName(),"Local socket closed by rhss server or other exception, exiting...");
+                Log.d(this.getClass().getName(),"Local socket closed by rhss server or other exception, exiting...");
                 if (!(t instanceof IOException)) t.printStackTrace();
                 // no need for finally, thread always exits with exception
                 close();
@@ -247,12 +251,12 @@ public class RemoteServerManager extends RemoteManager {
                 if (rhssLocalContext != null) {
                     // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
                     // update on-screen widgets, if any, as well
-                    Log.e("XRE_RHSS","refreshing XRE widget (-> OFF)");
+                    Log.d("XRE_RHSS","refreshing XRE widget (-> OFF)");
                     XRE_RHSS_Widget.updateAllDirect(rhssLocalContext);
                     // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
                 }
 
-                Log.e(this.getClass().getName(),"Really exiting update thread now!");
+                Log.d(this.getClass().getName(),"Really exiting update thread now!");
             }
         }
     }

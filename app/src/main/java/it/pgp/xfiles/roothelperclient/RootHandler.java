@@ -50,7 +50,7 @@ public class RootHandler {
         for (String where : places) {
             if ( new File( where + binaryName ).exists() ) {
                 found = true;
-                Log.e(RootHandler.class.getName(),"su binary found at "+where);
+                Log.d(RootHandler.class.getName(),"su binary found at "+where);
                 break;
             }
         }

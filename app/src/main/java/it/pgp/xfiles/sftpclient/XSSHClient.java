@@ -168,12 +168,12 @@ public class XSSHClient extends SSHClient implements AutoCloseable {
                             "(@for /F \"delims=\" %i in ( ' dir /s /a /-c \"" + path.getKey() + "\" ' ) do " +
                             "@( @set pline=!cline! & @set cline=%i)) & " +
                             "@echo !pline!\"";
-                    Log.e(getClass().getName(),"dir cmd is: "+dircmd);
+                    Log.d(getClass().getName(),"dir cmd is: "+dircmd);
 
                     try (Session.Command cmd = helperSession.exec(dircmd);
                          InputStream is = cmd.getInputStream()) {
                         String commandOutput = IOUtils.readFully(is).toString().trim();
-                        Log.e(getClass().getName(),"dir cmd output is: "+commandOutput);
+                        Log.d(getClass().getName(),"dir cmd output is: "+commandOutput);
                         long exitStatus = cmd.getExitStatus();
                         if (exitStatus != 0) return -1;
                         else {

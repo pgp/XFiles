@@ -39,19 +39,27 @@ public class RemoteRHServerManagementDialog extends Dialog {
     private TextView rhssServeOnlyCurrentDirectoryTextView;
     private CheckBox rhssServeOnlyCurrentDirectoryCheckBox;
 
+    private CheckBox rhssSendXreAnnounceCheckbox;
+    private static RemoteServerManager.RHSS_ACTION lastStartAction = null; // can be START or START_ANNOUNCE
+
     private String candidateLocalPath;
     private TextView rhssIPAddresses;
 
     private void switch_rhss_status(View unused) {
         if (RemoteServerManager.rhssManagerThreadRef.get()==null) { // OFF -> ON
-            int result = RemoteServerManager.rhss_action(
-                            RemoteServerManager.RHSS_ACTION.START,
-                            rhssServeOnlyCurrentDirectoryCheckBox.isChecked()?candidateLocalPath:"");
+            RemoteServerManager.RHSS_ACTION targetAction =
+                    (rhssSendXreAnnounceCheckbox!=null && rhssSendXreAnnounceCheckbox.isChecked())?
+                            RemoteServerManager.RHSS_ACTION.START_ANNOUNCE:
+                            RemoteServerManager.RHSS_ACTION.START;
+            int result = RemoteServerManager.rhss_action(targetAction,
+                    rhssServeOnlyCurrentDirectoryCheckBox.isChecked()?candidateLocalPath:"");
 
             switch (result) {
                 case 1:
                     Toast.makeText(activity, "Remote RH server started", Toast.LENGTH_SHORT).show();
                     rhss_status_button.setImageResource(R.drawable.xf_xre_server_up);
+                    rhssSendXreAnnounceCheckbox.setEnabled(false);
+                    lastStartAction = targetAction;
                     rhssServeOnlyCurrentDirectoryCheckBox.setEnabled(false);
                     rhssIPAddresses.setText(getInterfaceAddressesAsString());
                     break;
@@ -70,6 +78,7 @@ public class RemoteRHServerManagementDialog extends Dialog {
                 case 1:
                     Toast.makeText(activity, "Remote RH server stopped", Toast.LENGTH_SHORT).show();
                     rhss_status_button.setImageResource(R.drawable.xf_xre_server_down);
+                    rhssSendXreAnnounceCheckbox.setEnabled(true);
                     rhssServeOnlyCurrentDirectoryCheckBox.setEnabled(true);
                     // reload current directory path, which may have changed between the two dialog openings
                     rhssServeOnlyCurrentDirectoryTextView.setText(R.string.serve_only_current_directory);
@@ -159,12 +168,15 @@ public class RemoteRHServerManagementDialog extends Dialog {
         rhssServeOnlyCurrentDirectoryTextView = findViewById(R.id.rhssServeOnlyCurrentDirectoryTextView);
         rhssServeOnlyCurrentDirectoryCheckBox = findViewById(R.id.rhssServeOnlyCurrentDirectoryCheckBox);
 
+        rhssSendXreAnnounceCheckbox = findViewById(R.id.rhssAnnounceOptionCheckBox);
+
         // check rhss manager thread status
         if (RemoteServerManager.rhssManagerThreadRef.get() == null) {
             rhss_status_button.setImageResource(R.drawable.xf_xre_server_down);
             // for robustness, better to ask rh directly if rhss remote server is active
 
             setCandidateLocalPath(); // doesn't set anything if we are on a non-local path
+            rhssSendXreAnnounceCheckbox.setEnabled(true);
             rhssServeOnlyCurrentDirectoryCheckBox.setEnabled(true);
             rhssServeOnlyCurrentDirectoryCheckBox.setChecked(false);
             rhssServeOnlyCurrentDirectoryTextView.setText(
@@ -177,6 +189,8 @@ public class RemoteRHServerManagementDialog extends Dialog {
             rhssIPAddresses.setText(getInterfaceAddressesAsString());
             rhssServeOnlyCurrentDirectoryCheckBox.setChecked(
                     !RHSSServerStatus.currentlyServedLocalPath.isEmpty());
+            rhssSendXreAnnounceCheckbox.setEnabled(false);
+            rhssSendXreAnnounceCheckbox.setChecked(lastStartAction != RemoteServerManager.RHSS_ACTION.START);
             rhssServeOnlyCurrentDirectoryCheckBox.setEnabled(false);
             rhssServeOnlyCurrentDirectoryTextView.setText(
                     rhssServeOnlyCurrentDirectoryTextView.getText().toString()+"\n"+
