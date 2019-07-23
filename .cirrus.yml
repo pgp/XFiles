@@ -1,0 +1,20 @@
+container:
+  image: cirrusci/android-sdk:28
+  cpu: 4
+  memory: 10G
+
+check_android_task:
+  ndk_install_script:
+    - echo y | sdkmanager "tools"
+    - echo y | sdkmanager "platform-tools"
+    - echo y | sdkmanager "tools"
+    - echo y | sdkmanager "build-tools;28.0.3"
+    - echo y | sdkmanager "platforms;android-28"
+    - echo y | sdkmanager "ndk-bundle"
+    - echo y | sdkmanager "cmake;3.10.2.4988404"
+    - echo y | sdkmanager "lldb;3.1"
+  
+  assemble_script:
+    - export PATH=$PATH:$ANDROID_HOME/ndk-bundle
+    - export LOWPERF=true
+    - ./gradlew clean assemble
