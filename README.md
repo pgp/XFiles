@@ -4,6 +4,7 @@ A general-purpose file explorer for (rooted) Android, with support for compresse
 
 [![API](https://img.shields.io/badge/API-19%2B-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=19)
 [![Build Status](https://travis-ci.org/pgp/XFiles.svg?branch=master)](https://travis-ci.org/pgp/XFiles)
+[![Cirrus Build Status](https://api.cirrus-ci.com/github/pgp/XFiles.svg)](https://cirrus-ci.com/github/pgp/XFiles)
 
 [<img src="https://i.ibb.co/74VcyM3/00mainview.jpg" alt="00mainview" width="120" border="0">](https://ibb.co/wsCH6Gn)
 [<img src="https://i.ibb.co/HG8Fz6r/00mainviewgrid.jpg" alt="00mainviewgrid" width="120" border="0">](https://ibb.co/nQJgc9D)
