@@ -18,6 +18,7 @@
     <!-- for (local) wifi hotspot toggle from Android O onwards -->
     <application
         android:allowBackup="true"
+        android:usesCleartextTraffic="true"
         android:icon="@drawable/xfiles_new_app_icon"
         android:label="@string/app_name"
         android:supportsRtl="true"

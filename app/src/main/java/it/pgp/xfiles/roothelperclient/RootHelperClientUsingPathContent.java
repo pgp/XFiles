@@ -1330,14 +1330,14 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
     }
 
     // Using RH's internal HTTPS client, fileLength
-    public void downloadHttpsUrl(String url, int port, String destPath, String targetFilename) throws IOException {
+    public void downloadHttpsUrl(String url, int port, String destPath, String[] targetFilename) throws IOException {
         try(StreamsPair rs = getStreams()) {
             try (FlushingBufferedOutputStream nbf = new FlushingBufferedOutputStream(rs.o)) { // send a single packet instead of multiple ones
                 nbf.write(ControlCodes.ACTION_HTTPS_URL_DOWNLOAD.getValue());
                 Misc.sendStringWithLen(nbf,url);
                 nbf.write(Misc.castUnsignedNumberToBytes(port,2));
                 Misc.sendStringWithLen(nbf,destPath);
-                Misc.sendStringWithLen(nbf,targetFilename);
+                Misc.sendStringWithLen(nbf,targetFilename[0]);
             }
 
             for(;;) {
@@ -1358,6 +1358,7 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
                 Log.d("RHHttpsClient","Client TLS session shared secret hash: "+Misc.toHexString(tlsSessionHash));
             }
 
+            targetFilename[0] = Misc.receiveStringWithLen(rs.i); // Receive possibly updated filename string from rh
             long downloadSize = Misc.receiveTotalOrProgress(rs.i);
             Log.d("RHHttpsClient","Received download size is: "+downloadSize);
 

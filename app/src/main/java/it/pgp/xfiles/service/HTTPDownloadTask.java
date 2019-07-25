@@ -1,5 +1,6 @@
 package it.pgp.xfiles.service;
 
+import android.webkit.URLUtil;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -24,24 +25,12 @@ public class HTTPDownloadTask extends RootHelperClientTask {
     DownloadParams params;
     private BasePathContent currentDir;
 
-    String targetFileName,targetFileNameOnly;
+    String targetFileName;
+    final String[] targetFileNameOnly = new String[]{null};
 
     HTTPDownloadTask(Serializable params) {
         super(params);
         this.params = (DownloadParams) params;
-    }
-
-    private String getRemoteFilename(HttpURLConnection connection) {
-        String filename = null;
-        String raw = connection.getHeaderField("Content-Disposition");
-        if (raw != null && raw.contains("="))
-            filename = raw.split("=")[1];
-        if (filename == null) {
-            String[] chunks = params.url.split("/");
-            if (chunks.length != 0)
-                filename = chunks[chunks.length-1]!=null?chunks[chunks.length-1]:"file.bin";
-        }
-        return filename;
     }
 
     @Override
@@ -93,14 +82,17 @@ public class HTTPDownloadTask extends RootHelperClientTask {
                 // might be -1: server did not report the length
                 int fileLength = connection.getContentLength();
 
+
                 if (params.filename != null && !params.filename.equals("")) {
                     targetFileName = params.filename;
                 }
                 else {
-                    targetFileName = getRemoteFilename(connection);
+                    targetFileName = URLUtil.guessFileName(url.toString(),connection.getHeaderField("Content-Disposition"),null);
+                    if(targetFileName==null) targetFileName = "file.bin";
+//                  targetFileName = getRemoteFilename(connection);
                 }
 
-                targetFileNameOnly = targetFileName;
+                targetFileNameOnly[0] = targetFileName;
 
                 if (params.destPath != null && !params.destPath.equals("")) {
                     targetFileName = params.destPath.concat(targetFileName);
@@ -138,9 +130,9 @@ public class HTTPDownloadTask extends RootHelperClientTask {
                     else params.destPath = "/sdcard";
                 }
             }
-            targetFileNameOnly = params.filename==null?"":params.filename;
+            targetFileNameOnly[0] = params.filename==null?"":params.filename;
             try {
-                rh.downloadHttpsUrl(params.url,443,params.destPath,targetFileNameOnly);
+                rh.downloadHttpsUrl(params.url,443,params.destPath,targetFileNameOnly); // here pass String array, content will be replaced with guessed or same input filename
             }
             catch (IOException e) {
                 e.printStackTrace();
@@ -161,7 +153,7 @@ public class HTTPDownloadTask extends RootHelperClientTask {
             if (activity == null) return; // activity closed while service active, nothing to refresh
             BasePathContent cd = activity.getCurrentDirCommander().getCurrentDirectoryPathname();
             if (cd.equals(currentDir))
-                activity.browserPagerAdapter.showDirContent(activity.getCurrentDirCommander().refresh(),activity.browserPager.getCurrentItem(),targetFileNameOnly);
+                activity.browserPagerAdapter.showDirContent(activity.getCurrentDirCommander().refresh(),activity.browserPager.getCurrentItem(),targetFileNameOnly[0]);
         }
         else {
             Toast.makeText(service, "Download error", Toast.LENGTH_SHORT).show();
