@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import it.pgp.xfiles.roothelperclient.ControlCodes;
+import it.pgp.xfiles.roothelperclient.ResponseCodes;
 
 /**
  * Created by pgp on 23/06/17
@@ -64,7 +64,7 @@ public class Misc {
 
     public static int receiveBaseResponse(DataInputStream i) throws IOException {
         byte resp = i.readByte();
-        ControlCodes c = ControlCodes.getCode(resp);
+        ResponseCodes c = ResponseCodes.getCode(resp);
 
         if(c != null) {
             switch (c) {

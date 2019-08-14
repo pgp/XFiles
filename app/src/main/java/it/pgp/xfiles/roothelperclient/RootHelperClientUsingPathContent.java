@@ -308,9 +308,13 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
 
             // TODO response byte to be embedded in response classes (maybe also request byte)
             byte responseByte = rs.i.readByte();
-            ControlCodes c = ControlCodes.getCode(responseByte);
+            ResponseCodes c = ResponseCodes.getCode(responseByte);
 
             switch(c) {
+                case RESPONSE_REDIRECT:
+                    // read and replace redirect path before directory content
+                    dirPath.dir = Misc.receiveStringWithLen(rs.i);
+                    // missing break statement is intentional here
                 case RESPONSE_OK:
                     dirContent = assembleContentFromLsResps(rs.i);
                     break;
@@ -932,7 +936,7 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
             // read control byte (ok or error)
 
             byte responseByte = rs.i.readByte();
-            ControlCodes c = ControlCodes.getCode(responseByte);
+            ResponseCodes c = ResponseCodes.getCode(responseByte);
 
             switch(c) {
                 case RESPONSE_OK:
@@ -1342,8 +1346,8 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
 
             for(;;) {
                 byte resp = rs.i.readByte();
-                if (resp != ControlCodes.RESPONSE_OK.getValue()) {
-                    if (resp == ControlCodes.RESPONSE_HTTPS_END_OF_REDIRECTS.getValue()) {
+                if (resp != ResponseCodes.RESPONSE_OK.getValue()) {
+                    if (resp == ((byte)0x11)) { // RESPONSE_HTTPS_END_OF_REDIRECTS
                         Log.d("RHHttpsClient","End of redirects");
                         break;
                     }

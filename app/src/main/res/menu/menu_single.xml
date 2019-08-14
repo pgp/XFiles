@@ -41,6 +41,14 @@
         android:icon="@android:drawable/ic_menu_edit"
         android:title="Share" />
 
+    <item android:id="@+id/itemShareOverHTTP"
+        android:icon="@android:drawable/ic_menu_edit"
+        android:title="Share over HTTP" />
+
+    <item android:id="@+id/itemShareOverFTP"
+        android:icon="@android:drawable/ic_menu_edit"
+        android:title="Share over FTP" />
+
     <item android:id="@+id/itemProperties"
         android:icon="@android:drawable/ic_menu_info_details"
         android:title="Properties" />

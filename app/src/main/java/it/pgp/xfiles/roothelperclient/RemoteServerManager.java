@@ -33,28 +33,27 @@ public class RemoteServerManager extends RemoteManager {
         super();
     }
 
-    private boolean start_rhss(boolean announce, String... servedDirectory) throws IOException {
+    /**
+     *  servedPaths:
+     *  - home (default) path - xre server will leave it unchanged if sent empty
+     *  - announced path
+     *  - exposed path - no restrictions if sent empty
+     */
+    private boolean start_rhss(boolean announce, String... servedPaths) throws IOException {
         // start RH remote server instance
         byte rq = announce?
                 (byte)(rq_byte ^ (5 << rq_bit_length)) : // flags: 101, start with UDP broadcast announce
                 (byte)(rq_byte ^ (7 << rq_bit_length)); // flags: 111, no announce
         o.write(rq);
 
-        byte serveCustom;
-        // send byte to indicate whether current dir is to be served or not
-        // send served directory if present
-        if (servedDirectory.length > 0) {
-            serveCustom = (byte)0xFF;
-            o.write(serveCustom);
-            byte[] bb = servedDirectory[0].getBytes();
-            byte[] tmp = Misc.castUnsignedNumberToBytes(bb.length,2);
-            o.write(tmp);
-            o.write(bb);
-        }
-        else {
-            serveCustom = 0x00;
-            o.write(serveCustom);
-        }
+        if(servedPaths.length == 0)
+            servedPaths = new String[]{"","",""};
+
+        if(servedPaths.length != 3)
+            throw new RuntimeException("Invalid number of arguments in start_rhss");
+
+        for(int i=0;i<3;i++)
+            Misc.sendStringWithLen(o,servedPaths[i]);
 
         int resp = receiveBaseResponse();
         if (resp != 0) {
@@ -63,7 +62,7 @@ public class RemoteServerManager extends RemoteManager {
         }
         // ok, streams connected and RH remote server instance started
         // now, start rhss update thread
-        RHSSServerStatus.createServer(servedDirectory.length==0?"":servedDirectory[0]);
+        RHSSServerStatus.createServer(servedPaths.length==0?"":servedPaths[0]);
         new RHSSUpdateThread().start();
         return true;
     }
@@ -104,12 +103,12 @@ public class RemoteServerManager extends RemoteManager {
 
     public enum RHSS_ACTION {START,START_ANNOUNCE,STOP,STATUS}
 
-    public static int rhss_action(RHSS_ACTION action, String... servedDirectory) {
+    public static int rhss_action(RHSS_ACTION action, String... servedPaths) {
         switch (action) {
             case START:
             case START_ANNOUNCE:
                 // without auto-close
-                try {return (new RemoteServerManager().start_rhss(action==RHSS_ACTION.START_ANNOUNCE,servedDirectory)) ? 1 : 0;}
+                try {return (new RemoteServerManager().start_rhss(action==RHSS_ACTION.START_ANNOUNCE,servedPaths)) ? 1 : 0;}
                 catch (IOException e) {return -1;}
             case STOP:
             case STATUS:
@@ -162,28 +161,15 @@ public class RemoteServerManager extends RemoteManager {
     }
 
     // inner thread to be started only after rhss server start, to receive client connect/disconnect updates
-    public class RHSSUpdateThread extends Thread /*implements AutoCloseable*/ {
-//        @Override
-//        public void close() {
-//            RemoteServerManager.this.close();
-//        }
+    public class RHSSUpdateThread extends Thread {
         private Context rhssLocalContext;
 
         @Override
         public void run() {
             try {
-                // LEGACY
-//                boolean ok = false;
-//                Thread current = rhssManagerThreadRef.get();
-//                if (current == null) {
-//                    while(!ok) ok = rhssManagerThreadRef.compareAndSet(null,this);
-//                }
-//                else error Toast
-
                 // strong cas, a thread is guaranteed to win
                 if (!rhssManagerThreadRef.compareAndSet(null,this)) {
                     MainActivity.showToastOnUIWithHandler("Another rhss thread is already receiving updates");
-//                    MainActivity.mainActivity.runOnUiThread(() -> Toast.makeText(MainActivity.mainActivity, "Another rhss thread is already receiving updates", Toast.LENGTH_LONG).show());
                     return;
                 }
 
@@ -229,7 +215,6 @@ public class RemoteServerManager extends RemoteManager {
 
                     // to be replaced with onClientUpdate
                     MainActivity.showToastOnUIWithHandler(msg);
-//                    MainActivity.mainActivity.runOnUiThread(() -> Toast.makeText(MainActivity.mainActivity, msg, Toast.LENGTH_LONG).show());
                 }
             }
             catch (Throwable t) {

@@ -6,10 +6,6 @@ import java.util.Map;
 /**
  * Created by pgp on 21/01/17
  * (corresponding to common_uds.h in C roothelper project)
- *
- * Oracle's shit design strikes again - cannot have public enum
- * constructors, so in order to switch between response codes we have to flatten the roothelper package
- * (no reqs and resps subpackages) - better solution: public static map of bytes-enums
  */
 
 public enum ControlCodes {
@@ -34,8 +30,7 @@ public enum ControlCodes {
     ACTION_DOWNLOAD((byte)0x10),
     ACTION_UPLOAD((byte)0x11),
 
-    REMOTE_SERVER_MANAGEMENT((byte)0x12), // flags: 000: stop, 111: start, 010: get status
-//    REMOTE_STOPSERVER((byte)0x13),
+    REMOTE_SERVER_MANAGEMENT((byte)0x12), // flags: 000: stop, 111: start, 101: start with announce, 010: get status
 
     REMOTE_CONNECT((byte)0x14),
 
@@ -48,12 +43,7 @@ public enum ControlCodes {
     ACTION_HTTPS_URL_DOWNLOAD((byte)0x18),
 
 //    ACTION_CANCEL((byte)0x1E),
-    ACTION_EXIT((byte)0x1F),
-
-    // responses (full byte)
-    RESPONSE_HTTPS_END_OF_REDIRECTS((byte)0x11),
-    RESPONSE_OK((byte)0x00),
-    RESPONSE_ERROR((byte)0xFF);
+    ACTION_EXIT((byte)0x1F);
 
     final byte value;
     static final Map<Byte,ControlCodes> codeMap = new HashMap<Byte,ControlCodes>(){{

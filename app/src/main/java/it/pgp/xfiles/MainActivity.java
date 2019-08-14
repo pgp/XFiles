@@ -34,6 +34,7 @@ import android.view.View;
 import android.webkit.MimeTypeMap;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -532,6 +533,18 @@ public class MainActivity extends EffectActivity {
                 sharingIntent.putExtra(Intent.EXTRA_STREAM, sharingUri);
                 sharingIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 startActivity(Intent.createChooser(sharingIntent, "Share file using"));
+                return true;
+            case R.id.itemShareOverHTTP:
+            case R.id.itemShareOverFTP:
+                b = getCurrentBrowserAdapter().getItem(info.position);
+                path = path.concat(b.filename);
+                new RemoteRHServerManagementDialog(MainActivity.this);
+                // TODO LOCAL PROVIDER CHECK
+                ((EditText)RemoteRHServerManagementDialog.instance.findViewById(R.id.ftpHttpRootPath)).setText(path.dir);
+                RemoteRHServerManagementDialog.instance.show();
+                // autostart HTTP/FTP server
+                RemoteRHServerManagementDialog.instance.findViewById(item.getItemId()==R.id.itemShareOverHTTP?
+                        R.id.httpServerButton:R.id.ftpServerButton).performClick();
                 return true;
             case R.id.itemProperties:
                 b = getCurrentBrowserAdapter().getItem(info.position);
