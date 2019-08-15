@@ -48,6 +48,7 @@ public class XFilesRemotePathContent extends BasePathContent {
     public BasePathContent getParent() {
         if (dir==null || dir.equals("/") || dir.equals("")) return null;
         int idx = dir.lastIndexOf('/');
+        if(idx==0) return new XFilesRemotePathContent(serverHost,"/");
         return new XFilesRemotePathContent(serverHost,dir.substring(0,idx));
     }
 
