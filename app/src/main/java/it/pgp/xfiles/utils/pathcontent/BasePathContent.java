@@ -31,13 +31,14 @@ public abstract class BasePathContent implements Serializable {
 
     public BasePathContent(String dir, ProviderType providerType) {
         this.providerType = providerType;
-        if (dir == null || dir.equals("")) this.dir = "/";
+        // not the best solution (embed subclass logic in the parent class),
+        // just to avoid duplicating this check in all subclasses
+        if (providerType != ProviderType.XFILES_REMOTE && (dir == null || dir.equals(""))) this.dir = "/";
         else {
             this.dir = dir;
 //            if(this.dir.endsWith("/") && !this.dir.equals("/"))
 //                this.dir = this.dir.substring(0,this.dir.length()-1);
         }
-
     }
 
     public BasePathContent(FileOpsErrorCodes errorCode) {
