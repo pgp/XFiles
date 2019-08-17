@@ -52,7 +52,7 @@ public class RemoteRHServerManagementDialog extends Dialog {
                             RemoteServerManager.RHSS_ACTION.START_ANNOUNCE:
                             RemoteServerManager.RHSS_ACTION.START;
             int result = RemoteServerManager.rhss_action(targetAction,
-                    rhssServeOnlyCurrentDirectoryCheckBox.isChecked()?candidateLocalPath:"");
+                    rhssServeOnlyCurrentDirectoryCheckBox.isChecked()?new String[]{"","",candidateLocalPath}:new String[0]); // FIXME temporary, only exposed path passed from UI for now
 
             switch (result) {
                 case 1:
