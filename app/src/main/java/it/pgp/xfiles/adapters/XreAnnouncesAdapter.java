@@ -3,25 +3,26 @@ package it.pgp.xfiles.adapters;
 import android.content.Context;
 import android.widget.ArrayAdapter;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
-public class XreAnnouncesAdapter extends ArrayAdapter<Map.Entry<String,String>> {
+import it.pgp.xfiles.utils.Pair;
 
-    public final Set<Map.Entry<String,String>> support = new HashSet<>();
-    public final List<Map.Entry<String,String>> items;
+public class XreAnnouncesAdapter extends ArrayAdapter<Pair<String,String>> {
 
-    public XreAnnouncesAdapter(Context context, List<Map.Entry<String,String>> items) {
+    public final Set<Pair<String,String>> support = new TreeSet<>();
+    public final List<Pair<String,String>> items;
+
+    public XreAnnouncesAdapter(Context context, List<Pair<String,String>> items) {
         super(context, android.R.layout.simple_spinner_dropdown_item, items);
         this.items = items; // ugly workaround, cannot assign local variable before super() call
         this.support.addAll(items);
     }
 
-    // accumulates indefinitely till dialog dismiss, unrespective of the fact that a XRE server may have stopped announcing itself
+    // accumulates indefinitely till dialog dismiss, irrespective of the fact that a XRE server may have stopped announcing itself
     @Override
-    public void add(Map.Entry<String, String> object) {
+    public void add(Pair<String, String> object) {
         if(support.contains(object)) return;
         support.add(object);
         items.clear();

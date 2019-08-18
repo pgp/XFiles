@@ -4,9 +4,11 @@ import android.support.annotation.NonNull;
 
 import java.util.Objects;
 
-public class Pair<I,J> {
+public class Pair<I,J> implements Comparable<Pair<I,J>> {
     @NonNull public I i;
     @NonNull public J j;
+
+    public static final Pair<String,String> EmptyStringsPair = new Pair<>("","");
 
     public Pair(@NonNull I i, @NonNull J j) {
         this.i = i;
@@ -35,5 +37,10 @@ public class Pair<I,J> {
     @Override
     public String toString() {
         return "("+i+","+j+")";
+    }
+
+    @Override
+    public int compareTo(Pair<I, J> otherPair) {
+        return this.toString().compareTo(otherPair.toString());
     }
 }

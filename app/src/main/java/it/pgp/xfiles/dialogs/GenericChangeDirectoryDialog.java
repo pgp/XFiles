@@ -40,6 +40,7 @@ import it.pgp.xfiles.smbclient.SmbAuthData;
 import it.pgp.xfiles.utils.FavoritesList;
 import it.pgp.xfiles.utils.GenericDBHelper;
 import it.pgp.xfiles.utils.Misc;
+import it.pgp.xfiles.utils.Pair;
 import it.pgp.xfiles.utils.pathcontent.ArchivePathContent;
 import it.pgp.xfiles.utils.pathcontent.BasePathContent;
 import it.pgp.xfiles.utils.pathcontent.LocalPathContent;
@@ -114,9 +115,9 @@ public class GenericChangeDirectoryDialog extends Dialog {
     final AdapterView.OnItemSelectedListener defaultAnnounceSpinnerItemSelectListener = new AdapterView.OnItemSelectedListener() {
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-            Map.Entry<String,String> item = (Map.Entry<String, String>) parent.getItemAtPosition(position);
-            xreServerHost.setText(item.getKey());
-            xreRemotePath.setText(item.getValue());
+            Pair<String,String> item = (Pair<String, String>) parent.getItemAtPosition(position);
+            xreServerHost.setText(item.i);
+            xreRemotePath.setText(item.j);
         }
 
         @Override
@@ -583,9 +584,8 @@ public class GenericChangeDirectoryDialog extends Dialog {
         dbh = new GenericDBHelper(mainActivity);
         layoutInflater = (LayoutInflater) mainActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-        final Map.Entry<String,String> emptyEntry = new AbstractMap.SimpleEntry<>("","");
-        final List tmp = new ArrayList<>();
-        tmp.add(emptyEntry);
+        final List<Pair<String,String>> tmp = new ArrayList<>();
+        tmp.add(Pair.EmptyStringsPair);
 
         xreAnnouncesAdapter = new XreAnnouncesAdapter(mainActivity,tmp);
         xreAnnounceListenerRunnable = () -> {
@@ -603,7 +603,7 @@ public class GenericChangeDirectoryDialog extends Dialog {
 //                    xreServerHost.setText(xrpc.serverHost);
 //                        xreAnnounceTextView.setTextColor(R.color.green);
 //                        xreAnnounceTextView.setText("");
-                        xreAnnouncesAdapter.add(new AbstractMap.SimpleEntry<>(xrpc.serverHost,xrpc.dir));
+                        xreAnnouncesAdapter.add(new Pair<>(xrpc.serverHost,xrpc.dir));
                     });
 //                    else MainActivity.mainActivity.runOnUiThread(()->{
 //                        xreAnnounceTextView.setTextColor(R.color.red);
