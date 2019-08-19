@@ -11,26 +11,25 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class RHSSServerStatus {
 
-    // no need to keep active flag here, already have it.pgp.xfiles.roothelperclient.RemoteServerManager.RHSSUpdateThread reference (null if off)
-//    public static final AtomicBoolean active = new AtomicBoolean(false);
-
-    public static volatile String currentlyServedLocalPath; // if null, remote clients have access to the entire filesystem
+    public static volatile String xreHomePathStr;
+    public static volatile String xreAnnouncedPathStr;
+    public static volatile String xreExposedPathStr; // if null or empty, remote clients have access to the entire filesystem
+    public static volatile boolean announceEnabled = true;
 
     // key is String (IPv4:port or [IPv6]:port)
-    // byte[] value contains shared TLS key for that session
+    // byte[] value contains shared TLS key hash for that session
     // cleared on thread exit (rhss exit)
     public static final Map<String,byte[]> StoCSessions = new ConcurrentHashMap<>();
 
+    // FIXME duplicated logic in RemoteRHServerManagementDialog::saveOrClearPaths
     public static synchronized void createServer(String currentlyServedLocalPath) {
-        RHSSServerStatus.currentlyServedLocalPath = currentlyServedLocalPath;
+        RHSSServerStatus.xreExposedPathStr = currentlyServedLocalPath;
         StoCSessions.clear();
-//        active.set(true);
     }
 
     public static synchronized void destroyServer() {
-        currentlyServedLocalPath = "";
+        xreExposedPathStr = "";
         StoCSessions.clear();
-//        active.set(false);
     }
 
     // CtoS connections are contained in the static final variable RemoteClientManager in MainActivity

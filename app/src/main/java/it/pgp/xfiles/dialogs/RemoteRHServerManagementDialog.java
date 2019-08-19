@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.support.annotation.NonNull;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -21,12 +23,10 @@ import java.util.Map;
 
 import it.pgp.xfiles.MainActivity;
 import it.pgp.xfiles.R;
-import it.pgp.xfiles.enums.ProviderType;
 import it.pgp.xfiles.fileservers.FileServer;
 import it.pgp.xfiles.roothelperclient.RHSSServerStatus;
 import it.pgp.xfiles.roothelperclient.RemoteServerManager;
 import it.pgp.xfiles.utils.wifi.WifiButtonsLayout;
-import it.pgp.xfiles.utils.pathcontent.BasePathContent;
 
 /**
  * Created by pgp on 13/10/17
@@ -36,14 +36,42 @@ public class RemoteRHServerManagementDialog extends Dialog {
 
     private ImageButton rhss_status_button;
     private ImageButton rhss_show_xre_connections;
-    private TextView rhssServeOnlyCurrentDirectoryTextView;
-    private CheckBox rhssServeOnlyCurrentDirectoryCheckBox;
+
+    private EditText xreHomePath;
+    private EditText xreAnnouncedPath;
+    private EditText xreExposedPath;
 
     private CheckBox rhssSendXreAnnounceCheckbox;
-    private static RemoteServerManager.RHSS_ACTION lastStartAction = null; // can be START or START_ANNOUNCE
 
-    private String candidateLocalPath;
     private TextView rhssIPAddresses;
+
+    private void togglePathsWidgets(boolean status) {
+        rhssSendXreAnnounceCheckbox.setEnabled(status);
+        xreHomePath.setEnabled(status);
+        xreAnnouncedPath.setEnabled(status);
+        xreExposedPath.setEnabled(status);
+    }
+
+    private void saveOrClearPaths(boolean save) {
+        if(save) {
+            RHSSServerStatus.xreHomePathStr = xreHomePath.getText().toString();
+            RHSSServerStatus.xreAnnouncedPathStr = xreAnnouncedPath.getText().toString();
+            RHSSServerStatus.xreExposedPathStr = xreExposedPath.getText().toString();
+            RHSSServerStatus.announceEnabled = rhssSendXreAnnounceCheckbox.isChecked();
+        }
+        else {
+            RHSSServerStatus.xreHomePathStr = "";
+            RHSSServerStatus.xreAnnouncedPathStr = "";
+            RHSSServerStatus.xreExposedPathStr = "";
+        }
+    }
+
+    private void retrievePathsIntoEditTexts() {
+        xreHomePath.setText(RHSSServerStatus.xreHomePathStr);
+        xreAnnouncedPath.setText(RHSSServerStatus.xreAnnouncedPathStr);
+        xreExposedPath.setText(RHSSServerStatus.xreExposedPathStr);
+        rhssSendXreAnnounceCheckbox.setChecked(RHSSServerStatus.announceEnabled);
+    }
 
     private void switch_rhss_status(View unused) {
         if (RemoteServerManager.rhssManagerThreadRef.get()==null) { // OFF -> ON
@@ -51,16 +79,17 @@ public class RemoteRHServerManagementDialog extends Dialog {
                     (rhssSendXreAnnounceCheckbox!=null && rhssSendXreAnnounceCheckbox.isChecked())?
                             RemoteServerManager.RHSS_ACTION.START_ANNOUNCE:
                             RemoteServerManager.RHSS_ACTION.START;
-            int result = RemoteServerManager.rhss_action(targetAction,
-                    rhssServeOnlyCurrentDirectoryCheckBox.isChecked()?new String[]{"","",candidateLocalPath}:new String[0]); // FIXME temporary, only exposed path passed from UI for now
+            int result = RemoteServerManager.rhss_action(targetAction,new String[]{
+                    xreHomePath.getText().toString(),
+                    xreAnnouncedPath.getText().toString(),
+                    xreExposedPath.getText().toString()});
 
             switch (result) {
                 case 1:
                     Toast.makeText(activity, "Remote RH server started", Toast.LENGTH_SHORT).show();
                     rhss_status_button.setImageResource(R.drawable.xf_xre_server_up);
-                    rhssSendXreAnnounceCheckbox.setEnabled(false);
-                    lastStartAction = targetAction;
-                    rhssServeOnlyCurrentDirectoryCheckBox.setEnabled(false);
+                    togglePathsWidgets(false);
+                    saveOrClearPaths(true);
                     rhssIPAddresses.setText(getInterfaceAddressesAsString());
                     break;
                 case 0:
@@ -78,17 +107,10 @@ public class RemoteRHServerManagementDialog extends Dialog {
                 case 1:
                     Toast.makeText(activity, "Remote RH server stopped", Toast.LENGTH_SHORT).show();
                     rhss_status_button.setImageResource(R.drawable.xf_xre_server_down);
-                    rhssSendXreAnnounceCheckbox.setEnabled(true);
-                    rhssServeOnlyCurrentDirectoryCheckBox.setEnabled(true);
-                    // reload current directory path, which may have changed between the two dialog openings
-                    rhssServeOnlyCurrentDirectoryTextView.setText(R.string.serve_only_current_directory);
-                    setCandidateLocalPath(); // doesn't set anything if we are on a non-local path
-                    rhssServeOnlyCurrentDirectoryTextView.setText(
-                            rhssServeOnlyCurrentDirectoryTextView.getText().toString()+"\n"+
-                                    candidateLocalPath
-                    );
+                    togglePathsWidgets(true);
+                    saveOrClearPaths(false);
+
                     rhssIPAddresses.setText("");
-                    // clientSessionsAdapter.syncFromActivity(null);
                     break;
                 case 0:
                     Toast.makeText(activity, "Unable to stop remote RH server", Toast.LENGTH_SHORT).show();
@@ -112,10 +134,8 @@ public class RemoteRHServerManagementDialog extends Dialog {
                 List<String> addressesOfInterface = new ArrayList<>();
                 for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements();) {
                     InetAddress inetAddress = enumIpAddr.nextElement();
-                    if (!inetAddress.isLoopbackAddress()) {
-                        //return inetAddress.getHostAddress().toString();
+                    if (!inetAddress.isLoopbackAddress())
                         addressesOfInterface.add(inetAddress.getHostAddress());
-                    }
                 }
                 addresses.put(intf.getName(),addressesOfInterface);
             }
@@ -139,12 +159,18 @@ public class RemoteRHServerManagementDialog extends Dialog {
         return s.toString();
     }
 
+    @Override
+    public void show() {
+        super.show();
+        getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,WindowManager.LayoutParams.MATCH_PARENT);
+    }
+
     public static RemoteRHServerManagementDialog instance;
     public RemoteRHServerManagementDialog(@NonNull Activity activity) {
-        super(activity);
+        super(activity,R.style.fs_dialog);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
         instance = this;
         this.activity = activity;
-        setTitle("RHSS Management");
         setContentView(R.layout.remote_rh_server_management_dialog);
 
         rhssIPAddresses = findViewById(R.id.rhssIPAddresses);
@@ -165,37 +191,22 @@ public class RemoteRHServerManagementDialog extends Dialog {
         LinearLayout target = findViewById(R.id.targetWifiButtonsLayout);
         target.addView(wbl);
 
-        rhssServeOnlyCurrentDirectoryTextView = findViewById(R.id.rhssServeOnlyCurrentDirectoryTextView);
-        rhssServeOnlyCurrentDirectoryCheckBox = findViewById(R.id.rhssServeOnlyCurrentDirectoryCheckBox);
+        xreHomePath = findViewById(R.id.xreHomePath);
+        xreAnnouncedPath = findViewById(R.id.xreAnnouncedPath);
+        xreExposedPath = findViewById(R.id.xreExposedPath);
 
         rhssSendXreAnnounceCheckbox = findViewById(R.id.rhssAnnounceOptionCheckBox);
 
         // check rhss manager thread status
         if (RemoteServerManager.rhssManagerThreadRef.get() == null) {
             rhss_status_button.setImageResource(R.drawable.xf_xre_server_down);
-            // for robustness, better to ask rh directly if rhss remote server is active
-
-            setCandidateLocalPath(); // doesn't set anything if we are on a non-local path
-            rhssSendXreAnnounceCheckbox.setEnabled(true);
-            rhssServeOnlyCurrentDirectoryCheckBox.setEnabled(true);
-            rhssServeOnlyCurrentDirectoryCheckBox.setChecked(false);
-            rhssServeOnlyCurrentDirectoryTextView.setText(
-                    rhssServeOnlyCurrentDirectoryTextView.getText().toString()+"\n"+
-                            candidateLocalPath
-            );
+            togglePathsWidgets(true);
         }
         else {
             rhss_status_button.setImageResource(R.drawable.xf_xre_server_up);
             rhssIPAddresses.setText(getInterfaceAddressesAsString());
-            rhssServeOnlyCurrentDirectoryCheckBox.setChecked(
-                    !RHSSServerStatus.currentlyServedLocalPath.isEmpty());
-            rhssSendXreAnnounceCheckbox.setEnabled(false);
-            rhssSendXreAnnounceCheckbox.setChecked(lastStartAction != RemoteServerManager.RHSS_ACTION.START);
-            rhssServeOnlyCurrentDirectoryCheckBox.setEnabled(false);
-            rhssServeOnlyCurrentDirectoryTextView.setText(
-                    rhssServeOnlyCurrentDirectoryTextView.getText().toString()+"\n"+
-                            RHSSServerStatus.currentlyServedLocalPath
-            );
+            retrievePathsIntoEditTexts();
+            togglePathsWidgets(false);
         }
 
         rhss_status_button.setOnClickListener(this::switch_rhss_status);
@@ -206,11 +217,5 @@ public class RemoteRHServerManagementDialog extends Dialog {
             wbl.unregisterListeners();
             instance = null;
         });
-    }
-
-    private void setCandidateLocalPath() {
-            BasePathContent bpc = MainActivity.mainActivity.getCurrentDirCommander().getCurrentDirectoryPathname();
-            if (bpc.providerType != ProviderType.LOCAL) candidateLocalPath = "";
-            else candidateLocalPath = bpc.dir;
     }
 }

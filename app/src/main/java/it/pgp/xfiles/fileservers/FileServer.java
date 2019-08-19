@@ -5,13 +5,28 @@ import android.app.Activity;
 import it.pgp.xfiles.R;
 
 public enum FileServer {
-    FTP(new SimpleFTPServer()),
-    HTTP(new SimpleHTTPServer());
+    FTP(new SimpleFTPServer(),R.id.itemShareOverFTP,R.id.ftpServerButton),
+    HTTP(new SimpleHTTPServer(),R.id.itemShareOverHTTP,R.id.httpServerButton);
 
     public SimpleFileServer server;
+    public int menuId;
+    public int buttonId;
 
-    FileServer(SimpleFileServer server) {
+    FileServer(SimpleFileServer server, int menuId, int buttonId) {
         this.server = server;
+        this.menuId = menuId;
+        this.buttonId = buttonId;
+    }
+
+    public static FileServer fromMenuRes(int res) {
+        switch(res) {
+            case R.id.itemShareOverFTP:
+                return FTP;
+            case R.id.itemShareOverHTTP:
+                return HTTP;
+            default:
+                throw new RuntimeException("Invalid resource id provided");
+        }
     }
 
     public void start() {

@@ -327,7 +327,6 @@ public class MainActivity extends EffectActivity {
         WifiManager manager = (WifiManager)getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         WifiInfo wifiinfo = manager.getConnectionInfo();
         byte[] myIPAddress = BigInteger.valueOf(wifiinfo.getIpAddress()).toByteArray();
-        // you must reverse the byte array before conversion. Use Apache's commons library
         myIPAddress = reverseByteArray(myIPAddress);
         InetAddress myInetIP;
         try {
@@ -339,8 +338,6 @@ public class MainActivity extends EffectActivity {
             return "UNKNOWN";
         }
     }
-
-//    public static final AtomicReference<RemoteServerManager.RHSSUpdateThread> rhssManagerThreadRef = new AtomicReference<>(null);
 
     public void showXREConnections(View unused) {
         Intent i = new Intent(MainActivity.this, XFilesRemoteSessionsManagementActivity.class);
@@ -536,15 +533,32 @@ public class MainActivity extends EffectActivity {
                 return true;
             case R.id.itemShareOverHTTP:
             case R.id.itemShareOverFTP:
+            case R.id.itemShareOverXRE:
                 b = getCurrentBrowserAdapter().getItem(info.position);
                 path = path.concat(b.filename);
                 new RemoteRHServerManagementDialog(MainActivity.this);
-                // TODO LOCAL PROVIDER CHECK
-                ((EditText)RemoteRHServerManagementDialog.instance.findViewById(R.id.ftpHttpRootPath)).setText(path.dir);
-                RemoteRHServerManagementDialog.instance.show();
-                // autostart HTTP/FTP server
-                RemoteRHServerManagementDialog.instance.findViewById(item.getItemId()==R.id.itemShareOverHTTP?
-                        R.id.httpServerButton:R.id.ftpServerButton).performClick();
+
+                int itemId = item.getItemId();
+                if(itemId==R.id.itemShareOverXRE) {
+                    ((EditText)RemoteRHServerManagementDialog.instance.findViewById(R.id.xreHomePath)).setText(path.dir);
+                    RemoteRHServerManagementDialog.instance.show();
+                    if(RemoteServerManager.rhssManagerThreadRef.get() != null) {
+                        Toast.makeText(this, "XRE server is already active, please stop it before sharing a new directory", Toast.LENGTH_LONG).show();
+                        return true;
+                    }
+                    RemoteRHServerManagementDialog.instance.findViewById(R.id.rhss_toggle_rhss_button).performClick();
+                }
+                else {
+                    ((EditText)RemoteRHServerManagementDialog.instance.findViewById(R.id.ftpHttpRootPath)).setText(path.dir);
+                    RemoteRHServerManagementDialog.instance.show();
+                    // autostart HTTP/FTP server
+                    FileServer fileServer = FileServer.fromMenuRes(itemId);
+                    if(fileServer.isAlive()) {
+                        Toast.makeText(this, fileServer.name()+" server is already running, please stop it before sharing a new directory", Toast.LENGTH_LONG).show();
+                        return true;
+                    }
+                    RemoteRHServerManagementDialog.instance.findViewById(fileServer.buttonId).performClick();
+                }
                 return true;
             case R.id.itemProperties:
                 b = getCurrentBrowserAdapter().getItem(info.position);

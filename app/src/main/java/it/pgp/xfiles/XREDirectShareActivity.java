@@ -85,6 +85,7 @@ public class XREDirectShareActivity extends EffectActivity {
         super.onCreate(savedInstanceState);
         setActivityIcon(R.drawable.xf_xre_server_up);
         MainActivity.mainActivityContext = getApplicationContext();
+        MainActivity.refreshToastHandler(MainActivity.mainActivityContext);
 
         // CHECK SHARE INTENT
         List<Uri> uris = IntentUtil.getShareSelectionFromIntent(getIntent());
