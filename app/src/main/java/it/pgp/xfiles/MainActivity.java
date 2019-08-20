@@ -374,10 +374,12 @@ public class MainActivity extends EffectActivity {
             }
         }
         else {
-            if (getCurrentBrowserAdapter().getSelectedCount() == 0) { // long-click on single file
+            if (getCurrentBrowserAdapter().getSelectedCount() == 0) { // long-click on single file, without active selection
                 switch(getCurrentDirCommander().getCurrentDirectoryPathname().providerType) {
                     case LOCAL:
                         inflater.inflate(R.menu.menu_single, menu);
+                        BrowserItem b = getCurrentBrowserAdapter().getItem(((AdapterView.AdapterContextMenuInfo)menuInfo).position);
+                        if(b.isDirectory) inflater.inflate(R.menu.menu_single_local_folder,menu);
                         break;
                     case LOCAL_WITHIN_ARCHIVE:
                         // allowed operations: extract, properties (click only if folder, extract on click)
@@ -433,7 +435,7 @@ public class MainActivity extends EffectActivity {
                 return true;
             case R.id.itemsExtract:
                 if (path.providerType != ProviderType.LOCAL_WITHIN_ARCHIVE) {
-                    Toast.makeText(this,"Cannot extract items if they are not in an archive",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this,"Cannot extract multiple items if they are not in an archive",Toast.LENGTH_SHORT).show();
                     return true;
                 }
                 extractItems();
@@ -484,6 +486,10 @@ public class MainActivity extends EffectActivity {
                 return true;
             case R.id.itemExtract:
                 b = getCurrentBrowserAdapter().getItem(info.position);
+                if(b.isDirectory) {
+                    Toast.makeText(this, "Cannot extract files from a directory, please select a compressed archive", Toast.LENGTH_LONG).show();
+                    return true;
+                }
                 extractItem(b);
                 return true;
             case R.id.itemDelete:

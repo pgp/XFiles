@@ -26,6 +26,8 @@ import it.pgp.xfiles.R;
 import it.pgp.xfiles.fileservers.FileServer;
 import it.pgp.xfiles.roothelperclient.RHSSServerStatus;
 import it.pgp.xfiles.roothelperclient.RemoteServerManager;
+import it.pgp.xfiles.utils.pathcontent.BasePathContent;
+import it.pgp.xfiles.utils.pathcontent.LocalPathContent;
 import it.pgp.xfiles.utils.wifi.WifiButtonsLayout;
 
 /**
@@ -40,10 +42,35 @@ public class RemoteRHServerManagementDialog extends Dialog {
     private EditText xreHomePath;
     private EditText xreAnnouncedPath;
     private EditText xreExposedPath;
+    private ImageButton xreSetHomePath;
+    private ImageButton xreSetAnnouncedPath;
+    private ImageButton xreSetExposedPath;
 
     private CheckBox rhssSendXreAnnounceCheckbox;
 
     private TextView rhssIPAddresses;
+
+    private BasePathContent currentDir;
+
+    private final View.OnClickListener setCurrentDirectoryListener = v -> {
+        EditText targetEditText;
+        switch(v.getId()) {
+            case R.id.setXreHomePathToCurrent:
+                targetEditText = xreHomePath;
+                break;
+            case R.id.setXreAnnouncedPathToCurrent:
+                targetEditText = xreAnnouncedPath;
+                break;
+            case R.id.setXreExposedPathToCurrent:
+                targetEditText = xreExposedPath;
+                break;
+            default:
+                MainActivity.showToastOnUI("Invalid resource id in setCurrentDirectoryListener");
+                return;
+        }
+
+        targetEditText.setText(currentDir.dir);
+    };
 
     private void togglePathsWidgets(boolean status) {
         rhssSendXreAnnounceCheckbox.setEnabled(status);
@@ -173,6 +200,8 @@ public class RemoteRHServerManagementDialog extends Dialog {
         this.activity = activity;
         setContentView(R.layout.remote_rh_server_management_dialog);
 
+        currentDir = MainActivity.mainActivity.getCurrentDirCommander().getCurrentDirectoryPathname();
+
         rhssIPAddresses = findViewById(R.id.rhssIPAddresses);
 
         rhss_status_button = findViewById(R.id.rhss_toggle_rhss_button);
@@ -194,6 +223,20 @@ public class RemoteRHServerManagementDialog extends Dialog {
         xreHomePath = findViewById(R.id.xreHomePath);
         xreAnnouncedPath = findViewById(R.id.xreAnnouncedPath);
         xreExposedPath = findViewById(R.id.xreExposedPath);
+
+        xreSetHomePath = findViewById(R.id.setXreHomePathToCurrent);
+        xreSetAnnouncedPath = findViewById(R.id.setXreAnnouncedPathToCurrent);
+        xreSetExposedPath = findViewById(R.id.setXreExposedPathToCurrent);
+        if(currentDir instanceof LocalPathContent) {
+            xreSetHomePath.setOnClickListener(setCurrentDirectoryListener);
+            xreSetAnnouncedPath.setOnClickListener(setCurrentDirectoryListener);
+            xreSetExposedPath.setOnClickListener(setCurrentDirectoryListener);
+        }
+        else {
+            xreSetHomePath.setEnabled(false);
+            xreSetAnnouncedPath.setEnabled(false);
+            xreSetExposedPath.setEnabled(false);
+        }
 
         rhssSendXreAnnounceCheckbox = findViewById(R.id.rhssAnnounceOptionCheckBox);
 

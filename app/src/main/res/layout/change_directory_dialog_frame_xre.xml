@@ -54,7 +54,7 @@
     <EditText
         android:id="@+id/xreRemoteDirEditText"
         android:inputType="text"
-        android:text="/sdcard"
+        android:hint="Leave empty for server's home dir"
         android:imeOptions="actionDone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />

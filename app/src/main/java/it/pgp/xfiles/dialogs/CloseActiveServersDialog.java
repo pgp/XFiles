@@ -2,6 +2,7 @@ package it.pgp.xfiles.dialogs;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -20,6 +21,7 @@ public class CloseActiveServersDialog extends Dialog {
 
     public CloseActiveServersDialog(final Activity context) {
         super(context);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
         this.context = context;
 
         red = context.getResources().getColor(R.color.red);

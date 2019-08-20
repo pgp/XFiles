@@ -16,6 +16,7 @@ import java.util.List;
 import it.pgp.xfiles.BrowserItem;
 import it.pgp.xfiles.MainActivity;
 import it.pgp.xfiles.io.RobustLocalFileInputStream;
+import it.pgp.xfiles.items.SingleStatsItem;
 import it.pgp.xfiles.utils.dircontent.GenericDirWithContent;
 import it.pgp.xfiles.utils.pathcontent.LocalPathContent;
 
@@ -246,11 +247,23 @@ public class HTTPSessionThread extends Thread {
                             }
                         }
                         else {
+                            // stat in order to populate Content-Length header with file size
+                            long contentLength;
+                            try {
+                                SingleStatsItem stat = MainActivity.getRootHelperClient().statFile(new LocalPathContent(path));
+                                contentLength = stat.size;
+                            }
+                            catch(Exception e) {
+                                e.printStackTrace();
+                                contentLength = -1;
+                            }
+
                             try (RobustLocalFileInputStream file = new RobustLocalFileInputStream(path)) {
                                 // send file
 //                                InputStream file = new FileInputStream(f);
                                 pout.print("HTTP/1.0 200 OK\r\n" +
                                         "Content-Type: " + guessContentType(path) + "\r\n" +
+                                        ((contentLength>=0)?("Content-Length: "+contentLength+"\r\n"):"")+
                                         "Date: " + new Date() + "\r\n" +
                                         "Server: SimpleHTTPServer 1.0\r\n\r\n");
                                 sendFile(file, out); // send raw file

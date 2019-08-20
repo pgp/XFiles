@@ -64,33 +64,78 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
 
-                <EditText
-                    android:id="@+id/xreHomePath"
-                    android:inputType="text"
+                <LinearLayout
+                    android:orientation="horizontal"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content">
+
+                    <EditText
+                        android:id="@+id/xreHomePath"
+                        android:inputType="text"
+                        android:layout_weight="8"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent" />
+
+                    <ImageButton
+                        android:id="@+id/setXreHomePathToCurrent"
+                        android:src="@drawable/xf_dir_blu"
+                        android:background="@null"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent" />
+                </LinearLayout>
 
                 <TextView
                     android:text="XRE announced path:"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
 
-                <EditText
-                    android:id="@+id/xreAnnouncedPath"
-                    android:inputType="text"
+                <LinearLayout
+                    android:orientation="horizontal"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content">
+
+                    <EditText
+                        android:id="@+id/xreAnnouncedPath"
+                        android:inputType="text"
+                        android:layout_weight="8"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent" />
+
+                    <ImageButton
+                        android:id="@+id/setXreAnnouncedPathToCurrent"
+                        android:src="@drawable/xf_dir_blu"
+                        android:background="@null"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent" />
+                </LinearLayout>
 
                 <TextView
                     android:text="XRE exposed path:"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
 
-                <EditText
-                    android:id="@+id/xreExposedPath"
-                    android:inputType="text"
+                <LinearLayout
+                    android:orientation="horizontal"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content">
+
+                    <EditText
+                        android:id="@+id/xreExposedPath"
+                        android:inputType="text"
+                        android:layout_weight="8"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent" />
+
+                    <ImageButton
+                        android:id="@+id/setXreExposedPathToCurrent"
+                        android:src="@drawable/xf_dir_blu"
+                        android:background="@null"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent" />
+                </LinearLayout>
 
             </LinearLayout>
 
