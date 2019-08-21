@@ -189,6 +189,7 @@ public class CompressActivity extends EffectActivity implements FileSaveFragment
         setActivityIcon(R.drawable.xfiles_archive);
         setContentView(R.layout.compress_layout);
         MainActivity.mainActivityContext = getApplicationContext();
+        MainActivity.refreshToastHandler(MainActivity.mainActivityContext);
         MainActivity.getRootHelperClient();
 
         Intent intent = getIntent();
