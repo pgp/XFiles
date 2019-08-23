@@ -143,8 +143,8 @@ public class FindManager implements AutoCloseable {
                 for(;;) { // exits on IOException when the other socket endpoint is closed (search interrupted), or when receives end of list (not strictly needed, roothelper find thread could also close the connection after sending last item found)
 
                     // receive search results
-                    find_resp item = new find_resp(i);
-                    if (item.eol) break;
+                    find_resp item = find_resp.readNext(i);
+                    if (item == null) break;
                     if (!onSearchItemFound(item)) break; // exit immediately if adapter has been destroyed (actually, that should not happen)
                 }
                 MainActivity.showToastOnUI("Search completed");

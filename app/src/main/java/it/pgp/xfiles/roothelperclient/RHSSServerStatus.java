@@ -21,13 +21,9 @@ public class RHSSServerStatus {
     // cleared on thread exit (rhss exit)
     public static final Map<String,byte[]> StoCSessions = new ConcurrentHashMap<>();
 
-    // FIXME duplicated logic in RemoteRHServerManagementDialog::saveOrClearPaths
-    public static synchronized void createServer(String currentlyServedLocalPath) {
-        RHSSServerStatus.xreExposedPathStr = currentlyServedLocalPath;
-        StoCSessions.clear();
-    }
-
-    public static synchronized void destroyServer() {
+    public static void destroyServer() {
+        xreHomePathStr = "";
+        xreAnnouncedPathStr = "";
         xreExposedPathStr = "";
         StoCSessions.clear();
     }

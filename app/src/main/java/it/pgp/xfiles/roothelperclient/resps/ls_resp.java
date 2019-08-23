@@ -11,23 +11,27 @@ public class ls_resp {
     public byte[] permissions;
     public long size;
 
-    public ls_resp(DataInputStream inputStream) throws IOException {
+    private ls_resp() {}
+
+    public static ls_resp readNext(DataInputStream inputStream) throws IOException {
+        ls_resp resp = new ls_resp();
         byte[] tmp;
         tmp = new byte[2];
         inputStream.readFully(tmp);
         int filename_len = (int) Misc.castBytesToUnsignedNumber(tmp,2);
-        if (filename_len == 0) return; // FIXME this enforces double zero checking (here and by caller) in order to detect end of stream
-        this.filename = new byte[filename_len];
-        inputStream.readFully(this.filename);
+        if (filename_len == 0) return null; // end of list indication
+        resp.filename = new byte[filename_len];
+        inputStream.readFully(resp.filename);
         tmp = new byte[4];
         inputStream.readFully(tmp);
-        this.date = Misc.castBytesToUnsignedNumber(tmp,4);
+        resp.date = Misc.castBytesToUnsignedNumber(tmp,4);
         tmp = new byte[10];
         inputStream.readFully(tmp);
-        this.permissions = tmp;
+        resp.permissions = tmp;
         tmp = new byte[8];
         inputStream.readFully(tmp);
-        this.size = Misc.castBytesToUnsignedNumber(tmp,8);
+        resp.size = Misc.castBytesToUnsignedNumber(tmp,8);
+        return resp;
     }
 
 }

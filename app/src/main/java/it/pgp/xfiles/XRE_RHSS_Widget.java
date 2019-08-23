@@ -70,7 +70,7 @@ public class XRE_RHSS_Widget extends AppWidgetProvider {
                     break;
                 case onDemand:
                     Log.d("XRE_RHSS","onDemand: toggle server status");
-                    // FIXME TODO
+
                     if (RemoteServerManager.rhssManagerThreadRef.get() == null) {
                         MainActivity.getRootHelperClient(context);
                         int result = RemoteServerManager.rhss_action(RemoteServerManager.RHSS_ACTION.START_ANNOUNCE);

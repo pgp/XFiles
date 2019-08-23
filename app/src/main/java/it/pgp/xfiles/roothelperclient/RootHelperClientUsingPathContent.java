@@ -246,8 +246,8 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
     public static List<BrowserItem> assembleContentFromLsResps(DataInputStream clientInStream) throws IOException {
         List<BrowserItem> dirContent = new ArrayList<>();
         // read len, if 0 stop reading
-        ls_resp resp = new ls_resp(clientInStream);
-        while (resp.filename != null) {
+        ls_resp resp = ls_resp.readNext(clientInStream);
+        while (resp != null) {
             // TODO modify BrowserItem to host all permission instead of only isDirectory
 //            BrowserItem b =
 //                    new BrowserItem(new String(resp.filename,"UTF-8"),
@@ -256,7 +256,7 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
 //                            new String(resp.permissions, "UTF-8").charAt(0) == 'd');
 //            dirContent.add(b);
             dirContent.add(new BrowserItem(resp));
-            resp = new ls_resp(clientInStream);
+            resp = ls_resp.readNext(clientInStream);
         }
         return dirContent;
     }
@@ -264,9 +264,9 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
     private ArchiveVMap fillArchiveVMap(DataInputStream clientInStream) throws IOException {
         ArchiveVMap v = new ArchiveVMap();
         // read len, if 0 stop reading
-        ls_resp resp = new ls_resp(clientInStream);
+        ls_resp resp = ls_resp.readNext(clientInStream);
         int entryCnt = 0; // for extracting selected files, it is necessary to know their position in the archive entries list
-        while (resp.filename != null) {
+        while (resp != null) {
             List<String> inArchivePath = new ArrayList<>();
             inArchivePath.addAll(Arrays.asList((new String(resp.filename,"UTF-8")).split("/")));
             inArchivePath.add(ArchiveVMap.sentinelKeyForNodeProperties);
@@ -280,7 +280,7 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
 
             v.set(nodeProps,inArchivePath.toArray()); // put in vMap with properties
 
-            resp = new ls_resp(clientInStream);
+            resp = ls_resp.readNext(clientInStream);
             entryCnt++;
         }
         return v;
@@ -814,8 +814,6 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
             // receive total
             long total = Misc.receiveTotalOrProgress(rs.i);
             long last_progress = 0;
-//            builder.setProgress((int) total,0,false); // FIXME find way of passing long as progress, or reduce to mb progress in roothelper
-//            notifyManager.notify(NOTIF_ID, builder.build());
 
             // receive progress (end progress is -1 as uint64)
             for(;;) {
@@ -830,13 +828,7 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
                     break;
                 }
                 last_progress = progress;
-//                builder.setProgress((int) total, (int) progress,false);
-//                notifyManager.notify(NOTIF_ID, builder.build());
                 task.publishProgressWrapper((int)Math.round(progress*100.0/total));
-//                try {
-//                    Thread.sleep(1000);
-//                } catch (InterruptedException e) {
-//                }
             }
 
             // receive 1-byte final OK or error response

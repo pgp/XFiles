@@ -62,7 +62,7 @@ public class RemoteServerManager extends RemoteManager {
         }
         // ok, streams connected and RH remote server instance started
         // now, start rhss update thread
-        RHSSServerStatus.createServer(servedPaths.length==0?"":servedPaths[0]);
+        RHSSServerStatus.StoCSessions.clear();
         new RHSSUpdateThread().start();
         return true;
     }

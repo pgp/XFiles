@@ -11,28 +11,26 @@ public class find_resp {
     public byte[] contentAround; // not null only in non-trivial find in content
     public long offset;
 
-    public boolean eol = false; // end of list indication
+    private find_resp() {}
 
-    public find_resp(DataInputStream inputStream) throws IOException {
-        byte[] tmp;
+    public static find_resp readNext(DataInputStream inputStream) throws IOException {
+        find_resp resp = new find_resp();
+        resp.fileItem = ls_resp.readNext(inputStream);
+        if(resp.fileItem == null) return null; // end of list indication
 
-        this.fileItem = new ls_resp(inputStream);
-        if (fileItem.filename == null) {
-            eol = true;
-            return;
-        }
-
-        tmp = new byte[1];
+        byte[] tmp = new byte[1];
         inputStream.readFully(tmp);
         int contentAround_len = (int) Misc.castBytesToUnsignedNumber(tmp,1);
 
         if (contentAround_len != 0) {
-            contentAround = new byte[contentAround_len];
-            inputStream.readFully(contentAround);
+            resp.contentAround = new byte[contentAround_len];
+            inputStream.readFully(resp.contentAround);
             tmp = new byte[8];
             inputStream.readFully(tmp);
-            offset = Misc.castBytesToUnsignedNumber(tmp,8);
+            resp.offset = Misc.castBytesToUnsignedNumber(tmp,8);
         }
+
+        return resp;
     }
 
     @Override
