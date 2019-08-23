@@ -34,6 +34,7 @@ import it.pgp.xfiles.enums.ComparatorField;
 import it.pgp.xfiles.exceptions.DirCommanderException;
 import it.pgp.xfiles.exceptions.InvalidBrowserViewModeException;
 import it.pgp.xfiles.utils.DirCommanderCUsingBrowserItemsAndPathContent;
+import it.pgp.xfiles.utils.Pair;
 import it.pgp.xfiles.utils.dircontent.GenericDirWithContent;
 import it.pgp.xfiles.utils.pathcontent.BasePathContent;
 import it.pgp.xfiles.utils.pathcontent.LocalPathContent;
@@ -259,9 +260,9 @@ public class BrowserPagerAdapter extends PagerAdapter {
         }
     }
 
-    public void showSortedDirContent(GenericDirWithContent dirWithContent, ComparatorField whichAttribute, boolean reverse, int position) {
+    public void showSortedDirContent(GenericDirWithContent dirWithContent, Pair<ComparatorField,Boolean> whichAttribute_reverse, int position) {
         Collections.sort(dirWithContent.content,
-                new AdvancedComparator(new SortingItem(whichAttribute, true, reverse)));
+                new AdvancedComparator(new SortingItem(whichAttribute_reverse.i, true, whichAttribute_reverse.j)));
 
         currentDirectoryTextViews[position].setText(
                 dirCommanders[position].getCurrentDirectoryPathname().toString());
@@ -301,28 +302,12 @@ public class BrowserPagerAdapter extends PagerAdapter {
     }
 
     private void setMultiSelectModeLayout(boolean active, int position) {
-//        final LayoutInflater inflater = LayoutInflater.from(mContext);
-
-        // BEGIN LEGACY
-//        multiSelectModeLayouts[position] = rootLayouts[position].findViewById(R.id.multiSelectModeLayout);
-//        multiSelectModeLayouts[position].removeAllViews();
-        // END LEGACY
-
-        // BEGIN NEW
         if (mainBrowserViewLayoutParents[position] != null && csLayouts[position] != null)
             mainBrowserViewLayoutParents[position].removeView(csLayouts[position]);
 
-        // END NEW
-
         if (active) {
             // TODO rootLayouts member must become RelativeLayout
-            // BEGIN LEGACY
-//            View targetLayout = inflater.inflate(R.layout.multiselect_buttons_layout,null);
-//            multiSelectModeLayouts[position].setLayoutParams(onParams);
-//            multiSelectModeLayouts[position].addView(targetLayout);
-            // END LEGACY
 
-            // BEGIN NEW
             csCheckBoxes[position] = new CSCheckboxes();
             csListeners[position] = browserViewModes[position].buildCSListener(
                     mainBrowserViews[position],
@@ -339,7 +324,6 @@ public class BrowserPagerAdapter extends PagerAdapter {
             );
 
             mainBrowserViewLayoutParents[position].addView(csLayouts[position]);
-            // END NEW
         }
 
         togglePaddingToMainBrowserView(position,active);

@@ -41,7 +41,11 @@ public class InsertEditDialog extends Dialog {
         port= findViewById(R.id.insertPortEditText);
         password = findViewById(R.id.insertPasswordEditText);
 
-        if(!(vaultAdapter instanceof SmbVaultAdapter)) {
+        if(vaultAdapter instanceof SmbVaultAdapter) {
+            port.setText(R.string.smb_default_port);
+            domain.setText(R.string.smb_default_domain);
+        }
+        else {
             hostLabel.setVisibility(View.GONE);
             host.setVisibility(View.GONE);
         }

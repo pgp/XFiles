@@ -5,10 +5,8 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-/**
- * Created by pgp on 26/10/16
- * Last modified on 30/10/16
- */
+import it.pgp.xfiles.R;
+import it.pgp.xfiles.utils.Pair;
 
 public enum ComparatorField {
     FILENAME,
@@ -18,6 +16,8 @@ public enum ComparatorField {
     DIR;
 
     public static final Map<Locale,Map<ComparatorField,String>> localizedLabels;
+
+    public static final Map<Integer, Pair<ComparatorField,Boolean>> fromResMap;
 
     static {
         Map<Locale,Map<ComparatorField,String>> localizedLabels_ = new HashMap<>();
@@ -43,6 +43,16 @@ public enum ComparatorField {
         // ...Add other languages if needed...
 
         localizedLabels = Collections.unmodifiableMap(localizedLabels_);
+
+        fromResMap = new HashMap<>();
+        fromResMap.put(R.id.sortByFilename,new Pair<>(ComparatorField.FILENAME,false));
+        fromResMap.put(R.id.sortByFilenameDesc,new Pair<>(ComparatorField.FILENAME,true));
+        fromResMap.put(R.id.sortByDate,new Pair<>(ComparatorField.DATE,false));
+        fromResMap.put(R.id.sortByDateDesc,new Pair<>(ComparatorField.DATE,true));
+        fromResMap.put(R.id.sortBySize,new Pair<>(ComparatorField.SIZE,false));
+        fromResMap.put(R.id.sortBySizeDesc,new Pair<>(ComparatorField.SIZE,true));
+        fromResMap.put(R.id.sortByType,new Pair<>(ComparatorField.TYPE,false));
+        fromResMap.put(R.id.sortByTypeDesc,new Pair<>(ComparatorField.TYPE,true));
     }
 
     public static String getLocalizedString(Locale locale,ComparatorField comparatorField) {

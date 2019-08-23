@@ -47,6 +47,7 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="Port" />
 
+    <!-- ssh_default_port is overriden in InsertEditDialog with 445 for SMB -->
     <EditText
         android:inputType="number"
         android:text="@string/ssh_default_port"

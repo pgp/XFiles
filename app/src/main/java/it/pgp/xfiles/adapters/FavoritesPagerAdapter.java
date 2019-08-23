@@ -42,7 +42,7 @@ public class FavoritesPagerAdapter extends PagerAdapter {
     private Button xreFavoritesAddButton;
 
     // page four widgets
-    private ListView smbFavoritesListView; // TODO to be mapped to "@+id/favorites_smb_list"
+    private ListView smbFavoritesListView; // mapped to "@+id/favorites_smb_list"
     private SmbFavoritesAdapter smbFavoritesAdapter;
 
 

@@ -418,7 +418,8 @@ public class MainActivity extends EffectActivity {
         File currentFile;
         List<BasePathContent> selection;
         BasePathContent path = getCurrentDirCommander().getCurrentDirectoryPathname();
-        switch (item.getItemId()) {
+        int itemId = item.getItemId();
+        switch(itemId) {
 
             // multi-selection menu
             case R.id.itemsCopy:
@@ -477,9 +478,6 @@ public class MainActivity extends EffectActivity {
                 return true;
             case R.id.itemCompress:
                 b = getCurrentBrowserAdapter().getItem(info.position);
-//                CompressDialog compressDialog = new CompressDialog(this,b.filename);
-//                compressDialog.show();
-                // with CompressActivity
                 Intent i = new Intent(MainActivity.this,CompressActivity.class);
                 i.putExtra("filename", b);
                 startActivity(i);
@@ -517,10 +515,6 @@ public class MainActivity extends EffectActivity {
                     return true;
                 }
                 Intent intent = new Intent(MainActivity.this, ChecksumActivity.class);
-                // LEGACY, only local paths
-//                intent.putExtra("file", path.dir);
-
-                // NEW, also XRE paths
                 intent.putExtra("pathcontent", path);
 
                 startActivity(intent);
@@ -544,7 +538,6 @@ public class MainActivity extends EffectActivity {
                 path = path.concat(b.filename);
                 new RemoteRHServerManagementDialog(MainActivity.this);
 
-                int itemId = item.getItemId();
                 if(itemId==R.id.itemShareOverXRE) {
                     ((EditText)RemoteRHServerManagementDialog.instance.findViewById(R.id.xreHomePath)).setText(path.dir);
                     RemoteRHServerManagementDialog.instance.show();
@@ -571,34 +564,19 @@ public class MainActivity extends EffectActivity {
                 getStats(b);
                 return true;
 
-            // TODO collapse cases using indexed enum
             // sorting
             // TODO need to add directory priority switch some way (used priority on as default)
             case R.id.sortByFilename:
-                browserPagerAdapter.showSortedDirContent(getCurrentDirCommander().refresh(), ComparatorField.FILENAME, false,browserPager.getCurrentItem());
-                return true;
             case R.id.sortByFilenameDesc:
-                browserPagerAdapter.showSortedDirContent(getCurrentDirCommander().refresh(), ComparatorField.FILENAME, true,browserPager.getCurrentItem());
-                return true;
             case R.id.sortByDate:
-                browserPagerAdapter.showSortedDirContent(getCurrentDirCommander().refresh(), ComparatorField.DATE, false,browserPager.getCurrentItem());
-                return true;
             case R.id.sortByDateDesc:
-                browserPagerAdapter.showSortedDirContent(getCurrentDirCommander().refresh(), ComparatorField.DATE, true,browserPager.getCurrentItem());
-                return true;
             case R.id.sortBySize:
-                browserPagerAdapter.showSortedDirContent(getCurrentDirCommander().refresh(), ComparatorField.SIZE, false,browserPager.getCurrentItem());
-                return true;
             case R.id.sortBySizeDesc:
-                browserPagerAdapter.showSortedDirContent(getCurrentDirCommander().refresh(), ComparatorField.SIZE, true,browserPager.getCurrentItem());
-                return true;
             case R.id.sortByType:
-                browserPagerAdapter.showSortedDirContent(getCurrentDirCommander().refresh(), ComparatorField.TYPE, false,browserPager.getCurrentItem());
-                return true;
             case R.id.sortByTypeDesc:
-                browserPagerAdapter.showSortedDirContent(getCurrentDirCommander().refresh(), ComparatorField.TYPE, true,browserPager.getCurrentItem());
+                browserPagerAdapter.showSortedDirContent(getCurrentDirCommander().refresh(),
+                        ComparatorField.fromResMap.get(itemId),browserPager.getCurrentItem());
                 return true;
-
             // browser view
             case R.id.listBrowserViewMode:
                 return true;
@@ -607,14 +585,11 @@ public class MainActivity extends EffectActivity {
 
             // sftp credentials or favorites
             case R.id.openSftpCredManager:
-                openCredOrFavsManager(VaultActivity.class);
-                return true;
             case R.id.openSmbCredManager:
-                openCredOrFavsManager(SmbVaultActivity.class);
-                return true;
             case R.id.openFavsManager:
-                openCredOrFavsManager(FavoritesActivity.class);
+                openCredOrFavsManager(itemId);
                 return true;
+
             case R.id.openAboutDialog:
                 openAboutDialog();
                 return true;
@@ -785,27 +760,6 @@ public class MainActivity extends EffectActivity {
             }
         }
 
-        // LEGACY, no explicit first-run activity
-        /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            // not already granted, stop loading UI and wait the permission callback to restart or finish activity
-
-            permMask =
-                    (checkDangerousPermissions()?1:0)+
-                    (checkSignaturePermissions()?2:0);
-
-            switch (permMask) {
-                case 0:
-                case 2:
-                    requestDangerousPermissions();
-                    return;
-                case 1:
-                    requestSignaturePermissions();
-                    return;
-                case 3: // both OK, continue loading
-                    break;
-            }
-        }*/
-
         xFilesUtils = new XFilesUtilsUsingPathContent();
         currentHelper = xFilesUtils; // start with non-root (Java) file ops helper
 
@@ -894,9 +848,22 @@ public class MainActivity extends EffectActivity {
         browserPagerAdapter.changeBrowserViewMode(browserPager.getCurrentItem());
     }
 
-    public void openCredOrFavsManager(Class activity) {
-        Intent intent = new Intent(MainActivity.this,activity);
-        startActivity(intent);
+    public void openCredOrFavsManager(int resId) {
+        Class targetActivity;
+        switch(resId) {
+            case R.id.openSftpCredManager:
+                targetActivity = VaultActivity.class;
+                break;
+            case R.id.openSmbCredManager:
+                targetActivity = SmbVaultActivity.class;
+                break;
+            case R.id.openFavsManager:
+                targetActivity = FavoritesActivity.class;
+                break;
+            default:
+                throw new RuntimeException("Guard block");
+        }
+        startActivity(new Intent(MainActivity.this,targetActivity));
     }
 
     public void openAboutDialog() {

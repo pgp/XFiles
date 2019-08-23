@@ -461,10 +461,8 @@ public class GenericChangeDirectoryDialog extends Dialog {
             case SMB:
                 items = new ArrayList<>();
 
-//                cwf = dbh.getAllSmbCredsWithFavs().values();
                 cwf = dbh.getAllCredsWithFavs(SmbAuthData.ref).values();
-                smbCredsWithFavs = new FavoritesList[cwf.size()]; // TODO replace with return value from toArray of size 0
-                cwf.toArray(smbCredsWithFavs);
+                smbCredsWithFavs = (FavoritesList<SmbAuthData>[]) cwf.toArray(new FavoritesList[0]);
 
                 // add empty spinner for no selection
                 items.add("");

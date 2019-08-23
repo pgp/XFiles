@@ -93,8 +93,6 @@ public class XFilesRemoteEndpointAdapter extends BaseAdapter {
             view = inflater.inflate(R.layout.rhss_server_sessions_item, null);
 
             TextView clientIPandPort = view.findViewById(R.id.rhss_session_endpoint_IP_and_port);
-            // TODO enable client info button, show transitioned popup window with visual hash (initially show toast only)
-            // RHSSServerStatus.StoCSessions.get(<IPandPort>)
 
             ImageButton endpointInfo = view.findViewById(R.id.rhss_session_endpoint_info);
 

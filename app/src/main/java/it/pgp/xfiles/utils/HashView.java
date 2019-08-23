@@ -34,20 +34,6 @@ public class HashView extends View {
             0xFF7F0000,0xFF007F7F,0xFF007F00,0xFF7F7F00,
             0xFF7F4400,0xFF7F006E,0xFFFF8800,0xFF7F7F7F};
 
-    // generate pseudorandom stream of given length from key of fixed length
-    // no longer used, SHAKE-128 from libr.so used instead of SpongyCastle crypto
-//    public static byte[] c20_streamgen(byte[] key, int outBitLen) throws IllegalArgumentException {
-//        byte[] nonce = new byte[8];
-//        int roundedByteSize = (outBitLen%8==0)?outBitLen/8:outBitLen/8+1;
-//        byte[] input = new byte[roundedByteSize];
-//        StreamCipher c20 = new ChaChaEngine();
-//        ParametersWithIV p = new ParametersWithIV(new KeyParameter(key),nonce);
-//        c20.init(true,p);
-//        byte[] cipherText = new byte[input.length];
-//        c20.processBytes(input,0,input.length,cipherText,0);
-//        return cipherText;
-//    }
-
     PaintRect[][] M;
 
     private int width,height;
@@ -96,43 +82,19 @@ public class HashView extends View {
         int outSize = gridSize * gridSize * bitsPerCell;
         PaintRect[][] M = new PaintRect[gridSize][gridSize];
 
-        /***************************/
-        // LEGACY
-        // compression: get fixed-size hash from arbitrary length input
-//        byte[] digestOctets = new byte[32];
-//        SHA3Digest sd = new SHA3Digest(256);
-//        sd.update(b, 0, b.length);
-//        sd.doFinal(digestOctets, 0);
-//
-//        // expansion: get desired-size bit stream from fixed length hash
-//        // legacy
-////        byte[] outDigest = c20_streamgen(digestOctets,outSize);
-//        // new, native
-//        byte[] outDigest = new byte[outSize/8];
-//        Native.c20StreamGen(digestOctets,outDigest);
-        /***************************/
-
-//        byte[] outDigest = new byte[outSize/8];
-//        Native.spongeForHashView(b,outDigest);
-//        Native.spongeForHashViewInPlace(b,b.length,outDigest,outDigest.length);
         byte[] outDigest = Native.spongeForHashViewShake(b,b.length,outSize/8);
         boolean[] bb = byteArrayToBitArray(outDigest);
 
         for (int i = 0; i < gridSize; i++)
             for (int j = 0; j < gridSize; j++) {
                 Rect currentRect = new Rect(i * rSize, j * rSize, (i + 1) * rSize, (j + 1) * rSize);
-                // int rColor = GetBits(bitsPerCell*(gridSize*i+j),bitsPerCell,digestOctets);
-//                int rColor = GetBits(digestOctets, bitsPerCell * (gridSize * i + j), bitsPerCell);
                 int rColor = getBitSeqFromBooleanArray(bitsPerCell*(gridSize*i+j),bitsPerCell,bb);
 
                 Paint currentPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
                 currentPaint.setStyle(Paint.Style.FILL);
                 currentPaint.setColor(colors16_Ordered[rColor]);
                 M[i][j] = new PaintRect(currentRect, currentPaint);
-//                Log.d("************",""+rColor);
-//                Log.d("************",""+i+" "+j);
             }
-
         return M;
     }
     

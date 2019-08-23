@@ -7,6 +7,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 import it.pgp.xfiles.BrowserItem;
@@ -33,6 +35,8 @@ public class BrowserListAdapter extends BrowserAdapter {
             this.imageView = imageView;
         }
     }
+
+    private final DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss zzz");
 
     @Override
     public View getView(final int position, View convertView, final ViewGroup parent) {
@@ -62,7 +66,7 @@ public class BrowserListAdapter extends BrowserAdapter {
 
         name.setText(item.getFilename());
         size.setText(""+item.size);
-        date.setText(""+item.date); // TODO DateFormat
+        date.setText(formatter.format(item.date));
 
 //        imageView.setImageBitmap(item.isDirectory?dirIV:fileIV);
         imageView.setImageBitmap(getBitmapByExtension(item));

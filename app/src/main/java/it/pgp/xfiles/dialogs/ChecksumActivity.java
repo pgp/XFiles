@@ -36,11 +36,9 @@ import it.pgp.xfiles.utils.pathcontent.BasePathContent;
 public class ChecksumActivity extends EffectActivity {
 
     private ChecksumTask checksumTask;
-//    private BasePathContent file;
 
     private List<BasePathContent> files;
 
-//    private Map<HashRequestCodes,CheckBox> selector;
     private HashAlgorithmsAdapter adapter;
     private TableLayout standardResultsLayout;
     private Button computeChecksumsButton;
@@ -53,16 +51,7 @@ public class ChecksumActivity extends EffectActivity {
         super.onCreate(savedInstanceState);
         clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
 
-        // LEGACY, file path passed as string, valid only for local files
-        /*String singleFile = getIntent().getStringExtra("file");
-        if (singleFile == null) {
-            files = MainActivity.mainActivity.getCurrentBrowserAdapter().getSelectedItemsAsPathContents();
-        }
-        else {
-            files = Collections.singletonList(new LocalPathContent(singleFile));
-        }*/
-
-        // NEW, file path passed as BasePathContent, also for XRE paths
+        // file path passed as BasePathContent, valid for both local and XRE paths
         BasePathContent singleFile = (BasePathContent) getIntent().getSerializableExtra("pathcontent");
         if (singleFile == null)
             files = MainActivity.mainActivity.getCurrentBrowserAdapter().getSelectedItemsAsPathContents();

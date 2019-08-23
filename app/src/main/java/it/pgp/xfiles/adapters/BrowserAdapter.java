@@ -88,7 +88,7 @@ public class BrowserAdapter extends ArrayAdapter<BrowserItem> {
 
     @Override
     public BrowserItem getItem(int position) {
-        return currentObjects.get(position); // TODO to be tested
+        return currentObjects.get(position);
     }
 
     @Override
@@ -224,7 +224,7 @@ public class BrowserAdapter extends ArrayAdapter<BrowserItem> {
         }
         else {
             currentObjects = new ArrayList<>();
-            // TODO to be replace with recursive filtering (on currentObjects)
+            // TODO to be replaced with recursive filtering (on currentObjects)
             if (ignoreCase) {
                 for (BrowserItem b : objects) {
                     if (b.getFilename().toLowerCase().contains(content.toString().toLowerCase())) currentObjects.add(b);
