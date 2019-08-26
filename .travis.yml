@@ -3,7 +3,7 @@ dist: bionic
 language: android
 
 jdk:
-  - openjdk8
+  - openjdk11
 
 android:
   components:
