@@ -66,11 +66,9 @@ public class FindActivity extends EffectActivity implements FileSelectFragment.C
                 MainActivity.mainActivity.goDir(new LocalPathContent(b.getFilename()).getParent(),b.getFilename());
                 break;
             case R.id.findItemProperties:
-                PropertiesDialog pd = new PropertiesDialog(
-                        this,
+                new PropertiesDialog(this,
                         b.isDirectory? FileMode.DIRECTORY :FileMode.FILE,
-                        Collections.singletonList(new LocalPathContent(b.getFilename())));
-                pd.show();
+                        Collections.singletonList(new LocalPathContent(b.getFilename()))).show();
                 break;
         }
         return true;

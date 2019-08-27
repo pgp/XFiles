@@ -2,9 +2,6 @@ sudo: required
 dist: bionic
 language: android
 
-jdk:
-  - openjdk11
-
 android:
   components:
     - tools

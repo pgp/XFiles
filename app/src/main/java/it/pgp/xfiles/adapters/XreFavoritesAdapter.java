@@ -105,14 +105,12 @@ public class XreFavoritesAdapter extends BaseAdapter implements ListAdapter {
         ImageButton deleteBtn = view.findViewById(R.id.favorites_xre_list_item_delete);
 
         editBtn.setOnClickListener(v -> {
-            InsertEditXreFavoritesDialog insertEditDialog =
-                    new InsertEditXreFavoritesDialog(
-                            context,
-                            XreFavoritesAdapter.this,
-                            getItemId(position),
-                            xreFavoriteServers.get(position),
-                            xreFavoritePaths.get(position));
-            insertEditDialog.show();
+            new InsertEditXreFavoritesDialog(
+                    context,
+                    XreFavoritesAdapter.this,
+                    getItemId(position),
+                    xreFavoriteServers.get(position),
+                    xreFavoritePaths.get(position)).show();
         });
         deleteBtn.setOnClickListener(v -> {
             // remove row from db

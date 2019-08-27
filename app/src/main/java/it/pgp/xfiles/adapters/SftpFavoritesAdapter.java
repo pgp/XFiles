@@ -121,15 +121,13 @@ public class SftpFavoritesAdapter extends BaseAdapter {
                 port.setText(((AuthData)getItem(position)).port+"");
                 addButton.setOnClickListener(v -> {
                     // insert mode
-                    InsertEditSftpFavoritesDialog insertEditDialog =
-                            new InsertEditSftpFavoritesDialog(
-                                    AuthData.ref,
-                                    context,
-                                    SftpFavoritesAdapter.this,
-                                    getItemId(position),
-                                    sfDbMap.get(getItemId(position)),
-                                    null);
-                    insertEditDialog.show();
+                    new InsertEditSftpFavoritesDialog(
+                            AuthData.ref,
+                            context,
+                            SftpFavoritesAdapter.this,
+                            getItemId(position),
+                            sfDbMap.get(getItemId(position)),
+                            null).show();
                 });
             }
             else { // CONTENT_TYPE
@@ -144,15 +142,13 @@ public class SftpFavoritesAdapter extends BaseAdapter {
 
                 editBtn.setOnClickListener(v -> {
                     // edit mode
-                    InsertEditSftpFavoritesDialog insertEditDialog =
-                            new InsertEditSftpFavoritesDialog(
-                                    AuthData.ref,
-                                    context,
-                                    SftpFavoritesAdapter.this,
-                                    getItemId(position),
-                                    sfDbMap.get(getItemId(position)),
-                                    (String) getItem(position));
-                    insertEditDialog.show();
+                    new InsertEditSftpFavoritesDialog(
+                            AuthData.ref,
+                            context,
+                            SftpFavoritesAdapter.this,
+                            getItemId(position),
+                            sfDbMap.get(getItemId(position)),
+                            (String) getItem(position)).show();
                 });
                 deleteBtn.setOnClickListener(v -> {
                     // remove row from db

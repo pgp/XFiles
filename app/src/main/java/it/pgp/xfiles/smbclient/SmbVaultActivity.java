@@ -18,12 +18,7 @@ public class SmbVaultActivity extends VaultActivity {
         dbh = new GenericDBHelper(getApplicationContext());
         vaultListView= findViewById(R.id.smb_passitem_List);
         addNewItemBtn= findViewById(R.id.smbAddNewCredsBtn);
-        addNewItemBtn.setOnClickListener(
-                view -> {
-                    insertEditDialog = new InsertEditDialog(SmbVaultActivity.this,vaultAdapter);
-                    insertEditDialog.show();
-                }
-        );
+        addNewItemBtn.setOnClickListener(v -> new InsertEditDialog(SmbVaultActivity.this,vaultAdapter).show());
     }
 
     @Override

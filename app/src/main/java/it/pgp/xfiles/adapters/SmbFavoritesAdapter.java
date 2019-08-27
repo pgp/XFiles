@@ -64,15 +64,13 @@ public class SmbFavoritesAdapter extends SftpFavoritesAdapter {
                 port.setText(((SmbAuthData)getItem(position)).port+"");
                 addButton.setOnClickListener(v -> {
                     // insert mode
-                    InsertEditSftpFavoritesDialog insertEditDialog =
-                            new InsertEditSftpFavoritesDialog(
-                                    SmbAuthData.ref,
-                                    context,
-                                    SmbFavoritesAdapter.this,
-                                    getItemId(position),
-                                    sfDbMap.get(getItemId(position)),
-                                    null);
-                    insertEditDialog.show();
+                    new InsertEditSftpFavoritesDialog(
+                            SmbAuthData.ref,
+                            context,
+                            SmbFavoritesAdapter.this,
+                            getItemId(position),
+                            sfDbMap.get(getItemId(position)),
+                            null).show();
                 });
             }
             else { // CONTENT_TYPE
@@ -87,15 +85,13 @@ public class SmbFavoritesAdapter extends SftpFavoritesAdapter {
 
                 editBtn.setOnClickListener(v -> {
                     // edit mode
-                    InsertEditSftpFavoritesDialog insertEditDialog =
-                            new InsertEditSftpFavoritesDialog(
-                                    SmbAuthData.ref,
-                                    context,
-                                    SmbFavoritesAdapter.this,
-                                    getItemId(position),
-                                    sfDbMap.get(getItemId(position)),
-                                    (String) getItem(position));
-                    insertEditDialog.show();
+                    new InsertEditSftpFavoritesDialog(
+                            SmbAuthData.ref,
+                            context,
+                            SmbFavoritesAdapter.this,
+                            getItemId(position),
+                            sfDbMap.get(getItemId(position)),
+                            (String) getItem(position)).show();
                 });
                 deleteBtn.setOnClickListener(v -> {
                     // remove row from db

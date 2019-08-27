@@ -36,8 +36,6 @@ public class VaultActivity extends EffectActivity implements FileSelectFragment.
 
     public Button addNewItemBtn, addNewIdBtn, genNewIdBtn;
 
-    public InsertEditDialog insertEditDialog;
-
     public void openFileSelector() {
         String fragTag = getResources().getString(R.string.tag_fragment_FileSelect);
 
@@ -66,12 +64,7 @@ public class VaultActivity extends EffectActivity implements FileSelectFragment.
         addNewIdBtn = findViewById(R.id.sftpAddNewIdentityBtn);
         genNewIdBtn = findViewById(R.id.sftpGenNewIdentityBtn);
 
-        addNewItemBtn.setOnClickListener(
-            view -> {
-                insertEditDialog = new InsertEditDialog(VaultActivity.this,vaultAdapter);
-                insertEditDialog.show();
-            }
-        );
+        addNewItemBtn.setOnClickListener(v -> new InsertEditDialog(VaultActivity.this,vaultAdapter).show());
 
         addNewIdBtn.setOnClickListener(v -> openFileSelector());
         genNewIdBtn.setOnClickListener(v -> new SSHKeygenDialog(VaultActivity.this).show());

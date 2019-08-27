@@ -88,9 +88,7 @@ public class ExtractTask extends RootHelperClientTask {
         else if (result == FileOpsErrorCodes.NULL_OR_WRONG_PASSWORD) {
             Toast.makeText(service.getApplicationContext(),"Empty or wrong password",Toast.LENGTH_LONG).show();
             if (activity == null) return; // activity closed while service active, nothing to refresh
-            AskPasswordDialogOnExtract askPasswordDialogOnExtract = new AskPasswordDialogOnExtract(
-                    MainActivity.mainActivity,(ExtractParams)params);
-            askPasswordDialogOnExtract.show();
+            new AskPasswordDialogOnExtract(MainActivity.mainActivity,(ExtractParams)params).show();
         }
         else if (result == FileOpsErrorCodes.CRC_FAILED) {
             Toast.makeText(service.getApplicationContext(),"CRC failed in data, wrong password provided for extraction?",Toast.LENGTH_LONG).show();

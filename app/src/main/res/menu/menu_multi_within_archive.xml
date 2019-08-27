@@ -2,8 +2,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item android:id="@+id/itemsExtract"
+        android:icon="@drawable/xfiles_extract"
         android:title="Extract" />
 
     <item android:id="@+id/itemsProperties"
+        android:icon="@drawable/xfiles_file_icon"
         android:title="Properties" />
 </menu>

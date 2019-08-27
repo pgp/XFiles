@@ -2,15 +2,15 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item android:id="@+id/itemShareOverHTTP"
-        android:icon="@android:drawable/ic_menu_edit"
+        android:icon="@drawable/xf_share"
         android:title="Share over HTTP" />
 
     <item android:id="@+id/itemShareOverFTP"
-        android:icon="@android:drawable/ic_menu_edit"
+        android:icon="@drawable/xf_share"
         android:title="Share over FTP" />
 
     <item android:id="@+id/itemShareOverXRE"
-        android:icon="@android:drawable/ic_menu_edit"
+        android:icon="@drawable/xf_share"
         android:title="Share over XRE" />
 
 </menu>

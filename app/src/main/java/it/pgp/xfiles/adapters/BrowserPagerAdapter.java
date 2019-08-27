@@ -166,7 +166,11 @@ public class BrowserPagerAdapter extends PagerAdapter {
 
         // mainBrowserViews[position].setAdapter(browserAdapters[position]); // already called in showDirContent
         mainBrowserViews[position].setOnItemClickListener(mainActivity.listViewLevelOICL);
-        mainActivity.registerForContextMenu(mainBrowserViews[position]);
+        mainBrowserViews[position].setOnItemLongClickListener((parent, view, position1, id) -> {
+            mainActivity.showPopup(parent,view,position1,id);
+            return true;
+        });
+//        mainActivity.registerForContextMenu(mainBrowserViews[position]);
     }
 
     private void changeMainViews(BrowserViewMode browserViewMode,

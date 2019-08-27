@@ -384,26 +384,22 @@ public class SFTPProviderUsingPathContent implements FileOperationHelperUsingPat
                 if (InteractiveHostKeyVerifier.lastHostKeyHasChanged != null && pendingLsPath != null){
                     if (InteractiveHostKeyVerifier.lastHostKeyHasChanged) {
                         // show "last host key changed" dialog, containing current getChannel input parameter
-                        SSHAlreadyInKnownHostsDialog ad =
-                                new SSHAlreadyInKnownHostsDialog(
+                        new SSHAlreadyInKnownHostsDialog(
                                         mainActivity,
                                         authData,
                                         null, // FIXME need to have old host key here
                                         InteractiveHostKeyVerifier.currentHostKey,
                                         this,
-                                        pendingLsPath
-                                );
-                        ad.show();
-                    } else {
+                                        pendingLsPath).show();
+                    }
+                    else {
                         // show "add host key" dialog, containing current getChannel input parameter
-                        SSHNotInKnownHostsDialog nd =
-                                new SSHNotInKnownHostsDialog(
+                        new SSHNotInKnownHostsDialog(
                                         mainActivity,
                                         authData,
                                         InteractiveHostKeyVerifier.currentHostKey,
                                         this,
-                                        pendingLsPath);
-                        nd.show();
+                                        pendingLsPath).show();
                     }
                 }
                  // any way, won't get a list dir response at this request, dismiss listeners in dialogs will do the job by calling main activity methods

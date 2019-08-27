@@ -2,17 +2,22 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item android:id="@+id/itemsCopy"
+        android:icon="@drawable/xf_copy"
         android:title="Copy" />
 
     <item android:id="@+id/itemsMove"
+        android:icon="@drawable/xfiles_cut"
         android:title="Move" />
 
     <item android:id="@+id/itemsDelete"
+        android:icon="@drawable/xf_recycle_bin"
         android:title="Delete" />
 
     <item android:id="@+id/itemsChecksum"
+        android:icon="@android:drawable/ic_menu_edit"
         android:title="Checksum" />
 
     <item android:id="@+id/itemsProperties"
+        android:icon="@drawable/xfiles_file_icon"
         android:title="Properties" />
 </menu>
