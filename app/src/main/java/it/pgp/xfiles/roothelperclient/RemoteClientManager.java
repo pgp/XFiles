@@ -181,7 +181,7 @@ public class RemoteClientManager {
                 List<String> names = new ArrayList<>();
                 List<Long> sizes = new ArrayList<>();
                 long totalSize = 0;
-                long currentFileSize = 0;
+                long currentFileSize;
                 for (String uriString : ((CopyListUris)items).contentUris) {
                     Uri uri = Uri.parse(uriString);
                     uris.add(uri);

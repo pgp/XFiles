@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
@@ -267,8 +268,7 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
         ls_resp resp = ls_resp.readNext(clientInStream);
         int entryCnt = 0; // for extracting selected files, it is necessary to know their position in the archive entries list
         while (resp != null) {
-            List<String> inArchivePath = new ArrayList<>();
-            inArchivePath.addAll(Arrays.asList((new String(resp.filename,"UTF-8")).split("/")));
+            List<String> inArchivePath = new ArrayList<>(Arrays.asList((new String(resp.filename, StandardCharsets.UTF_8)).split("/")));
             inArchivePath.add(ArchiveVMap.sentinelKeyForNodeProperties);
 
             Map<String,Object> nodeProps = new HashMap<>();
@@ -276,7 +276,7 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
             nodeProps.put("i",entryCnt);
             nodeProps.put("size",resp.size);
             nodeProps.put("date",new Date(resp.date*1000L));
-            nodeProps.put("isDir",new String(resp.permissions, "UTF-8").charAt(0) == 'd');
+            nodeProps.put("isDir",new String(resp.permissions, StandardCharsets.UTF_8).charAt(0) == 'd');
 
             v.set(nodeProps,inArchivePath.toArray()); // put in vMap with properties
 
@@ -459,7 +459,7 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
 
     private int handleCompressProgressAfterConfOK(StreamsPair rs, final long total) throws IOException {
         long last_progress = 0;
-        int ret = 0;
+        int ret;
         // receive progress (end progress is -1 as uint64)
         for(;;) {
             long progress = Misc.receiveTotalOrProgress(rs.i);
@@ -492,7 +492,7 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
 
     private int handleCompressProgressAfterConfOK(StreamsPair rs, final long total, ContentResolver resolver, List<Uri> uris, int nativeUds) throws IOException {
         long last_progress = 0;
-        int ret = 0;
+        int ret;
         byte[] b_idx = new byte[4];
 
         long totalFromRh = Misc.receiveTotalOrProgress(rs.i);
@@ -1378,7 +1378,7 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
         int ret = receiveBaseResponse(rs.i);
         if (ret != 0) throw new IOException("File creation error");
 
-        byte data[] = new byte[4096];
+        byte[] data = new byte[4096];
         long total = 0;
         long latest = 0;
         int count;

@@ -187,8 +187,8 @@ public class Misc {
     public static List<String> splitByteArrayOverByteAndEncode(byte[] b, byte targetByte) {
         List<String> outs = new ArrayList<>();
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        for (int j=0;j<b.length;j++) {
-            if (b[j] != targetByte) baos.write(b[j]);
+        for (byte value : b) {
+            if (value != targetByte) baos.write(value);
             else {
                 outs.add(new String(baos.toByteArray())); // assumed default charset: UTF-8
                 baos.reset();

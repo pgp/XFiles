@@ -260,8 +260,8 @@ public class MainActivity extends EffectActivity {
                 if(ArchiveType.APK.name().equals(arcExt.toUpperCase())) {
                     AlertDialog.Builder bld = new AlertDialog.Builder(MainActivity.this);
                     bld.setTitle("Choose APK action");
-                    bld.setNegativeButton("Install", (dialog, which) -> {openWithDefaultApp(new File(currentFile.dir));});
-                    bld.setPositiveButton("Open as archive", (dialog, which) -> {goDir(new ArchivePathContent(currentFile.dir,"/"));});
+                    bld.setNegativeButton("Install", (dialog, which) -> openWithDefaultApp(new File(currentFile.dir)));
+                    bld.setPositiveButton("Open as archive", (dialog, which) -> goDir(new ArchivePathContent(currentFile.dir,"/")));
                     bld.create().show();
                     return;
                 }
@@ -966,7 +966,6 @@ public class MainActivity extends EffectActivity {
             startIntent.putExtra("params",new CopyMoveParams(copyMoveList,destPath));
             startService(startIntent);
             //*/*/*/*/*/*/*/*/
-            return;
         }
         // SFTP to SFTP file transfer
         else if (copyMoveList.parentDir.providerType == ProviderType.SFTP &&
@@ -994,7 +993,6 @@ public class MainActivity extends EffectActivity {
                 // not implementable without downloading to device & uploading from it (unpractical), or
                 // without already key-exchanged remote end-points
             }
-            return;
         }
         // XFiles remote transfer
         else if ((copyMoveList.parentDir.providerType == ProviderType.XFILES_REMOTE &&
@@ -1017,7 +1015,6 @@ public class MainActivity extends EffectActivity {
             startIntent.putExtra("params",new CopyMoveParams(copyMoveList,destPath));
             startService(startIntent);
             //*/*/*/*/*/*/*/*/
-            return;
         }
         else {
             Toast.makeText(mainActivity, "Unknown data provider pair", Toast.LENGTH_LONG).show();
@@ -1160,181 +1157,178 @@ public class MainActivity extends EffectActivity {
 
         mypopupmenu.show();
 //        mypopupmenu.getMenu().getItem(0).setIcon(getResources().getDrawable(R.mipmap.ic_launcher));
-        mypopupmenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                BrowserItem b;
-                File currentFile;
-                List<BasePathContent> selection;
-                BasePathContent path = getCurrentDirCommander().getCurrentDirectoryPathname();
-                int itemId = item.getItemId();
-                switch (itemId) {
-                    // multi-selection menu
-                    case R.id.itemsCopy:
-                        prepareForCopyOrMove(CopyMoveMode.COPY);
+        mypopupmenu.setOnMenuItemClickListener(item -> {
+            BrowserItem b;
+            File currentFile;
+            List<BasePathContent> selection;
+            BasePathContent path = getCurrentDirCommander().getCurrentDirectoryPathname();
+            int itemId = item.getItemId();
+            switch (itemId) {
+                // multi-selection menu
+                case R.id.itemsCopy:
+                    prepareForCopyOrMove(CopyMoveMode.COPY);
+                    return true;
+                case R.id.itemsMove:
+                    prepareForCopyOrMove(CopyMoveMode.MOVE);
+                    return true;
+                case R.id.itemsChecksum:
+                    checksumSelection();
+                    return true;
+                case R.id.itemsCompress:
+                    compressSelection();
+                    return true;
+                case R.id.itemsExtract:
+                    if (path.providerType != ProviderType.LOCAL_WITHIN_ARCHIVE) {
+                        Toast.makeText(MainActivity.this,"Cannot extract multiple items if they are not in an archive",Toast.LENGTH_SHORT).show();
                         return true;
-                    case R.id.itemsMove:
-                        prepareForCopyOrMove(CopyMoveMode.MOVE);
-                        return true;
-                    case R.id.itemsChecksum:
-                        checksumSelection();
-                        return true;
-                    case R.id.itemsCompress:
-                        compressSelection();
-                        return true;
-                    case R.id.itemsExtract:
-                        if (path.providerType != ProviderType.LOCAL_WITHIN_ARCHIVE) {
-                            Toast.makeText(MainActivity.this,"Cannot extract multiple items if they are not in an archive",Toast.LENGTH_SHORT).show();
-                            return true;
-                        }
-                        extractItems();
-                        return true;
-                    case R.id.itemsDelete:
-                        deleteSelection();
-                        return true;
-                    case R.id.itemsShare:
-                        shareItems();
-                        return true;
-                    case R.id.itemsProperties:
-                        getStats();
-                        return true;
+                    }
+                    extractItems();
+                    return true;
+                case R.id.itemsDelete:
+                    deleteSelection();
+                    return true;
+                case R.id.itemsShare:
+                    shareItems();
+                    return true;
+                case R.id.itemsProperties:
+                    getStats();
+                    return true;
 
-                    // single-selection menu
-                    case R.id.itemOpenAs:
-                        b = getCurrentBrowserAdapter().getItem(position1);
-                        if (path.providerType != ProviderType.LOCAL) {
-                            Toast.makeText(MainActivity.this,"Open not implemented for non-local or within-archive paths",Toast.LENGTH_LONG).show();
-                            return true;
-                        }
+                // single-selection menu
+                case R.id.itemOpenAs:
+                    b = getCurrentBrowserAdapter().getItem(position1);
+                    if (path.providerType != ProviderType.LOCAL) {
+                        Toast.makeText(MainActivity.this,"Open not implemented for non-local or within-archive paths",Toast.LENGTH_LONG).show();
+                        return true;
+                    }
 
-                        currentFile = new File(path.dir, b.filename);
-                        showOpenAsList(currentFile);
+                    currentFile = new File(path.dir, b.filename);
+                    showOpenAsList(currentFile);
+                    return true;
+                case R.id.itemCopy:
+                    b = getCurrentBrowserAdapter().getItem(position1);
+                    copyMoveList = new CopyMoveListPathContent(b, CopyMoveMode.COPY, path);
+                    Toast.makeText(MainActivity.this, "Copy item " + b.filename, Toast.LENGTH_LONG).show();
+                    return true;
+                case R.id.itemMove:
+                    b = getCurrentBrowserAdapter().getItem(position1);
+                    copyMoveList = new CopyMoveListPathContent(b, CopyMoveMode.MOVE, path);
+                    Toast.makeText(MainActivity.this, "Move item " + b.filename, Toast.LENGTH_LONG).show();
+                    return true;
+                case R.id.itemCreateLink:
+                    b = getCurrentBrowserAdapter().getItem(position1);
+                    new CreateLinkDialog(MainActivity.this, path.concat(b.filename), b.isDirectory?FileMode.DIRECTORY:FileMode.FILE).show();
+                    return true;
+                case R.id.itemCompress:
+                    b = getCurrentBrowserAdapter().getItem(position1);
+                    Intent i = new Intent(MainActivity.this,CompressActivity.class);
+                    i.putExtra("filename", b);
+                    startActivity(i);
+                    return true;
+                case R.id.itemExtract:
+                    b = getCurrentBrowserAdapter().getItem(position1);
+                    if(b.isDirectory) {
+                        Toast.makeText(MainActivity.this, "Cannot extract files from a directory, please select a compressed archive", Toast.LENGTH_LONG).show();
                         return true;
-                    case R.id.itemCopy:
-                        b = getCurrentBrowserAdapter().getItem(position1);
-                        copyMoveList = new CopyMoveListPathContent(b, CopyMoveMode.COPY, path);
-                        Toast.makeText(MainActivity.this, "Copy item " + b.filename, Toast.LENGTH_LONG).show();
+                    }
+                    extractItem(b);
+                    return true;
+                case R.id.itemDelete:
+                    b = getCurrentBrowserAdapter().getItem(position1);
+                    selection = Collections.singletonList(path.concat(b.filename));
+                    showDeleteDialog(selection);
+                    return true;
+                case R.id.itemRename:
+                    b = getCurrentBrowserAdapter().getItem(position1);
+                    new RenameDialog(
+                            MainActivity.this,
+                            path.concat(b.filename)
+                    ).show();
+                    return true;
+                case R.id.itemChecksum:
+                    if (path.providerType != ProviderType.LOCAL &&
+                            path.providerType != ProviderType.XFILES_REMOTE) {
+                        Toast.makeText(MainActivity.this,"Checksum implemented only for local and XFiles remote files",Toast.LENGTH_LONG).show();
                         return true;
-                    case R.id.itemMove:
-                        b = getCurrentBrowserAdapter().getItem(position1);
-                        copyMoveList = new CopyMoveListPathContent(b, CopyMoveMode.MOVE, path);
-                        Toast.makeText(MainActivity.this, "Move item " + b.filename, Toast.LENGTH_LONG).show();
+                    }
+                    b = getCurrentBrowserAdapter().getItem(position1);
+                    path = path.concat(b.filename);
+                    if (b.isDirectory) {
+                        Toast.makeText(MainActivity.this, "File is a directory", Toast.LENGTH_SHORT).show();
                         return true;
-                    case R.id.itemCreateLink:
-                        b = getCurrentBrowserAdapter().getItem(position1);
-                        new CreateLinkDialog(MainActivity.this, path.concat(b.filename), b.isDirectory?FileMode.DIRECTORY:FileMode.FILE).show();
-                        return true;
-                    case R.id.itemCompress:
-                        b = getCurrentBrowserAdapter().getItem(position1);
-                        Intent i = new Intent(MainActivity.this,CompressActivity.class);
-                        i.putExtra("filename", b);
-                        startActivity(i);
-                        return true;
-                    case R.id.itemExtract:
-                        b = getCurrentBrowserAdapter().getItem(position1);
-                        if(b.isDirectory) {
-                            Toast.makeText(MainActivity.this, "Cannot extract files from a directory, please select a compressed archive", Toast.LENGTH_LONG).show();
-                            return true;
-                        }
-                        extractItem(b);
-                        return true;
-                    case R.id.itemDelete:
-                        b = getCurrentBrowserAdapter().getItem(position1);
-                        selection = Collections.singletonList(path.concat(b.filename));
-                        showDeleteDialog(selection);
-                        return true;
-                    case R.id.itemRename:
-                        b = getCurrentBrowserAdapter().getItem(position1);
-                        new RenameDialog(
-                                MainActivity.this,
-                                path.concat(b.filename)
-                        ).show();
-                        return true;
-                    case R.id.itemChecksum:
-                        if (path.providerType != ProviderType.LOCAL &&
-                                path.providerType != ProviderType.XFILES_REMOTE) {
-                            Toast.makeText(MainActivity.this,"Checksum implemented only for local and XFiles remote files",Toast.LENGTH_LONG).show();
-                            return true;
-                        }
-                        b = getCurrentBrowserAdapter().getItem(position1);
-                        path = path.concat(b.filename);
-                        if (b.isDirectory) {
-                            Toast.makeText(MainActivity.this, "File is a directory", Toast.LENGTH_SHORT).show();
-                            return true;
-                        }
-                        Intent intent = new Intent(MainActivity.this, ChecksumActivity.class);
-                        intent.putExtra("pathcontent", path);
+                    }
+                    Intent intent = new Intent(MainActivity.this, ChecksumActivity.class);
+                    intent.putExtra("pathcontent", path);
 
-                        startActivity(intent);
-                        return true;
-                    case R.id.itemShare:
-                        b = getCurrentBrowserAdapter().getItem(position1);
-                        Intent sharingIntent = new Intent(Intent.ACTION_SEND);
-                        Uri sharingUri = Uri.fromFile(new File(path.dir, b.filename));
+                    startActivity(intent);
+                    return true;
+                case R.id.itemShare:
+                    b = getCurrentBrowserAdapter().getItem(position1);
+                    Intent sharingIntent = new Intent(Intent.ACTION_SEND);
+                    Uri sharingUri = Uri.fromFile(new File(path.dir, b.filename));
 //                Uri sharingUri = FileProvider.getUriForFile(MainActivity.this,
 //                        BuildConfig.APPLICATION_ID + ".provider",
 //                        new File(path.dir, b.filename));
-                        sharingIntent.setType("*/*");
-                        sharingIntent.putExtra(Intent.EXTRA_STREAM, sharingUri);
-                        sharingIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                        startActivity(Intent.createChooser(sharingIntent, "Share file using"));
+                    sharingIntent.setType("*/*");
+                    sharingIntent.putExtra(Intent.EXTRA_STREAM, sharingUri);
+                    sharingIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    startActivity(Intent.createChooser(sharingIntent, "Share file using"));
+                    return true;
+                case R.id.itemShowInGallery:
+                    // TODO consider also the case when image viewer is invoked by third party app - use MainActivity.mainActivity
+                    BasePathContent currentDir = getCurrentDirCommander().getCurrentDirectoryPathname();
+                    if(!(currentDir instanceof LocalPathContent)) {
+                        Toast.makeText(MainActivity.this, "Cannot preview images in a non-local directory", Toast.LENGTH_SHORT).show();
                         return true;
-                    case R.id.itemShowInGallery:
-                        // TODO consider also the case when image viewer is invoked by third party app - use MainActivity.mainActivity
-                        BasePathContent currentDir = getCurrentDirCommander().getCurrentDirectoryPathname();
-                        if(!(currentDir instanceof LocalPathContent)) {
-                            Toast.makeText(MainActivity.this, "Cannot preview images in a non-local directory", Toast.LENGTH_SHORT).show();
+                    }
+
+                    b = getCurrentBrowserAdapter().getItem(position1);
+                    if(b.filename.length()>=4 &&
+                            MediaGalleryActivity.allowedImageExtensions.contains(b.filename.substring(b.filename.length()-4))) {
+                        ArrayList<String> imageList = MediaGalleryActivity.filterByImageExtensionsAndSaveTargetIdx(currentDir,b.filename);
+                        MediaGallery.Builder(MainActivity.this,imageList)
+                                .title("Media Gallery")
+                                .backgroundColor(R.color.white)
+                                .placeHolder(R.drawable.media_gallery_placeholder)
+                                .selectedImagePosition(MediaGalleryActivity.targetIdx < 0 ? 0 : MediaGalleryActivity.targetIdx)
+                                .show();
+                    }
+                    else Toast.makeText(MainActivity.this, "This file doesn't seem to be an image", Toast.LENGTH_SHORT).show();
+                    return true;
+                case R.id.itemShareOverHTTP:
+                case R.id.itemShareOverFTP:
+                case R.id.itemShareOverXRE:
+                    b = getCurrentBrowserAdapter().getItem(position1);
+                    path = path.concat(b.filename);
+                    new RemoteRHServerManagementDialog(MainActivity.this);
+
+                    if(itemId==R.id.itemShareOverXRE) {
+                        ((EditText)RemoteRHServerManagementDialog.instance.findViewById(R.id.xreHomePath)).setText(path.dir);
+                        RemoteRHServerManagementDialog.instance.show();
+                        if(RemoteServerManager.rhssManagerThreadRef.get() != null) {
+                            Toast.makeText(MainActivity.this, "XRE server is already active, please stop it before sharing a new directory", Toast.LENGTH_LONG).show();
                             return true;
                         }
-
-                        b = getCurrentBrowserAdapter().getItem(position1);
-                        if(b.filename.length()>=4 &&
-                                MediaGalleryActivity.allowedImageExtensions.contains(b.filename.substring(b.filename.length()-4))) {
-                            ArrayList<String> imageList = MediaGalleryActivity.filterByImageExtensionsAndSaveTargetIdx(currentDir,b.filename);
-                            MediaGallery.Builder(MainActivity.this,imageList)
-                                    .title("Media Gallery")
-                                    .backgroundColor(R.color.white)
-                                    .placeHolder(R.drawable.media_gallery_placeholder)
-                                    .selectedImagePosition(MediaGalleryActivity.targetIdx < 0 ? 0 : MediaGalleryActivity.targetIdx)
-                                    .show();
+                        RemoteRHServerManagementDialog.instance.findViewById(R.id.rhss_toggle_rhss_button).performClick();
+                    }
+                    else {
+                        ((EditText)RemoteRHServerManagementDialog.instance.findViewById(R.id.ftpHttpRootPath)).setText(path.dir);
+                        RemoteRHServerManagementDialog.instance.show();
+                        // autostart HTTP/FTP server
+                        FileServer fileServer = FileServer.fromMenuRes(itemId);
+                        if(fileServer.isAlive()) {
+                            Toast.makeText(MainActivity.this, fileServer.name()+" server is already running, please stop it before sharing a new directory", Toast.LENGTH_LONG).show();
+                            return true;
                         }
-                        else Toast.makeText(MainActivity.this, "This file doesn't seem to be an image", Toast.LENGTH_SHORT).show();
-                        return true;
-                    case R.id.itemShareOverHTTP:
-                    case R.id.itemShareOverFTP:
-                    case R.id.itemShareOverXRE:
-                        b = getCurrentBrowserAdapter().getItem(position1);
-                        path = path.concat(b.filename);
-                        new RemoteRHServerManagementDialog(MainActivity.this);
-
-                        if(itemId==R.id.itemShareOverXRE) {
-                            ((EditText)RemoteRHServerManagementDialog.instance.findViewById(R.id.xreHomePath)).setText(path.dir);
-                            RemoteRHServerManagementDialog.instance.show();
-                            if(RemoteServerManager.rhssManagerThreadRef.get() != null) {
-                                Toast.makeText(MainActivity.this, "XRE server is already active, please stop it before sharing a new directory", Toast.LENGTH_LONG).show();
-                                return true;
-                            }
-                            RemoteRHServerManagementDialog.instance.findViewById(R.id.rhss_toggle_rhss_button).performClick();
-                        }
-                        else {
-                            ((EditText)RemoteRHServerManagementDialog.instance.findViewById(R.id.ftpHttpRootPath)).setText(path.dir);
-                            RemoteRHServerManagementDialog.instance.show();
-                            // autostart HTTP/FTP server
-                            FileServer fileServer = FileServer.fromMenuRes(itemId);
-                            if(fileServer.isAlive()) {
-                                Toast.makeText(MainActivity.this, fileServer.name()+" server is already running, please stop it before sharing a new directory", Toast.LENGTH_LONG).show();
-                                return true;
-                            }
-                            RemoteRHServerManagementDialog.instance.findViewById(fileServer.buttonId).performClick();
-                        }
-                        return true;
-                    case R.id.itemProperties:
-                        b = getCurrentBrowserAdapter().getItem(position1);
-                        getStats(b);
-                        return true;
-                    default:
-                        return true;
-                }
+                        RemoteRHServerManagementDialog.instance.findViewById(fileServer.buttonId).performClick();
+                    }
+                    return true;
+                case R.id.itemProperties:
+                    b = getCurrentBrowserAdapter().getItem(position1);
+                    getStats(b);
+                    return true;
+                default:
+                    return true;
             }
         });
     }

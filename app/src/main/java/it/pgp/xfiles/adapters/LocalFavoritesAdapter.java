@@ -90,13 +90,11 @@ public class LocalFavoritesAdapter extends BaseAdapter implements ListAdapter {
         ImageButton editBtn = view.findViewById(R.id.favorites_local_list_item_edit);
         ImageButton deleteBtn = view.findViewById(R.id.favorites_local_list_item_delete);
 
-        editBtn.setOnClickListener(v -> {
-            new InsertEditLocalFavoritesDialog(
-                    context,
-                    LocalFavoritesAdapter.this,
-                    getItemId(position),
-                    getItem(position)).show();
-        });
+        editBtn.setOnClickListener(v -> new InsertEditLocalFavoritesDialog(
+                context,
+                LocalFavoritesAdapter.this,
+                getItemId(position),
+                getItem(position)).show());
         deleteBtn.setOnClickListener(v -> {
             // remove row from db
             boolean deleted = dbh.deleteRowFromLocalFavoritesTable(dbIds.get(position));

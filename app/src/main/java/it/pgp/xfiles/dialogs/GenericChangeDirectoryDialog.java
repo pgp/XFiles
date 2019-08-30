@@ -381,8 +381,7 @@ public class GenericChangeDirectoryDialog extends Dialog {
 
 //                Collection cwf = dbh.getAllSftpCredsWithFavs().values();
                 Collection cwf = dbh.getAllCredsWithFavs(AuthData.ref).values();
-                credsWithFavs = new FavoritesList[cwf.size()];
-                cwf.toArray(credsWithFavs);
+                credsWithFavs = (FavoritesList<AuthData>[]) cwf.toArray(new FavoritesList[0]);
 
                 // add empty spinner for no selection
                 items.add("");
@@ -420,14 +419,7 @@ public class GenericChangeDirectoryDialog extends Dialog {
 
                         // populate auto-complete list for remote path's AutoCompleteTextView
                         Collection paths = credsWithFavs[position-1].paths; // pos-1: idem as before
-                        String[] autoCompleteSupport;
-                        if (paths != null) {
-                            autoCompleteSupport = new String[paths.size()];
-                            paths.toArray(autoCompleteSupport);
-                        }
-                        else {
-                            autoCompleteSupport = new String[0];
-                        }
+                        String[] autoCompleteSupport = (paths!=null)?(String[])paths.toArray(new String[0]):new String[0];
 
                         ArrayAdapter<String> autoCompleteAdapter = new ArrayAdapter<>(
                                 mainActivity,
@@ -499,14 +491,7 @@ public class GenericChangeDirectoryDialog extends Dialog {
 
                         // populate auto-complete list for remote path's AutoCompleteTextView
                         Collection paths = smbCredsWithFavs[position-1].paths; // pos-1: idem as before
-                        String[] autoCompleteSupport;
-                        if (paths != null) {
-                            autoCompleteSupport = new String[paths.size()];
-                            paths.toArray(autoCompleteSupport);
-                        }
-                        else {
-                            autoCompleteSupport = new String[0];
-                        }
+                        String[] autoCompleteSupport = (paths!=null)?(String[])paths.toArray(new String[0]):new String[0];
 
                         ArrayAdapter<String> autoCompleteAdapter = new ArrayAdapter<>(
                                 mainActivity,

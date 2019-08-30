@@ -118,8 +118,8 @@ public class ChecksumActivity extends EffectActivity {
 
     private class HashTextView extends android.support.v7.widget.AppCompatTextView {
 
-        private CharSequence header = "";
-        private CharSequence content = "";
+        private CharSequence header;
+        private CharSequence content;
 
         public HashTextView(Context context,
                             CharSequence content,

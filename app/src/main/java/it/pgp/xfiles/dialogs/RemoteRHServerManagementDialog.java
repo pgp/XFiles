@@ -106,10 +106,10 @@ public class RemoteRHServerManagementDialog extends Dialog {
                     (rhssSendXreAnnounceCheckbox!=null && rhssSendXreAnnounceCheckbox.isChecked())?
                             RemoteServerManager.RHSS_ACTION.START_ANNOUNCE:
                             RemoteServerManager.RHSS_ACTION.START;
-            int result = RemoteServerManager.rhss_action(targetAction,new String[]{
+            int result = RemoteServerManager.rhss_action(targetAction,
                     xreHomePath.getText().toString(),
                     xreAnnouncedPath.getText().toString(),
-                    xreExposedPath.getText().toString()});
+                    xreExposedPath.getText().toString());
 
             switch (result) {
                 case 1:
