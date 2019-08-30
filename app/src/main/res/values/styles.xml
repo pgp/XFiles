@@ -8,4 +8,8 @@
     </style>
 
     <style name="popupMenuStyle" parent="Theme.AppCompat"/>
+
+    <style name="AppTheme.MediaGalleryToolbar" parent="android:Theme.Holo">
+    </style>
+
 </resources>

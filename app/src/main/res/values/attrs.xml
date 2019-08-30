@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="MediaGalleryView">
+        <attr name="span_count" format="integer" />
+        <attr name="place_holder" format="reference" />
+        <attr name="gallery_orientation" format="enum">
+            <enum name="horizontal" value="0" />
+            <enum name="vertical" value="1" />
+        </attr>
+        <attr name="image_width" format="dimension"/>
+        <attr name="image_height" format="dimension"/>
+    </declare-styleable>
+</resources>

@@ -42,6 +42,9 @@ import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.Toast;
 
+import net.alhazmy13.mediagallery.library.activity.MediaGallery;
+import net.alhazmy13.mediagallery.library.activity.MediaGalleryActivity;
+
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -1275,6 +1278,27 @@ public class MainActivity extends EffectActivity {
                         sharingIntent.putExtra(Intent.EXTRA_STREAM, sharingUri);
                         sharingIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                         startActivity(Intent.createChooser(sharingIntent, "Share file using"));
+                        return true;
+                    case R.id.itemShowInGallery:
+                        // TODO consider also the case when image viewer is invoked by third party app - use MainActivity.mainActivity
+                        BasePathContent currentDir = getCurrentDirCommander().getCurrentDirectoryPathname();
+                        if(!(currentDir instanceof LocalPathContent)) {
+                            Toast.makeText(MainActivity.this, "Cannot preview images in a non-local directory", Toast.LENGTH_SHORT).show();
+                            return true;
+                        }
+
+                        b = getCurrentBrowserAdapter().getItem(position1);
+                        if(b.filename.length()>=4 &&
+                                MediaGalleryActivity.allowedImageExtensions.contains(b.filename.substring(b.filename.length()-4))) {
+                            ArrayList<String> imageList = MediaGalleryActivity.filterByImageExtensionsAndSaveTargetIdx(currentDir,b.filename);
+                            MediaGallery.Builder(MainActivity.this,imageList)
+                                    .title("Media Gallery")
+                                    .backgroundColor(R.color.white)
+                                    .placeHolder(R.drawable.media_gallery_placeholder)
+                                    .selectedImagePosition(MediaGalleryActivity.targetIdx < 0 ? 0 : MediaGalleryActivity.targetIdx)
+                                    .show();
+                        }
+                        else Toast.makeText(MainActivity.this, "This file doesn't seem to be an image", Toast.LENGTH_SHORT).show();
                         return true;
                     case R.id.itemShareOverHTTP:
                     case R.id.itemShareOverFTP:

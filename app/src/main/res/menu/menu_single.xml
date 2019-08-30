@@ -41,6 +41,10 @@
         android:icon="@drawable/xf_share"
         android:title="Share" />
 
+    <item android:id="@+id/itemShowInGallery"
+        android:icon="@drawable/xfiles_image"
+        android:title="Show in gallery" />
+
     <item android:id="@+id/itemProperties"
         android:icon="@drawable/xfiles_file_icon"
         android:title="Properties" />

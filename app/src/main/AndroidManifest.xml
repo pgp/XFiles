@@ -232,6 +232,9 @@
         <activity
             android:name=".PermissionManagementActivity"
             android:configChanges="orientation|screenSize|keyboardHidden" />
+        <activity
+            android:name="net.alhazmy13.mediagallery.library.activity.MediaGalleryActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden" />
 
         <service
             android:name=".service.NonInteractiveXFilesRemoteTransferService"

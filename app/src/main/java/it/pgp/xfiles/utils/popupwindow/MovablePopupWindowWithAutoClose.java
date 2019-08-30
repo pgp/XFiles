@@ -12,31 +12,30 @@ public class MovablePopupWindowWithAutoClose extends PopupWindow {
 
     private GestureDetector gestureDetector;
 
-    private void makeMovable(View view) {
-        view.setOnTouchListener(new View.OnTouchListener() {
-            int orgX, orgY;
-            int offsetX, offsetY;
+    int orgX, orgY;
+    int offsetX, offsetY;
 
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (gestureDetector.onTouchEvent(event)) {
-                    disableDismissTimeout();
-                    return true;
-                } else {
-                    switch (event.getAction()) {
-                        case MotionEvent.ACTION_DOWN:
-                            orgX = (int) event.getX();
-                            orgY = (int) event.getY();
-                            break;
-                        case MotionEvent.ACTION_MOVE:
-                            offsetX = (int)event.getRawX() - orgX;
-                            offsetY = (int)event.getRawY() - orgY;
-                            update(offsetX, offsetY, -1, -1, true);
-                            break;
-                    }
-                }
+    private void makeMovable(View view) {
+        view.setOnTouchListener((v,event) -> {
+            if (gestureDetector.onTouchEvent(event)) {
+                disableDismissTimeout();
                 return true;
-            }});
+            }
+            else {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        orgX = (int) event.getX();
+                        orgY = (int) event.getY();
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+                        offsetX = (int)event.getRawX() - orgX;
+                        offsetY = (int)event.getRawY() - orgY;
+                        update(offsetX, offsetY, -1, -1, true);
+                        break;
+                }
+            }
+            return true;
+        });
     }
 
 
