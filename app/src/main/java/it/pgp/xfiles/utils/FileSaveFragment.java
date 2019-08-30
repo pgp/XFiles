@@ -307,7 +307,7 @@ public class FileSaveFragment extends DialogFragment
 				(dialog, whichButton) -> {/*Empty method. Method defined in onStart();*/});
 
 		popupBuilder.setNegativeButton(resourceID_Cancel,
-				(dialog, whichButton) -> mCallbacks.onConfirmSave(null, null));
+				(dialog, whichButton) -> {});
 		
         return popupBuilder.create();
     }
@@ -319,21 +319,18 @@ public class FileSaveFragment extends DialogFragment
 	 * 
 	 * */
 	@Override
-	public void onStart()
-	{
+	public void onStart() {
 	    super.onStart();    
 	    AlertDialog d = (AlertDialog)getDialog();
-	    if(d != null)
-	    {
-	        Button positiveButton = d.getButton(Dialog.BUTTON_POSITIVE);
-	        positiveButton.setOnClickListener(v -> {
+	    if(d != null) {
+	        d.getButton(Dialog.BUTTON_POSITIVE).setOnClickListener(v -> {
                 String absolutePath = currentDirectory.getAbsolutePath();
                 String filename = fileName.getText().toString();
                 if (mCallbacks.onCanSave(absolutePath, filename)) {
                     dismiss();
                     mCallbacks.onConfirmSave(absolutePath, filename);
                 }
-            });
+			});
 	    }
 	}
 	

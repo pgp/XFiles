@@ -313,7 +313,7 @@ public class FileSelectFragment extends DialogFragment
 				(dialog, whichButton) -> {/* Empty method. See onStart */});
 
 		popupBuilder.setNegativeButton(resourceID_Cancel,
-				(dialog, whichButton) -> mCallbacks.onConfirmSelect(null, null));
+				(dialog, whichButton) -> {});
 		
         return popupBuilder.create();
     }
@@ -325,15 +325,11 @@ public class FileSelectFragment extends DialogFragment
 	 * 
 	 * */
 	@Override
-	public void onStart()
-	{
+	public void onStart() {
 	    super.onStart();    
 	    AlertDialog d = (AlertDialog)getDialog();
-	    if(d != null)
-	    {
-	        Button positiveButton = d.getButton(Dialog.BUTTON_POSITIVE);
-	        positiveButton.setOnClickListener(v -> {
-
+	    if(d != null) {
+	        d.getButton(Dialog.BUTTON_POSITIVE).setOnClickListener(v -> {
                 String absolutePath = currentDirectory.getAbsolutePath();
                 String filename = null;
                 if(currentFile != null) {

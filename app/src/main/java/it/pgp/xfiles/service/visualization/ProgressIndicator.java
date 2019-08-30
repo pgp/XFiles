@@ -29,11 +29,8 @@ public abstract class ProgressIndicator {
     public abstract void setProgress(Integer... values);
 
     public void destroy() {
-        try {
-            if (oView != null) wm.removeView(oView);
-            if (topLeftView != null) wm.removeView(topLeftView);
-        }
-        catch (Exception ignored) {}
+        try{ wm.removeView(oView); } catch(Throwable ignored) {}
+        try{ wm.removeView(topLeftView); } catch(Throwable ignored) {}
     }
 
     protected boolean overlayNotAvailable = false;

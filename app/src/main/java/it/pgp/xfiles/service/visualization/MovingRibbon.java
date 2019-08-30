@@ -126,7 +126,7 @@ public class MovingRibbon extends ProgressIndicator implements View.OnTouchListe
 
     @Override
     public void destroy() {
-        if(oView!=null) wm.removeView(oView);
-        if(topLeftView!=null) wm.removeView(topLeftView);
+        try{ wm.removeView(oView); } catch(Throwable ignored) {}
+        try{ wm.removeView(topLeftView); } catch(Throwable ignored) {}
     }
 }
