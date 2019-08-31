@@ -37,28 +37,44 @@ public class CloseActiveServersDialog extends Dialog {
         Bftp = findViewById(R.id.active_servers_ftp_button);
         Bhttp = findViewById(R.id.active_servers_http_button);
 
-        Txre.setTextColor((RemoteServerManager.rhssManagerThreadRef.get() != null)?green:red);
-        Tftp.setTextColor(FileServer.FTP.isAlive()?green:red);
-        Thttp.setTextColor((FileServer.HTTP.isAlive()?green:red));
-
-        Bxre.setOnClickListener(v->{
-            RemoteServerManager.rhss_action(RemoteServerManager.RHSS_ACTION.STOP);
+        if(RemoteServerManager.rhssManagerThreadRef.get() != null) {
+            Txre.setTextColor(green);
+            Bxre.setOnClickListener(v->{
+                RemoteServerManager.rhss_action(RemoteServerManager.RHSS_ACTION.STOP);
+                Txre.setTextColor(red);
+                Bxre.setEnabled(false);
+            });
+        }
+        else {
             Txre.setTextColor(red);
             Bxre.setEnabled(false);
-        });
-
-        Bftp.setOnClickListener(v-> {
-            FileServer.FTP.stop();
+        }
+        
+        if(FileServer.FTP.isAlive()) {
+            Tftp.setTextColor(green);
+            Bftp.setOnClickListener(v-> {
+                FileServer.FTP.stop();
+                Tftp.setTextColor(red);
+                Bftp.setEnabled(false);
+            });
+        }
+        else {
             Tftp.setTextColor(red);
             Bftp.setEnabled(false);
-        });
+        }
 
-        Bhttp.setOnClickListener(v-> {
-            FileServer.HTTP.stop();
+        if(FileServer.HTTP.isAlive()) {
+            Thttp.setTextColor(green);
+            Bhttp.setOnClickListener(v-> {
+                FileServer.HTTP.stop();
+                Thttp.setTextColor(red);
+                Bhttp.setEnabled(false);
+            });
+        }
+        else {
             Thttp.setTextColor(red);
             Bhttp.setEnabled(false);
-        });
-
+        }
     }
 
     @Override
