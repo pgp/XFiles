@@ -13,6 +13,7 @@ import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
@@ -42,6 +43,7 @@ public class ViewPagerAdapter extends PagerAdapter {
     private Toolbar toolbar;
     private RecyclerView imagesHorizontalList;
     private ImageView imageView;
+    private TextView filename;
 
     /**
      * Instantiates a new View pager adapter.
@@ -75,8 +77,9 @@ public class ViewPagerAdapter extends PagerAdapter {
         String o = mDataSet.get(position);
         boolean isImageValid;
         imageView = itemView.findViewById(R.id.iv);
+        filename = itemView.findViewById(R.id.pager_item_filename);
 
-        if (Utility.isValidURL(o) || new File(o).exists()) {
+        if (new File(o).exists() || Utility.isValidURL(o)) {
             Glide.with(activity)
                     .load(String.valueOf(mDataSet.get(position)))
                     .listener(new RequestListener<String, GlideDrawable>() {
@@ -87,6 +90,7 @@ public class ViewPagerAdapter extends PagerAdapter {
 
                         @Override
                         public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                            filename.setText(String.valueOf(mDataSet.get(position)));
                             onTap();
                             return false;
                         }
@@ -106,6 +110,7 @@ public class ViewPagerAdapter extends PagerAdapter {
 
                             @Override
                             public boolean onResourceReady(Bitmap resource, byte[] model, Target<Bitmap> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                                filename.setText(String.valueOf(mDataSet.get(position)));
                                 onTap();
                                 return false;
                             }
@@ -135,10 +140,12 @@ public class ViewPagerAdapter extends PagerAdapter {
                     isShowing = false;
                     toolbar.animate().translationY(-toolbar.getBottom()).setInterpolator(new AccelerateInterpolator()).start();
                     imagesHorizontalList.animate().translationY(imagesHorizontalList.getBottom()).setInterpolator(new AccelerateInterpolator()).start();
+                    filename.setVisibility(View.GONE);
                 } else {
                     isShowing = true;
                     toolbar.animate().translationY(0).setInterpolator(new DecelerateInterpolator()).start();
                     imagesHorizontalList.animate().translationY(0).setInterpolator(new DecelerateInterpolator()).start();
+                    filename.setVisibility(View.VISIBLE);
                 }
             }
 

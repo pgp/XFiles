@@ -60,7 +60,7 @@ public class GridImagesAdapter extends RecyclerView.Adapter<GridImagesAdapter.Vi
         holder.image.setLayoutParams(params);
 
         String o = mDataset.get(holder.getAdapterPosition());
-        if (Utility.isValidURL(o) || new File(o).exists()) {
+        if (new File(o).exists() || Utility.isValidURL(o)) {
             Glide.with(mContext)
                     .load(o)
                     .placeholder(imgPlaceHolderResId)

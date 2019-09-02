@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
@@ -54,7 +55,7 @@ public class HorizontalListAdapters extends RecyclerView.Adapter<HorizontalListA
     public void onBindViewHolder(final ViewHolder holder, final int position) {
         String o = mDataset.get(holder.getAdapterPosition());
         boolean isValidImage;
-        if (Utility.isValidURL(o) || new File(o).exists()) {
+        if (new File(o).exists() || Utility.isValidURL(o)) {
             Glide.with(mContext)
                     .load(String.valueOf(o))
                     .placeholder(placeHolder == -1 ? R.drawable.media_gallery_placeholder : placeHolder)
@@ -120,6 +121,7 @@ public class HorizontalListAdapters extends RecyclerView.Adapter<HorizontalListA
          * The Image.
          */
         public ImageView image;
+        public TextView filename;
 
         /**
          * Instantiates a new View holder.
@@ -129,6 +131,7 @@ public class HorizontalListAdapters extends RecyclerView.Adapter<HorizontalListA
         ViewHolder(View itemView) {
             super(itemView);
             image = itemView.findViewById(R.id.iv);
+            filename = itemView.findViewById(R.id.pager_item_filename);
         }
     }
 

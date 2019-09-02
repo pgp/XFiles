@@ -1,5 +1,6 @@
 package it.pgp.xfiles.adapters;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.os.Environment;
 import android.support.annotation.NonNull;
@@ -147,7 +148,16 @@ public class BrowserPagerAdapter extends PagerAdapter {
         swipeRefreshLayouts[position] = browserPageLayout.findViewById(R.id.activity_main_swipe_refresh_layout);
         swipeRefreshLayouts[position].setParentActivity(mainActivity);
         swipeRefreshLayouts[position].setOnRefreshListener(() -> {
-            showDirContent(mainActivity.getCurrentDirCommander().refresh(),position);
+            if(browserAdapters[position].getSelectedCount() == 0) {
+                showDirContent(mainActivity.getCurrentDirCommander().refresh(),position);
+            }
+            else {
+                AlertDialog.Builder bld = new AlertDialog.Builder(mainActivity);
+                bld.setTitle("Refreshing will clear active selection");
+                bld.setNegativeButton("Cancel", (dialog, which) -> {});
+                bld.setPositiveButton("OK", (dialog, which) -> showDirContent(mainActivity.getCurrentDirCommander().refresh(),position));
+                bld.create().show();
+            }
             swipeRefreshLayouts[position].setRefreshing(false);
         });
 
