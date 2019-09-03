@@ -1190,6 +1190,17 @@ public class MainActivity extends EffectActivity {
                 case R.id.itemsShare:
                     shareItems();
                     return true;
+                case R.id.itemsShowInGallery:
+                    // TODO consider also the case when image viewer is invoked by third party app - use MainActivity.mainActivity
+                    BasePathContent currentDir = getCurrentDirCommander().getCurrentDirectoryPathname();
+                    ArrayList<String> imageList = MediaGalleryActivity.filterByImageExtensionsOnSelection(currentDir,getCurrentBrowserAdapter().getSelectedItems());
+                    MediaGallery.Builder(MainActivity.this,imageList)
+                            .title("Media Gallery")
+                            .backgroundColor(R.color.white)
+                            .placeHolder(R.drawable.media_gallery_placeholder)
+                            .selectedImagePosition(MediaGalleryActivity.targetIdx)
+                            .show();
+                    return true;
                 case R.id.itemsProperties:
                     getStats();
                     return true;
@@ -1276,7 +1287,7 @@ public class MainActivity extends EffectActivity {
                     return true;
                 case R.id.itemShowInGallery:
                     // TODO consider also the case when image viewer is invoked by third party app - use MainActivity.mainActivity
-                    BasePathContent currentDir = getCurrentDirCommander().getCurrentDirectoryPathname();
+                    currentDir = getCurrentDirCommander().getCurrentDirectoryPathname();
                     if(!(currentDir instanceof LocalPathContent)) {
                         Toast.makeText(MainActivity.this, "Cannot preview images in a non-local directory", Toast.LENGTH_SHORT).show();
                         return true;
@@ -1285,7 +1296,7 @@ public class MainActivity extends EffectActivity {
                     b = getCurrentBrowserAdapter().getItem(position1);
                     if(b.filename.length()>=4 &&
                             MediaGalleryActivity.allowedImageExtensions.contains(b.filename.substring(b.filename.length()-4))) {
-                        ArrayList<String> imageList = MediaGalleryActivity.filterByImageExtensionsAndSaveTargetIdx(currentDir,b.filename);
+                        imageList = MediaGalleryActivity.filterByImageExtensionsAndSaveTargetIdx(currentDir,b.filename);
                         MediaGallery.Builder(MainActivity.this,imageList)
                                 .title("Media Gallery")
                                 .backgroundColor(R.color.white)

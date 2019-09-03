@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import it.pgp.xfiles.BrowserItem;
@@ -47,11 +48,24 @@ public class MediaGalleryActivity extends BaseActivity implements ViewPager.OnPa
             String y = b.getFilename();
             int l = y.length();
             if(l < 4) continue;
-            if(allowedImageExtensions.contains(y.toLowerCase().substring(l-4))) {
+            if(!b.isDirectory && allowedImageExtensions.contains(y.toLowerCase().substring(l-4))) {
                 x.add(currentDir.concat(y).dir);
                 if(targetIdx==-1 && y.equals(targetFilename)) targetIdx = idx;
                 idx++;
             }
+        }
+        return x;
+    }
+
+    public static ArrayList<String> filterByImageExtensionsOnSelection(BasePathContent currentDir, List<BrowserItem> activeSelection) {
+        ArrayList<String> x = new ArrayList<>();
+        targetIdx = 0;
+        for (BrowserItem b : activeSelection) {
+            String y = b.getFilename();
+            int l = y.length();
+            if(l < 4) continue;
+            if(!b.isDirectory && allowedImageExtensions.contains(y.toLowerCase().substring(l-4)))
+                x.add(currentDir.concat(y).dir);
         }
         return x;
     }
