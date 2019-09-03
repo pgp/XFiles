@@ -40,6 +40,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
+import android.widget.RadioButton;
 import android.widget.Toast;
 
 import net.alhazmy13.mediagallery.library.activity.MediaGallery;
@@ -55,7 +56,9 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import it.pgp.xfiles.adapters.BrowserAdapter;
 import it.pgp.xfiles.adapters.BrowserPagerAdapter;
@@ -378,6 +381,9 @@ public class MainActivity extends EffectActivity {
                     inflater.inflate(R.menu.menu_browserview, menu);
             }
         }
+        else if (v.getId()==R.id.currentDirectoryTextView) {
+            inflater.inflate(R.menu.menu_fast_changedir,menu);
+        }
         else {
             Toast.makeText(this, "Switch not allowed anymore here, check showPopup", Toast.LENGTH_SHORT).show();
         }
@@ -419,6 +425,16 @@ public class MainActivity extends EffectActivity {
             case R.id.openAboutDialog:
                 openAboutDialog();
                 return true;
+
+            // fast menu for change directory
+            case R.id.menuFastLocal:
+            case R.id.menuFastLocalArchive:
+            case R.id.menuFastSFTP:
+            case R.id.menuFastXRE:
+            case R.id.menuFastSMB:
+            case R.id.menuFastURL:
+                showChangeDirectoryDialog(itemId);
+
             default:
                 return true; // No action
         }
@@ -710,6 +726,24 @@ public class MainActivity extends EffectActivity {
                 getCurrentDirCommander().getCurrentDirectoryPathname()
         );
         cdd.show();
+    }
+
+    public void showChangeDirectoryDialog(int targetId) {
+        Map<Integer,Integer> ids = new HashMap<Integer,Integer>(){{
+            put(R.id.menuFastLocal,R.id.localFolderRadioButton);
+            put(R.id.menuFastLocalArchive,R.id.localArchiveRadioButton);
+            put(R.id.menuFastSFTP,R.id.sftpRemoteFolderRadioButton);
+            put(R.id.menuFastXRE,R.id.xfilesRemoteFolderRadioButton);
+            put(R.id.menuFastSMB,R.id.smbRemoteFolderRadioButton);
+            put(R.id.menuFastURL,R.id.httpUrlRadioButton);
+        }};
+
+        cdd = new GenericChangeDirectoryDialog(
+                MainActivity.this,
+                getCurrentDirCommander().getCurrentDirectoryPathname()
+        );
+        cdd.show();
+        ((RadioButton)cdd.findViewById(ids.get(targetId))).setChecked(true);
     }
 
     public void toggleRootHelper(View v) {

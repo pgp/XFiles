@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:id="@+id/menuFastLocal"
+        android:title="Local directory" />
+
+    <item android:id="@+id/menuFastLocalArchive"
+        android:title="Local archive" />
+
+    <item android:id="@+id/menuFastSFTP"
+        android:title="SFTP directory" />
+
+    <item android:id="@+id/menuFastXRE"
+        android:title="XFiles remote directory" />
+
+    <item android:id="@+id/menuFastSMB"
+        android:title="SMB directory" />
+
+    <item android:id="@+id/menuFastURL"
+        android:title="Download URL" />
+
+</menu>

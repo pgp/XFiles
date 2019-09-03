@@ -171,6 +171,7 @@ public class BrowserPagerAdapter extends PagerAdapter {
 
         mainBrowserViews[position].setFastScrollEnabled(true);
         currentDirectoryTextViews[position] = browserPageLayout.findViewById(R.id.currentDirectoryTextView);
+        mainActivity.registerForContextMenu(currentDirectoryTextViews[position]);
 
         showDirContent(dirCommanders[position].refresh(),position);
 
