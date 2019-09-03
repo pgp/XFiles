@@ -12,6 +12,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
@@ -112,16 +113,10 @@ public class GenericChangeDirectoryDialog extends Dialog {
         public void onNothingSelected(AdapterView<?> parent) {}
     };
 
-    final AdapterView.OnItemSelectedListener defaultAnnounceSpinnerItemSelectListener = new AdapterView.OnItemSelectedListener() {
-        @Override
-        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-            Pair<String,String> item = (Pair<String, String>) parent.getItemAtPosition(position);
-            xreServerHost.setText(item.i);
-            xreRemotePath.setText(item.j);
-        }
-
-        @Override
-        public void onNothingSelected(AdapterView<?> parent) {}
+    final AdapterView.OnItemClickListener defaultAnnounceItemSelectListener = (parent,view,position,id) -> {
+        Pair<String,String> item = (Pair<String, String>) parent.getItemAtPosition(position);
+        xreServerHost.setText(item.i);
+        xreRemotePath.setText(item.j);
     };
 
     public static XFilesRemotePathContent fromXREAnnounce(DatagramPacket packet) {
@@ -165,7 +160,7 @@ public class GenericChangeDirectoryDialog extends Dialog {
 
     public static DatagramSocket xreAnnounceReceiveSocket;
 //    TextView xreAnnounceTextView; // stub textview for testing xre announce
-    Spinner xreAnnouncesSpinner;
+    ListView xreAnnouncesListView;
     final XreAnnouncesAdapter xreAnnouncesAdapter;
     final Runnable xreAnnounceListenerRunnable;
     Thread xreAnnounceListener;
@@ -312,9 +307,9 @@ public class GenericChangeDirectoryDialog extends Dialog {
                 xreRemotePath = findViewById(R.id.xreRemoteDirEditText);
 
 //                xreAnnounceTextView = findViewById(R.id.xreAnnounceTextView);
-                xreAnnouncesSpinner = findViewById(R.id.xreAnnouncesSpinner);
-                xreAnnouncesSpinner.setAdapter(xreAnnouncesAdapter);
-                xreAnnouncesSpinner.setOnItemSelectedListener(defaultAnnounceSpinnerItemSelectListener);
+                xreAnnouncesListView = findViewById(R.id.xreAnnouncesListView);
+                xreAnnouncesListView.setAdapter(xreAnnouncesAdapter);
+                xreAnnouncesListView.setOnItemClickListener(defaultAnnounceItemSelectListener);
                 break;
             case SMB:
                 targetLayout = layoutInflater.inflate(R.layout.change_directory_dialog_frame_smb, null);
@@ -568,7 +563,6 @@ public class GenericChangeDirectoryDialog extends Dialog {
         layoutInflater = (LayoutInflater) mainActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         final List<Pair<String,String>> tmp = new ArrayList<>();
-        tmp.add(Pair.EmptyStringsPair);
 
         xreAnnouncesAdapter = new XreAnnouncesAdapter(mainActivity,tmp);
         xreAnnounceListenerRunnable = () -> {

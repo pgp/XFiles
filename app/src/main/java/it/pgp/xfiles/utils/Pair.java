@@ -8,8 +8,6 @@ public class Pair<I,J> implements Comparable<Pair<I,J>> {
     @NonNull public I i;
     @NonNull public J j;
 
-    public static final Pair<String,String> EmptyStringsPair = new Pair<>("","");
-
     public Pair(@NonNull I i, @NonNull J j) {
         this.i = i;
         this.j = j;
