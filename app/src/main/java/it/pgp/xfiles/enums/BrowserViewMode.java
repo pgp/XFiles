@@ -1,17 +1,21 @@
 package it.pgp.xfiles.enums;
 
+import android.content.Context;
 import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
 import android.widget.Checkable;
 
 import java.util.List;
 
+import it.pgp.xfiles.BrowserItem;
 import it.pgp.xfiles.R;
+import it.pgp.xfiles.adapters.BrowserAdapter;
+import it.pgp.xfiles.adapters.BrowserGridAdapter;
+import it.pgp.xfiles.adapters.BrowserListAdapter;
 import it.pgp.xfiles.adapters.continuousselection.CSCheckboxes;
 import it.pgp.xfiles.adapters.continuousselection.ContSelListener;
 import it.pgp.xfiles.adapters.continuousselection.ContSelListenerGrid;
 import it.pgp.xfiles.adapters.continuousselection.ContSelListenerList;
-import it.pgp.xfiles.exceptions.InvalidBrowserViewModeException;
 
 /**
  * Created by pgp on 31/10/16
@@ -29,11 +33,17 @@ public enum BrowserViewMode {
         this.id = id;
     }
 
+    static final RuntimeException invalidMode = new RuntimeException("Invalid browser view mode");
+
+    public BrowserAdapter newAdapter(Context context, List<BrowserItem> objects) {
+        return (this==LIST)?new BrowserListAdapter(context,objects):new BrowserGridAdapter(context,objects);
+    }
+
     public BrowserViewMode next() {
         switch (this) {
             case LIST: return GRID;
             case GRID: return LIST;
-            default: throw new InvalidBrowserViewModeException();
+            default: throw invalidMode;
         }
     }
 
@@ -45,7 +55,7 @@ public enum BrowserViewMode {
         switch (this) {
             case LIST: return new ContSelListenerList(lv,adapter,objects,csCheckboxes);
             case GRID: return new ContSelListenerGrid(lv,adapter,objects,csCheckboxes);
-            default: throw new InvalidBrowserViewModeException();
+            default: throw invalidMode;
         }
     }
 

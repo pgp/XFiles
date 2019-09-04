@@ -30,4 +30,12 @@ public class CSCheckboxes {
     public void setStickySelection(CheckBox stickySelection) {
         this.stickySelection = stickySelection;
     }
+
+    public boolean[] getAsBooleans() {
+        return new boolean[]{
+                continuousSelection==null?false:continuousSelection.isChecked(),
+                invertSelection==null?false:invertSelection.isChecked(),
+                stickySelection==null?false:stickySelection.isChecked()
+        };
+    }
 }

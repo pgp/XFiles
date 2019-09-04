@@ -33,7 +33,6 @@ import it.pgp.xfiles.comparators.FilenameComparator;
 import it.pgp.xfiles.enums.BrowserViewMode;
 import it.pgp.xfiles.enums.ComparatorField;
 import it.pgp.xfiles.exceptions.DirCommanderException;
-import it.pgp.xfiles.exceptions.InvalidBrowserViewModeException;
 import it.pgp.xfiles.utils.DirCommanderCUsingBrowserItemsAndPathContent;
 import it.pgp.xfiles.utils.Pair;
 import it.pgp.xfiles.utils.dircontent.GenericDirWithContent;
@@ -51,11 +50,8 @@ public class BrowserPagerAdapter extends PagerAdapter {
 
     private static final int ADAPTER_SIZE = 2;
 
-    // private int currentPosition = 0; // actually, the information about currently active page is contained in the ViewPager, rather than the PagerAdapter
-
     private final ViewGroup[] rootLayouts = new ViewGroup[ADAPTER_SIZE];
 
-    /**************************/
     // almost every array is initially populated with null objects
     public final DirCommanderCUsingBrowserItemsAndPathContent[] dirCommanders =
             new DirCommanderCUsingBrowserItemsAndPathContent[ADAPTER_SIZE];
@@ -69,16 +65,11 @@ public class BrowserPagerAdapter extends PagerAdapter {
 
     private final SwipeRefreshLayoutChildCanScroll[] swipeRefreshLayouts = new SwipeRefreshLayoutChildCanScroll[ADAPTER_SIZE];
 
-//    private final LinearLayout[] multiSelectModeLayouts = new LinearLayout[ADAPTER_SIZE];
-
-    // BEGIN NEW
     private final CSCheckboxes[] csCheckBoxes = new CSCheckboxes[ADAPTER_SIZE];
     private final ContSelListener[] csListeners = new ContSelListener[ADAPTER_SIZE];
     private final ContSelHandlingLayout[] csLayouts = new ContSelHandlingLayout[ADAPTER_SIZE];
-    // END NEW
 
     private final LinearLayout[] quickFindModeLayouts = new LinearLayout[ADAPTER_SIZE];
-    /**************************/
 
     public void createStandardCommanders() {
         BasePathContent path0, path1;
@@ -126,14 +117,10 @@ public class BrowserPagerAdapter extends PagerAdapter {
 
         rootLayouts[position] = layout;
 
-        /////////////////////////////
-
         if (checkUpdateIntent) {
             mainActivity.updateFromSelfIntent(mainActivity.getIntent());
             checkUpdateIntent = false;
         }
-
-        /////////////////////////////
 
         return layout;
     }
@@ -175,17 +162,14 @@ public class BrowserPagerAdapter extends PagerAdapter {
 
         showDirContent(dirCommanders[position].refresh(),position);
 
-        // mainBrowserViews[position].setAdapter(browserAdapters[position]); // already called in showDirContent
         mainBrowserViews[position].setOnItemClickListener(mainActivity.listViewLevelOICL);
         mainBrowserViews[position].setOnItemLongClickListener((parent, view, position1, id) -> {
             mainActivity.showPopup(parent,view,position1,id);
             return true;
         });
-//        mainActivity.registerForContextMenu(mainBrowserViews[position]);
     }
 
-    private void changeMainViews(BrowserViewMode browserViewMode,
-                                 int position) {
+    private void changeMainViews(BrowserViewMode browserViewMode, int position) {
         LayoutInflater inflater = LayoutInflater.from(mContext);
         browserViewModes[position] = browserViewMode;
 
@@ -238,6 +222,15 @@ public class BrowserPagerAdapter extends PagerAdapter {
         changeMainViews(browserViewModes[position], position);
     }
 
+    public void recreateAdapterAndSelectMode(BrowserViewMode m, int position, GenericDirWithContent dirWithContent) {
+        boolean[] lastcontselmode = (csCheckBoxes[position] != null)?csCheckBoxes[position].getAsBooleans():new boolean[]{false,false,false};
+        browserAdapters[position] = m.newAdapter(mainActivity,dirWithContent.content);
+        setMultiSelectModeLayout(multiSelectModes[position],position);
+        if(lastcontselmode[0]) mainActivity.findViewById(R.id.toggleSelectMode).performClick();
+        if(lastcontselmode[1]) mainActivity.findViewById(R.id.invertSelection).performClick();
+        if(lastcontselmode[2]) mainActivity.findViewById(R.id.stickySelection).performClick();
+    }
+
     public void showDirContent(GenericDirWithContent dirWithContent,
                                int position,
                                Object... targetFilenameToHighlight) { // with filename comparator
@@ -247,16 +240,7 @@ public class BrowserPagerAdapter extends PagerAdapter {
         currentDirectoryTextViews[position].setText(
                 dirCommanders[position].getCurrentDirectoryPathname().toString());
 
-        switch (browserViewModes[position]) {
-            case LIST:
-                browserAdapters[position] = new BrowserListAdapter(mainActivity,dirWithContent.content);
-                break;
-            case GRID:
-                browserAdapters[position] = new BrowserGridAdapter(mainActivity,dirWithContent.content);
-                break;
-            default:
-                throw new InvalidBrowserViewModeException();
-        }
+        recreateAdapterAndSelectMode(browserViewModes[position],position,dirWithContent);
         mainBrowserViews[position].setAdapter(browserAdapters[position]);
         if (targetFilenameToHighlight.length>0) {
             if (targetFilenameToHighlight[0] instanceof String) { // reposition listview with FindActivity locate
@@ -282,21 +266,10 @@ public class BrowserPagerAdapter extends PagerAdapter {
         currentDirectoryTextViews[position].setText(
                 dirCommanders[position].getCurrentDirectoryPathname().toString());
 
-        switch (browserViewModes[position]) {
-            case LIST:
-                browserAdapters[position] = new BrowserListAdapter(mainActivity,dirWithContent.content);
-                break;
-            case GRID:
-                browserAdapters[position] = new BrowserGridAdapter(mainActivity,dirWithContent.content);
-                break;
-            default:
-                throw new InvalidBrowserViewModeException();
-        }
+        recreateAdapterAndSelectMode(browserViewModes[position],position,dirWithContent);
         mainBrowserViews[position].setAdapter(browserAdapters[position]);
     }
 
-//    private final LinearLayout.LayoutParams offParams =
-//            new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,0,0);
     private final LinearLayout.LayoutParams onParams = new LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT,
             LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -344,11 +317,8 @@ public class BrowserPagerAdapter extends PagerAdapter {
         togglePaddingToMainBrowserView(position,active);
 
         // reset swipe settings on BrowserViewPager
-        if(!active) {
-            if(MainActivity.mainActivity != null) {
-                MainActivity.mainActivity.browserPager.swipeDisabled = false;
-            }
-        }
+        if(!active && MainActivity.mainActivity != null)
+            MainActivity.mainActivity.browserPager.swipeDisabled = false;
     }
 
     private final EditText[] quickFindEditTexts = new EditText[ADAPTER_SIZE];
@@ -389,9 +359,6 @@ public class BrowserPagerAdapter extends PagerAdapter {
                     quickFindEditTexts[position].getText(),
                     quickFindIgnoreCases[position].isChecked()));
         }
-//        else {
-//            quickFindModeLayouts[position].setLayoutParams(offParams);
-//        }
     }
 
     public final boolean[] multiSelectModes = new boolean[ADAPTER_SIZE];
