@@ -427,14 +427,20 @@ public class MainActivity extends EffectActivity {
                 return true;
 
             // fast menu for change directory
-            case R.id.menuFastLocal:
-            case R.id.menuFastLocalArchive:
-            case R.id.menuFastSFTP:
-            case R.id.menuFastXRE:
-            case R.id.menuFastSMB:
-            case R.id.menuFastURL:
-                showChangeDirectoryDialog(itemId);
-
+            case R.id.localFolder:
+            case R.id.localArchive:
+            case R.id.sftpRemoteFolder:
+            case R.id.xfilesRemoteFolder:
+            case R.id.smbRemoteFolder:
+            case R.id.httpUrlDownload:
+                cdd = new GenericChangeDirectoryDialog(
+                        MainActivity.this,
+                        getCurrentDirCommander().getCurrentDirectoryPathname()
+                );
+                cdd.show();
+                // using same resIds (with different parent) for both menu items and radiobuttons
+                ((RadioButton)cdd.findViewById(itemId)).setChecked(true);
+                return true;
             default:
                 return true; // No action
         }
@@ -726,24 +732,6 @@ public class MainActivity extends EffectActivity {
                 getCurrentDirCommander().getCurrentDirectoryPathname()
         );
         cdd.show();
-    }
-
-    public void showChangeDirectoryDialog(int targetId) {
-        Map<Integer,Integer> ids = new HashMap<Integer,Integer>(){{
-            put(R.id.menuFastLocal,R.id.localFolderRadioButton);
-            put(R.id.menuFastLocalArchive,R.id.localArchiveRadioButton);
-            put(R.id.menuFastSFTP,R.id.sftpRemoteFolderRadioButton);
-            put(R.id.menuFastXRE,R.id.xfilesRemoteFolderRadioButton);
-            put(R.id.menuFastSMB,R.id.smbRemoteFolderRadioButton);
-            put(R.id.menuFastURL,R.id.httpUrlRadioButton);
-        }};
-
-        cdd = new GenericChangeDirectoryDialog(
-                MainActivity.this,
-                getCurrentDirCommander().getCurrentDirectoryPathname()
-        );
-        cdd.show();
-        ((RadioButton)cdd.findViewById(ids.get(targetId))).setChecked(true);
     }
 
     public void toggleRootHelper(View v) {

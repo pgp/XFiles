@@ -18,38 +18,38 @@
             android:layout_height="match_parent" >
 
             <RadioButton
-                android:id="@+id/localFolderRadioButton"
+                android:id="@+id/localFolder"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Local Directory" />
 
             <RadioButton
-                android:id="@+id/localArchiveRadioButton"
+                android:id="@+id/localArchive"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Local archive"
                 android:checked="true" />
 
             <RadioButton
-                android:id="@+id/sftpRemoteFolderRadioButton"
+                android:id="@+id/sftpRemoteFolder"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="SFTP directory" />
 
             <RadioButton
-                android:id="@+id/xfilesRemoteFolderRadioButton"
+                android:id="@+id/xfilesRemoteFolder"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="XFiles remote directory" />
 
             <RadioButton
-                android:id="@+id/smbRemoteFolderRadioButton"
+                android:id="@+id/smbRemoteFolder"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="SMB directory" />
 
             <RadioButton
-                android:id="@+id/httpUrlRadioButton"
+                android:id="@+id/httpUrlDownload"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Download URL" />
