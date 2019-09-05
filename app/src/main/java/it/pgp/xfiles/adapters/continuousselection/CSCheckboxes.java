@@ -33,9 +33,9 @@ public class CSCheckboxes {
 
     public boolean[] getAsBooleans() {
         return new boolean[]{
-                continuousSelection==null?false:continuousSelection.isChecked(),
-                invertSelection==null?false:invertSelection.isChecked(),
-                stickySelection==null?false:stickySelection.isChecked()
+                continuousSelection != null && continuousSelection.isChecked(),
+                invertSelection != null && invertSelection.isChecked(),
+                stickySelection != null && stickySelection.isChecked()
         };
     }
 }

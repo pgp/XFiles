@@ -14,6 +14,7 @@ import net.alhazmy13.mediagallery.library.views.adapter.GridImagesAdapter;
 
 import java.util.ArrayList;
 
+import it.pgp.xfiles.MainActivity;
 import it.pgp.xfiles.R;
 
 /**
@@ -35,12 +36,6 @@ public class MediaGalleryView extends RecyclerView {
     private int mWidth;
     private int mHeight;
     private int defaultSystemUIVisibility = -1;
-    private final int fullScreenVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-            | View.SYSTEM_UI_FLAG_FULLSCREEN
-            | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
 
     /**
      * Instantiates a new Media gallery view.
@@ -87,7 +82,7 @@ public class MediaGalleryView extends RecyclerView {
             View dcv = mActivity.getWindow().getDecorView();
             int currV = dcv.getSystemUiVisibility();
             defaultSystemUIVisibility = defaultSystemUIVisibility==-1 ? currV : defaultSystemUIVisibility;
-            mActivity.getWindow().getDecorView().setSystemUiVisibility(currV==fullScreenVisibility?defaultSystemUIVisibility:fullScreenVisibility);
+            mActivity.getWindow().getDecorView().setSystemUiVisibility(currV== MainActivity.fullScreenVisibility?defaultSystemUIVisibility:MainActivity.fullScreenVisibility);
         });
         setAdapter(mAdapter);
     }

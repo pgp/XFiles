@@ -33,6 +33,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.webkit.MimeTypeMap;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
@@ -56,9 +58,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import it.pgp.xfiles.adapters.BrowserAdapter;
 import it.pgp.xfiles.adapters.BrowserPagerAdapter;
@@ -139,6 +139,13 @@ public class MainActivity extends EffectActivity {
     private LinearLayout operationButtonsLayout; // target container for conditional inflating
 
     public BrowserPagerAdapter browserPagerAdapter;
+
+    public static final int fullScreenVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+            | View.SYSTEM_UI_FLAG_FULLSCREEN
+            | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
 
     // File Operations Helpers
     public static SmbProviderUsingPathContent smbProvider;
@@ -585,6 +592,7 @@ public class MainActivity extends EffectActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
         activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
         setContentView(R.layout.activity_main_with_pager);
@@ -759,11 +767,6 @@ public class MainActivity extends EffectActivity {
         alertDialog.show();
     }
 
-    /**
-     * To disable fullscreen and hide title, comment this method and add:
-     * requestWindowFeature(Window.FEATURE_NO_TITLE);
-     * in onCreate, before super.onCreate();
-     */
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
@@ -775,6 +778,29 @@ public class MainActivity extends EffectActivity {
                             | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                             | View.SYSTEM_UI_FLAG_FULLSCREEN
                             | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+        }
+        /**
+         * Web source:
+         * https://stackoverflow.com/questions/54140793/how-to-fix-navigation-bar-icons-still-showing-when-pop-up-menu-is-opened-ful
+         * Still ugly as hack (navbar appears and disappears rapidly) but at least it works
+         */
+        else if(EffectActivity.activityCurrentlyFocused instanceof MainActivity &&
+                RemoteRHServerManagementDialog.instance == null) {
+            // When PopupMenu appears, the current Activity looses the focus;
+            // hijack to the current peek view, apply the Flags on it
+            try {
+                Class wmgClass = Class.forName("android.view.WindowManagerGlobal");
+                Object wmgInstance = wmgClass.getMethod("getInstance").invoke(null);
+                Field viewsField = wmgClass.getDeclaredField("mViews");
+                viewsField.setAccessible(true);
+
+                List<View> views = (List<View>) viewsField.get(wmgInstance);
+                views.get(views.size()-1).setSystemUiVisibility(fullScreenVisibility);
+//                v.setOnSystemUiVisibilityChangeListener(i->{v.setSystemUiVisibility(i);});
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -1132,6 +1158,26 @@ public class MainActivity extends EffectActivity {
 
         browserPagerAdapter.showDirContent(dwc,browserPager.getCurrentItem(),targetFilenameToHighlight);
         return FileOpsErrorCodes.OK;
+    }
+
+    public static void hideDefaultControls(@NonNull final Activity activity) {
+//        activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+        activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
+        final Window window = activity.getWindow();
+
+        if (window == null) {
+            return;
+        }
+
+        final View decorView = window.getDecorView();
+
+        if (decorView != null) {
+            int uiOptions = decorView.getSystemUiVisibility();
+            uiOptions |= View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+
+            decorView.setSystemUiVisibility(uiOptions);
+        }
     }
 
     public void showPopup(AdapterView<?> parent, View v, int position1, long id) {

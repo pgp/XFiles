@@ -1,13 +1,13 @@
 package it.pgp.xfiles.dialogs;
 
+import android.app.Activity;
 import android.app.Dialog;
-import android.content.Context;
 import android.support.annotation.NonNull;
 import android.view.Window;
 
 public class BaseDialog extends Dialog {
-    public BaseDialog(@NonNull Context context) {
-        super(context);
+    public BaseDialog(@NonNull Activity activity) {
+        super(activity);
         requestWindowFeature(Window.FEATURE_LEFT_ICON);
     }
 

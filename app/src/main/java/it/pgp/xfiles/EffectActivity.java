@@ -12,11 +12,19 @@ public abstract class EffectActivity extends Activity {
         if (b != null) b.setIcon(resId);
     }
 
+    public static Activity activityCurrentlyFocused;
+
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         b = getActionBar();
         overridePendingTransition(R.anim.fade_in,R.anim.fade_out);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        activityCurrentlyFocused = this;
     }
 
     @Override

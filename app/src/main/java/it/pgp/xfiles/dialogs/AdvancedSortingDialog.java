@@ -1,6 +1,6 @@
 package it.pgp.xfiles.dialogs;
 
-import android.content.Context;
+import android.app.Activity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -26,8 +26,8 @@ public class AdvancedSortingDialog extends BaseDialog {
 
     private AdvancedComparator advancedComparator;
 
-    public AdvancedSortingDialog(final Context context, final BrowserAdapter browserAdapter) {
-        super(context);
+    public AdvancedSortingDialog(final Activity activity, final BrowserAdapter browserAdapter) {
+        super(activity);
         setTitle("Advanced sort");
         setContentView(R.layout.advanced_sorting_dialog);
         setDialogIcon(R.drawable.xfiles_sort_special);
@@ -51,7 +51,7 @@ public class AdvancedSortingDialog extends BaseDialog {
             dragNDropAdapter.updateRevItem(checkBox.isChecked(), index);
         };
 
-        dragNDropAdapter = new DragNDropAdapter(context,R.layout.dragitem,content,selListener,revListener);
+        dragNDropAdapter = new DragNDropAdapter(activity,R.layout.dragitem,content,selListener,revListener);
         listView = findViewById(R.id.sortingAttributesDragNDropListView);
         listView.setItemList(content);
         listView.setAdapter(dragNDropAdapter);

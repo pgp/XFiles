@@ -164,6 +164,7 @@ public class BrowserPagerAdapter extends PagerAdapter {
 
         mainBrowserViews[position].setOnItemClickListener(mainActivity.listViewLevelOICL);
         mainBrowserViews[position].setOnItemLongClickListener((parent, view, position1, id) -> {
+            MainActivity.hideDefaultControls(mainActivity);
             mainActivity.showPopup(parent,view,position1,id);
             return true;
         });

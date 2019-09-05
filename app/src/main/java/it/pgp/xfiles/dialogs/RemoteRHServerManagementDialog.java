@@ -5,7 +5,6 @@ import android.app.Dialog;
 import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.Window;
-import android.view.WindowManager;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -184,12 +183,6 @@ public class RemoteRHServerManagementDialog extends Dialog {
             }
         }
         return s.toString();
-    }
-
-    @Override
-    public void show() {
-        super.show();
-        getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,WindowManager.LayoutParams.MATCH_PARENT);
     }
 
     public static RemoteRHServerManagementDialog instance;
