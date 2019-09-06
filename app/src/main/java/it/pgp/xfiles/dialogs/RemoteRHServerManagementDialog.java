@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import it.pgp.xfiles.EffectActivity;
 import it.pgp.xfiles.MainActivity;
 import it.pgp.xfiles.R;
 import it.pgp.xfiles.fileservers.FileServer;
@@ -190,6 +191,7 @@ public class RemoteRHServerManagementDialog extends Dialog {
         super(activity,R.style.fs_dialog);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         instance = this;
+        setOnShowListener(EffectActivity.defaultDialogShowListener);
         this.activity = activity;
         setContentView(R.layout.remote_rh_server_management_dialog);
 
@@ -252,6 +254,7 @@ public class RemoteRHServerManagementDialog extends Dialog {
         setOnDismissListener(dialog->{
             wbl.unregisterListeners();
             instance = null;
+            EffectActivity.currentlyOnFocus = MainActivity.mainActivity;
         });
     }
 }

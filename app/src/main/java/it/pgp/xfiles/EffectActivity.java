@@ -2,6 +2,7 @@ package it.pgp.xfiles;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.os.Bundle;
 
 public abstract class EffectActivity extends Activity {
@@ -12,7 +13,9 @@ public abstract class EffectActivity extends Activity {
         if (b != null) b.setIcon(resId);
     }
 
-    public static Activity activityCurrentlyFocused;
+    public static Object currentlyOnFocus;
+
+    public static final DialogInterface.OnShowListener defaultDialogShowListener = d -> EffectActivity.currentlyOnFocus = d;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -24,7 +27,7 @@ public abstract class EffectActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        activityCurrentlyFocused = this;
+        currentlyOnFocus = this;
     }
 
     @Override

@@ -6,6 +6,8 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.TextView;
 
+import it.pgp.xfiles.EffectActivity;
+import it.pgp.xfiles.MainActivity;
 import it.pgp.xfiles.R;
 import it.pgp.xfiles.fileservers.FileServer;
 import it.pgp.xfiles.roothelperclient.RemoteServerManager;
@@ -23,6 +25,8 @@ public class CloseActiveServersDialog extends Dialog {
         super(context);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         this.context = context;
+        setOnShowListener(EffectActivity.defaultDialogShowListener);
+        setOnDismissListener(d->EffectActivity.currentlyOnFocus = MainActivity.mainActivity);
 
         red = context.getResources().getColor(R.color.red);
         green = context.getResources().getColor(R.color.green);

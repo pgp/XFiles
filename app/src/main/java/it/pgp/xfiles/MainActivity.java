@@ -784,8 +784,7 @@ public class MainActivity extends EffectActivity {
          * https://stackoverflow.com/questions/54140793/how-to-fix-navigation-bar-icons-still-showing-when-pop-up-menu-is-opened-ful
          * Still ugly as hack (navbar appears and disappears rapidly) but at least it works
          */
-        else if(EffectActivity.activityCurrentlyFocused instanceof MainActivity &&
-                RemoteRHServerManagementDialog.instance == null) {
+        else if(EffectActivity.currentlyOnFocus instanceof MainActivity) {
             // When PopupMenu appears, the current Activity looses the focus;
             // hijack to the current peek view, apply the Flags on it
             try {
