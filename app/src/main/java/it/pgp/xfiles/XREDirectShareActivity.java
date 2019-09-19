@@ -10,6 +10,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -19,6 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import it.pgp.xfiles.adapters.XreAnnouncesAdapter;
+import it.pgp.xfiles.dialogs.GenericChangeDirectoryDialog;
 import it.pgp.xfiles.enums.CopyMoveMode;
 import it.pgp.xfiles.items.SingleStatsItem;
 import it.pgp.xfiles.roothelperclient.RootHelperClientUsingPathContent;
@@ -49,6 +52,8 @@ public class XREDirectShareActivity extends EffectActivity {
     CopyMoveListPathContent filesToUpload;
 
     private boolean currentDirAutofillOverride = true;
+
+    XreAnnouncesAdapter xreAnnouncesAdapter;
 
     private void ok(View unused) {
         BasePathContent path;
@@ -136,6 +141,8 @@ public class XREDirectShareActivity extends EffectActivity {
         LinearLayout target = findViewById(R.id.targetWifiButtonsLayout);
         target.addView(wbl);
 
+        xreAnnouncesAdapter = new XreAnnouncesAdapter(this,new ArrayList<>());
+
         // duplicated logic from GenericChangeDirectoryDialog (XRE switch branches)
 
         //////////////////////////////////
@@ -144,6 +151,10 @@ public class XREDirectShareActivity extends EffectActivity {
         xreServerHost = xre_embedded_layout.findViewById(R.id.xreConnectionDomainEditText);
 //                xreServerPort = xre_embedded_layout.findViewById(R.id.xreConnectionPortEditText);
         xreRemotePath = xre_embedded_layout.findViewById(R.id.xreRemoteDirEditText);
+
+        ListView xreAnnouncesListView = findViewById(R.id.xreAnnouncesListView);
+        xreAnnouncesListView.setAdapter(xreAnnouncesAdapter);
+        xreAnnouncesListView.setOnItemClickListener(GenericChangeDirectoryDialog.getDefaultAnnounceItemSelectListener(xreServerHost,xreRemotePath));
 
         //////////////////////////////////
 
@@ -177,6 +188,8 @@ public class XREDirectShareActivity extends EffectActivity {
         });
 
         findViewById(R.id.xreDirectShareOkButton).setOnClickListener(this::ok);
+
+        GenericChangeDirectoryDialog.getXreAnnounceListenerThread(this,xreAnnouncesAdapter).start();
     }
 
     @Override
@@ -189,6 +202,8 @@ public class XREDirectShareActivity extends EffectActivity {
     protected void onDestroy() {
         super.onDestroy();
         if (wbl != null) wbl.unregisterListeners();
+        if(GenericChangeDirectoryDialog.xreAnnounceReceiveSocket != null)
+            GenericChangeDirectoryDialog.xreAnnounceReceiveSocket.close();
         if (MainActivity.mainActivity == null) MainActivity.mainActivityContext = null;
     }
 }

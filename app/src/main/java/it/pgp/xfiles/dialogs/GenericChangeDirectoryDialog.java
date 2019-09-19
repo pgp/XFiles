@@ -1,5 +1,6 @@
 package it.pgp.xfiles.dialogs;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -24,7 +25,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.zip.CRC32;
 
@@ -113,11 +113,13 @@ public class GenericChangeDirectoryDialog extends Dialog {
         public void onNothingSelected(AdapterView<?> parent) {}
     };
 
-    final AdapterView.OnItemClickListener defaultAnnounceItemSelectListener = (parent,view,position,id) -> {
-        Pair<String,String> item = (Pair<String, String>) parent.getItemAtPosition(position);
-        xreServerHost.setText(item.i);
-        xreRemotePath.setText(item.j);
-    };
+    public static AdapterView.OnItemClickListener getDefaultAnnounceItemSelectListener(EditText xreServerHost, EditText xreRemotePath) {
+        return (parent,view,position,id) -> {
+            Pair<String,String> item = (Pair<String, String>) parent.getItemAtPosition(position);
+            xreServerHost.setText(item.i);
+            xreRemotePath.setText(item.j);
+        };
+    }
 
     public static XFilesRemotePathContent fromXREAnnounce(DatagramPacket packet) {
         try {
@@ -158,13 +160,39 @@ public class GenericChangeDirectoryDialog extends Dialog {
         }
     }
 
+    public static Thread getXreAnnounceListenerThread(Activity activity, XreAnnouncesAdapter xreAnnouncesAdapter) {
+        return new Thread(() -> {
+            try {
+                xreAnnounceReceiveSocket = new DatagramSocket(11111);
+                for(;;) {
+                    DatagramPacket data = new DatagramPacket(new byte[256], 256);
+                    xreAnnounceReceiveSocket.receive(data);
+                    String received = new String(data.getData(), data.getOffset(), data.getLength(), StandardCharsets.UTF_8);
+                    Log.e("XREANNOUNCE",received);
+
+                    XFilesRemotePathContent xrpc = fromXREAnnounce(data);
+                    if(xrpc != null) activity.runOnUiThread(()-> {
+//                    xreRemotePath.setText(xrpc.dir);
+//                    xreServerHost.setText(xrpc.serverHost);
+//                        xreAnnounceTextView.setTextColor(R.color.green);
+//                        xreAnnounceTextView.setText("");
+                        xreAnnouncesAdapter.add(new Pair<>(xrpc.serverHost,xrpc.dir));
+                    });
+//                    else activity.runOnUiThread(()->{
+//                        xreAnnounceTextView.setTextColor(R.color.red);
+//                        xreAnnounceTextView.setText(received + " " + System.currentTimeMillis());
+//                    });
+                }
+            }
+            catch(Exception e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
     public static DatagramSocket xreAnnounceReceiveSocket;
-//    TextView xreAnnounceTextView; // stub textview for testing xre announce
-    ListView xreAnnouncesListView;
+
     final XreAnnouncesAdapter xreAnnouncesAdapter;
-    final Runnable xreAnnounceListenerRunnable;
-    Thread xreAnnounceListener;
-    //------------------------------//
 
     // smb remote dir
     Spinner smbStoredUsers;
@@ -307,9 +335,9 @@ public class GenericChangeDirectoryDialog extends Dialog {
                 xreRemotePath = findViewById(R.id.xreRemoteDirEditText);
 
 //                xreAnnounceTextView = findViewById(R.id.xreAnnounceTextView);
-                xreAnnouncesListView = findViewById(R.id.xreAnnouncesListView);
+                ListView xreAnnouncesListView = findViewById(R.id.xreAnnouncesListView);
                 xreAnnouncesListView.setAdapter(xreAnnouncesAdapter);
-                xreAnnouncesListView.setOnItemClickListener(defaultAnnounceItemSelectListener);
+                xreAnnouncesListView.setOnItemClickListener(getDefaultAnnounceItemSelectListener(xreServerHost,xreRemotePath));
                 break;
             case SMB:
                 targetLayout = layoutInflater.inflate(R.layout.change_directory_dialog_frame_smb, null);
@@ -547,8 +575,7 @@ public class GenericChangeDirectoryDialog extends Dialog {
         ((RadioButton)pathContentTypeSelector.getChildAt(providerType.ordinal())).setChecked(true);
 
         if(providerType == ProviderType.XFILES_REMOTE) {
-            xreAnnounceListener = new Thread(xreAnnounceListenerRunnable);
-            xreAnnounceListener.start();
+            getXreAnnounceListenerThread(MainActivity.mainActivity,xreAnnouncesAdapter).start();
         }
         else if(xreAnnounceReceiveSocket != null)
             xreAnnounceReceiveSocket.close();
@@ -562,36 +589,7 @@ public class GenericChangeDirectoryDialog extends Dialog {
         dbh = new GenericDBHelper(mainActivity);
         layoutInflater = (LayoutInflater) mainActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-        final List<Pair<String,String>> tmp = new ArrayList<>();
-
-        xreAnnouncesAdapter = new XreAnnouncesAdapter(mainActivity,tmp);
-        xreAnnounceListenerRunnable = () -> {
-            try {
-                xreAnnounceReceiveSocket = new DatagramSocket(11111);
-                for(;;) {
-                    DatagramPacket data = new DatagramPacket(new byte[256], 256);
-                    xreAnnounceReceiveSocket.receive(data);
-                    String received = new String(data.getData(), data.getOffset(), data.getLength(), StandardCharsets.UTF_8);
-                    Log.e(getClass().getName(),received);
-
-                    XFilesRemotePathContent xrpc = fromXREAnnounce(data);
-                    if(xrpc != null) MainActivity.mainActivity.runOnUiThread(()-> {
-//                    xreRemotePath.setText(xrpc.dir);
-//                    xreServerHost.setText(xrpc.serverHost);
-//                        xreAnnounceTextView.setTextColor(R.color.green);
-//                        xreAnnounceTextView.setText("");
-                        xreAnnouncesAdapter.add(new Pair<>(xrpc.serverHost,xrpc.dir));
-                    });
-//                    else MainActivity.mainActivity.runOnUiThread(()->{
-//                        xreAnnounceTextView.setTextColor(R.color.red);
-//                        xreAnnounceTextView.setText(received + " " + System.currentTimeMillis());
-//                    });
-                }
-            }
-            catch(Exception e) {
-                e.printStackTrace();
-            }
-        };
+        xreAnnouncesAdapter = new XreAnnouncesAdapter(mainActivity,new ArrayList<>());
 
         setTitle("Change directory");
         setContentView(R.layout.change_directory_generic_dialog);
