@@ -279,10 +279,13 @@ public class BrowserPagerAdapter extends PagerAdapter {
         int measuredHeight = 0;
         // measure last item height
         if (enabled) {
-            View item = browserAdapters[position].getView(browserAdapters[position].getCount()-1,null,mainBrowserViews[position]);
-            item.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
-                    View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
-            measuredHeight = item.getMeasuredHeight()*3;
+            int nItems = browserAdapters[position].getCount();
+            if(nItems > 0) {
+                View item = browserAdapters[position].getView(nItems-1,null,mainBrowserViews[position]);
+                item.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+                        View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+                measuredHeight = item.getMeasuredHeight()*3;
+            }
         }
 
         mainBrowserViews[position].setPadding(0,0,0,measuredHeight);
