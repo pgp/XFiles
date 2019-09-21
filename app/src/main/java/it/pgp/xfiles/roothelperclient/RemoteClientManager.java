@@ -19,6 +19,7 @@ import it.pgp.xfiles.R;
 import it.pgp.xfiles.dialogs.XFilesRemoteSessionsManagementActivity;
 import it.pgp.xfiles.enums.FileOpsErrorCodes;
 import it.pgp.xfiles.roothelperclient.reqs.ListOfPathPairs_rq;
+import it.pgp.xfiles.roothelperclient.reqs.retrieveHomePath_rq;
 import it.pgp.xfiles.service.BaseBackgroundTask;
 import it.pgp.xfiles.service.NonInteractiveXFilesRemoteTransferTask;
 import it.pgp.xfiles.utils.ContentProviderUtils;
@@ -164,6 +165,21 @@ public class RemoteClientManager {
         }
 
         initProgressSupport(progressTask);
+
+        // beware: here we are sending a custom LS (i.e. retrieve home path) request
+        // using isFastClient = false (this is intended behaviour)
+        if(action == ControlCodes.ACTION_UPLOAD && destDir.dir.isEmpty()) {
+            try {
+                new retrieveHomePath_rq("").write(client.o);
+                if (Misc.receiveBaseResponse(client.i) != 0)
+                    throw new RuntimeException("Unexpected response for retrieve home path request");
+                destDir.dir = Misc.receiveStringWithLen(client.i); // re-assign using received home dir
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+                return FileOpsErrorCodes.TRANSFER_ERROR;
+            }
+        }
 
         if (items instanceof CopyListUris) {
             /* - customize ACTION_UPLOAD request byte with flags 111

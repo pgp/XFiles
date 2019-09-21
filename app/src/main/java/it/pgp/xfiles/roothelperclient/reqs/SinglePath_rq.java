@@ -43,7 +43,7 @@ public abstract class SinglePath_rq {
     public void write(OutputStream outputStream) throws IOException {
         try(FlushingBufferedOutputStream nbf = new FlushingBufferedOutputStream(outputStream)) {
             // write request byte
-            nbf.write(requestType.getValue());
+            nbf.write(getRequestByteWithFlags());
             // write len and field
             nbf.write(Misc.castUnsignedNumberToBytes(this.pathname_len,2));
             nbf.write(this.pathname);
