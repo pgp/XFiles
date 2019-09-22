@@ -19,8 +19,7 @@ public class RestarterActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.empty);
 
-        Bundle extras = getIntent().getExtras();
-        int targetPid = extras.getInt("");
+        int targetPid = getIntent().getExtras().getInt("");
         android.os.Process.sendSignal(targetPid,2); // SIGINT
 
         // start target activity again

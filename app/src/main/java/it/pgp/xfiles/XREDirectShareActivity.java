@@ -1,5 +1,6 @@
 package it.pgp.xfiles;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -85,6 +86,19 @@ public class XREDirectShareActivity extends EffectActivity {
         return valid;
     }
 
+    class ThreadWrapper extends Thread {
+        private Runnable r;
+
+        public void setRunnable(Runnable r) {
+            this.r = r;
+        }
+
+        @Override
+        public void run() {
+            r.run();
+        }
+    }
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -128,7 +142,6 @@ public class XREDirectShareActivity extends EffectActivity {
             catch (IOException e) {
                 e.printStackTrace();
             }
-
 
             filesToUpload = new CopyMoveListPathContent(lb,CopyMoveMode.COPY,srcPath);
         }
@@ -190,6 +203,48 @@ public class XREDirectShareActivity extends EffectActivity {
         findViewById(R.id.xreDirectShareOkButton).setOnClickListener(this::ok);
 
         GenericChangeDirectoryDialog.getXreAnnounceListenerThread(this,xreAnnouncesAdapter).start();
+
+        /**
+         * check extras for unattended direct share:
+         * creates a cancelable progressdialog, waits for some xre server to send an announce,
+         * then connects to it and sends data
+         */
+        if(getIntent().getExtras().getBoolean("unattended", false)) {
+
+            ThreadWrapper t = new ThreadWrapper();
+
+            ProgressDialog pd = new ProgressDialog(this);
+            pd.setIndeterminate(true);
+            pd.setCancelable(true);
+            pd.setOnCancelListener(d -> {
+                t.interrupt();
+                finish();
+            });
+            pd.setMessage("Waiting for an XRE server to come online...");
+            pd.show();
+
+            // periodically check size of listener adapter, then click item and ok
+            t.setRunnable(()->{
+                while(!Thread.currentThread().isInterrupted()) {
+                    if(xreAnnouncesAdapter.items.size() > 0) {
+                        int activePosition = 0;
+                        runOnUiThread(()->{
+                            pd.dismiss();
+                            xreAnnouncesListView.performItemClick(
+                                    xreAnnouncesListView.getAdapter().getView(activePosition,null,null),
+                                    activePosition,
+                                    xreAnnouncesListView.getAdapter().getItemId(activePosition));
+                            ok(null);
+                        });
+                        break;
+                    }
+                    try {Thread.sleep(500);}
+                    catch (InterruptedException e) {break;}
+                }
+                Log.d("UNATTENDED","Thread ended");
+            });
+            t.start();
+        }
     }
 
     @Override

@@ -7,8 +7,8 @@ android {
         minSdkVersion 19
         targetSdkVersion 28
         multiDexEnabled true
-        versionCode 145190921
-        versionName "1.4.5-alpha"
+        versionCode 146190922
+        versionName "1.4.6-alpha"
         externalNativeBuild {
             cmake {
                 cppFlags "-std=c++11 -pthread -frtti -fexceptions"

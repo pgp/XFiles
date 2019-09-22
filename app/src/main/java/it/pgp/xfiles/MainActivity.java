@@ -895,14 +895,16 @@ public class MainActivity extends EffectActivity {
         startActivity(i);
     }
 
-    public void shareItems() {
+    public void shareItems(boolean unattended) {
         List<BasePathContent> selection = getCurrentBrowserAdapter().getSelectedItemsAsPathContents();
         if (selection.size()==0) {
             Toast.makeText(this,"No items selected for sharing",Toast.LENGTH_SHORT).show();
             return;
         }
-        Intent sharingIntent;
-        sharingIntent = new Intent(Intent.ACTION_SEND_MULTIPLE);
+        Intent sharingIntent = unattended?
+                new Intent(this,XREDirectShareActivity.class):new Intent();
+        sharingIntent.setAction(Intent.ACTION_SEND_MULTIPLE);
+
         sharingIntent.setType("*/*");
         ArrayList<Uri> uris = new ArrayList<>();
         for (BasePathContent f : selection) {
@@ -922,7 +924,8 @@ public class MainActivity extends EffectActivity {
         }
         sharingIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
         sharingIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        startActivity(Intent.createChooser(sharingIntent, "Share files using"));
+        sharingIntent.putExtra("unattended",unattended);
+        startActivity(unattended?sharingIntent:Intent.createChooser(sharingIntent, "Share files using"));
     }
 
     public void paste() {
@@ -1255,7 +1258,10 @@ public class MainActivity extends EffectActivity {
                     deleteSelection();
                     return true;
                 case R.id.itemsShare:
-                    shareItems();
+                    shareItems(false);
+                    return true;
+                case R.id.itemsXreShareUnattended:
+                    shareItems(true);
                     return true;
                 case R.id.itemsShowInGallery:
                     // TODO consider also the case when image viewer is invoked by third party app - use MainActivity.mainActivity
@@ -1341,8 +1347,11 @@ public class MainActivity extends EffectActivity {
                     startActivity(intent);
                     return true;
                 case R.id.itemShare:
+                case R.id.itemXreShareUnattended:
+                    boolean unattended = itemId == R.id.itemXreShareUnattended;
                     b = getCurrentBrowserAdapter().getItem(position1);
-                    Intent sharingIntent = new Intent(Intent.ACTION_SEND);
+                    Intent sharingIntent = unattended?new Intent(this,XREDirectShareActivity.class):new Intent();
+                    sharingIntent.setAction(Intent.ACTION_SEND);
                     Uri sharingUri = Uri.fromFile(new File(path.dir, b.filename));
 //                Uri sharingUri = FileProvider.getUriForFile(MainActivity.this,
 //                        BuildConfig.APPLICATION_ID + ".provider",
@@ -1350,7 +1359,8 @@ public class MainActivity extends EffectActivity {
                     sharingIntent.setType("*/*");
                     sharingIntent.putExtra(Intent.EXTRA_STREAM, sharingUri);
                     sharingIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                    startActivity(Intent.createChooser(sharingIntent, "Share file using"));
+                    sharingIntent.putExtra("unattended",unattended);
+                    startActivity(unattended?sharingIntent:Intent.createChooser(sharingIntent, "Share file using"));
                     return true;
                 case R.id.itemShowInGallery:
                     // TODO consider also the case when image viewer is invoked by third party app - use MainActivity.mainActivity
@@ -1603,7 +1613,7 @@ public class MainActivity extends EffectActivity {
             case R.id.compressButton:
                 compressSelection();break;
             case R.id.shareButton:
-                shareItems();break;
+                shareItems(false);break;
 
             default: break;
         }
