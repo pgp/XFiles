@@ -1,5 +1,7 @@
 package it.pgp.xfiles.utils;
 
+import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -24,28 +26,15 @@ public class ArchiveVMap extends VMap {
     }
 
     public Map getNodeProps(String inArchivePath) throws ValueAsKeyException {
-        return (Map) get(Misc.concatAll(inArchivePath.split("/"),
+        Map nodeProps = (Map) get(Misc.concatAll(inArchivePath.split("/"),
                 new String[]{ArchiveVMap.sentinelKeyForNodeProperties}));
+        // the directory node need not necessarily be present in an archive
+        if(nodeProps==null) {
+            nodeProps = new HashMap();
+            nodeProps.put("date",new Date(0));
+            nodeProps.put("size",0L);
+            nodeProps.put("isDir",true);
+        }
+        return nodeProps;
     }
-
-    // TODO modify method to add node properties for implicitly stored folder paths (clone Date from leaf node, size = 0, isdir = true)
-//    @Override
-//    public void set(Object v, Object... keys) throws ValueAsKeyException {
-//        if (h==null) h = new HashMap<>();
-//        HashMap<Object,Object> currentLevelMap = h;
-//
-//        for (int i=0;i<keys.length-1;i++) {
-//            if (currentLevelMap.get(keys[i]) == null) {
-//                currentLevelMap.put(keys[i],new HashMap<>());
-//            }
-//            try {
-//                currentLevelMap = (HashMap<Object, Object>) currentLevelMap.get(keys[i]);
-//            }
-//            catch (Exception e) {
-//                throw new ValueAsKeyException();
-//            }
-//        }
-//
-//        currentLevelMap.put(keys[keys.length-1],v);
-//    }
 }
