@@ -6,6 +6,7 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.IBinder;
 import android.os.PowerManager;
@@ -38,6 +39,8 @@ public abstract class BaseBackgroundService extends Service {
 	public BaseBackgroundTask task;
     public Serializable params;
 
+    public static final DialogInterface.OnClickListener emptyListener = (dialog, which) -> {};
+
     public abstract int getForegroundServiceNotificationId();
 
     public abstract ForegroundServiceType getForegroundServiceType();
@@ -50,7 +53,7 @@ public abstract class BaseBackgroundService extends Service {
 	private void abortServiceWithConfirmation() {
         AlertDialog.Builder bld = new AlertDialog.Builder(this);
         bld.setTitle("Cancel "+this.getClass().getName()+"?");
-        bld.setNegativeButton("No", (dialog, which) -> {/*no action*/});
+        bld.setNegativeButton("No", emptyListener);
         bld.setPositiveButton("Yes", (dialog, which) -> task.cancelTask());
         AlertDialog alertDialog = bld.create();
         alertDialog.getWindow().setType(ViewType.OVERLAY_WINDOW_TYPE);

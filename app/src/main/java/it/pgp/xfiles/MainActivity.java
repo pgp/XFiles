@@ -314,7 +314,7 @@ public class MainActivity extends EffectActivity {
         String name = selection.size()==1?selection.get(0).getName():"selection";
         bld.setTitle("Confirm delete "+name);
         bld.setIcon(R.drawable.xf_recycle_bin);
-        bld.setNegativeButton("No", (dialog, which) -> {/*no action*/});
+        bld.setNegativeButton("No", BaseBackgroundService.emptyListener);
         bld.setPositiveButton("Yes", (dialog, which) -> {
             try {
                 int posToRestore = browserPagerAdapter.mainBrowserViews[browserPager.getCurrentItem()].getFirstVisiblePosition();
@@ -748,7 +748,7 @@ public class MainActivity extends EffectActivity {
         AlertDialog.Builder bld = new AlertDialog.Builder(MainActivity.this);
         bld.setTitle("Switch dir commander to "+h+" one?");
         bld.setIcon(isRootHelperUsed?R.drawable.xfiles_root_off:R.drawable.xfiles_root_on);
-        bld.setNegativeButton("No", (dialog, which) -> {/* no action */});
+        bld.setNegativeButton("No", BaseBackgroundService.emptyListener);
         bld.setPositiveButton("Yes", (dialog, which) -> {
             // disabled, better user experience, to be tested
             // browserPagerAdapter.createStandardCommanders();

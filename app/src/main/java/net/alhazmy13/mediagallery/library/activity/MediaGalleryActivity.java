@@ -1,5 +1,7 @@
 package net.alhazmy13.mediagallery.library.activity;
 
+import android.app.AlertDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
@@ -7,8 +9,12 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.Window;
+import android.view.WindowManager;
+import android.widget.ImageButton;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import net.alhazmy13.mediagallery.library.activity.adapter.CustomViewPager;
 import net.alhazmy13.mediagallery.library.activity.adapter.HorizontalListAdapters;
@@ -24,6 +30,8 @@ import java.util.Set;
 import it.pgp.xfiles.BrowserItem;
 import it.pgp.xfiles.MainActivity;
 import it.pgp.xfiles.R;
+import it.pgp.xfiles.service.BaseBackgroundService;
+import it.pgp.xfiles.service.visualization.ViewType;
 import it.pgp.xfiles.utils.pathcontent.BasePathContent;
 
 
@@ -35,6 +43,7 @@ public class MediaGalleryActivity extends BaseActivity implements ViewPager.OnPa
     private RecyclerView imagesHorizontalList;
     private HorizontalListAdapters hAdapter;
     private RelativeLayout mMainLayout;
+    private ImageButton showImageOnLockScreen;
 
     public static final Set<String> allowedImageExtensions = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(".bmp",".gif",".jpg",".png")));
 
@@ -79,6 +88,11 @@ public class MediaGalleryActivity extends BaseActivity implements ViewPager.OnPa
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
+        if(getIntent().getBooleanExtra("setShowOnLockScreenFlags",false))
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON|
+                    WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD|
+                    WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED|
+                    WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
         super.onCreate(savedInstanceState);
     }
 
@@ -109,6 +123,24 @@ public class MediaGalleryActivity extends BaseActivity implements ViewPager.OnPa
         if (backgroundColor != -1){
             mMainLayout.setBackgroundColor(ContextCompat.getColor(this,backgroundColor));
         }
+        showImageOnLockScreen = findViewById(R.id.showImageOnLockScreen);
+    }
+
+    public void setShowImageOnLockScreen(View unused) {
+        AlertDialog.Builder bld = new AlertDialog.Builder(this);
+        bld.setTitle("Show this gallery on lock screen, if any?");
+        bld.setNegativeButton("No", BaseBackgroundService.emptyListener);
+        bld.setPositiveButton("Yes", (dialog, which) -> {
+            Intent i = new Intent(this, MediaGalleryActivity.class);
+            i.putExtras(getIntent().getExtras());
+            i.putExtra("setShowOnLockScreenFlags",true);
+            Toast.makeText(this, "Gallery is being shown on lock screen now", Toast.LENGTH_SHORT).show();
+            finish();
+            startActivity(i);
+        });
+        AlertDialog alertDialog = bld.create();
+        alertDialog.getWindow().setType(ViewType.OVERLAY_WINDOW_TYPE);
+        alertDialog.show();
     }
 
     @Override

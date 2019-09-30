@@ -234,6 +234,7 @@
             android:configChanges="orientation|screenSize|keyboardHidden" />
         <activity
             android:name="net.alhazmy13.mediagallery.library.activity.MediaGalleryActivity"
+            android:launchMode="singleTask"
             android:configChanges="orientation|screenSize|keyboardHidden" />
 
         <service

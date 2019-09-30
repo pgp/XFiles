@@ -25,4 +25,14 @@
         android:clipToPadding="false"
         android:paddingLeft="40dp"
         android:paddingRight="40dp" />
+
+    <ImageButton
+        android:id="@+id/showImageOnLockScreen"
+        android:src="@android:drawable/ic_lock_idle_lock"
+        android:onClick="setShowImageOnLockScreen"
+        android:background="@null"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_width="50dp"
+        android:layout_height="50dp" />
 </RelativeLayout>
