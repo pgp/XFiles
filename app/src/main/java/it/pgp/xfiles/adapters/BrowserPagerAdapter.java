@@ -231,9 +231,13 @@ public class BrowserPagerAdapter extends PagerAdapter {
         boolean[] lastcontselmode = (csCheckBoxes[position] != null)?csCheckBoxes[position].getAsBooleans():new boolean[]{false,false,false};
         browserAdapters[position] = m.newAdapter(mainActivity,dirWithContent.content);
         setMultiSelectModeLayout(multiSelectModes[position],position);
-        if(lastcontselmode[0]) mainActivity.findViewById(R.id.toggleSelectMode).performClick();
-        if(lastcontselmode[1]) mainActivity.findViewById(R.id.invertSelection).performClick();
-        if(lastcontselmode[2]) mainActivity.findViewById(R.id.stickySelection).performClick();
+        int[] resIds = {R.id.toggleSelectMode,R.id.invertSelection,R.id.stickySelection};
+        for(int i=0;i<resIds.length;i++) {
+            if(lastcontselmode[i]) {
+                View v = mainActivity.findViewById(resIds[i]);
+                if(v!=null) v.performClick();
+            }
+        }
     }
 
     public void showDirContent(GenericDirWithContent dirWithContent,
