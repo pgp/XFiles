@@ -1372,7 +1372,7 @@ public class MainActivity extends EffectActivity {
 
                     b = getCurrentBrowserAdapter().getItem(position1);
                     if(b.filename.length()>=4 &&
-                            MediaGalleryActivity.allowedImageExtensions.contains(b.filename.substring(b.filename.length()-4))) {
+                            MediaGalleryActivity.allowedImageExtensions.contains(b.filename.substring(b.filename.length()-4).toLowerCase())) {
                         imageList = MediaGalleryActivity.filterByImageExtensionsAndSaveTargetIdx(currentDir,b.filename);
                         MediaGallery.Builder(MainActivity.this,imageList)
                                 .title("Media Gallery")
