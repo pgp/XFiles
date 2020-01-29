@@ -11,12 +11,15 @@ import android.view.ContextMenu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.GridView;
+import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.Toast;
 
 import java.io.IOException;
+import java.util.BitSet;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -45,6 +48,12 @@ public class ChecksumActivity extends EffectActivity {
 
     private ClipboardManager clipboard;
 
+    // directory hashing layout and checkboxes for options
+    private LinearLayout dirHashOptsLayout;
+    private CheckBox dirHashWithNames;
+    private CheckBox dirHashIgnoreThumbsFiles;
+    private CheckBox dirHashIgnoreUnixHiddenFiles;
+    private CheckBox dirHashIgnoreEmptyDirs;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -62,6 +71,12 @@ public class ChecksumActivity extends EffectActivity {
         setTitle("Checksum");
 
         standardResultsLayout = findViewById(R.id.standardResultsLayout);
+
+        dirHashOptsLayout = findViewById(R.id.checksum_dirHashOptsLayout); // TODO set GONE visibility if adapter selection only contains regular files
+        dirHashWithNames = findViewById(R.id.checksum_dirHashWithNames);
+        dirHashIgnoreThumbsFiles = findViewById(R.id.checksum_dirHashIgnoreThumbsFiles);
+        dirHashIgnoreUnixHiddenFiles = findViewById(R.id.checksum_dirHashIgnoreUnixHiddenFiles);
+        dirHashIgnoreEmptyDirs = findViewById(R.id.checksum_dirHashIgnoreEmptyDirs);
 
         GridView hashSelectorView = findViewById(R.id.hashSelectorView);
         hashSelectorView.setOnItemClickListener((parent, item, position, id) -> {
@@ -162,7 +177,12 @@ public class ChecksumActivity extends EffectActivity {
             switch (path.providerType) {
                 case LOCAL:
                 case XFILES_REMOTE:
-                    return MainActivity.currentHelper.hashFile(path,s);
+                    BitSet dirHashOpts = new BitSet(4);
+                    dirHashOpts.set(0,dirHashWithNames.isChecked());
+                    dirHashOpts.set(1,dirHashIgnoreThumbsFiles.isChecked());
+                    dirHashOpts.set(2,dirHashIgnoreUnixHiddenFiles.isChecked());
+                    dirHashOpts.set(3,dirHashIgnoreEmptyDirs.isChecked());
+                    return MainActivity.currentHelper.hashFile(path,s,dirHashOpts);
                 default:
                     throw new RuntimeException("Only local and XRE paths allowed for hashing");
             }

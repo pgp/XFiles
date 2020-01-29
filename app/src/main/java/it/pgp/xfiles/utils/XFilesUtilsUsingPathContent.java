@@ -8,6 +8,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.Date;
 import java.util.List;
 
@@ -265,8 +266,10 @@ public class XFilesUtilsUsingPathContent implements FileOperationHelperUsingPath
     }
 
     @Override
-    public byte[] hashFile(BasePathContent pathname, HashRequestCodes hashAlgorithm) throws IOException {
-        return new RootHelperClientUsingPathContent().hashFile(pathname,hashAlgorithm);
+    public byte[] hashFile(BasePathContent pathname,
+                           HashRequestCodes hashAlgorithm,
+                           BitSet dirHashOpts) throws IOException {
+        return new RootHelperClientUsingPathContent().hashFile(pathname,hashAlgorithm,dirHashOpts);
 //        File f = new File(pathname.dir);
 //        byte[] digest = null;
 //        try {

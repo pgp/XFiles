@@ -32,6 +32,7 @@ import java.security.PublicKey;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.BitSet;
 import java.util.Collections;
 import java.util.Date;
 import java.util.EnumSet;
@@ -773,7 +774,9 @@ public class SFTPProviderUsingPathContent implements FileOperationHelperUsingPat
     }
 
     @Override
-    public byte[] hashFile(BasePathContent pathname, HashRequestCodes hashAlgorithm) throws IOException {
+    public byte[] hashFile(BasePathContent pathname,
+                           HashRequestCodes hashAlgorithm,
+                           BitSet dirHashOpts) throws IOException {
         return new byte[0];
     }
 

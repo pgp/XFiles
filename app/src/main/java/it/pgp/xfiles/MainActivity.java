@@ -1101,10 +1101,6 @@ public class MainActivity extends EffectActivity {
             Toast.makeText(this,"No items selected for checksum",Toast.LENGTH_SHORT).show();
             return;
         }
-        if (!getCurrentBrowserAdapter().ensureOnlyFilesSelection()) {
-            Toast.makeText(this, "Selection contains directories, please choose only files for checksum", Toast.LENGTH_SHORT).show();
-            return;
-        }
         startActivity(new Intent(MainActivity.this,ChecksumActivity.class));
     }
 
@@ -1337,10 +1333,6 @@ public class MainActivity extends EffectActivity {
                     }
                     b = getCurrentBrowserAdapter().getItem(position1);
                     path = path.concat(b.filename);
-                    if (b.isDirectory) {
-                        Toast.makeText(MainActivity.this, "File is a directory", Toast.LENGTH_SHORT).show();
-                        return true;
-                    }
                     Intent intent = new Intent(MainActivity.this, ChecksumActivity.class);
                     intent.putExtra("pathcontent", path);
 

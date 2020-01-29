@@ -3,6 +3,7 @@ package it.pgp.xfiles.utils;
 import android.support.annotation.Nullable;
 
 import java.io.IOException;
+import java.util.BitSet;
 import java.util.Date;
 import java.util.List;
 
@@ -36,7 +37,9 @@ public interface FileOperationHelperUsingPathContent {
     boolean isFile(BasePathContent pathname);
     boolean isDir(BasePathContent pathname);
 
-    byte[] hashFile(BasePathContent pathname, HashRequestCodes hashAlgorithm) throws IOException;
+    byte[] hashFile(BasePathContent pathname,
+                    HashRequestCodes hashAlgorithm,
+                    BitSet dirHashOpts) throws IOException;
 
     GenericDirWithContent listDirectory(BasePathContent directory);
     GenericDirWithContent listArchive(BasePathContent archivePath);

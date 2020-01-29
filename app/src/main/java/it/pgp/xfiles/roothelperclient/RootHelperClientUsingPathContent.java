@@ -1258,13 +1258,19 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
     }
 
     @Override
-    public byte[] hashFile(BasePathContent pathname, HashRequestCodes hashAlgorithm) throws IOException {
+    public byte[] hashFile(BasePathContent pathname,
+                           HashRequestCodes hashAlgorithm,
+                           BitSet dirHashOpts) throws IOException {
         if (pathname instanceof XFilesRemotePathContent)
             if (!ProgressIndicator.acquire(ForegroundServiceType.XRE_HASH)) return null;
 
         try {
             rs = getStreams(pathname,false);
-            SinglePath_rq rq = new hash_rq(pathname.dir,hashAlgorithm);
+            SinglePath_rq rq = new hash_rq(
+                    pathname.dir,
+                    hashAlgorithm,
+                    dirHashOpts
+            );
             rq.write(rs.o);
 
             int resp = receiveBaseResponse(rs.i);

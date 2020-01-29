@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -308,7 +309,9 @@ public class SmbProviderUsingPathContent implements FileOperationHelperUsingPath
     }
 
     @Override
-    public byte[] hashFile(BasePathContent pathname, HashRequestCodes hashAlgorithm) throws IOException {
+    public byte[] hashFile(BasePathContent pathname,
+                           HashRequestCodes hashAlgorithm,
+                           BitSet dirHashOpts) throws IOException {
         return new byte[0];
     }
 

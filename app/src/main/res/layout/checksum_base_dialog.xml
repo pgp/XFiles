@@ -8,10 +8,80 @@
         android:id="@+id/hashSelectorView"
         android:numColumns="auto_fit"
         android:columnWidth="100dp"
-        android:layout_weight="3"
         android:layout_width="match_parent"
-        android:layout_height="0dp" >
+        android:layout_height="wrap_content" >
     </GridView>
+
+    <LinearLayout
+        android:id="@+id/checksum_dirHashOptsLayout"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:text="Directory hashing options:"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <CheckBox
+                android:checked="false"
+                android:id="@+id/checksum_dirHashWithNames"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent" />
+
+            <TextView
+                android:text="Include filenames"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent" />
+
+            <CheckBox
+                android:checked="true"
+                android:id="@+id/checksum_dirHashIgnoreThumbsFiles"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent" />
+
+            <TextView
+                android:text="Ignore thumbs files"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <CheckBox
+                android:checked="true"
+                android:id="@+id/checksum_dirHashIgnoreUnixHiddenFiles"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent" />
+
+            <TextView
+                android:text="Ignore Unix hidden files"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent" />
+
+            <CheckBox
+                android:checked="true"
+                android:id="@+id/checksum_dirHashIgnoreEmptyDirs"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent" />
+
+            <TextView
+                android:text="Ignore empty sub-directories"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent" />
+
+        </LinearLayout>
+
+    </LinearLayout>
 
     <ScrollView
         android:scrollbars="horizontal|vertical"
@@ -37,8 +107,7 @@
     <Button
         android:id="@+id/computeChecksumsButton"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_height="wrap_content"
         android:text="Compute checksums" />
 
 
