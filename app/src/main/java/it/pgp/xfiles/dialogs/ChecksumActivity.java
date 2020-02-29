@@ -1,5 +1,6 @@
 package it.pgp.xfiles.dialogs;
 
+import android.app.Dialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -10,6 +11,7 @@ import android.support.annotation.Nullable;
 import android.view.ContextMenu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.GridView;
@@ -54,6 +56,18 @@ public class ChecksumActivity extends EffectActivity {
     private CheckBox dirHashIgnoreThumbsFiles;
     private CheckBox dirHashIgnoreUnixHiddenFiles;
     private CheckBox dirHashIgnoreEmptyDirs;
+
+    public void showLegend(View unused) {
+        Dialog hashLegendDialog = new Dialog(this){
+            @Override
+            public void show() {
+                requestWindowFeature(Window.FEATURE_NO_TITLE);
+                setContentView(R.layout.hash_labels_legend);
+                super.show();
+            }
+        };
+        hashLegendDialog.show();
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

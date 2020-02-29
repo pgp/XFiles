@@ -104,11 +104,25 @@
         </HorizontalScrollView>
     </ScrollView>
 
-    <Button
-        android:id="@+id/computeChecksumsButton"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Compute checksums" />
+        android:layout_height="wrap_content">
+        <Button
+            android:id="@+id/computeChecksumsButton"
+            android:layout_weight="8"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Compute checksums" />
+
+        <ImageButton
+            android:background="@android:color/transparent"
+            android:src="@android:drawable/ic_menu_help"
+            android:onClick="showLegend"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Compute checksums" />
+    </LinearLayout>
 
 
 </LinearLayout>

@@ -28,12 +28,14 @@ public class HashAlgorithmsAdapter extends ArrayAdapter<HashRequestCodes> {
     }
 
     private final LayoutInflater inflater;
+    private final Context context;
 
     public HashAlgorithmsAdapter(Context context) {
         super(context,
                 R.layout.checksum_label_item,
                 R.id.checksum_textview,
                 Arrays.asList(HashRequestCodes.values()));
+        this.context = context;
         inflater = LayoutInflater.from(context);
     }
 
@@ -68,6 +70,8 @@ public class HashAlgorithmsAdapter extends ArrayAdapter<HashRequestCodes> {
 
         tv.setText(item.getLabel());
         cb.setChecked(item.isChecked());
+
+        tv.setTextColor(context.getResources().getColor(item.getLabelColor()));
 
         return convertView;
     }

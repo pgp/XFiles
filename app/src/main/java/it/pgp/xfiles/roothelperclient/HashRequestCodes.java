@@ -11,29 +11,33 @@ import java.util.Map;
 
 public enum HashRequestCodes {
 
-    md5((byte)0x01,"MD5",16),
-    sha1((byte)0x02,"SHA1",20),
-    sha256((byte)0x03,"SHA256",32),
-    sha384((byte)0x04,"SHA384",48),
-    sha512((byte)0x05,"SHA512",64),
-    sha3_224((byte)0x06,"SHA3-224",28),
-    sha3_256((byte)0x07,"SHA3-256",32),
-    sha3_384((byte)0x08,"SHA3-384",48),
-    sha3_512((byte)0x09,"SHA3-512",64),
-    blake2b_256((byte)0x0A,"BLAKE2B-256",32);
+    crc32((byte)0x00,"CRC32",4,android.R.color.holo_purple),
+    md5((byte)0x01,"MD5",16, android.R.color.holo_red_dark),
+    sha1((byte)0x02,"SHA1",20, android.R.color.holo_red_dark),
+    sha224((byte)0x0B,"SHA224",28, android.R.color.holo_green_light),
+    sha256((byte)0x03,"SHA256",32, android.R.color.holo_orange_light),
+    sha384((byte)0x04,"SHA384",48, android.R.color.holo_green_light),
+    sha512((byte)0x05,"SHA512",64, android.R.color.holo_orange_light),
+    sha3_224((byte)0x06,"SHA3-224",28, android.R.color.holo_green_light),
+    sha3_256((byte)0x07,"SHA3-256",32, android.R.color.holo_green_light),
+    sha3_384((byte)0x08,"SHA3-384",48, android.R.color.holo_green_light),
+    sha3_512((byte)0x09,"SHA3-512",64, android.R.color.holo_green_light),
+    blake2b_256((byte)0x0A,"BLAKE2B-256",32, android.R.color.holo_green_light);
 
     final byte value;
     final String label;
     final int length;
+    final int labelColor;
     static final Map<Byte,HashRequestCodes> codeMap = new HashMap<Byte,HashRequestCodes>(){{
         for (HashRequestCodes x: HashRequestCodes.values())
             put(x.getValue(),x);
     }};
 
-    HashRequestCodes(byte value, String label, int length) {
+    HashRequestCodes(byte value, String label, int length, int labelColor) {
         this.value = value;
         this.label = label;
         this.length = length;
+        this.labelColor = labelColor;
     }
 
     // enum value to byte value
@@ -47,6 +51,10 @@ public enum HashRequestCodes {
 
     public int getLength() {
         return length;
+    }
+
+    public int getLabelColor() {
+        return labelColor;
     }
 
     // byte value to enum value
