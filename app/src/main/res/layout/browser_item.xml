@@ -18,6 +18,7 @@
 
         <TextView
             android:id="@+id/browserItemFilename"
+            android:textColor="#CCCCCC"
             android:textSize="18sp"
             android:layout_weight="5"
             android:layout_width="match_parent"
@@ -30,6 +31,7 @@
 
             <TextView
                 android:id="@+id/browserItemFileSize"
+                android:textColor="#9AD1FA"
                 android:textSize="12sp"
                 android:layout_alignParentStart="true"
                 android:layout_width="wrap_content"
@@ -37,6 +39,7 @@
 
             <TextView
                 android:id="@+id/browserItemFileDate"
+                android:textColor="#B2E1F7"
                 android:textSize="12sp"
                 android:layout_alignParentEnd="true"
                 android:layout_width="wrap_content"
