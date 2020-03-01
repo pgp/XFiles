@@ -1331,10 +1331,8 @@ public class MainActivity extends EffectActivity {
                         Toast.makeText(MainActivity.this,"Checksum implemented only for local and XFiles remote files",Toast.LENGTH_LONG).show();
                         return true;
                     }
-                    b = getCurrentBrowserAdapter().getItem(position1);
-                    path = path.concat(b.filename);
                     Intent intent = new Intent(MainActivity.this, ChecksumActivity.class);
-                    intent.putExtra("pathcontent", path);
+                    intent.putExtra("browseritem", getCurrentBrowserAdapter().getItem(position1));
 
                     startActivity(intent);
                     return true;
@@ -1370,7 +1368,7 @@ public class MainActivity extends EffectActivity {
                                 .title("Media Gallery")
                                 .backgroundColor(R.color.white)
                                 .placeHolder(R.drawable.media_gallery_placeholder)
-                                .selectedImagePosition(MediaGalleryActivity.targetIdx < 0 ? 0 : MediaGalleryActivity.targetIdx)
+                                .selectedImagePosition(Math.max(MediaGalleryActivity.targetIdx, 0))
                                 .show();
                     }
                     else Toast.makeText(MainActivity.this, "This file doesn't seem to be an image", Toast.LENGTH_SHORT).show();
