@@ -34,7 +34,7 @@
         android:title="Rename" />
 
     <item android:id="@+id/itemChecksum"
-        android:icon="@android:drawable/ic_menu_edit"
+        android:icon="@drawable/xfiles_root_off"
         android:title="Checksum" />
 
     <item android:id="@+id/itemShare"
