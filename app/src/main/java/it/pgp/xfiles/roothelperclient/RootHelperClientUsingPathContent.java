@@ -1374,6 +1374,56 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
         }
     }
 
+    public byte[] downloadHttpsUrlInMemory(String url, int port) throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try(StreamsPair rs = getStreams()) {
+            try (FlushingBufferedOutputStream nbf = new FlushingBufferedOutputStream(rs.o)) { // send a single packet instead of multiple ones
+                byte req = ControlCodes.ACTION_HTTPS_URL_DOWNLOAD.getValue();
+                req ^= (7 << 5); // flags: 111
+                nbf.write(req);
+                Misc.sendStringWithLen(nbf,url);
+                nbf.write(Misc.castUnsignedNumberToBytes(port,2));
+                Misc.sendStringWithLen(nbf,""); // empty dest path
+                Misc.sendStringWithLen(nbf,""); // empty dest filename
+            }
+
+            for(;;) {
+                byte resp = rs.i.readByte();
+                if (resp != ResponseCodes.RESPONSE_OK.getValue()) {
+                    if (resp == ((byte)0x11)) { // RESPONSE_HTTPS_END_OF_REDIRECTS
+                        Log.d("RHHttpsClient","End of redirects");
+                        break;
+                    }
+                    byte[] errno_ = new byte[4];
+                    rs.i.readFully(errno_);
+                    int errno = (int) Misc.castBytesToUnsignedNumber(errno_,4);
+                    Log.e("RHHttpsClient", "Error returned from roothelper server: " + errno);
+                    return null; // TODO propagate error better
+                }
+                byte[] tlsSessionHash = new byte[32];
+                rs.i.readFully(tlsSessionHash);
+                Log.d("RHHttpsClient","Client TLS session shared secret hash: "+Misc.toHexString(tlsSessionHash));
+            }
+
+            String unusedFilename = Misc.receiveStringWithLen(rs.i);
+            long downloadSize = Misc.receiveTotalOrProgress(rs.i);
+            Log.d("RHHttpsClient","Received download size is: "+downloadSize);
+
+            for(;;) {
+                byte[] x = new byte[1024];
+                int readBytes = rs.i.read(x);
+                if(readBytes <= 0) break;
+                baos.write(x,0,readBytes);
+            }
+        }
+        catch(IOException e) {
+            // this should catch only EOF
+            e.printStackTrace();
+        }
+        Log.d("RHHttpsClient","In-memory download completed");
+        return baos.toByteArray();
+    }
+
     public void downloadUrl(InputStream input, String destPath, long fileLength) throws IOException {
         StreamsPair rs = getStreams();
 

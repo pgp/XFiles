@@ -74,6 +74,7 @@ import it.pgp.xfiles.dialogs.OpenAsDialog;
 import it.pgp.xfiles.dialogs.PropertiesDialog;
 import it.pgp.xfiles.dialogs.RemoteRHServerManagementDialog;
 import it.pgp.xfiles.dialogs.RenameDialog;
+import it.pgp.xfiles.dialogs.UpdateCheckDialog;
 import it.pgp.xfiles.dialogs.XFilesRemoteSessionsManagementActivity;
 import it.pgp.xfiles.dialogs.compress.AskPasswordDialogOnListing;
 import it.pgp.xfiles.dialogs.compress.CompressActivity;
@@ -431,6 +432,9 @@ public class MainActivity extends EffectActivity {
 
             case R.id.openAboutDialog:
                 openAboutDialog();
+                return true;
+            case R.id.openUpdateCheckDialog:
+                new UpdateCheckDialog(this).show();
                 return true;
 
             // fast menu for change directory
