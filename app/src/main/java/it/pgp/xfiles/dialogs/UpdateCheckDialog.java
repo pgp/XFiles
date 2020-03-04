@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -85,19 +86,37 @@ public class UpdateCheckDialog extends Dialog {
         for(Map<String,String> rel : releases) // actually not Map<String,String>, variable types, but we are interested only in tag_name, so no ClassCastException if the format is the expected one
             tagnames.put(rel.get("tag_name"),cnt++);
         Integer currentVersionIdx = tagnames.get(currentVersionTagname);
-        if(currentVersionIdx == null) // currently installed version not found in GH releases, assume very old
-            currentVersionCreatedAt = new Date(0);
+        if(currentVersionIdx == null) { // currently installed version not found in GH releases
+            // extract date from versionCode (latest 6 chars, yyMMdd)
+            currentVersionCreatedAt = new SimpleDateFormat("yyMMdd").parse(
+                    currentVersionTagname.substring(currentVersionTagname.length()-6));
+        }
         else currentVersionCreatedAt = df.parse((String) releases.get(currentVersionIdx).get("created_at"));
 
         latestVersionTagName = (String) releases.get(0).get("tag_name");
         latestVersionCreatedAt = df.parse((String) releases.get(0).get("created_at"));
         latestVersionDownloadUrl = (String)((Map)((List)releases.get(0).get("assets")).get(0)).get("browser_download_url");
         activity.runOnUiThread(()->{
-            boolean isUpdated = currentVersionCreatedAt.compareTo(latestVersionCreatedAt)>=0;
-            updateMessage.setText(isUpdated?"Already at the latest version":"Update avilable");
+            int compareResult = currentVersionCreatedAt.compareTo(latestVersionCreatedAt);
+            switch(compareResult) {
+                case -1:
+                    updateMessage.setText("Update available");
+                    break;
+                case 0:
+                    updateMessage.setText("Already up to date");
+                    break;
+                case 1:
+                    updateMessage.setText("This version is newer than latest official release");
+                    break;
+                default:
+                    throw new RuntimeException("Guard block");
+            }
+            if(compareResult > -1) {
+                downloadButton.setText("Get anyway");
+            }
+
             currentVersion.setText(currentVersionTagname);
             latestVersion.setText(latestVersionTagName);
-            if(isUpdated) downloadButton.setText("Download anyway");
         });
     }
 
@@ -108,7 +127,7 @@ public class UpdateCheckDialog extends Dialog {
         setContentView(R.layout.update_check_dialog);
         try {
             PackageInfo pInfo = activity.getPackageManager().getPackageInfo(activity.getPackageName(), 0);
-            currentVersionTagname = pInfo.versionName+"_"+pInfo.versionCode;
+            currentVersionTagname = pInfo.versionName+"_"+pInfo.versionCode; // STRONG ASSUMPTION
         }
         catch (PackageManager.NameNotFoundException e) {
             throw new RuntimeException(e);
@@ -151,6 +170,11 @@ public class UpdateCheckDialog extends Dialog {
                 MainActivity.showToastOnUI("Date parse error", activity);
                 dismiss();
             }
+            catch (Exception e) {
+                e.printStackTrace();
+                MainActivity.showToastOnUI("Generic error during update check", activity);
+                dismiss();
+            }
         }).start();
     }
 
@@ -158,7 +182,7 @@ public class UpdateCheckDialog extends Dialog {
         /**
          * 1) download latest release zip from GH assets, into /sdcard
          * 2) on complete, extract zip into same folder
-         * 3) on extract complete, show popup "Install now?"
+         * 3) on extract complete, delete zip and show popup "Install now?"
          */
         Toast.makeText(activity, "Download url: "+latestVersionDownloadUrl, Toast.LENGTH_LONG).show();
 
