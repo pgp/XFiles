@@ -1397,8 +1397,7 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
                     byte[] errno_ = new byte[4];
                     rs.i.readFully(errno_);
                     int errno = (int) Misc.castBytesToUnsignedNumber(errno_,4);
-                    Log.e("RHHttpsClient", "Error returned from roothelper server: " + errno);
-                    return null; // TODO propagate error better
+                    throw new IOException("Error returned from roothelper server: " + errno);
                 }
                 byte[] tlsSessionHash = new byte[32];
                 rs.i.readFully(tlsSessionHash);
@@ -1415,10 +1414,6 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
                 if(readBytes <= 0) break;
                 baos.write(x,0,readBytes);
             }
-        }
-        catch(IOException e) {
-            // this should catch only EOF
-            e.printStackTrace();
         }
         Log.d("RHHttpsClient","In-memory download completed");
         return baos.toByteArray();

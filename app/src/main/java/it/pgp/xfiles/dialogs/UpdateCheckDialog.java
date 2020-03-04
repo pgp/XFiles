@@ -128,27 +128,29 @@ public class UpdateCheckDialog extends Dialog {
                 releases = new ObjectMapper().readValue(x, List.class);
                 compareReleases(activity);
                 activity.runOnUiThread(()->{
-                    Toast.makeText(activity, "Prefetch completed, check logcat", Toast.LENGTH_SHORT).show();
                     downloadButton.setEnabled(true);
                 });
             }
             catch(JsonParseDuringCompareException e) {
                 e.printStackTrace();
-                Toast.makeText(activity, "Json parse error during release sorting, check logcat", Toast.LENGTH_SHORT).show();
+                MainActivity.showToastOnUI("Json parse error during release sorting",activity);
+                dismiss();
             }
             catch(JsonParseException | JsonMappingException e) {
                 e.printStackTrace();
-                Toast.makeText(activity, "Json parse error after downloading releases file, check logcat", Toast.LENGTH_SHORT).show();
+                MainActivity.showToastOnUI("Json parse error after downloading releases file", activity);
+                dismiss();
             }
             catch (IOException e) {
                 e.printStackTrace();
-                Toast.makeText(activity, "Prefetch error, check logcat", Toast.LENGTH_SHORT).show();
+                MainActivity.showToastOnUI("Prefetch error, check connection", activity);
+                dismiss();
             }
             catch (ParseException e) {
                 e.printStackTrace();
-                Toast.makeText(activity, "Date parse error, check logcat", Toast.LENGTH_SHORT).show();
+                MainActivity.showToastOnUI("Date parse error", activity);
+                dismiss();
             }
-
         }).start();
     }
 
@@ -166,10 +168,15 @@ public class UpdateCheckDialog extends Dialog {
         final BasePathContent outDir = new LocalPathContent("/sdcard");
         final BasePathContent srcArchive = outDir.concat(zipname);
         String expectedApkName = zipname.substring(0,zipname.length()-3)+"apk";
+        final File zipFile = new File(srcArchive.dir);
         final File apkFile = new File(outDir.concat(expectedApkName).dir);
 
         // add extract task
         BaseBackgroundTask.nextAutoTasks.add(()->{
+            if(!zipFile.exists()) {
+                BaseBackgroundTask.nextAutoTasks.clear();
+                return;
+            }
             Intent startIntent = new Intent(activity, ExtractService.class);
             startIntent.setAction(BaseBackgroundService.START_ACTION);
             startIntent.putExtra(
@@ -185,6 +192,10 @@ public class UpdateCheckDialog extends Dialog {
 
         // add install task (delete zipped apk file as well
         BaseBackgroundTask.nextAutoTasks.add(()->{
+            if(!apkFile.exists()) {
+                BaseBackgroundTask.nextAutoTasks.clear();
+                return;
+            }
             try {
                 new RootHelperClientUsingPathContent().deleteFilesOrDirectories(Collections.singletonList(srcArchive));
             }
@@ -216,7 +227,7 @@ public class UpdateCheckDialog extends Dialog {
         relDownloadIntent.putExtra("params",new DownloadParams(
                 latestVersionDownloadUrl,
                 "/sdcard",
-                ""));
+                zipname));
         activity.startService(relDownloadIntent);
         dismiss();
     }
