@@ -198,9 +198,10 @@ public class MainActivity extends EffectActivity {
         return browserPagerAdapter.mainBrowserViews[browserPager.getCurrentItem()];
     }
 
-    public static void showToastOnUI(String msg) {
-        if (mainActivity != null)
-            mainActivity.runOnUiThread(()-> Toast.makeText(mainActivity, msg, Toast.LENGTH_SHORT).show());
+    public static void showToastOnUI(String msg, Activity... activity) {
+        final Activity a = (activity.length > 0)?activity[0]:mainActivity;
+        if (a != null)
+            a.runOnUiThread(()-> Toast.makeText(a, msg, Toast.LENGTH_SHORT).show());
         else Log.e(MainActivity.class.getName(), "showToastOnUI failed, no active activity, msg is: "+msg);
     }
 

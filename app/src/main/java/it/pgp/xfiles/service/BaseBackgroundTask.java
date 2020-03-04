@@ -4,9 +4,12 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 import android.view.WindowManager;
 
 import java.io.Serializable;
+import java.util.ArrayDeque;
+import java.util.Deque;
 
 import it.pgp.xfiles.enums.ForegroundServiceType;
 import it.pgp.xfiles.enums.ServiceStatus;
@@ -25,6 +28,8 @@ public abstract class BaseBackgroundTask extends AsyncTask<Object,Integer,Object
 	public ServiceStatus status;
 
     public Serializable params; // to be down-casted in subclasses
+
+    public static final Deque<Runnable> nextAutoTasks = new ArrayDeque<>();
 
     public BaseBackgroundTask(Serializable params) {
         this.params = params;
@@ -105,6 +110,11 @@ public abstract class BaseBackgroundTask extends AsyncTask<Object,Integer,Object
 
         // unlock ribbon overlay resource
         ProgressIndicator.release();
+
+        if(!nextAutoTasks.isEmpty()) {
+            Log.d(getClass().getName(),"Starting next auto task...");
+            new Thread(nextAutoTasks.pop()).start();
+        }
     }
 
     @Override

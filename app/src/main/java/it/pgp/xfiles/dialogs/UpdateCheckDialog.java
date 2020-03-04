@@ -1,11 +1,10 @@
 package it.pgp.xfiles.dialogs;
 
-import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
@@ -19,6 +18,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 
+import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.Collections;
@@ -27,11 +27,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import it.pgp.xfiles.MainActivity;
 import it.pgp.xfiles.R;
 import it.pgp.xfiles.roothelperclient.RootHelperClientUsingPathContent;
 import it.pgp.xfiles.service.BaseBackgroundService;
+import it.pgp.xfiles.service.BaseBackgroundTask;
+import it.pgp.xfiles.service.ExtractService;
 import it.pgp.xfiles.service.HTTPDownloadService;
 import it.pgp.xfiles.service.params.DownloadParams;
+import it.pgp.xfiles.service.params.ExtractParams;
+import it.pgp.xfiles.service.visualization.ViewType;
+import it.pgp.xfiles.utils.pathcontent.BasePathContent;
+import it.pgp.xfiles.utils.pathcontent.LocalPathContent;
 
 public class UpdateCheckDialog extends Dialog {
 
@@ -44,7 +51,7 @@ public class UpdateCheckDialog extends Dialog {
         }
     }
 
-    final Activity activity;
+    final MainActivity activity;
 
     final ISO8601DateFormat df = new ISO8601DateFormat();
 
@@ -58,7 +65,7 @@ public class UpdateCheckDialog extends Dialog {
 
     List<Map> releases;
 
-    private void compareReleases(final Activity activity) throws ParseException {
+    private void compareReleases(final MainActivity activity) throws ParseException {
         if(releases.isEmpty())
             throw new JsonParseDuringCompareException("Empty releases list");
 
@@ -86,13 +93,15 @@ public class UpdateCheckDialog extends Dialog {
         latestVersionCreatedAt = df.parse((String) releases.get(0).get("created_at"));
         latestVersionDownloadUrl = (String)((Map)((List)releases.get(0).get("assets")).get(0)).get("browser_download_url");
         activity.runOnUiThread(()->{
-            updateMessage.setText((currentVersionCreatedAt.compareTo(latestVersionCreatedAt)>=0)?"Already at the latest version":"Update avilable");
+            boolean isUpdated = currentVersionCreatedAt.compareTo(latestVersionCreatedAt)>=0;
+            updateMessage.setText(isUpdated?"Already at the latest version":"Update avilable");
             currentVersion.setText(currentVersionTagname);
             latestVersion.setText(latestVersionTagName);
+            if(isUpdated) downloadButton.setText("Download anyway");
         });
     }
 
-    public UpdateCheckDialog(@NonNull final Activity activity) {
+    public UpdateCheckDialog(@NonNull final MainActivity activity) {
         super(activity);
         this.activity = activity;
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -107,7 +116,7 @@ public class UpdateCheckDialog extends Dialog {
         currentVersion = findViewById(R.id.updateCheckCurrentVersion);
         latestVersion = findViewById(R.id.updateCheckLatestVersion);
         downloadButton = findViewById(R.id.updateCheckOkButton);
-        downloadButton.setOnClickListener(this::ok);
+        downloadButton.setOnClickListener(this::startDownloadOfLatestRelease);
         cancelButton = findViewById(R.id.updateCheckCancelButton);
         cancelButton.setOnClickListener(v->dismiss());
         updateMessage = findViewById(R.id.updateCheckMessage);
@@ -143,25 +152,72 @@ public class UpdateCheckDialog extends Dialog {
         }).start();
     }
 
-    private void startDownloadOfLatestRelease() {
-        Intent relDownloadIntent = new Intent(activity, HTTPDownloadService.class);
-        relDownloadIntent.setAction(BaseBackgroundService.START_ACTION);
-        relDownloadIntent.putExtra("params",new DownloadParams(
-                latestVersionDownloadUrl,
-                Environment.getExternalStorageDirectory().getAbsolutePath(),
-                ""));
-        activity.startService(relDownloadIntent);
-        dismiss();
-    }
-
-    public void ok(View unused) {
+    private void startDownloadOfLatestRelease(View unused) {
         /**
          * 1) download latest release zip from GH assets, into /sdcard
          * 2) on complete, extract zip into same folder
          * 3) on extract complete, show popup "Install now?"
          */
         Toast.makeText(activity, "Download url: "+latestVersionDownloadUrl, Toast.LENGTH_LONG).show();
-        startDownloadOfLatestRelease();
-        // TODO 2) and 3)
+
+        // prepare extract task to be executed after download task has ended
+        String[] s = latestVersionDownloadUrl.split("/");
+        final String zipname = s[s.length-1];
+        final BasePathContent outDir = new LocalPathContent("/sdcard");
+        final BasePathContent srcArchive = outDir.concat(zipname);
+        String expectedApkName = zipname.substring(0,zipname.length()-3)+"apk";
+        final File apkFile = new File(outDir.concat(expectedApkName).dir);
+
+        // add extract task
+        BaseBackgroundTask.nextAutoTasks.add(()->{
+            Intent startIntent = new Intent(activity, ExtractService.class);
+            startIntent.setAction(BaseBackgroundService.START_ACTION);
+            startIntent.putExtra(
+                    "params",
+                    new ExtractParams(
+                            srcArchive,
+                            outDir,
+                            null,
+                            null
+                    ));
+            activity.startService(startIntent);
+        });
+
+        // add install task (delete zipped apk file as well
+        BaseBackgroundTask.nextAutoTasks.add(()->{
+            try {
+                new RootHelperClientUsingPathContent().deleteFilesOrDirectories(Collections.singletonList(srcArchive));
+            }
+            catch (IOException e) {
+                MainActivity.showToastOnUI("Unable to delete zipped apk file", activity);
+            }
+
+            // show dialog asking if installation should be done now
+            activity.runOnUiThread(()->{
+                AlertDialog.Builder bld = new AlertDialog.Builder(activity);
+                bld.setTitle("APK file has been downloaded, install now?");
+                bld.setNegativeButton("No", BaseBackgroundService.emptyListener);
+                bld.setPositiveButton("Yes", (dialog, which) -> {
+                    // kill RH before updating; this is useful in older versions of Android with root,
+                    // since the RH process (being root) cannot be terminated till restart
+                    // (even if the executable on the filesystem is actually updated)
+                    MainActivity.killRHWrapper();
+                    activity.openWithDefaultApp(apkFile);
+                });
+                AlertDialog alertDialog = bld.create();
+                alertDialog.getWindow().setType(ViewType.OVERLAY_WINDOW_TYPE);
+                alertDialog.show();
+            });
+        });
+
+        // run download task, subsequent tasks will be run automatically after download end
+        Intent relDownloadIntent = new Intent(activity, HTTPDownloadService.class);
+        relDownloadIntent.setAction(BaseBackgroundService.START_ACTION);
+        relDownloadIntent.putExtra("params",new DownloadParams(
+                latestVersionDownloadUrl,
+                "/sdcard",
+                ""));
+        activity.startService(relDownloadIntent);
+        dismiss();
     }
 }
