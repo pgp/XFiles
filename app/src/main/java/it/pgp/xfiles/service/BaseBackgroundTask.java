@@ -11,6 +11,7 @@ import java.io.Serializable;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
+import it.pgp.xfiles.enums.FileOpsErrorCodes;
 import it.pgp.xfiles.enums.ForegroundServiceType;
 import it.pgp.xfiles.enums.ServiceStatus;
 import it.pgp.xfiles.service.visualization.ProgressIndicator;
@@ -26,6 +27,8 @@ public abstract class BaseBackgroundTask extends AsyncTask<Object,Integer,Object
 
     protected BaseBackgroundService service;
 	public ServiceStatus status;
+
+    public FileOpsErrorCodes result;
 
     public Serializable params; // to be down-casted in subclasses
 

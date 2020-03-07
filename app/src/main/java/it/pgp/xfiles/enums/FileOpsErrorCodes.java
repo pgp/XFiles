@@ -13,7 +13,6 @@ public enum FileOpsErrorCodes {
     NOT_IMPLEMENTED("Not implemented"),
     ILLEGAL_ARGUMENT("Illegal argument"),
 
-    TRANSFER_OK(""), // copy or move OK
     TRANSFER_ERROR(""), // generic copy error (read/write error)
     TRANSFER_CANCELLED(""), // transfer explicitly cancelled by user
     DEST_FILE_ALREADY_EXISTS("Destination file already exists"), // to trigger file conflict dialog

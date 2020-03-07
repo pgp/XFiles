@@ -123,7 +123,7 @@ public class XFilesUtilsUsingPathContent implements FileOperationHelperUsingPath
         try (FileChannel source = new FileInputStream(sourceFile).getChannel();
              FileChannel destination = new FileOutputStream(destFile).getChannel()) {
             destination.transferFrom(source, 0, source.size());
-            return FileOpsErrorCodes.TRANSFER_OK;
+            return FileOpsErrorCodes.OK;
         }
         catch (IOException i) {
             return FileOpsErrorCodes.TRANSFER_ERROR; // copy error

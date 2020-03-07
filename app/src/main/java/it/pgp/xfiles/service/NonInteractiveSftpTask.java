@@ -33,7 +33,6 @@ public class NonInteractiveSftpTask extends BaseBackgroundTask {
     public ControlCodes action;
 
     private BasePathContent currentDir; // for refreshing dir listview (if not changed meanwhile) on operation end
-    FileOpsErrorCodes result;
     Exception lastException;
 
     public NonInteractiveSftpTask(Serializable params_) {
@@ -93,7 +92,7 @@ public class NonInteractiveSftpTask extends BaseBackgroundTask {
     protected void onPostExecute(Object o) {
         super.onPostExecute(o);
 
-        if (result == null || result == FileOpsErrorCodes.TRANSFER_OK) {
+        if (result == null || result == FileOpsErrorCodes.OK) {
             // refresh dir only if it's the same of when the task started
             Toast.makeText(service,"Remote transfer completed",Toast.LENGTH_LONG).show();
             MainActivity activity = MainActivity.mainActivity;

@@ -1331,7 +1331,7 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
         }
     }
 
-    // Using RH's internal HTTPS client, fileLength
+    // Using RH's internal HTTPS client
     public void downloadHttpsUrl(String url, int port, String destPath, String[] targetFilename) throws IOException {
         try(StreamsPair rs = getStreams()) {
             try (FlushingBufferedOutputStream nbf = new FlushingBufferedOutputStream(rs.o)) { // send a single packet instead of multiple ones

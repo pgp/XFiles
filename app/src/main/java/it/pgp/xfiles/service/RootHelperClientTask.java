@@ -5,7 +5,6 @@ import android.content.ContentResolver;
 import java.io.Serializable;
 
 import it.pgp.xfiles.MainActivity;
-import it.pgp.xfiles.enums.FileOpsErrorCodes;
 import it.pgp.xfiles.roothelperclient.RootHelperClientUsingPathContent;
 
 /**
@@ -17,8 +16,6 @@ public abstract class RootHelperClientTask extends BaseBackgroundTask {
 
     public RootHelperClientUsingPathContent rh;
     public ContentResolver resolver; // for XRE direct share and compress from 3rd party providers
-
-    public FileOpsErrorCodes result;
 
     // launch a new RootHelper process on the given unix socket name,
     // then create a new RootHelperClient instance connected to that process

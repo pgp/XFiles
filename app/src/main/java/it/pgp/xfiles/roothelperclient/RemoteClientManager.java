@@ -238,7 +238,7 @@ public class RemoteClientManager {
                 return FileOpsErrorCodes.TRANSFER_ERROR;
             }
 
-            return FileOpsErrorCodes.TRANSFER_OK;
+            return FileOpsErrorCodes.OK;
         }
         else {
             ArrayList<String> v_fx = new ArrayList<>();
@@ -304,7 +304,7 @@ public class RemoteClientManager {
                         }
                     }
                 }
-                return FileOpsErrorCodes.TRANSFER_OK;
+                return FileOpsErrorCodes.OK;
             }
             catch (IOException e) {
                 client.close();

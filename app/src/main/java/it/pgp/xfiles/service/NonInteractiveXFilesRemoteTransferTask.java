@@ -111,7 +111,7 @@ public class NonInteractiveXFilesRemoteTransferTask extends RootHelperClientTask
         if(activity == null) {
             // TODO launch MainActivity
             Toast.makeText(service,
-                    (result == null || result == FileOpsErrorCodes.TRANSFER_OK)?
+                    (result == null || result == FileOpsErrorCodes.OK)?
                             "Remote transfer completed in standalone mode":
                             params.list.copyOrMove.name().toLowerCase()+" error in standalone mode: "+result.getValue()
                     , Toast.LENGTH_SHORT).show();
@@ -119,7 +119,7 @@ public class NonInteractiveXFilesRemoteTransferTask extends RootHelperClientTask
         }
 
 
-        if (result == null || result == FileOpsErrorCodes.TRANSFER_OK) {
+        if (result == null || result == FileOpsErrorCodes.OK) {
             // refresh dir only if it's the same of when the task started
             Toast.makeText(service,"Remote transfer completed",Toast.LENGTH_LONG).show();
             if (activity == null) return; // activity closed while service active, nothing to refresh
