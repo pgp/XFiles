@@ -8,8 +8,8 @@ import android.util.Log;
 import android.view.WindowManager;
 
 import java.io.Serializable;
-import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.concurrent.ConcurrentLinkedDeque;
 
 import it.pgp.xfiles.enums.FileOpsErrorCodes;
 import it.pgp.xfiles.enums.ForegroundServiceType;
@@ -32,7 +32,7 @@ public abstract class BaseBackgroundTask extends AsyncTask<Object,Integer,Object
 
     public Serializable params; // to be down-casted in subclasses
 
-    public static final Deque<Runnable> nextAutoTasks = new ArrayDeque<>();
+    public static final Deque<Runnable> nextAutoTasks = new ConcurrentLinkedDeque<>();
 
     public BaseBackgroundTask(Serializable params) {
         this.params = params;
@@ -115,8 +115,14 @@ public abstract class BaseBackgroundTask extends AsyncTask<Object,Integer,Object
         ProgressIndicator.release();
 
         if(!nextAutoTasks.isEmpty()) {
-            Log.d(getClass().getName(),"Starting next auto task...");
-            new Thread(nextAutoTasks.pop()).start();
+            if(result == null || result == FileOpsErrorCodes.OK) {
+                Log.d(getClass().getName(),"Starting next auto task...");
+                new Thread(nextAutoTasks.pop()).start();
+            }
+            else {
+                Log.d(getClass().getName(),"Current task failed, clearing next auto tasks...");
+                nextAutoTasks.clear();
+            }
         }
     }
 
