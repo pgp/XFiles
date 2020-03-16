@@ -56,7 +56,7 @@ public class MovablePopupWindowWithAutoClose extends PopupWindow {
     }
 
 
-    private class SingleTapConfirm extends GestureDetector.SimpleOnGestureListener {
+    private static class SingleTapConfirm extends GestureDetector.SimpleOnGestureListener {
         @Override
         public boolean onSingleTapUp(MotionEvent event) {
             return true;

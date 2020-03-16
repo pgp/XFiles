@@ -31,11 +31,8 @@ import it.pgp.xfiles.MainActivity;
 import it.pgp.xfiles.utils.dircontent.GenericDirWithContent;
 import it.pgp.xfiles.utils.pathcontent.LocalPathContent;
 
-/** Allow user to select destination directory and to enter filename.
- *
- * */
-public class FileSaveFragment extends DialogFragment 
-		implements OnItemClickListener {
+/** Allow user to select destination directory and to enter filename */
+public class FileSaveFragment extends DialogFragment implements OnItemClickListener {
 
 	/*
 	 * Use the unicode "back" triangle to indicate there is a parent 

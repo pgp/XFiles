@@ -9,6 +9,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -195,6 +196,35 @@ public class Misc {
             }
         }
         return outs;
+    }
+
+    // CSV escape (for checksum export)
+    public static final String[] csvToBeEscaped = {"\"",",","\n"};
+
+    public static final byte[] crlf = new byte[]{'\r','\n'};
+
+    /**
+     * - if filename contains any between { \n " , }, use enclosing quotes
+     * - if filename contains " escape it as ""
+     */
+    public static String escapeForCSV(String filename) {
+        boolean enclosingQuotes = false;
+        for(String x : csvToBeEscaped)
+            if(filename.contains(x)) {
+                enclosingQuotes = true;
+                break;
+            }
+
+        return enclosingQuotes?"\""+filename.replace("\"","\"\"")+"\"":filename;
+    }
+
+    public static void csvWriteRow(OutputStream o, List<String> row) throws IOException {
+        for(int i=0;i<row.size()-1;i++)
+            o.write((escapeForCSV(row.get(i))+",").getBytes(StandardCharsets.UTF_8));
+
+        // fine to have IndexOutOfBounds with empty list
+        o.write(escapeForCSV(row.get(row.size()-1)).getBytes(StandardCharsets.UTF_8));
+        o.write(crlf);
     }
 
 }

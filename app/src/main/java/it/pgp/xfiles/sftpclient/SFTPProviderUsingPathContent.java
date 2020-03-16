@@ -177,24 +177,6 @@ public class SFTPProviderUsingPathContent implements FileOperationHelperUsingPat
 
     /************************************************************/
 
-    // replaced by RemotePathContent
-//    private class GenericRemotePath {
-//        AuthData authData; // parsed from sftp://user@domain:port
-//        String remotePath; // format: /remote/path
-//
-//        GenericRemotePath(String path) throws RuntimeException {
-//            if (path.startsWith("sftp://")) {
-//                String s = path.substring(7); // user@domain:port/remote/path
-//                String authString = s.split("/")[0]; // user@domain:port
-//                authData = new AuthData(authString);
-//                int idx = s.indexOf('/');
-//                // remote path beginning immediately after port number, and beginning with '/'
-//                remotePath = s.substring(idx);
-//            }
-//            else throw new RuntimeException("");
-//        }
-//    }
-
     public SFTPProviderUsingPathContent(final MainActivity mainActivity) {
         this.mainActivity = mainActivity;
         sshIdsDir = new File(mainActivity.getApplicationContext().getFilesDir(),sshIdsDirName);

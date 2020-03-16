@@ -23,7 +23,7 @@ public class VMap {
         h = new HashMap<>();
     }
 
-    public class ValueAsKeyException extends RuntimeException {
+    public static class ValueAsKeyException extends RuntimeException {
         public ValueAsKeyException() {
             super("Tried to access value as key!");
         }

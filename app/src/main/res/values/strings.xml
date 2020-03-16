@@ -20,6 +20,7 @@
     <string name="smb_default_port">445</string>
     <string name="smb_default_domain">WORKGROUP</string>
     <string name="dest_archive_filename_header">archive</string>
+    <string name="checksums_export_filename_header">checksums</string>
     <string name="serve_only_current_directory">Serve only current directory:</string>
     <string name="send_xre_announce">Send XRE server announce</string>
     <string name="appwidget_text">EXAMPLE</string>

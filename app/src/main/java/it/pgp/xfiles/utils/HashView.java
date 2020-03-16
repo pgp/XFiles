@@ -129,7 +129,7 @@ public class HashView extends View {
                 canvas.drawRect(anAM.rect, anAM.rPaint);
     }
 
-    private class PaintRect {
+    private static class PaintRect {
         Rect rect;
         Paint rPaint;
 

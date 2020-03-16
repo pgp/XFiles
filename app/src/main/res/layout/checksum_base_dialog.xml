@@ -109,10 +109,29 @@
         android:layout_height="wrap_content">
         <Button
             android:id="@+id/computeChecksumsButton"
-            android:layout_weight="8"
+            android:onClick="ok"
+            android:layout_weight="5"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Compute checksums" />
+            android:text="Hash" />
+
+        <Button
+            android:id="@+id/exportChecksumsCSVButton"
+            android:onClick="openExportOutputSelector"
+            android:textSize="14dp"
+            android:layout_weight="2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="->CSV" />
+
+        <Button
+            android:id="@+id/exportChecksumsJSONButton"
+            android:onClick="openExportOutputSelector"
+            android:textSize="14dp"
+            android:layout_weight="2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="->JSON" />
 
         <ImageButton
             android:background="@android:color/transparent"
