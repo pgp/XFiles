@@ -1,7 +1,6 @@
 package it.pgp.xfiles;
 
 import android.os.Bundle;
-import android.os.Environment;
 import android.view.ContextMenu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -24,6 +23,7 @@ import it.pgp.xfiles.enums.ProviderType;
 import it.pgp.xfiles.roothelperclient.FindManager;
 import it.pgp.xfiles.roothelperclient.reqs.find_rq;
 import it.pgp.xfiles.utils.FileSelectFragment;
+import it.pgp.xfiles.utils.Misc;
 import it.pgp.xfiles.utils.pathcontent.BasePathContent;
 import it.pgp.xfiles.utils.pathcontent.LocalPathContent;
 
@@ -166,7 +166,7 @@ public class FindActivity extends EffectActivity implements FileSelectFragment.C
         // set current base path textview
         BasePathContent bpc = MainActivity.mainActivity.getCurrentDirCommander().getCurrentDirectoryPathname();
         if (bpc.providerType== ProviderType.LOCAL) basePath.setText(bpc.dir);
-        else basePath.setText(Environment.getExternalStorageDirectory().getPath());
+        else basePath.setText(Misc.internalStorageDir.getPath());
     }
 
     public void onSlideViewButtonClick(View unused) {

@@ -9,7 +9,6 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.view.Gravity;
 import android.view.View;
@@ -249,7 +248,7 @@ public class FileSelectFragment extends DialogFragment
 		 * 
 		 * */
 		if (currentDirectory == null)
-			currentDirectory = Environment.getExternalStorageDirectory();
+			currentDirectory = Misc.internalStorageDir;
 		fileList = getDirectoryContent(currentDirectory);
 		DirectoryDisplay displayFormat = new DirectoryDisplay(getActivity(), fileList);
 

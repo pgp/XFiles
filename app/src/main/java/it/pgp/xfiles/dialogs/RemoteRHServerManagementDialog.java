@@ -26,6 +26,7 @@ import it.pgp.xfiles.R;
 import it.pgp.xfiles.fileservers.FileServer;
 import it.pgp.xfiles.roothelperclient.RHSSServerStatus;
 import it.pgp.xfiles.roothelperclient.RemoteServerManager;
+import it.pgp.xfiles.utils.Misc;
 import it.pgp.xfiles.utils.pathcontent.BasePathContent;
 import it.pgp.xfiles.utils.pathcontent.LocalPathContent;
 import it.pgp.xfiles.utils.wifi.WifiButtonsLayout;
@@ -45,6 +46,8 @@ public class RemoteRHServerManagementDialog extends Dialog {
     private ImageButton xreSetHomePath;
     private ImageButton xreSetAnnouncedPath;
     private ImageButton xreSetExposedPath;
+
+    private EditText ftpHttpRootPath;
 
     private CheckBox rhssSendXreAnnounceCheckbox;
 
@@ -232,6 +235,9 @@ public class RemoteRHServerManagementDialog extends Dialog {
             xreSetAnnouncedPath.setEnabled(false);
             xreSetExposedPath.setEnabled(false);
         }
+
+        ftpHttpRootPath = findViewById(R.id.ftpHttpRootPath);
+        ftpHttpRootPath.setText(Misc.internalStorageDir.getAbsolutePath());
 
         rhssSendXreAnnounceCheckbox = findViewById(R.id.rhssAnnounceOptionCheckBox);
 

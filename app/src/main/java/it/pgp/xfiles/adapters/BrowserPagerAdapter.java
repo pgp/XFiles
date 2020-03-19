@@ -2,7 +2,6 @@ package it.pgp.xfiles.adapters;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -34,6 +33,7 @@ import it.pgp.xfiles.enums.BrowserViewMode;
 import it.pgp.xfiles.enums.ComparatorField;
 import it.pgp.xfiles.exceptions.DirCommanderException;
 import it.pgp.xfiles.utils.DirCommanderCUsingBrowserItemsAndPathContent;
+import it.pgp.xfiles.utils.Misc;
 import it.pgp.xfiles.utils.Pair;
 import it.pgp.xfiles.utils.dircontent.GenericDirWithContent;
 import it.pgp.xfiles.utils.pathcontent.BasePathContent;
@@ -74,7 +74,7 @@ public class BrowserPagerAdapter extends PagerAdapter {
     public void createStandardCommanders() {
         BasePathContent path0, path1;
         path0 = dirCommanders[0]==null?
-                new LocalPathContent(Environment.getExternalStorageDirectory().getAbsolutePath()):
+                new LocalPathContent(Misc.internalStorageDir.getAbsolutePath()):
                 dirCommanders[0].getCurrentDirectoryPathname();
         path1 = dirCommanders[1]==null?
                 new LocalPathContent("/"):

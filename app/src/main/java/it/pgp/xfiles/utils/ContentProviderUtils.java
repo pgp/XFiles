@@ -7,7 +7,6 @@ import android.database.Cursor;
 import android.net.LocalSocket;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
@@ -67,7 +66,7 @@ public class ContentProviderUtils {
                 final String type = split[0];
 
                 if ("primary".equalsIgnoreCase(type)) {
-                    return Environment.getExternalStorageDirectory() + "/" + split[1];
+                    return Misc.internalStorageDir + "/" + split[1];
                 }
 
                 // TODO handle non-primary volumes

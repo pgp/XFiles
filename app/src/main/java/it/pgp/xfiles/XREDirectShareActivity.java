@@ -173,7 +173,7 @@ public class XREDirectShareActivity extends EffectActivity {
 
         ArrayList<Map.Entry<String,String>> xreitems_ = new ArrayList<>();
         xreitems_.add(new AbstractMap.SimpleEntry<>("","")); // empty item for no selection
-        xreitems_.add(new AbstractMap.SimpleEntry<>("192.168.43.1","/sdcard")); // default remote server and path when server provides network access with its WiFi hotspot
+        xreitems_.add(new AbstractMap.SimpleEntry<>("192.168.43.1","")); // default remote server and default offered home path when server provides network access with its WiFi hotspot
         xreitems_.addAll(dbh.getAllRowsOfXreFavoritesTable().values());
         xreItems = xreitems_.toArray(new Map.Entry[0]);
 

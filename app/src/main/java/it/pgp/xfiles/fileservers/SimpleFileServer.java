@@ -2,12 +2,14 @@ package it.pgp.xfiles.fileservers;
 
 import android.widget.Button;
 
+import it.pgp.xfiles.utils.Misc;
+
 public abstract class SimpleFileServer {
 
     public Button serverButton;
     public int serverButtonRes;
 
-    public String rootPath = "/sdcard";
+    public String rootPath = Misc.internalStorageDir.getAbsolutePath();
     public int port;
 
     public abstract void startServer();

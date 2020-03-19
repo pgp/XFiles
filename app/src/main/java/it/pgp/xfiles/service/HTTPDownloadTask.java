@@ -14,6 +14,7 @@ import it.pgp.xfiles.enums.FileOpsErrorCodes;
 import it.pgp.xfiles.enums.ProviderType;
 import it.pgp.xfiles.service.params.DownloadParams;
 import it.pgp.xfiles.service.visualization.MovingRibbon;
+import it.pgp.xfiles.utils.Misc;
 import it.pgp.xfiles.utils.pathcontent.BasePathContent;
 
 /**
@@ -102,10 +103,10 @@ public class HTTPDownloadTask extends RootHelperClientTask {
                         BasePathContent bpc = MainActivity.mainActivity.getCurrentDirCommander().getCurrentDirectoryPathname();
                         if (bpc.providerType == ProviderType.LOCAL)
                             targetFileName = bpc.concat(targetFileName).toString();
-                        else targetFileName = "/sdcard/"+targetFileName;
+                        else targetFileName = Misc.internalStorageDir.getAbsolutePath()+"/"+targetFileName;
                     }
                     else { // app not started, service/task started by intent
-                        targetFileName = "/sdcard/"+targetFileName;
+                        targetFileName = Misc.internalStorageDir.getAbsolutePath()+"/"+targetFileName;
                     }
                 }
                 // download the file
@@ -127,7 +128,7 @@ public class HTTPDownloadTask extends RootHelperClientTask {
                     BasePathContent bpc = MainActivity.mainActivity.getCurrentDirCommander().getCurrentDirectoryPathname();
                     if (bpc.providerType == ProviderType.LOCAL)
                         params.destPath = bpc.dir;
-                    else params.destPath = "/sdcard";
+                    else params.destPath = Misc.internalStorageDir.getAbsolutePath();
                 }
             }
             targetFileNameOnly[0] = params.filename==null?"":params.filename;

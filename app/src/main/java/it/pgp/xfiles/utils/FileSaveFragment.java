@@ -8,7 +8,6 @@ import android.app.DialogFragment;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Environment;
 import android.text.InputType;
 import android.view.Gravity;
 import android.view.View;
@@ -224,7 +223,7 @@ public class FileSaveFragment extends DialogFragment implements OnItemClickListe
 		 * Set up initial sub-directory list.
 		 * 
 		 * */
-		currentDirectory = Environment.getExternalStorageDirectory();
+		currentDirectory = Misc.internalStorageDir;
 		directoryList = getSubDirectories(currentDirectory);
 		DirectoryDisplay displayFormat = new DirectoryDisplay(getActivity(), directoryList);
 

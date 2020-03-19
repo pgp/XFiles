@@ -2,7 +2,6 @@ package it.pgp.xfiles.dialogs.compress;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.view.View;
 import android.widget.EditText;
@@ -19,6 +18,7 @@ import it.pgp.xfiles.service.BaseBackgroundService;
 import it.pgp.xfiles.service.ExtractService;
 import it.pgp.xfiles.service.params.ExtractParams;
 import it.pgp.xfiles.utils.FileSelectFragment;
+import it.pgp.xfiles.utils.Misc;
 import it.pgp.xfiles.utils.pathcontent.ArchivePathContent;
 import it.pgp.xfiles.utils.pathcontent.BasePathContent;
 import it.pgp.xfiles.utils.pathcontent.LocalPathContent;
@@ -54,7 +54,7 @@ public class ExtractActivity extends EffectActivity implements FileSelectFragmen
     }
 
     private BasePathContent getCandidateExtractDirectory() {
-        BasePathContent defaultPath = new LocalPathContent(Environment.getExternalStorageDirectory().getAbsolutePath());
+        BasePathContent defaultPath = new LocalPathContent(Misc.internalStorageDir.getAbsolutePath());
 
         if (srcArchiveWithSubDir.errorCode != null) {
             Toast.makeText(this,"File ops helper error: "+srcArchiveWithSubDir.errorCode.getValue(),Toast.LENGTH_SHORT).show();

@@ -371,7 +371,7 @@ public class GenericChangeDirectoryDialog extends Dialog {
                 // autocomplete stuff
                 ArrayList<String> lItems = new ArrayList<>();
                 lItems.add(""); // empty item for no selection
-                lItems.add("/sdcard"); // empty item for no selection
+                lItems.add(Misc.internalStorageDir.getAbsolutePath()); // empty item for no selection
                 lItems.addAll(dbh.getAllRowsOfLocalFavoritesTable().values());
                 ArrayAdapter<String> lAdapter = new ArrayAdapter<>(
                         mainActivity,
@@ -460,7 +460,7 @@ public class GenericChangeDirectoryDialog extends Dialog {
             case XFILES_REMOTE:
                 ArrayList<Map.Entry<String,String>> xreitems_ = new ArrayList<>();
                 xreitems_.add(new AbstractMap.SimpleEntry<>("","")); // empty item for no selection
-                xreitems_.add(new AbstractMap.SimpleEntry<>("192.168.43.1","/sdcard")); // default remote server and path when server provides network access with its WiFi hotspot
+                xreitems_.add(new AbstractMap.SimpleEntry<>("192.168.43.1","")); // default remote server and offered home path when server provides network access with its WiFi hotspot
                 xreitems_.addAll(dbh.getAllRowsOfXreFavoritesTable().values());
                 xreItems = new Map.Entry[xreitems_.size()];
                 xreitems_.toArray(xreItems);

@@ -38,6 +38,7 @@ import it.pgp.xfiles.service.HTTPDownloadService;
 import it.pgp.xfiles.service.params.DownloadParams;
 import it.pgp.xfiles.service.params.ExtractParams;
 import it.pgp.xfiles.service.visualization.ViewType;
+import it.pgp.xfiles.utils.Misc;
 import it.pgp.xfiles.utils.pathcontent.BasePathContent;
 import it.pgp.xfiles.utils.pathcontent.LocalPathContent;
 
@@ -180,7 +181,7 @@ public class UpdateCheckDialog extends Dialog {
 
     private void startDownloadOfLatestRelease(View unused) {
         /**
-         * 1) download latest release zip from GH assets, into /sdcard
+         * 1) download latest release zip from GH assets, into internal memory path
          * 2) on complete, extract zip into same folder
          * 3) on extract complete, delete zip and show popup "Install now?"
          */
@@ -189,7 +190,7 @@ public class UpdateCheckDialog extends Dialog {
         // prepare extract task to be executed after download task has ended
         String[] s = latestVersionDownloadUrl.split("/");
         final String zipname = s[s.length-1];
-        final BasePathContent outDir = new LocalPathContent("/sdcard");
+        final BasePathContent outDir = new LocalPathContent(Misc.internalStorageDir.getAbsolutePath());
         final BasePathContent srcArchive = outDir.concat(zipname);
         String expectedApkName = zipname.substring(0,zipname.length()-3)+"apk";
         final File zipFile = new File(srcArchive.dir);
@@ -250,7 +251,7 @@ public class UpdateCheckDialog extends Dialog {
         relDownloadIntent.setAction(BaseBackgroundService.START_ACTION);
         relDownloadIntent.putExtra("params",new DownloadParams(
                 latestVersionDownloadUrl,
-                "/sdcard",
+                Misc.internalStorageDir.getAbsolutePath(),
                 zipname));
         activity.startService(relDownloadIntent);
         dismiss();

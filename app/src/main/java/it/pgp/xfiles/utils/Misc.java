@@ -1,10 +1,12 @@
 package it.pgp.xfiles.utils;
 
+import android.os.Environment;
 import android.util.Log;
 
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -23,6 +25,8 @@ import it.pgp.xfiles.roothelperclient.ResponseCodes;
 
 public class Misc {
     public static final char[] hexArray = "0123456789ABCDEF".toCharArray();
+    public static final File internalStorageDir = Environment.getExternalStorageDirectory();
+
     public static String toHexString(byte[] bytes) {
         char[] hexChars = new char[bytes.length * 2];
         for ( int j = 0; j < bytes.length; j++ ) {

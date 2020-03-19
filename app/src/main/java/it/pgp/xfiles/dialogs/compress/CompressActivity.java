@@ -3,7 +3,6 @@ package it.pgp.xfiles.dialogs.compress;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
@@ -33,6 +32,7 @@ import it.pgp.xfiles.service.params.CompressParams;
 import it.pgp.xfiles.service.visualization.ProgressIndicator;
 import it.pgp.xfiles.utils.FileSaveFragment;
 import it.pgp.xfiles.utils.IntentUtil;
+import it.pgp.xfiles.utils.Misc;
 import it.pgp.xfiles.utils.dircontent.GenericDirWithContent;
 import it.pgp.xfiles.utils.pathcontent.BasePathContent;
 import it.pgp.xfiles.utils.pathcontent.LocalPathContent;
@@ -128,7 +128,7 @@ public class CompressActivity extends EffectActivity implements FileSaveFragment
         }
 
         Log.e("COMPRESS", "entering limited content provider mode, only zip output format available");
-        dirPath = new LocalPathContent(Environment.getExternalStorageDirectory().getAbsolutePath());
+        dirPath = new LocalPathContent(Misc.internalStorageDir.getAbsolutePath());
         selectedItems = null;
         contentUris = CopyListUris.getFromUriList(imageUris);
 
