@@ -23,35 +23,35 @@ public class PermissionManagementActivity extends Activity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == PermReqCodes.STORAGE.ordinal()) {
             if (grantResults.length == 0) { // request cancelled
-                Toast.makeText(this, "Storage permissions denied", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.storage_perm_denied, Toast.LENGTH_SHORT).show();
                 return;
             }
 
             for (int grantResult : grantResults) {
                 if (grantResult != PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(this, "Storage permissions denied", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, R.string.storage_perm_denied, Toast.LENGTH_SHORT).show();
                     return;
                 }
             }
 
-            Toast.makeText(this, "Storage permissions granted", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.storage_perm_granted, Toast.LENGTH_SHORT).show();
 
             requestStorageReadPermissions(); // Oreo and above needs this!
         }
         else if (requestCode == PermReqCodes.STORAGE_READ.ordinal()) {
             if (grantResults.length == 0) { // request cancelled
-                Toast.makeText(this, "Storage READ permissions denied", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.storage_read_perm_denied, Toast.LENGTH_SHORT).show();
                 return;
             }
 
             for (int grantResult : grantResults) {
                 if (grantResult != PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(this, "Storage READ permissions denied", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, R.string.storage_read_perm_denied, Toast.LENGTH_SHORT).show();
                     return;
                 }
             }
 
-            Toast.makeText(this, "Storage READ permissions granted", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.storage_read_perm_granted, Toast.LENGTH_SHORT).show();
         }
     }
 

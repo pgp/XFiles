@@ -127,70 +127,40 @@ public class RootHandler {
         Context c = context.length > 0 ? context[0]:MainActivity.mainActivityContext;
 
         SocketNames socketName = SocketNames.theroothelper;
-        Process p;
         RootHelperClientUsingPathContent rh = null;
         long pid; // communicated by RH server itself once successfully started
-        try {
-            p = runRootHelper(c,true,socketName);
 
-            rh = new RootHelperClientUsingPathContent(socketName);
-            pid = rh.checkConnection();
-            while (pid < 0) {
-                try {
-                    p.exitValue();
-                    // process exited prematurely, failed to start roothelper process in maximum-privilege mode
-                    rh = null;
+        for(boolean asRoot : new Boolean[]{true,false}) {
+            try {
+                Process p = runRootHelper(c,asRoot,socketName);
+
+                rh = new RootHelperClientUsingPathContent(socketName);
+                pid = rh.checkConnection();
+                while (pid < 0) {
+                    try {
+                        p.exitValue();
+                        // process exited prematurely, failed to start roothelper process in the given mode (when asRoot is false, should never happen)
+                        rh = null;
+                        break;
+                    }
+                    catch (IllegalThreadStateException e) {
+                        Log.d(RootHandler.class.getName(),"Waiting for roothelper process to start...");
+                        LockSupport.parkNanos(250000000); // sleep 250 ms
+                    }
+                    pid = rh.checkConnection();
+                }
+
+                if (rh != null) {
+                    isRootAvailableAndGranted = asRoot;
+                    Log.d(RootHandler.class.getName(),"Started roothelper in "+(asRoot?"root":"normal")+" mode");
+
+                    if (pid <= 0) Log.e(RootHandler.class.getName(),"Failed to get roothelper pid: "+pid);
                     break;
                 }
-                catch (IllegalThreadStateException e) {
-                    Log.d(RootHandler.class.getName(),"Waiting for roothelper process to start...");
-                    LockSupport.parkNanos(100000000); // sleep 100 ms
-                }
-                pid = rh.checkConnection();
             }
-
-            if (rh != null) {
-                isRootAvailableAndGranted = true;
-                Log.i(RootHandler.class.getName(),"Started roothelper in root mode");
-                // here started RH in root mode and connection ok
-
-                if (pid <= 0) Log.e(RootHandler.class.getName(),"Failed to get roothelper pid: "+pid);
-                return rh;
+            catch (IOException e) {
+                if(!asRoot) e.printStackTrace();
             }
-        }
-        catch (IOException ignored) {}
-
-        // start in normal mode, if starting as root failed
-        Log.i(RootHandler.class.getName(),"Root privileges not available, starting roothelper in standard mode...");
-
-        try {
-            p = runRootHelper(c,false,socketName);
-
-            rh = new RootHelperClientUsingPathContent(socketName);
-            pid = rh.checkConnection();
-            while (pid < 0) {
-                try {
-                    p.exitValue();
-                    // process exited prematurely, failed to start roothelper process even in standard mode (should not happen)
-                    rh = null;
-                    break;
-                }
-                catch (IllegalThreadStateException e) {
-                    Log.d(RootHandler.class.getName(),"Waiting for roothelper process to start...");
-                    LockSupport.parkNanos(100000000); // sleep 100 ms
-                }
-                pid = rh.checkConnection();
-            }
-
-            if (rh != null) {
-                // here started RH in normal mode and connection ok
-
-                if (pid <= 0) Log.e(RootHandler.class.getName(),"Failed to get roothelper pid: "+pid);
-            }
-        }
-        catch (IOException e) {
-            // failed to start even in normal mode
-            e.printStackTrace();
         }
 
         return rh;

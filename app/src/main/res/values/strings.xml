@@ -32,6 +32,10 @@
     <string name="active_servers_on_close_explain">Some remote servers are currently active. You can close them from here if needed, and then press Back once more to exit. Any active transfers will be canceled if servers are closed</string>
     <string name="permission_extsd_explain">Optional permission, for devices having external memory card, requests write access (you have to manually pick the external SD card from the file browser that opens)</string>
     <string name="permission_install_unknown_apps_explain">Optional permission, from Oreo onwards, Android will block installation of apk files opened within XFiles, even if \"Install apps from unknown sources\" global setting is enabled. Granting this permission will allow apks installation from this app</string>
+    <string name="storage_perm_denied">Storage permissions denied</string>
+    <string name="storage_read_perm_denied">Storage READ permissions denied</string>
+    <string name="storage_perm_granted">Storage permissions granted</string>
+    <string name="storage_read_perm_granted">Storage READ permissions granted</string>
     <string name="app_about_desc">A general-purpose file explorer for Android</string>
     <string name="appWebsite">https://github.com/pgp/XFiles</string>
 </resources>
