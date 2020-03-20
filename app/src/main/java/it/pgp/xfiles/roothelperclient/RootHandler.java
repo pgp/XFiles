@@ -1,8 +1,10 @@
 package it.pgp.xfiles.roothelperclient;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Binder;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.io.DataOutputStream;
 import java.io.File;
@@ -12,6 +14,9 @@ import java.util.concurrent.locks.LockSupport;
 
 import it.pgp.xfiles.MainActivity;
 import it.pgp.xfiles.service.SocketNames;
+import it.pgp.xfiles.utils.Misc;
+import it.pgp.xfiles.utils.dircontent.GenericDirWithContent;
+import it.pgp.xfiles.utils.pathcontent.LocalPathContent;
 
 /**
  * Created by pgp on 28/09/16
@@ -151,8 +156,13 @@ public class RootHandler {
                 }
 
                 if (rh != null) {
-                    isRootAvailableAndGranted = asRoot;
                     Log.d(RootHandler.class.getName(),"Started roothelper in "+(asRoot?"root":"normal")+" mode");
+                    if(asRoot) {
+                        isRootAvailableAndGranted = asRoot;
+                        String rootModeStoragePath = getInternalStoragePathInRootMode(rh,c);
+                        if(rootModeStoragePath != null) Misc.internalStorageDir = new File(rootModeStoragePath);
+                        else Toast.makeText(c, "Unable to get a common internal storage path for both normal and root mode, RH integration may not work properly", Toast.LENGTH_LONG).show();
+                    }
 
                     if (pid <= 0) Log.e(RootHandler.class.getName(),"Failed to get roothelper pid: "+pid);
                     break;
@@ -164,5 +174,32 @@ public class RootHandler {
         }
 
         return rh;
+    }
+
+    public static String getInternalStoragePathInRootMode(RootHelperClientUsingPathContent rh, Context c) {
+        SharedPreferences sp = c.getSharedPreferences(c.getPackageName(), Context.MODE_PRIVATE);
+        String rootModeStoragePath = sp.getString("rootModeStoragePath",null);
+        if(rootModeStoragePath != null) return rootModeStoragePath; // a working path was already set
+
+        GenericDirWithContent dwc = rh.listDirectory(new LocalPathContent(Misc.internalStorageDir.getAbsolutePath()));
+        if(dwc.errorCode != null) {
+            // internal storage dir exposed by Environment.getExternalStorageDir is not mounted for root user (some Kitkat devices)
+            try {
+                rootModeStoragePath = System.getenv("EXTERNAL_STORAGE");
+                if(rootModeStoragePath == null) return null;
+                dwc = rh.listDirectory(new LocalPathContent(rootModeStoragePath));
+                if(dwc.errorCode != null) return null;
+                if(new File(rootModeStoragePath).listFiles()==null) return null; // the found path for root mode must be accessible in normal mode as well
+            }
+            catch(Exception e) {
+                return null;
+            }
+        }
+
+        SharedPreferences.Editor editor = sp.edit();
+        editor.putString("rootModeStoragePath",rootModeStoragePath);
+        editor.commit();
+
+        return rootModeStoragePath;
     }
 }

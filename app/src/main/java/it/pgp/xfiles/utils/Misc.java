@@ -25,7 +25,7 @@ import it.pgp.xfiles.roothelperclient.ResponseCodes;
 
 public class Misc {
     public static final char[] hexArray = "0123456789ABCDEF".toCharArray();
-    public static final File internalStorageDir = Environment.getExternalStorageDirectory();
+    public static File internalStorageDir = Environment.getExternalStorageDirectory();
 
     public static String toHexString(byte[] bytes) {
         char[] hexChars = new char[bytes.length * 2];
