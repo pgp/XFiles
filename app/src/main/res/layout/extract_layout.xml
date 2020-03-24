@@ -27,6 +27,41 @@
 
     </LinearLayout>
 
+
+    <TextView
+        android:id="@+id/intermediateDirectoryPolicyTextView"
+        android:text="Intermediate directory creation policy:"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <RadioGroup
+        android:id="@+id/intermediateDirectoryPolicyRadioGroup"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RadioButton
+            android:text="@string/alwaysCreateSubdirectory"
+            android:id="@+id/alwaysCreateSubdirectory"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <RadioButton
+            android:text="@string/neverCreateSubdirectory"
+            android:id="@+id/neverCreateSubdirectory"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:checked="true" />
+
+        <RadioButton
+            android:text="@string/smartCreateSubdirectory"
+            android:id="@+id/smartCreateSubdirectory"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+
+    </RadioGroup>
+
     <Button
         android:id="@+id/extractOkButton"
         android:layout_width="match_parent"

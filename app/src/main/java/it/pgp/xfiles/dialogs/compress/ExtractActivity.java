@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import java.util.Collections;
@@ -31,6 +32,7 @@ public class ExtractActivity extends EffectActivity implements FileSelectFragmen
 
     // TODO should be populated with nearest directory path (parent of archive, or current open directory)
     private LocalPathContent candidateExtractDirectory;
+    private boolean isWholeArchiveExtract;
 
     String filename; // on single selection
     String password;
@@ -38,6 +40,8 @@ public class ExtractActivity extends EffectActivity implements FileSelectFragmen
     private EditText destDirectoryEditText;
 
     private BasePathContent srcArchiveWithSubDir;
+
+    RadioGroup intermediateDirectoryPolicyRadioGroup; // only enabled when extracting a whole archive (not extracting single items from within the archive)
 
     private void getSrcArchiveWithSubDirOrFinish() {
         srcArchiveWithSubDir = MainActivity.mainActivity.getCurrentDirCommander().getCurrentDirectoryPathname();
@@ -50,7 +54,9 @@ public class ExtractActivity extends EffectActivity implements FileSelectFragmen
         if (srcArchiveWithSubDir.errorCode != null) {
             Toast.makeText(this,"File ops helper error: "+srcArchiveWithSubDir.errorCode.getValue(),Toast.LENGTH_SHORT).show();
             finish();
+            return;
         }
+        isWholeArchiveExtract = srcArchiveWithSubDir.providerType == ProviderType.LOCAL;
     }
 
     private BasePathContent getCandidateExtractDirectory() {
@@ -95,6 +101,26 @@ public class ExtractActivity extends EffectActivity implements FileSelectFragmen
         }
 
         LocalPathContent destDir = new LocalPathContent(destDirectoryEditText.getText().toString());
+
+        if(isWholeArchiveExtract) {
+            int idx = intermediateDirectoryPolicyRadioGroup.indexOfChild(
+                    intermediateDirectoryPolicyRadioGroup.findViewById(
+                            intermediateDirectoryPolicyRadioGroup.getCheckedRadioButtonId()));
+
+            if (idx == 2) { // always create subdirectory
+                Toast.makeText(this, "Warning: smart directory policy not implemented yet", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            else if (idx == 0) { // always create subdirectory
+                String archiveFilename = srcArchiveWithSubDir.getName();
+                // strip extension
+                int dotIdx = archiveFilename.lastIndexOf('.');
+                if(dotIdx <= 0) archiveFilename += ".extracted";
+                else archiveFilename = archiveFilename.substring(0,dotIdx);
+                destDir = (LocalPathContent) destDir.concat(archiveFilename);
+            }
+            // else if (idx == 1) {} // nothing to be done for no subdirectory creation
+        }
 
         Intent startIntent = new Intent(MainActivity.mainActivity,ExtractService.class);
         startIntent.setAction(BaseBackgroundService.START_ACTION);
@@ -149,5 +175,10 @@ public class ExtractActivity extends EffectActivity implements FileSelectFragmen
         setContentView(R.layout.extract_layout);
         destDirectoryEditText = findViewById(R.id.extractDirectoryEditText);
         destDirectoryEditText.setText(getCandidateExtractDirectory().dir);
+        intermediateDirectoryPolicyRadioGroup = findViewById(R.id.intermediateDirectoryPolicyRadioGroup);
+        if(!isWholeArchiveExtract) {
+            intermediateDirectoryPolicyRadioGroup.setVisibility(View.GONE);
+            findViewById(R.id.intermediateDirectoryPolicyTextView).setVisibility(View.GONE);
+        }
     }
 }

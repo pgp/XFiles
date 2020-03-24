@@ -1312,7 +1312,7 @@ public class MainActivity extends EffectActivity {
                     return true;
                 case R.id.itemExtract:
                     b = getCurrentBrowserAdapter().getItem(position1);
-                    if(b.isDirectory) {
+                    if(b.isDirectory && path.providerType != ProviderType.LOCAL_WITHIN_ARCHIVE) {
                         Toast.makeText(MainActivity.this, "Cannot extract files from a directory, please select a compressed archive", Toast.LENGTH_LONG).show();
                         return true;
                     }

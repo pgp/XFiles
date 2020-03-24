@@ -38,4 +38,7 @@
     <string name="storage_read_perm_granted">Storage READ permissions granted</string>
     <string name="app_about_desc">A general-purpose file explorer for Android</string>
     <string name="appWebsite">https://github.com/pgp/XFiles</string>
+    <string name="alwaysCreateSubdirectory">Always create subdirectory</string>
+    <string name="neverCreateSubdirectory">Never create subdirectory</string>
+    <string name="smartCreateSubdirectory">Smart subdirectory creation</string>
 </resources>
