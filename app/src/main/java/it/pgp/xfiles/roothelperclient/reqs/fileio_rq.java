@@ -25,7 +25,7 @@ public class fileio_rq extends SinglePath_rq {
     public byte getRequestByteWithFlags() {
         byte rq = requestType.getValue();
         // customize with flag bits (only one bit)
-        rq ^= ((mode == FileIOMode.READFROMFILE?1:0) << (rq_bit_length));
+        rq ^= ((mode == FileIOMode.READFROMFILE?1:0) << (ControlCodes.rq_bit_length));
         return rq;
     }
 

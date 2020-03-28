@@ -690,7 +690,8 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
     public FileOpsErrorCodes extractFromArchive(BasePathContent srcArchive,
                                                 BasePathContent destDirectory,
                                                 @Nullable String password,
-                                                @Nullable List<String> filenames) throws IOException {
+                                                @Nullable List<String> filenames,
+                                                boolean smartDirectoryCreation) throws IOException {
 
         if (destDirectory.providerType != ProviderType.LOCAL) {
             throw new RuntimeException("Forbidden type for destination directory");
@@ -699,7 +700,7 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
         switch (srcArchive.providerType) {
             case LOCAL:
                 // entryIdxs will be ignored, extract all, no need to preload VMap
-                return extract(srcArchive.dir,destDirectory.dir,password,null); // extract all
+                return extract(srcArchive.dir,destDirectory.dir,password,null,smartDirectoryCreation); // extract all
             case LOCAL_WITHIN_ARCHIVE:
                 break;
             default:
@@ -716,7 +717,7 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
         if (filenames == null || filenames.size()==0) {
             if (srcArchive.dir == null || srcArchive.dir.equals("") || srcArchive.dir.equals("/")) {
                 // no selection in root dir of archive, extract all
-                return extract(((ArchivePathContent)srcArchive).archivePath,destDirectory.dir,password,null); // extract all
+                return extract(((ArchivePathContent)srcArchive).archivePath,destDirectory.dir,password,null,smartDirectoryCreation); // extract all
             }
             else {
                 // no selection in subpath of archive
@@ -735,7 +736,8 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
         return extract(((ArchivePathContent)srcArchive).archivePath,
                 destDirectory.dir,
                 password,
-                new RelativeExtractEntries(stripPathLen,entries));
+                new RelativeExtractEntries(stripPathLen,entries),
+                smartDirectoryCreation);
     }
 
     @Override
@@ -799,10 +801,11 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
     private FileOpsErrorCodes extract(String archive,
                                       String directory,
                                       @Nullable String password,
-                                      @Nullable RelativeExtractEntries entries) throws IOException {
+                                      @Nullable RelativeExtractEntries entries,
+                                      boolean smartDirectoryCreation) throws IOException {
         rs = getStreams();
 
-        extract_rq rq = new extract_rq(archive,directory,password,null,entries);
+        extract_rq rq = new extract_rq(archive,directory,password,null,entries, smartDirectoryCreation);
         rq.write(rs.o);
 
         FileOpsErrorCodes ret;

@@ -19,19 +19,29 @@ public class extract_rq extends PairOfPaths_rq {
     public byte[] password;
     public byte[] subDir;
     public RelativeExtractEntries entries;
+    public boolean smartDirectoryCreation;
 
     public extract_rq(Object fx, Object fy, // source archive and destination directory (both LocalPathContent)
                       @Nullable Object password, // password will be used if present to try to open archive
                       @Nullable Object subDir, // subDir prefix will be removed by entries path when extracting
-                      @Nullable RelativeExtractEntries entries // for selective extraction
+                      @Nullable RelativeExtractEntries entries, // for selective extraction
+                      boolean smartDirectoryCreation // valid only if entries is null
                       ) {
         super(fx, fy);
         requestType = ControlCodes.ACTION_EXTRACT;
+        this.smartDirectoryCreation = smartDirectoryCreation;
         if (password != null)
             this.password = (password instanceof String)?((String) password).getBytes():(byte[])password;
         if (subDir != null)
             this.subDir = (subDir instanceof String)?((String) subDir).getBytes():(byte[])subDir;
         this.entries = entries;
+    }
+
+    @Override
+    public byte getRequestByteWithFlags() {
+        byte rq = requestType.getValue();
+        rq ^= ((smartDirectoryCreation?6:7) << ControlCodes.rq_bit_length); // 110 vs 111 flags
+        return rq;
     }
 
     @Override

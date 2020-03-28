@@ -43,6 +43,8 @@ public class ExtractActivity extends EffectActivity implements FileSelectFragmen
 
     RadioGroup intermediateDirectoryPolicyRadioGroup; // only enabled when extracting a whole archive (not extracting single items from within the archive)
 
+    private boolean smartDirectoryCreation = false;
+
     private void getSrcArchiveWithSubDirOrFinish() {
         srcArchiveWithSubDir = MainActivity.mainActivity.getCurrentDirCommander().getCurrentDirectoryPathname();
         if (srcArchiveWithSubDir.providerType != ProviderType.LOCAL_WITHIN_ARCHIVE &&
@@ -107,9 +109,8 @@ public class ExtractActivity extends EffectActivity implements FileSelectFragmen
                     intermediateDirectoryPolicyRadioGroup.findViewById(
                             intermediateDirectoryPolicyRadioGroup.getCheckedRadioButtonId()));
 
-            if (idx == 2) { // always create subdirectory
-                Toast.makeText(this, "Warning: smart directory policy not implemented yet", Toast.LENGTH_SHORT).show();
-                return;
+            if (idx == 2) { // smart subdirectory creation
+                smartDirectoryCreation = true;
             }
             else if (idx == 0) { // always create subdirectory
                 String archiveFilename = srcArchiveWithSubDir.getName();
@@ -130,7 +131,8 @@ public class ExtractActivity extends EffectActivity implements FileSelectFragmen
                         srcArchiveWithSubDir,
                         destDir,
                         password,
-                        selectedItems
+                        selectedItems,
+                        smartDirectoryCreation
                 ));
         startService(startIntent);
 

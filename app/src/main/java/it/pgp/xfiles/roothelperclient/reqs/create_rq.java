@@ -36,9 +36,9 @@ public class create_rq extends SinglePath_rq {
     public byte getRequestByteWithFlags() {
         byte rq = requestType.getValue();
         // customize with flag bits
-        rq ^= ((fileMode == FileMode.FILE ?1:0) << (rq_bit_length));
+        rq ^= ((fileMode == FileMode.FILE ?1:0) << (ControlCodes.rq_bit_length));
         if (fileOptions != null && fileMode == FileMode.FILE)
-            rq ^= (2 << rq_bit_length);
+            rq ^= (2 << ControlCodes.rq_bit_length);
         return rq;
     }
 

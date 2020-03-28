@@ -55,7 +55,8 @@ public interface FileOperationHelperUsingPathContent {
     FileOpsErrorCodes extractFromArchive(BasePathContent srcArchive, // subDir taken from here
                                          BasePathContent destDirectory,
                                          @Nullable String password,
-                                         @Nullable List<String> filenames) throws IOException;
+                                         @Nullable List<String> filenames,
+                                         boolean smartDirectoryCreation) throws IOException;
 
     int setDates(BasePathContent file,
                      @Nullable Date accessDate,

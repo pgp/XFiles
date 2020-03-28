@@ -36,7 +36,7 @@ public class ls_archive_rq extends SinglePath_rq {
     @Override
     public byte getRequestByteWithFlags() {
         byte rq = requestType.getValue();
-        rq ^= (flags << rq_bit_length);
+        rq ^= (flags << ControlCodes.rq_bit_length);
         return rq;
     }
 

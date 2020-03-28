@@ -819,7 +819,8 @@ public class SFTPProviderUsingPathContent implements FileOperationHelperUsingPat
     public FileOpsErrorCodes extractFromArchive(BasePathContent srcArchive,
                                                 BasePathContent destDirectory,
                                                 @Nullable String password,
-                                                @Nullable List<String> filenames) throws IOException {
+                                                @Nullable List<String> filenames,
+                                                boolean smartDirectoryCreation) throws IOException {
         return null;
     }
 

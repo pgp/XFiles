@@ -9,8 +9,6 @@ import it.pgp.xfiles.io.FlushingBufferedOutputStream;
 import it.pgp.xfiles.roothelperclient.ControlCodes;
 import it.pgp.xfiles.utils.Misc;
 
-import static it.pgp.xfiles.roothelperclient.reqs.SinglePath_rq.rq_bit_length;
-
 public class find_rq {
 
     public final ControlCodes requestType = ControlCodes.ACTION_FIND;
@@ -116,7 +114,7 @@ public class find_rq {
     public void writefind_rq(OutputStream outputStream) throws IOException {
         try(FlushingBufferedOutputStream nbf = new FlushingBufferedOutputStream(outputStream)) {
             byte rq = requestType.getValue();
-            rq ^= (flagBits.getFlagBits() << (rq_bit_length));
+            rq ^= (flagBits.getFlagBits() << (ControlCodes.rq_bit_length));
             nbf.write(rq);
             if (flagBits.cancelCurrentSearch) return;
             nbf.write(searchBits.getSearchBits());

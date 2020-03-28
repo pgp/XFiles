@@ -331,8 +331,8 @@ public class XFilesUtilsUsingPathContent implements FileOperationHelperUsingPath
     }
 
     @Override
-    public FileOpsErrorCodes extractFromArchive(BasePathContent srcArchive, BasePathContent destDirectory, @Nullable String password, @Nullable List<String> filenames) throws IOException {
-        return (new RootHelperClientUsingPathContent(ExtractTask.extractSocketName)).extractFromArchive(srcArchive,destDirectory,password,filenames);
+    public FileOpsErrorCodes extractFromArchive(BasePathContent srcArchive, BasePathContent destDirectory, @Nullable String password, @Nullable List<String> filenames, boolean smartDirectoryCreation) throws IOException {
+        return (new RootHelperClientUsingPathContent(ExtractTask.extractSocketName)).extractFromArchive(srcArchive,destDirectory,password,filenames,smartDirectoryCreation);
     }
 
     @Override

@@ -47,7 +47,7 @@ public abstract class PairOfPaths_rq {
     public void write(OutputStream outputStream) throws IOException {
         try(FlushingBufferedOutputStream nbf = new FlushingBufferedOutputStream(outputStream)) {
             // write control byte
-            nbf.write(requestType.getValue());
+            nbf.write(getRequestByteWithFlags());
             // write lengths and fields
             nbf.write(Misc.castUnsignedNumberToBytes(lx,2));
             nbf.write(Misc.castUnsignedNumberToBytes(ly,2));

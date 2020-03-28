@@ -45,6 +45,9 @@ public enum ControlCodes {
 //    ACTION_CANCEL((byte)0x1E),
     ACTION_EXIT((byte)0x1F);
 
+    public static final int rq_bit_length = 5;
+    public static final int flags_bit_length = 3;
+
     final byte value;
     static final Map<Byte,ControlCodes> codeMap = new HashMap<Byte,ControlCodes>(){{
         for (ControlCodes x: ControlCodes.values())

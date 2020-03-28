@@ -8,7 +8,6 @@ import it.pgp.xfiles.roothelperclient.ControlCodes;
 import it.pgp.xfiles.utils.Misc;
 
 public class link_rq extends PairOfPaths_rq {
-    protected static final int rq_bit_length = 5;
 
     boolean isHardLink;
 
@@ -22,7 +21,7 @@ public class link_rq extends PairOfPaths_rq {
     public byte getRequestByteWithFlags() {
         byte rq = requestType.getValue();
         // customize with flag bits
-        rq ^= ((isHardLink?2:0) << (rq_bit_length));
+        rq ^= ((isHardLink?2:0) << (ControlCodes.rq_bit_length));
         return rq;
     }
 

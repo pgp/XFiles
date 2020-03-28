@@ -28,6 +28,7 @@ public class ExtractTask extends RootHelperClientTask {
     private BasePathContent destDirectory;
     private String password;
     private List<String> filenames;
+    private boolean smartDirectoryCreation;
 
     private static final FileOpsErrorCodes defaultErrorResult = FileOpsErrorCodes.TRANSFER_ERROR;
     private BasePathContent currentDir;
@@ -39,6 +40,7 @@ public class ExtractTask extends RootHelperClientTask {
         destDirectory = params.destDirectory;
         password = params.password;
         filenames = params.filenames;
+        smartDirectoryCreation = params.smartDirectoryCreation;
     }
 
     @Override
@@ -65,7 +67,8 @@ public class ExtractTask extends RootHelperClientTask {
                     srcArchive,
                     destDirectory,
                     password,
-                    filenames);
+                    filenames,
+                    smartDirectoryCreation);
         }
         catch (IOException e) {
             e.printStackTrace();

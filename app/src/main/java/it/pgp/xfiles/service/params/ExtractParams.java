@@ -18,15 +18,18 @@ public class ExtractParams implements Serializable {
     public BasePathContent destDirectory;
     public String password;
     public List<String> filenames;
+    public boolean smartDirectoryCreation;
 
     public ExtractParams(BasePathContent srcArchive,
                          BasePathContent destDirectory,
                          @Nullable String password,
-                         @Nullable List<String> filenames) {
+                         @Nullable List<String> filenames,
+                         boolean smartDirectoryCreation) {
         this.srcArchive = srcArchive;
         this.destDirectory = destDirectory;
         this.password = password;
         this.filenames = filenames;
+        this.smartDirectoryCreation = smartDirectoryCreation;
     }
 
     public void setPassword(String password) {

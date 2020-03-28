@@ -14,8 +14,6 @@ import it.pgp.xfiles.utils.Misc;
 
 public abstract class SinglePath_rq {
     static final Charset UTF8 = Charset.forName("UTF-8");
-    protected static final int rq_bit_length = 5;
-    protected static final int flags_bit_length = 3;
 
     public ControlCodes requestType;
     public int pathname_len;

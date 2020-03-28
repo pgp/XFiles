@@ -353,7 +353,7 @@ public class SmbProviderUsingPathContent implements FileOperationHelperUsingPath
     }
 
     @Override
-    public FileOpsErrorCodes extractFromArchive(BasePathContent srcArchive, BasePathContent destDirectory, @Nullable String password, @Nullable List<String> filenames) throws IOException {
+    public FileOpsErrorCodes extractFromArchive(BasePathContent srcArchive, BasePathContent destDirectory, @Nullable String password, @Nullable List<String> filenames, boolean smartDirectoryCreation) throws IOException {
         return null;
     }
 

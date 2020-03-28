@@ -210,7 +210,8 @@ public class UpdateCheckDialog extends Dialog {
                             srcArchive,
                             outDir,
                             null,
-                            null
+                            null,
+                            false
                     ));
             activity.startService(startIntent);
         });

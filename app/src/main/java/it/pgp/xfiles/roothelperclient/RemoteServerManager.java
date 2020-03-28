@@ -24,7 +24,6 @@ import it.pgp.xfiles.utils.popupwindow.PopupWindowUtils;
 public class RemoteServerManager extends RemoteManager {
 
     public static final AtomicReference<Thread> rhssManagerThreadRef = new AtomicReference<>(null);
-    private static final int rq_bit_length = 5;
 
     private final byte rq_byte = ControlCodes.REMOTE_SERVER_MANAGEMENT.getValue();
 
@@ -42,8 +41,8 @@ public class RemoteServerManager extends RemoteManager {
     private boolean start_rhss(boolean announce, String... servedPaths) throws IOException {
         // start RH remote server instance
         byte rq = announce?
-                (byte)(rq_byte ^ (5 << rq_bit_length)) : // flags: 101, start with UDP broadcast announce
-                (byte)(rq_byte ^ (7 << rq_bit_length)); // flags: 111, no announce
+                (byte)(rq_byte ^ (5 << ControlCodes.rq_bit_length)) : // flags: 101, start with UDP broadcast announce
+                (byte)(rq_byte ^ (7 << ControlCodes.rq_bit_length)); // flags: 111, no announce
         o.write(rq);
 
         if(servedPaths.length == 0)
@@ -84,7 +83,7 @@ public class RemoteServerManager extends RemoteManager {
 
     // true: running, false: not running
     private boolean status_rhss() throws IOException {
-        byte rq = (byte)(rq_byte ^ (2 << rq_bit_length)); // flags: 010
+        byte rq = (byte)(rq_byte ^ (2 << ControlCodes.rq_bit_length)); // flags: 010
         o.write(rq);
 
         int resp = receiveBaseResponse();

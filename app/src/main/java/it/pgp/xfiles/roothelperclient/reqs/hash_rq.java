@@ -45,7 +45,7 @@ public class hash_rq extends SinglePath_rq {
             // write dirHashOpts
             byte dirHashOpts_ = 0;
             // customize with flag bits
-            for (int i=0;i<flags_bit_length;i++)
+            for (int i=0;i<ControlCodes.flags_bit_length;i++)
                 dirHashOpts_ ^= ((dirHashOpts.get(i)?1:0) << i);
             nbf.write(dirHashOpts_);
 
