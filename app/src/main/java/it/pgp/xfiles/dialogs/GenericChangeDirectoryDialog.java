@@ -96,6 +96,8 @@ public class GenericChangeDirectoryDialog extends Dialog {
     EditText xreRemotePath;
     Map.Entry<String,String>[] xreItems;
 
+    public static final String xreAnnounceLogTag = "XREANNOUNCE";
+
     final AdapterView.OnItemSelectedListener defaultSpinnerItemSelectListener = new AdapterView.OnItemSelectedListener() {
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -136,7 +138,7 @@ public class GenericChangeDirectoryDialog extends Dialog {
             crc.update(payload);
             long computedChecksum = crc.getValue();
             if (computedChecksum != Misc.castBytesToUnsignedNumber(receivedChecksum,4)) {
-                Log.e("XREANNOUNCE","Verification failed for XRE announce");
+                Log.e(xreAnnounceLogTag,"Verification failed for XRE announce");
                 return null;
             }
 
@@ -160,34 +162,39 @@ public class GenericChangeDirectoryDialog extends Dialog {
         }
     }
 
-    public static Thread getXreAnnounceListenerThread(Activity activity, XreAnnouncesAdapter xreAnnouncesAdapter) {
-        return new Thread(() -> {
-            try {
-                xreAnnounceReceiveSocket = new DatagramSocket(11111);
-                for(;;) {
-                    DatagramPacket data = new DatagramPacket(new byte[256], 256);
-                    xreAnnounceReceiveSocket.receive(data);
-                    String received = new String(data.getData(), data.getOffset(), data.getLength(), StandardCharsets.UTF_8);
-                    Log.e("XREANNOUNCE",received);
+    public static void startXreAnnounceListenerThread(Activity activity, XreAnnouncesAdapter xreAnnouncesAdapter) {
+        if(xreAnnounceReceiveSocket == null)
+            new Thread(() -> {
+                Log.d(xreAnnounceLogTag,"XRE announce receiver thread started");
+                try {
+                    xreAnnounceReceiveSocket = new DatagramSocket(11111);
+                    for(;;) {
+                        DatagramPacket data = new DatagramPacket(new byte[256], 256);
+                        xreAnnounceReceiveSocket.receive(data);
+                        String received = new String(data.getData(), data.getOffset(), data.getLength(), StandardCharsets.UTF_8);
+                        Log.e(xreAnnounceLogTag,received);
 
-                    XFilesRemotePathContent xrpc = fromXREAnnounce(data);
-                    if(xrpc != null) activity.runOnUiThread(()-> {
+                        XFilesRemotePathContent xrpc = fromXREAnnounce(data);
+                        if(xrpc != null) activity.runOnUiThread(()-> {
 //                    xreRemotePath.setText(xrpc.dir);
 //                    xreServerHost.setText(xrpc.serverHost);
 //                        xreAnnounceTextView.setTextColor(R.color.green);
 //                        xreAnnounceTextView.setText("");
-                        xreAnnouncesAdapter.add(new Pair<>(xrpc.serverHost,xrpc.dir));
-                    });
+                            xreAnnouncesAdapter.add(new Pair<>(xrpc.serverHost,xrpc.dir));
+                        });
 //                    else activity.runOnUiThread(()->{
 //                        xreAnnounceTextView.setTextColor(R.color.red);
 //                        xreAnnounceTextView.setText(received + " " + System.currentTimeMillis());
 //                    });
+                    }
                 }
-            }
-            catch(Exception e) {
-                e.printStackTrace();
-            }
-        });
+                catch(Exception e) {
+                    e.printStackTrace();
+                }
+                xreAnnounceReceiveSocket = null; // the dismiss listener or trhe onPause method in XREDirectShareActivity have closed the socket
+                Log.d(xreAnnounceLogTag,"XRE announce receiver thread ended");
+            }).start();
+        else Log.w(xreAnnounceLogTag, "Announce receiver thread already running, updates could be not visible if the adapter has been recreated meanwhile");
     }
 
     public static DatagramSocket xreAnnounceReceiveSocket;
@@ -574,9 +581,8 @@ public class GenericChangeDirectoryDialog extends Dialog {
 
         ((RadioButton)pathContentTypeSelector.getChildAt(providerType.ordinal())).setChecked(true);
 
-        if(providerType == ProviderType.XFILES_REMOTE) {
-            getXreAnnounceListenerThread(MainActivity.mainActivity,xreAnnouncesAdapter).start();
-        }
+        if(providerType == ProviderType.XFILES_REMOTE)
+            startXreAnnounceListenerThread(MainActivity.mainActivity,xreAnnouncesAdapter);
         else if(xreAnnounceReceiveSocket != null)
             xreAnnounceReceiveSocket.close();
     }

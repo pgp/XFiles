@@ -109,12 +109,12 @@ public class NonInteractiveXFilesRemoteTransferTask extends RootHelperClientTask
         super.onPostExecute(o);
         MainActivity activity = MainActivity.mainActivity;
         if(activity == null) {
-            // TODO launch MainActivity
             Toast.makeText(service,
                     (result == null || result == FileOpsErrorCodes.OK)?
                             "Remote transfer completed in standalone mode":
                             params.list.copyOrMove.name().toLowerCase()+" error in standalone mode: "+result.getValue()
                     , Toast.LENGTH_SHORT).show();
+            MainActivity.rootHelperRemoteClientManager.closeAllSessions();
             return;
         }
 

@@ -191,6 +191,7 @@
             android:configChanges="orientation|screenSize|keyboardHidden" />
         <activity
             android:name=".XREDirectShareActivity"
+            android:launchMode="singleTask"
             android:configChanges="orientation|screenSize|keyboardHidden">
             <intent-filter
                 android:icon="@drawable/xf_share"

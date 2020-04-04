@@ -86,7 +86,7 @@ public class XREDirectShareActivity extends EffectActivity {
         return valid;
     }
 
-    class ThreadWrapper extends Thread {
+    static class ThreadWrapper extends Thread {
         private Runnable r;
 
         public void setRunnable(Runnable r) {
@@ -202,7 +202,7 @@ public class XREDirectShareActivity extends EffectActivity {
 
         findViewById(R.id.xreDirectShareOkButton).setOnClickListener(this::ok);
 
-        GenericChangeDirectoryDialog.getXreAnnounceListenerThread(this,xreAnnouncesAdapter).start();
+        GenericChangeDirectoryDialog.startXreAnnounceListenerThread(this,xreAnnouncesAdapter);
 
         /**
          * check extras for unattended direct share:
@@ -254,11 +254,16 @@ public class XREDirectShareActivity extends EffectActivity {
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    protected void onPause() {
+        super.onPause();
         if (wbl != null) wbl.unregisterListeners();
         if(GenericChangeDirectoryDialog.xreAnnounceReceiveSocket != null)
             GenericChangeDirectoryDialog.xreAnnounceReceiveSocket.close();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
         if (MainActivity.mainActivity == null) MainActivity.mainActivityContext = null;
     }
 }

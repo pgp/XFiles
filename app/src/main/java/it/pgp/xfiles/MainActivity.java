@@ -313,7 +313,8 @@ public class MainActivity extends EffectActivity {
 
     private void showDeleteDialog(final List<BasePathContent> selection) {
         AlertDialog.Builder bld = new AlertDialog.Builder(MainActivity.this);
-        String name = selection.size()==1?selection.get(0).getName():"selection";
+        int size = selection.size();
+        String name = size==1?selection.get(0).getName():""+size+" items";
         bld.setTitle("Confirm delete "+name);
         bld.setIcon(R.drawable.xf_recycle_bin);
         bld.setNegativeButton("No", BaseBackgroundService.emptyListener);
