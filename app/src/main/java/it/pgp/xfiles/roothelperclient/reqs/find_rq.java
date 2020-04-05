@@ -9,9 +9,7 @@ import it.pgp.xfiles.io.FlushingBufferedOutputStream;
 import it.pgp.xfiles.roothelperclient.ControlCodes;
 import it.pgp.xfiles.utils.Misc;
 
-public class find_rq {
-
-    public final ControlCodes requestType = ControlCodes.ACTION_FIND;
+public class find_rq extends BaseRHRequest {
 
     private byte [] basepath; // where to search into
     @Nullable private byte[] contentPattern;
@@ -99,6 +97,7 @@ public class find_rq {
             @Nullable byte[] contentPattern,
             FlagBits flagBits,
             SearchBits searchBits) {
+        super(ControlCodes.ACTION_FIND);
         this.basepath = basepath;
         this.filenamePattern = filenamePattern==null?new byte[0]:filenamePattern;
         this.contentPattern = contentPattern==null?new byte[0]:contentPattern;
@@ -108,21 +107,31 @@ public class find_rq {
 
     // cancel search
     public find_rq() {
+        super(ControlCodes.ACTION_FIND);
         flagBits = new FlagBits();
     }
 
-    public void writefind_rq(OutputStream outputStream) throws IOException {
+    @Override
+    public byte getRequestByteWithFlags() {
+        byte rq = requestType.getValue();
+        rq ^= (flagBits.getFlagBits() << (ControlCodes.rq_bit_length));
+        return rq;
+    }
+
+    @Override
+    public void write(OutputStream outputStream) throws IOException {
         try(FlushingBufferedOutputStream nbf = new FlushingBufferedOutputStream(outputStream)) {
-            byte rq = requestType.getValue();
-            rq ^= (flagBits.getFlagBits() << (ControlCodes.rq_bit_length));
-            nbf.write(rq);
+            nbf.write(getRequestByteWithFlags());
             if (flagBits.cancelCurrentSearch) return;
+
             nbf.write(searchBits.getSearchBits());
 
             nbf.write(Misc.castUnsignedNumberToBytes(basepath.length,2));
             nbf.write(basepath);
+
             nbf.write(Misc.castUnsignedNumberToBytes(filenamePattern.length,2));
             if (filenamePattern.length!=0) nbf.write(filenamePattern);
+
             nbf.write(Misc.castUnsignedNumberToBytes(contentPattern.length,2));
             if (contentPattern.length!=0) nbf.write(contentPattern);
         }

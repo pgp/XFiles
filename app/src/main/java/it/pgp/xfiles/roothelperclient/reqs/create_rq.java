@@ -18,17 +18,15 @@ public class create_rq extends SinglePath_rq {
     final FileCreationAdvancedOptions fileOptions;
 
     public create_rq(Object pathname, FileMode fileMode) {
-        super(pathname);
+        super(ControlCodes.ACTION_CREATE, pathname);
         this.fileMode = fileMode;
-        this.requestType = ControlCodes.ACTION_CREATE;
         this.fileOptions = null;
     }
 
     // only for file creation requests
     public create_rq(Object pathname, FileCreationAdvancedOptions fileOptions) {
-        super(pathname);
+        super(ControlCodes.ACTION_CREATE, pathname);
         this.fileMode = FileMode.FILE;
-        this.requestType = ControlCodes.ACTION_CREATE;
         this.fileOptions = fileOptions;
     }
 

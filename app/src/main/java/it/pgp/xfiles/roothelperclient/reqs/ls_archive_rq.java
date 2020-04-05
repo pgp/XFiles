@@ -17,7 +17,7 @@ public class ls_archive_rq extends SinglePath_rq {
 
     // Object: String or byte[]
     public ls_archive_rq(Object archivePath, Object password) {
-        super(archivePath);
+        super(ControlCodes.ACTION_LS, archivePath);
         if (password instanceof String) {
             this.password = ((String) password).getBytes();
             this.password_len = this.password.length;
@@ -29,8 +29,6 @@ public class ls_archive_rq extends SinglePath_rq {
         else {
             throw new RuntimeException("Unexpected password object type");
         }
-
-        this.requestType = ControlCodes.ACTION_LS;
     }
 
     @Override

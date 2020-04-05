@@ -12,8 +12,7 @@ public class link_rq extends PairOfPaths_rq {
     boolean isHardLink;
 
     public link_rq(Object fx, Object fy, boolean isHardLink) {
-        super(fx, fy);
-        requestType = ControlCodes.ACTION_LINK;
+        super(ControlCodes.ACTION_LINK, fx, fy);
         this.isHardLink = isHardLink;
     }
 

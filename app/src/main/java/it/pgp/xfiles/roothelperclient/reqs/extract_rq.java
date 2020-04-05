@@ -27,8 +27,7 @@ public class extract_rq extends PairOfPaths_rq {
                       @Nullable RelativeExtractEntries entries, // for selective extraction
                       boolean smartDirectoryCreation // valid only if entries is null
                       ) {
-        super(fx, fy);
-        requestType = ControlCodes.ACTION_EXTRACT;
+        super(ControlCodes.ACTION_EXTRACT, fx, fy);
         this.smartDirectoryCreation = smartDirectoryCreation;
         if (password != null)
             this.password = (password instanceof String)?((String) password).getBytes():(byte[])password;

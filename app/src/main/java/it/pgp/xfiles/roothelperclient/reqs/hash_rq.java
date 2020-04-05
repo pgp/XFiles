@@ -28,8 +28,7 @@ public class hash_rq extends SinglePath_rq {
     public hash_rq(Object pathname,
                    HashRequestCodes hashAlgorithm,
                    BitSet dirHashOpts) {
-        super(pathname);
-        this.requestType = ControlCodes.ACTION_HASH;
+        super(ControlCodes.ACTION_HASH, pathname);
         this.hashAlgorithm = hashAlgorithm;
         this.dirHashOpts = dirHashOpts;
     }

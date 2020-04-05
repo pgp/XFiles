@@ -5,7 +5,6 @@ import it.pgp.xfiles.roothelperclient.ControlCodes;
 public class ls_rq extends SinglePath_rq {
 
     public ls_rq(Object dirPath)  {
-        super(dirPath);
-        this.requestType = ControlCodes.ACTION_LS;
+        super(ControlCodes.ACTION_LS, dirPath);
     }
 }

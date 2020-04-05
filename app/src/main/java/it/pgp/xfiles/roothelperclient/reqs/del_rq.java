@@ -8,7 +8,6 @@ import it.pgp.xfiles.roothelperclient.ControlCodes;
 
 public class del_rq extends SinglePath_rq {
     public del_rq(Object pathname) {
-        super(pathname);
-        this.requestType = ControlCodes.ACTION_DELETE;
+        super(ControlCodes.ACTION_DELETE, pathname);
     }
 }

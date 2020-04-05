@@ -19,7 +19,6 @@ public abstract class setAttributes_rq extends SinglePath_rq {
     public int additionalByte = 0;
 
     public setAttributes_rq(Object pathname) {
-        super(pathname);
-        requestType = ControlCodes.ACTION_SETATTRIBUTES;
+        super(ControlCodes.ACTION_SETATTRIBUTES, pathname);
     }
 }

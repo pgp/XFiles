@@ -2,7 +2,6 @@ package it.pgp.xfiles.roothelperclient.reqs;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.nio.charset.Charset;
 
 import it.pgp.xfiles.io.FlushingBufferedOutputStream;
 import it.pgp.xfiles.roothelperclient.ControlCodes;
@@ -12,10 +11,8 @@ import it.pgp.xfiles.utils.Misc;
  * Created by pgp on 25/01/17
  */
 
-public abstract class SinglePath_rq {
-    static final Charset UTF8 = Charset.forName("UTF-8");
+public abstract class SinglePath_rq extends BaseRHRequest {
 
-    public ControlCodes requestType;
     public int pathname_len;
     public byte[] pathname;
 
@@ -25,7 +22,8 @@ public abstract class SinglePath_rq {
     }
 
     // Request type to be set by inheritors
-    public SinglePath_rq(Object pathname) {
+    public SinglePath_rq(ControlCodes requestType, Object pathname) {
+        super(requestType);
         if (pathname instanceof byte[]) {
             this.pathname = (byte[]) pathname;
             this.pathname_len = this.pathname.length;

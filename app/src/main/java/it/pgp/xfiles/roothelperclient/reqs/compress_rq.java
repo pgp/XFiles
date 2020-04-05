@@ -28,8 +28,7 @@ public class compress_rq extends PairOfPaths_rq {
                        @Nullable Boolean solidMode,
                        @Nullable String password,
                        @Nullable List<String> filenames) {
-        super(fx, fy);
-        requestType = ControlCodes.ACTION_COMPRESS;
+        super(ControlCodes.ACTION_COMPRESS, fx, fy);
         compress_options = new compress_rq_options(compressionLevel,encryptHeaders,solidMode);
 
         if (password == null) this.password = new byte[0];

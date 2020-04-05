@@ -16,9 +16,8 @@ import it.pgp.xfiles.utils.Misc;
 public class singleStats_rq extends SinglePath_rq {
     private BitSet flags; // file/folder/multi
     public singleStats_rq(Object pathname, FileMode fileMode) {
-        super(pathname);
+        super(ControlCodes.ACTION_STATS, pathname);
         this.flags = (fileMode==FileMode.FILE ?BitSet.valueOf(new long[]{1}):BitSet.valueOf(new long[]{2})); // 0,0,1 --- 0,1,0
-        this.requestType = ControlCodes.ACTION_STATS;
     }
 
     @Override

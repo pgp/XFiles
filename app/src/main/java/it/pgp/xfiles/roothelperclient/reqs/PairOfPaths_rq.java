@@ -10,22 +10,16 @@ import it.pgp.xfiles.utils.Misc;
 
 /**
  * Created by pgp on 25/01/17
- * Deprecated, no longer aligned with rh protocol, see {@link ListOfPathPairs_rq} instead
  */
 
-public abstract class PairOfPaths_rq {
-    static final Charset UTF8 = Charset.forName("UTF-8");
+public abstract class PairOfPaths_rq extends BaseRHRequest {
 
-    public ControlCodes requestType;
     public int lx,ly; // lengths
     public byte[] fx,fy; // pathnames
 
-    public byte getRequestByteWithFlags() {
-        return requestType.getValue();
-    }
-
     // Request type to be set by inheritors
-    public PairOfPaths_rq(Object fx, Object fy) {
+    public PairOfPaths_rq(ControlCodes requestType, Object fx, Object fy) {
+        super(requestType);
         if (fx instanceof byte[] && fy instanceof byte[]) {
             this.fx = (byte[]) fx;
             this.lx = this.fx.length;
@@ -44,6 +38,7 @@ public abstract class PairOfPaths_rq {
         }
     }
 
+    @Override
     public void write(OutputStream outputStream) throws IOException {
         try(FlushingBufferedOutputStream nbf = new FlushingBufferedOutputStream(outputStream)) {
             // write control byte

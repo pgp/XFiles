@@ -16,9 +16,8 @@ public class fileio_rq extends SinglePath_rq {
     FileIOMode mode;
 
     public fileio_rq(Object pathname, FileIOMode mode) {
-        super(pathname);
+        super(ControlCodes.ACTION_FILEIO, pathname);
         this.mode = mode;
-        this.requestType = ControlCodes.ACTION_FILEIO;
     }
 
     @Override

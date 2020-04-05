@@ -249,8 +249,7 @@ public class RemoteClientManager {
                 v_fy.add(destDir.dir+"/"+fname.getFilename());
             }
 
-            ListOfPathPairs_rq r = new ListOfPathPairs_rq(v_fx,v_fy);
-            r.requestType = action;
+            ListOfPathPairs_rq r = new ListOfPathPairs_rq(action,v_fx,v_fy);
 
             try {
                 r.write(client.o);

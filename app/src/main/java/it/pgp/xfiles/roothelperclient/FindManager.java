@@ -57,7 +57,7 @@ public class FindManager implements AutoCloseable {
 
     private boolean start_find(find_rq find_rq) throws IOException {
         // start RH find thread
-        find_rq.writefind_rq(o);
+        find_rq.write(o);
 
         int resp = Misc.receiveBaseResponse(i);
         if (resp != 0) {
@@ -72,8 +72,7 @@ public class FindManager implements AutoCloseable {
 
     // cancel current search, if any
     private boolean stop_find() throws IOException {
-        find_rq rq = new find_rq();
-        rq.writefind_rq(o);
+        new find_rq().write(o);
 
         int resp = Misc.receiveBaseResponse(i);
         if (resp != 0) return false;

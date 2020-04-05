@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.charset.Charset;
 import java.util.Iterator;
 import java.util.List;
 
@@ -17,18 +16,18 @@ import it.pgp.xfiles.utils.Misc;
  * One single request for copying/moving/uploading/downloading a selection of files
  */
 
-public class ListOfPathPairs_rq {
-    static final Charset UTF8 = Charset.forName("UTF-8");
+public class ListOfPathPairs_rq extends BaseRHRequest {
 
-    public ControlCodes requestType;
     public List<String> v_fx,v_fy; // pathnames
 
     // Request type to be set by inheritors
-    public ListOfPathPairs_rq(List<String> v_fx, List<String> v_fy) {
+    public ListOfPathPairs_rq(ControlCodes requestType, List<String> v_fx, List<String> v_fy) {
+        super(requestType);
         this.v_fx = v_fx;
         this.v_fy = v_fy;
     }
 
+    @Override
     public void write(OutputStream outputStream) throws IOException {
         final byte[] listEnd = new byte[]{0,0,0,0};
         try(FlushingBufferedOutputStream nbf = new FlushingBufferedOutputStream(outputStream)) {

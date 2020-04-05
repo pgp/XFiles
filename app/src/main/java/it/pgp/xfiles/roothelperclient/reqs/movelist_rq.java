@@ -11,7 +11,6 @@ import it.pgp.xfiles.roothelperclient.ControlCodes;
 public class movelist_rq extends ListOfPathPairs_rq {
 
     public movelist_rq(List<String> v_fx, List<String> v_fy) {
-        super(v_fx, v_fy);
-        requestType = ControlCodes.ACTION_MOVE;
+        super(ControlCodes.ACTION_MOVE, v_fx, v_fy);
     }
 }

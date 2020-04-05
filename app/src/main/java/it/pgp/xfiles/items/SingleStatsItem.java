@@ -1,6 +1,6 @@
 package it.pgp.xfiles.items;
 
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 import it.pgp.xfiles.roothelperclient.resps.singleStats_resp;
@@ -31,12 +31,12 @@ public class SingleStatsItem {
     }
 
     public SingleStatsItem(singleStats_resp r) {
-        group = new String(r.group, Charset.forName("UTF-8"));
-        owner = new String(r.owner, Charset.forName("UTF-8"));
+        group = new String(r.group, StandardCharsets.UTF_8);
+        owner = new String(r.owner, StandardCharsets.UTF_8);
         creationTime = new Date(r.creationTime*1000L);
         lastAccessTime = new Date(r.lastAccessTime*1000L);
         modificationTime = new Date(r.modificationTime*1000L);
-        permissions = new String(r.permissions,Charset.forName("UTF-8"));
+        permissions = new String(r.permissions,StandardCharsets.UTF_8);
         isDir = permissions.charAt(0) == 'd';
         size = r.size;
     }

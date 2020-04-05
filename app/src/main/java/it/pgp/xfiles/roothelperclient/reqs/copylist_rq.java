@@ -10,7 +10,6 @@ import it.pgp.xfiles.roothelperclient.ControlCodes;
 
 public class copylist_rq extends ListOfPathPairs_rq {
     public copylist_rq(List<String> v_fx, List<String> v_fy) {
-        super(v_fx, v_fy);
-        requestType = ControlCodes.ACTION_COPY;
+        super(ControlCodes.ACTION_COPY, v_fx, v_fy);
     }
 }

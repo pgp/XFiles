@@ -15,12 +15,11 @@ import it.pgp.xfiles.utils.Misc;
 public class exists_rq extends SinglePath_rq {
     public BitSet flags;
     public exists_rq(Object pathname, boolean exists, boolean isFile, boolean isDir) {
-        super(pathname);
+        super(ControlCodes.ACTION_EXISTS, pathname);
         flags = new BitSet(3);
         flags.set(0,exists);
         flags.set(1,isFile);
         flags.set(2,isDir);
-        this.requestType = ControlCodes.ACTION_EXISTS; // exists/is file/is dir
     }
 
     @Override
