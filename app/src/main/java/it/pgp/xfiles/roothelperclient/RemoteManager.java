@@ -29,7 +29,7 @@ public class RemoteManager extends StreamsPair {
                 defaultaddress.name(),
                 LocalSocketAddress.Namespace.ABSTRACT);
         clientSocket.connect(socketAddress);
-        Log.d(this.getClass().getName(),"Connected");
+        Log.d(getClass().getName(),"Connected");
 
         ls = clientSocket;
 
@@ -49,7 +49,7 @@ public class RemoteManager extends StreamsPair {
 
         try {i.close();} catch (Exception ignored) {}
         try {o.close();} catch (Exception ignored) {}
-        Log.d(this.getClass().getName(),"Streams closed");
+        Log.d(getClass().getName(),"Streams closed");
     }
 
     int receiveBaseResponse() throws IOException {

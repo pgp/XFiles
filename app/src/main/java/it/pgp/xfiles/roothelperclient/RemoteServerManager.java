@@ -209,7 +209,7 @@ public class RemoteServerManager extends RemoteManager {
                         onClientDisconnect(clientIP);
                     }
 
-                    Log.d(this.getClass().getName(),message);
+                    Log.d(getClass().getName(),message);
                     final String msg = message;
 
                     // to be replaced with onClientUpdate
@@ -217,7 +217,7 @@ public class RemoteServerManager extends RemoteManager {
                 }
             }
             catch (Throwable t) {
-                Log.d(this.getClass().getName(),"Local socket closed by rhss server or other exception, exiting...");
+                Log.d(getClass().getName(),"Local socket closed by rhss server or other exception, exiting...");
                 if (!(t instanceof IOException)) t.printStackTrace();
                 // no need for finally, thread always exits with exception
                 close();
@@ -240,7 +240,7 @@ public class RemoteServerManager extends RemoteManager {
                     // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
                 }
 
-                Log.d(this.getClass().getName(),"Really exiting update thread now!");
+                Log.d(getClass().getName(),"Really exiting update thread now!");
             }
         }
     }

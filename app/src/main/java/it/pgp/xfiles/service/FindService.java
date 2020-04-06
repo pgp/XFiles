@@ -56,12 +56,12 @@ public class FindService extends BaseBackgroundService {
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
                 notificationIntent, 0);
 
-        Intent pauseIntent = new Intent(this, this.getClass());
+        Intent pauseIntent = new Intent(this, getClass());
         pauseIntent.setAction(PAUSE_ACTION);
         PendingIntent ppauseIntent = PendingIntent.getService(this, 0,
                 pauseIntent, 0);
 
-        Intent stopIntent = new Intent(this, this.getClass());
+        Intent stopIntent = new Intent(this, getClass());
         stopIntent.setAction(CANCEL_ACTION);
         PendingIntent pstopIntent = PendingIntent.getService(this, 0,
                 stopIntent, 0);

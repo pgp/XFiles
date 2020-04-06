@@ -40,18 +40,18 @@ public class FindManager implements AutoCloseable {
                 defaultaddress.name(),
                 LocalSocketAddress.Namespace.ABSTRACT);
         clientSocket.connect(socketAddress);
-        Log.d(this.getClass().getName(),"Connected");
+        Log.d(getClass().getName(),"Connected");
 
         o = clientSocket.getOutputStream();
         i = new DataInputStream(clientSocket.getInputStream());
-        Log.d(this.getClass().getName(),"Streams acquired");
+        Log.d(getClass().getName(),"Streams acquired");
     }
 
     @Override
     public void close() {
         try {i.close();} catch (Exception ignored) {}
         try {o.close();} catch (Exception ignored) {}
-        Log.d(this.getClass().getName(),"Streams closed");
+        Log.d(getClass().getName(),"Streams closed");
     }
     // END common code with RemoteManager
 
@@ -150,14 +150,14 @@ public class FindManager implements AutoCloseable {
             }
             catch (Throwable t) {
                 t.printStackTrace();
-                Log.d(this.getClass().getName(),"Local socket closed by rhss server or other exception, exiting...");
+                Log.d(getClass().getName(),"Local socket closed by rhss server or other exception, exiting...");
             }
             finally {
                 close();
             }
             findManagerThreadRef.set(null); // unset reference only if compareAndSet was successful
             FindActivity.instance.runOnUiThread(()->FindActivity.instance.toggleSearchButtons(false));
-            Log.d(this.getClass().getName(),"Really exiting find update thread now!");
+            Log.d(getClass().getName(),"Really exiting find update thread now!");
         }
     }
 }

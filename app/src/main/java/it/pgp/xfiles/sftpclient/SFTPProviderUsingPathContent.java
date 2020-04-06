@@ -143,9 +143,9 @@ public class SFTPProviderUsingPathContent implements FileOperationHelperUsingPat
         w.close();
 
         if (knownHostsFile.delete() && g.renameTo(knownHostsFile))
-            Log.d(this.getClass().getName(),"known_hosts updated");
+            Log.d(getClass().getName(),"known_hosts updated");
         else
-            Log.e(this.getClass().getName(),"error replacing old known_hosts file");
+            Log.e(getClass().getName(),"error replacing old known_hosts file");
     }
 
     // replaces the key for the (possibly existing) pair (host, host key algorithm) with the current key
@@ -170,9 +170,9 @@ public class SFTPProviderUsingPathContent implements FileOperationHelperUsingPat
         w.close();
 
         if (knownHostsFile.delete() && g.renameTo(knownHostsFile))
-            Log.d(this.getClass().getName(),"known_hosts updated");
+            Log.d(getClass().getName(),"known_hosts updated");
         else
-            Log.e(this.getClass().getName(),"error replacing old known_hosts file");
+            Log.e(getClass().getName(),"error replacing old known_hosts file");
     }
 
     /************************************************************/
@@ -185,7 +185,7 @@ public class SFTPProviderUsingPathContent implements FileOperationHelperUsingPat
         if (!knownHostsFile.exists()) try {
             knownHostsFile.createNewFile();
         } catch (IOException e) {
-            Log.e(this.getClass().getName(),"Cannot create known_hosts file");
+            Log.e(getClass().getName(),"Cannot create known_hosts file");
         }
 
         identities.clear();
@@ -279,11 +279,11 @@ public class SFTPProviderUsingPathContent implements FileOperationHelperUsingPat
                 }
             }
             else {
-                Log.e(this.getClass().getName(),"transport exception in getChannel: "+e.getMessage());
+                Log.e(getClass().getName(),"transport exception in getChannel: "+e.getMessage());
             }
         }
         catch (IOException e) {
-            Log.e(this.getClass().getName(),"getChannel error");
+            Log.e(getClass().getName(),"getChannel error");
         }
 
         // in any failure case, close connection with SSH server and return null
@@ -388,11 +388,11 @@ public class SFTPProviderUsingPathContent implements FileOperationHelperUsingPat
                  // any way, won't get a list dir response at this request, dismiss listeners in dialogs will do the job by calling main activity methods
             }
             else {
-                Log.e(this.getClass().getName(),"transport exception in getChannel: "+e.getMessage());
+                Log.e(getClass().getName(),"transport exception in getChannel: "+e.getMessage());
             }
         }
         catch (IOException e) {
-            Log.e(this.getClass().getName(),"getChannel error");
+            Log.e(getClass().getName(),"getChannel error");
         }
 
         // in any failure case, close connection with SSH server and return null
@@ -501,13 +501,13 @@ public class SFTPProviderUsingPathContent implements FileOperationHelperUsingPat
         for (String x : remotePaths) {
             try {
                 attrs = channelSftp.stat(x);
-//                Log.d(this.getClass().getName(),"item name: "+x+"\tattr type: "+attrs.getType());
+//                Log.d(getClass().getName(),"item name: "+x+"\tattr type: "+attrs.getType());
                 if (attrs.getType() == net.schmizz.sshj.sftp.FileMode.Type.DIRECTORY)
                      recursiveFolderDelete(channelSftp.getSFTPEngine(),x);
                 else channelSftp.rm(x);
             }
             catch (IOException e) {
-                Log.e(this.getClass().getName(),"Unable to delete element "+x);
+                Log.e(getClass().getName(),"Unable to delete element "+x);
                 throw new IOException("Unable to delete element "+x);
             }
         }

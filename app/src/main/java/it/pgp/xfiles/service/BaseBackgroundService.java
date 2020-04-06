@@ -52,7 +52,7 @@ public abstract class BaseBackgroundService extends Service {
 	
 	private void abortServiceWithConfirmation() {
         AlertDialog.Builder bld = new AlertDialog.Builder(this);
-        bld.setTitle("Cancel "+this.getClass().getName()+"?");
+        bld.setTitle("Cancel "+getClass().getName()+"?");
         bld.setNegativeButton("No", emptyListener);
         bld.setPositiveButton("Yes", (dialog, which) -> task.cancelTask());
         AlertDialog alertDialog = bld.create();

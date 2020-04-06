@@ -53,7 +53,7 @@ class WifiApManager {
 
             return AP_STATE.values()[tmp];
         } catch (Exception e) {
-            Log.e(this.getClass().toString(), "", e);
+            Log.e(getClass().toString(), "", e);
             return AP_STATE.WIFI_AP_STATE_FAILED;
         }
     }

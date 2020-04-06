@@ -292,7 +292,7 @@ public class GenericDBHelper extends SQLiteOpenHelper {
                         m.put(mCursor.getLong(0),new FavoritesList<>(a,favs));
                     }
                     catch (IOException | ClassNotFoundException e) {
-                        Log.e(this.getClass().getName(),"Exception: "+e.getMessage());
+                        Log.e(getClass().getName(),"Exception: "+e.getMessage());
                         e.printStackTrace();
                         m.put(mCursor.getLong(0),new FavoritesList<>(a));
                     }

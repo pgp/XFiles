@@ -28,10 +28,10 @@ public class InteractiveHostKeyVerifier extends OpenSSHKnownHosts {
         lastHostKeyHasChanged = null;
 
         // DEBUG INFO
-        Log.d(this.getClass().getName(),key.toString());
-        Log.d(this.getClass().getName(),KeyType.fromKey(key).toString());
-        Log.d(this.getClass().getName(),key.getAlgorithm());
-        Log.d(this.getClass().getName(),key.getFormat());
+        Log.d(getClass().getName(),key.toString());
+        Log.d(getClass().getName(),KeyType.fromKey(key).toString());
+        Log.d(getClass().getName(),key.getAlgorithm());
+        Log.d(getClass().getName(),key.getFormat());
 
         //////////////////////////////////////////
 
