@@ -159,6 +159,38 @@ public class DirCommanderCUsingBrowserItemsAndPathContent {
         return cwd;
     }
 
+    // TODO to be converged in a single method with refresh(), after updating all usages to background + UI part
+    public GenericDirWithContent refresh_background() {
+        GenericDirWithContent cwd;
+        int startIndex = currentIndex;
+
+        do {
+            cwd = validateDirAccess(recentDirs.get(currentIndex));
+            if (cwd != null && cwd.errorCode == null) break;
+            currentIndex--;
+        } while (currentIndex >= 0);
+
+        if (currentIndex < 0) {
+            currentIndex = 0;
+            recentDirs.put(currentIndex,new LocalPathContent("/"));
+//            MainActivity.mainActivity.finishAffinity();
+//            return new LocalDirWithContent("/",new ArrayList<>()); // dummy return object, just to avoid NPE in Collections.sort before finishAffinity is actually called
+            // TODO check for behaviour conflicts/errors after replacing the above return line with the following one
+            cwd = new LocalDirWithContent(FileOpsErrorCodes.CURRENT_DIR_NO_LONGER_AVAILABLE);
+            cwd.dir = "/";
+            cwd.content = new ArrayList<>();
+            cwd.listViewPosition = null;
+            return cwd;
+        }
+
+        if (currentIndex != startIndex) {
+            truncateListMaps(currentIndex);
+            cwd.errorCode = FileOpsErrorCodes.CURRENT_DIR_NO_LONGER_AVAILABLE; // TODO this requires further refactoring, here we are adding error in a well formed response (to indicate redirection to one previous commander dir)
+            cwd.listViewPosition = startIndex-currentIndex; // abuse of notation, just for showing toast message in this case
+        }
+        return cwd;
+    }
+
     public GenericDirWithContent goAhead(int previousPosition) {
         if (recentDirs.size()==currentIndex+1) // cannot go ahead, already last item of commander
             return validateDirAccess(recentDirs.get(currentIndex));

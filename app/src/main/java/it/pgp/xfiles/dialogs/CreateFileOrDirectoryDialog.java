@@ -122,7 +122,7 @@ public class CreateFileOrDirectoryDialog extends BaseDialog implements Runnable 
         }
         catch (IOException e) {
             e.printStackTrace();
-            MainActivity.showToastOnUI("File creation error");
+            MainActivity.showToastOnUI("File creation error, reason: "+e.getMessage());
             nameToLocate.clear();
         }
         finally {

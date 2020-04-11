@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -42,6 +43,7 @@ import it.pgp.xfiles.utils.FavoritesList;
 import it.pgp.xfiles.utils.GenericDBHelper;
 import it.pgp.xfiles.utils.Misc;
 import it.pgp.xfiles.utils.Pair;
+import it.pgp.xfiles.utils.dircontent.GenericDirWithContent;
 import it.pgp.xfiles.utils.pathcontent.ArchivePathContent;
 import it.pgp.xfiles.utils.pathcontent.BasePathContent;
 import it.pgp.xfiles.utils.pathcontent.LocalPathContent;
@@ -220,6 +222,22 @@ public class GenericChangeDirectoryDialog extends Dialog {
     private boolean currentDirAutofillOverride = true;
 
     private void ok(View unused) {
+        okButton.setEnabled(false);
+        okButton.setText("Loading...");
+        new Thread(this::ok_inner).start();
+    }
+
+    // dummy int return, just to avoid writing two lines of code for early returns in invocations of this method
+    private int reenableOkButton(Object ret) { // ret is a String in all calls of this method
+        mainActivity.runOnUiThread(()->{
+            Toast.makeText(mainActivity, ret.toString(), Toast.LENGTH_SHORT).show();
+            okButton.setEnabled(true);
+            okButton.setText(R.string.alert_OK);
+        });
+        return 0;
+    }
+
+    private int ok_inner() {
         BasePathContent path = null;
 
         // see which pathContent type is currently selected
@@ -246,7 +264,8 @@ public class GenericChangeDirectoryDialog extends Dialog {
                  and launches error dialogs (host key not found/not valid and auth error -> provide password)
                  accordingly. Otherwise, a RemotePathContent object needs explicitly a home directory
                  */
-                    if (!basicNonEmptyValidation(user,domain,port)) return; // password can be empty
+                    String ret = basicNonEmptyValidation(user,domain,port);
+                    if (!ret.isEmpty()) return reenableOkButton(ret); // password can be empty
                     path = new RemotePathContent(
                             new AuthData(
                                     user.getText().toString(),
@@ -258,7 +277,8 @@ public class GenericChangeDirectoryDialog extends Dialog {
                     );
                     break;
                 case 3: // XFILES_REMOTE
-                    if (!basicNonEmptyValidation(xreServerHost)) return;
+                    ret = basicNonEmptyValidation(xreServerHost);
+                    if (!ret.isEmpty()) return reenableOkButton(ret);
                     path = new XFilesRemotePathContent(
                             xreServerHost.getText().toString(),
 //                        Integer.valueOf(xreServerPort.getText().toString()),
@@ -266,7 +286,8 @@ public class GenericChangeDirectoryDialog extends Dialog {
                     );
                     break;
                 case 4: // SMB
-                    if (!basicNonEmptyValidation(smbUser,smbDomain,smbHost,smbPort,smbPassword)) return; // password cannot be empty (no pubkey authentication for SMB)
+                    ret = basicNonEmptyValidation(smbUser,smbDomain,smbHost,smbPort,smbPassword);
+                    if (!ret.isEmpty()) return reenableOkButton(ret); // password cannot be empty (no pubkey authentication for SMB)
                     path = new SmbRemotePathContent(
                             new SmbAuthData(
                                     smbUser.getText().toString(),
@@ -280,9 +301,13 @@ public class GenericChangeDirectoryDialog extends Dialog {
                     break;
 
             }
-            FileOpsErrorCodes ret = mainActivity.goDir(path);
-            if (ret == FileOpsErrorCodes.OK ||
-                    ret == FileOpsErrorCodes.NULL_OR_WRONG_PASSWORD) dismiss();
+            GenericDirWithContent gdwc = mainActivity.goDir_inner(path);
+            FileOpsErrorCodes fe = gdwc.errorCode;
+            mainActivity.runOnUiThread(()-> {
+                if (fe == null || fe == FileOpsErrorCodes.OK) dismiss();
+                else reenableOkButton(fe);
+            });
+            mainActivity.completeGoDir(gdwc,path);
         }
         else if (idx == 5) {
             // start download service
@@ -297,7 +322,9 @@ public class GenericChangeDirectoryDialog extends Dialog {
             mainActivity.startService(startIntent);
             dismiss();
         }
-        else Toast.makeText(mainActivity, "Unexpected selector index", Toast.LENGTH_SHORT).show();
+        else throw new RuntimeException("Unexpected selector index");
+
+        return 0;
     }
 
     public void setLayout(ProviderType providerType, BasePathContent... currentDir) {
@@ -589,6 +616,7 @@ public class GenericChangeDirectoryDialog extends Dialog {
 
     public GenericChangeDirectoryDialog(MainActivity mainActivity, BasePathContent curDirPath) {
         super(mainActivity);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
         MainActivity.cdd = this;
         this.mainActivity = mainActivity;
         this.curDirPath = curDirPath;
@@ -597,7 +625,6 @@ public class GenericChangeDirectoryDialog extends Dialog {
 
         xreAnnouncesAdapter = new XreAnnouncesAdapter(mainActivity,new ArrayList<>());
 
-        setTitle("Change directory");
         setContentView(R.layout.change_directory_generic_dialog);
         pathContentTypeSelector = findViewById(R.id.pathContentRadioGroup);
         setLayout(curDirPath.providerType,curDirPath);
@@ -626,13 +653,12 @@ public class GenericChangeDirectoryDialog extends Dialog {
         });
     }
 
-    private boolean basicNonEmptyValidation(EditText... fields) {
+    private String basicNonEmptyValidation(EditText... fields) {
         boolean valid = true;
         for (EditText field : fields) {
             valid &= (field != null) && !(field.getText().toString().equals(""));
         }
-        if (!valid) Toast.makeText(mainActivity, "Invalid parameters", Toast.LENGTH_SHORT).show();
-        return valid;
+        return valid ? "":"Invalid parameters";
     }
 
 }

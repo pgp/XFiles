@@ -71,12 +71,12 @@ public class CreateLinkDialog extends BaseDialog {
             }
             else*/
             MainActivity.currentHelper.createLink(originPath,linkPath,isHardLink.isChecked());
-            Toast.makeText(mainActivity, "link created", Toast.LENGTH_SHORT).show();
+            Toast.makeText(mainActivity, "Link created", Toast.LENGTH_SHORT).show();
         }
         catch (IOException e) {
             e.printStackTrace();
             nameToLocate.clear();
-            MainActivity.showToastOnUI("Link creation error");
+            MainActivity.showToastOnUI("Link creation error, reason: "+e.getMessage());
         }
         finally {
             mainActivity.browserPagerAdapter.showDirContent(mainActivity.getCurrentDirCommander().refresh(),mainActivity.browserPager.getCurrentItem(),

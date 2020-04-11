@@ -16,6 +16,7 @@ import it.pgp.xfiles.sftpclient.AuthData;
 public class SftpDirWithContent extends GenericDirWithContent {
 
     public AuthData authData; // user@domain:port, to display in address bar
+    public String pendingLsPath;
 
     public SftpDirWithContent(AuthData authData, String dir, List<BrowserItem> content) {
         super(dir, content);
@@ -23,9 +24,10 @@ public class SftpDirWithContent extends GenericDirWithContent {
         this.authData = authData;
     }
 
-    public SftpDirWithContent(AuthData authData, FileOpsErrorCodes errorCode) {
+    public SftpDirWithContent(AuthData authData, FileOpsErrorCodes errorCode, String pendingLsPath) {
         super(errorCode);
         this.providerType = ProviderType.SFTP;
         this.authData = authData;
+        this.pendingLsPath = pendingLsPath;
     }
 }

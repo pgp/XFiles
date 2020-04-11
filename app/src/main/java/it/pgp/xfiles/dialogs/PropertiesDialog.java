@@ -117,8 +117,8 @@ public class PropertiesDialog extends Dialog {
         }
         catch (Exception e) {
             e.printStackTrace();
-            Toast.makeText(context, "Generic stats error", Toast.LENGTH_SHORT).show();
-        } // TODO refine error msgs from commented code below
+            Toast.makeText(context, "Generic stats error, reason: "+e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
 
         /*// @@@
         try {

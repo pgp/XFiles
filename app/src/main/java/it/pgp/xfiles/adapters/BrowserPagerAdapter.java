@@ -31,6 +31,7 @@ import it.pgp.xfiles.comparators.AdvancedComparator;
 import it.pgp.xfiles.comparators.FilenameComparator;
 import it.pgp.xfiles.enums.BrowserViewMode;
 import it.pgp.xfiles.enums.ComparatorField;
+import it.pgp.xfiles.enums.FileOpsErrorCodes;
 import it.pgp.xfiles.exceptions.DirCommanderException;
 import it.pgp.xfiles.utils.DirCommanderCUsingBrowserItemsAndPathContent;
 import it.pgp.xfiles.utils.Misc;
@@ -132,20 +133,34 @@ public class BrowserPagerAdapter extends PagerAdapter {
                                int position) {
         browserViewModes[position] = browserViewMode;
 
+        final Runnable refreshRunnable = () -> {
+            GenericDirWithContent dwc = mainActivity.getCurrentDirCommander().refresh_background();
+
+            if(dwc.errorCode == FileOpsErrorCodes.CURRENT_DIR_NO_LONGER_AVAILABLE) {
+                mainActivity.runOnUiThread(()-> {
+                    if(dwc.listViewPosition == null) {
+                        Toast.makeText(mainActivity, "Current dir was no longer available, unable to go back even to start folder, exiting...", Toast.LENGTH_SHORT).show();
+                        mainActivity.finishAffinity();
+                    }
+                    else Toast.makeText(mainActivity,"Current dir is no longer available, went back of " + dwc.listViewPosition + " positions", Toast.LENGTH_SHORT).show();
+                });
+            }
+            mainActivity.runOnUiThread(()->showDirContent(dwc,position));
+        };
+
         swipeRefreshLayouts[position] = browserPageLayout.findViewById(R.id.activity_main_swipe_refresh_layout);
         swipeRefreshLayouts[position].setParentActivity(mainActivity);
         swipeRefreshLayouts[position].setOnRefreshListener(() -> {
             if(browserAdapters[position].getSelectedCount() == 0) {
-                showDirContent(mainActivity.getCurrentDirCommander().refresh(),position);
+                new Thread(refreshRunnable).start();
             }
             else {
                 AlertDialog.Builder bld = new AlertDialog.Builder(mainActivity);
                 bld.setTitle("Refreshing will clear active selection");
-                bld.setNegativeButton("Cancel", (dialog, which) -> {});
-                bld.setPositiveButton("OK", (dialog, which) -> showDirContent(mainActivity.getCurrentDirCommander().refresh(),position));
+                bld.setNegativeButton(R.string.alert_cancel, (dialog, which) -> {});
+                bld.setPositiveButton(R.string.alert_OK, (dialog, which) -> new Thread(refreshRunnable).start());
                 bld.create().show();
             }
-            swipeRefreshLayouts[position].setRefreshing(false);
         });
 
         mainBrowserViewLayouts[position] = browserPageLayout.findViewById(R.id.mainBrowserViewLayout);
@@ -255,7 +270,7 @@ public class BrowserPagerAdapter extends PagerAdapter {
             if (targetFilenameToHighlight[0] instanceof String) { // reposition listview with FindActivity locate
                 int locatedPos = browserAdapters[position].findPositionByFilename((String)targetFilenameToHighlight[0]);
                 if (locatedPos < 0)
-                    Toast.makeText(mainActivity, "Unable to find file position in browser adapter", Toast.LENGTH_SHORT).show();
+                    MainActivity.showToastOnUI("Unable to find file position in browser adapter");
                 else mainBrowserViews[position].setSelection(locatedPos);
             }
             else { // reposition listview after delete operation
@@ -266,6 +281,7 @@ public class BrowserPagerAdapter extends PagerAdapter {
         else { // reposition listview when going back in dir navigation
             mainBrowserViews[position].setSelection(dirWithContent.listViewPosition);
         }
+        swipeRefreshLayouts[position].setRefreshing(false);
     }
 
     public void showSortedDirContent(GenericDirWithContent dirWithContent, Pair<ComparatorField,Boolean> whichAttribute_reverse, int position) {

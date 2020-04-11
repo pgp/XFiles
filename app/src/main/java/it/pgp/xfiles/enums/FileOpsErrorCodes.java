@@ -12,6 +12,7 @@ public enum FileOpsErrorCodes {
     COMMANDER_CANNOT_ACCESS("Cannot access"), // generic
     NOT_IMPLEMENTED("Not implemented"),
     ILLEGAL_ARGUMENT("Illegal argument"),
+    CURRENT_DIR_NO_LONGER_AVAILABLE("Current directory no longer available"),
 
     TRANSFER_ERROR(""), // generic copy error (read/write error)
     TRANSFER_CANCELLED(""), // transfer explicitly cancelled by user
@@ -26,6 +27,7 @@ public enum FileOpsErrorCodes {
     // SFTP errors
     MALFORMED_PATH_ERROR("Malformed path"),
     CONNECTION_ERROR("Connection error"),
+    SFTP_PATH_CANONICALIZE_ERROR("SFTP path canonicalization error"), // FIXME to be removed, just for debugging
     AUTHENTICATION_ERROR("Authentication error"), // to trigger password insert
     HOST_KEY_CHANGED_ERROR("Host key changed"), // to trigger dialog on host key changed
     HOST_KEY_INEXISTENT_ERROR("Host key does not exists") // to trigger dialog on host key not found

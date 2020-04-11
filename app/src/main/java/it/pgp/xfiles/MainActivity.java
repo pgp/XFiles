@@ -74,6 +74,8 @@ import it.pgp.xfiles.dialogs.OpenAsDialog;
 import it.pgp.xfiles.dialogs.PropertiesDialog;
 import it.pgp.xfiles.dialogs.RemoteRHServerManagementDialog;
 import it.pgp.xfiles.dialogs.RenameDialog;
+import it.pgp.xfiles.dialogs.SSHAlreadyInKnownHostsDialog;
+import it.pgp.xfiles.dialogs.SSHNotInKnownHostsDialog;
 import it.pgp.xfiles.dialogs.UpdateCheckDialog;
 import it.pgp.xfiles.dialogs.XFilesRemoteSessionsManagementActivity;
 import it.pgp.xfiles.dialogs.compress.AskPasswordDialogOnListing;
@@ -102,6 +104,7 @@ import it.pgp.xfiles.service.NonInteractiveXFilesRemoteTransferService;
 import it.pgp.xfiles.service.params.CopyMoveParams;
 import it.pgp.xfiles.service.params.DownloadParams;
 import it.pgp.xfiles.service.visualization.ProgressIndicator;
+import it.pgp.xfiles.sftpclient.InteractiveHostKeyVerifier;
 import it.pgp.xfiles.sftpclient.SFTPProviderUsingPathContent;
 import it.pgp.xfiles.sftpclient.SftpRetryLsListener;
 import it.pgp.xfiles.sftpclient.VaultActivity;
@@ -112,6 +115,7 @@ import it.pgp.xfiles.utils.DirCommanderCUsingBrowserItemsAndPathContent;
 import it.pgp.xfiles.utils.FileOperationHelperUsingPathContent;
 import it.pgp.xfiles.utils.XFilesUtilsUsingPathContent;
 import it.pgp.xfiles.utils.dircontent.GenericDirWithContent;
+import it.pgp.xfiles.utils.dircontent.SftpDirWithContent;
 import it.pgp.xfiles.utils.pathcontent.ArchivePathContent;
 import it.pgp.xfiles.utils.pathcontent.BasePathContent;
 import it.pgp.xfiles.utils.pathcontent.LocalPathContent;
@@ -1119,16 +1123,23 @@ public class MainActivity extends EffectActivity {
         goDir(parentFile);
     }
 
-    public FileOpsErrorCodes goDirOrArchive(LocalPathContent path) {
-        if (getRootHelperClient().isDir(path)) return goDir(path);
-        return goDir(new ArchivePathContent(path.dir,""));
+    public void goDirOrArchive(LocalPathContent path) {
+        BasePathContent path_ = (getRootHelperClient().isDir(path))? path: new ArchivePathContent(path.dir,"");
+        GenericDirWithContent gdwc = goDir_inner(path_);
+        completeGoDir(gdwc,path_);
+    }
+
+    public FileOpsErrorCodes goDir(Object dirOrDirection, String... targetFilenameToHighlight) {
+        GenericDirWithContent gdwc = goDir_inner(dirOrDirection,targetFilenameToHighlight);
+        completeGoDir(gdwc,dirOrDirection,targetFilenameToHighlight);
+        return gdwc.errorCode;
     }
 
     /**
      * @param dirOrDirection Target path to be loaded, or direction as boolean (back or ahead)
      * @param targetFilenameToHighlight Target filename to be highlighted and centered in the listview (in case of Locate command from {@link FindActivity})
      */
-    public FileOpsErrorCodes goDir(Object dirOrDirection, String... targetFilenameToHighlight) {
+    public GenericDirWithContent goDir_inner(Object dirOrDirection, String... targetFilenameToHighlight) {
         GenericDirWithContent dwc;
         int prevPos = getCurrentMainBrowserView().getFirstVisiblePosition();
         if (dirOrDirection instanceof Boolean) {
@@ -1139,29 +1150,54 @@ public class MainActivity extends EffectActivity {
         else if (dirOrDirection instanceof BasePathContent) {
             dwc = getCurrentDirCommander().setDir((BasePathContent) dirOrDirection, prevPos);
         }
-        else {
-            Toast.makeText(this,"Invalid object type for dir browsing",Toast.LENGTH_SHORT).show();
-            return FileOpsErrorCodes.ILLEGAL_ARGUMENT;
-        }
+        else return new GenericDirWithContent(FileOpsErrorCodes.ILLEGAL_ARGUMENT);
 
-        // check for errors here
-        if (dwc.errorCode != null) {
-            if (dwc.errorCode == FileOpsErrorCodes.NULL_OR_WRONG_PASSWORD) {
-                AskPasswordDialogOnListing askPasswordDialogOnListing = new AskPasswordDialogOnListing(
-                        MainActivity.this,
-                        (BasePathContent) dirOrDirection // tested, no classCastException on go back/ahead into an archive
-                );
-                askPasswordDialogOnListing.show();
-                return dwc.errorCode;
+        return dwc;
+    }
+
+    // this part can be submitted to UI
+    public void completeGoDir(GenericDirWithContent dwc, Object dirOrDirection, String... targetFilenameToHighlight) {
+        runOnUiThread(()->{
+            if(dwc.errorCode != null && dwc.errorCode != FileOpsErrorCodes.OK) {
+                switch(dwc.errorCode) {
+                    case ILLEGAL_ARGUMENT:
+                        showToastOnUI("Invalid object type for dir browsing");
+                        return;
+                    case NULL_OR_WRONG_PASSWORD:
+                        new AskPasswordDialogOnListing(
+                                MainActivity.this,
+                                (BasePathContent) dirOrDirection // tested, no classCastException on go back/ahead into an archive
+                        ).show();
+                        return;
+                    case HOST_KEY_INEXISTENT_ERROR:
+                        new SSHNotInKnownHostsDialog(
+                                MainActivity.this,
+                                ((SftpDirWithContent)dwc).authData,
+                                InteractiveHostKeyVerifier.currentHostKey,
+                                MainActivity.sftpProvider,
+                                new RemotePathContent(
+                                        ((SftpDirWithContent)dwc).authData,
+                                        ((SftpDirWithContent)dwc).pendingLsPath)).show();
+                        return;
+                    case HOST_KEY_CHANGED_ERROR:
+                        new SSHAlreadyInKnownHostsDialog(
+                                MainActivity.this,
+                                ((SftpDirWithContent)dwc).authData,
+                                null, // FIXME need to have old host key here
+                                InteractiveHostKeyVerifier.currentHostKey,
+                                MainActivity.sftpProvider,
+                                new RemotePathContent(
+                                        ((SftpDirWithContent)dwc).authData,
+                                        ((SftpDirWithContent)dwc).pendingLsPath)).show();
+                        return;
+                    default:
+                        Toast.makeText(MainActivity.this, dwc.errorCode.getValue(), Toast.LENGTH_SHORT).show();
+                        return;
+                }
             }
 
-            Toast.makeText(this,dwc.errorCode.getValue(),Toast.LENGTH_SHORT).show();
-            // TODO switch error codes to dialogs or toast popups
-            return dwc.errorCode;
-        }
-
-        browserPagerAdapter.showDirContent(dwc,browserPager.getCurrentItem(),targetFilenameToHighlight);
-        return FileOpsErrorCodes.OK;
+            browserPagerAdapter.showDirContent(dwc,browserPager.getCurrentItem(),targetFilenameToHighlight);
+        });
     }
 
     public static void hideDefaultControls(@NonNull final Activity activity) {
