@@ -3,6 +3,7 @@ package it.pgp.xfiles.adapters;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.text.Editable;
@@ -145,7 +146,7 @@ public class BrowserPagerAdapter extends PagerAdapter {
                     else Toast.makeText(mainActivity,"Current dir is no longer available, went back of " + dwc.listViewPosition + " positions", Toast.LENGTH_SHORT).show();
                 });
             }
-            mainActivity.runOnUiThread(()->showDirContent(dwc,position));
+            mainActivity.runOnUiThread(()->showDirContent(dwc,position,null));
         };
 
         swipeRefreshLayouts[position] = browserPageLayout.findViewById(R.id.activity_main_swipe_refresh_layout);
@@ -175,7 +176,7 @@ public class BrowserPagerAdapter extends PagerAdapter {
         currentDirectoryTextViews[position] = browserPageLayout.findViewById(R.id.currentDirectoryTextView);
         mainActivity.registerForContextMenu(currentDirectoryTextViews[position]);
 
-        showDirContent(dirCommanders[position].refresh(),position);
+        showDirContent(dirCommanders[position].refresh(),position,null);
 
         mainBrowserViews[position].setOnItemClickListener(mainActivity.listViewLevelOICL);
         mainBrowserViews[position].setOnItemLongClickListener((parent, view, position1, id) -> {
@@ -204,7 +205,8 @@ public class BrowserPagerAdapter extends PagerAdapter {
                         dirCommanders[position].getCurrentDirectoryPathname().dir,
                         browserAdapters[position].objects
                 ),
-                position);
+                position,
+                null);
 
         // mainBrowserViews[position].setAdapter(browserAdapters[position]); // already called in showDirContent
         mainBrowserViews[position].setOnItemClickListener(mainActivity.listViewLevelOICL);
@@ -257,7 +259,7 @@ public class BrowserPagerAdapter extends PagerAdapter {
 
     public void showDirContent(GenericDirWithContent dirWithContent,
                                int position,
-                               Object... targetFilenameToHighlight) { // with filename comparator
+                               @Nullable Object targetFilenameToHighlight) { // with filename comparator
 
         Collections.sort(dirWithContent.content,new FilenameComparator());
 
@@ -266,15 +268,15 @@ public class BrowserPagerAdapter extends PagerAdapter {
 
         recreateAdapterAndSelectMode(browserViewModes[position],position,dirWithContent);
         mainBrowserViews[position].setAdapter(browserAdapters[position]);
-        if (targetFilenameToHighlight.length>0) {
-            if (targetFilenameToHighlight[0] instanceof String) { // reposition listview with FindActivity locate
-                int locatedPos = browserAdapters[position].findPositionByFilename((String)targetFilenameToHighlight[0]);
+        if (targetFilenameToHighlight != null) {
+            if (targetFilenameToHighlight instanceof String) { // reposition listview with FindActivity locate
+                int locatedPos = browserAdapters[position].findPositionByFilename((String)targetFilenameToHighlight);
                 if (locatedPos < 0)
                     MainActivity.showToastOnUI("Unable to find file position in browser adapter");
                 else mainBrowserViews[position].setSelection(locatedPos);
             }
             else { // reposition listview after delete operation
-                Integer locatedPos = (Integer)targetFilenameToHighlight[0];
+                Integer locatedPos = (Integer)targetFilenameToHighlight;
                 mainBrowserViews[position].setSelection(locatedPos);
             }
         }

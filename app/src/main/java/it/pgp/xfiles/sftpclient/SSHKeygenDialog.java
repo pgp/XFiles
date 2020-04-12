@@ -131,7 +131,7 @@ class SSHKeygenDialog extends Dialog {
             if (result == null) {
                 Toast.makeText(dialog.vaultActivity, "Keys generated successfully", Toast.LENGTH_SHORT).show();
                 dialog.vaultActivity.idVaultAdapter.notifyDataSetChanged();
-                MainActivity.mainActivity.goDir(new LocalPathContent(dialog.destDir.getAbsolutePath()));
+                MainActivity.mainActivity.goDir(new LocalPathContent(dialog.destDir.getAbsolutePath()),null);
             }
             else {
                 Toast.makeText(dialog.vaultActivity, "Key generation error", Toast.LENGTH_SHORT).show();

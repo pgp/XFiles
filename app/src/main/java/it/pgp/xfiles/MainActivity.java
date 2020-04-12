@@ -21,6 +21,7 @@ import android.os.Message;
 import android.os.StrictMode;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.util.DisplayMetrics;
@@ -42,6 +43,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
+import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.Toast;
 
@@ -231,6 +233,7 @@ public class MainActivity extends EffectActivity {
         toastHandler.sendMessage(m);
     }
 
+    public ProgressBar progressCircleForGoDirOps;
     public ImageButton operationButtonsLayoutSwitcher;
     public ImageButton fileOperationHelperSwitcher;
 
@@ -263,7 +266,7 @@ public class MainActivity extends EffectActivity {
 
             // open local directory
             if (browserItem.isDirectory) {
-                goDir(currentFile);
+                goDir_async(currentFile,null);
                 return;
             }
 
@@ -277,12 +280,12 @@ public class MainActivity extends EffectActivity {
                     AlertDialog.Builder bld = new AlertDialog.Builder(MainActivity.this);
                     bld.setTitle("Choose APK action");
                     bld.setNegativeButton("Install", (dialog, which) -> openWithDefaultApp(new File(currentFile.dir)));
-                    bld.setPositiveButton("Open as archive", (dialog, which) -> goDir(new ArchivePathContent(currentFile.dir,"/")));
+                    bld.setPositiveButton("Open as archive", (dialog, which) -> goDir(new ArchivePathContent(currentFile.dir,"/"),null));
                     bld.create().show();
                     return;
                 }
                 if(ArchiveType.formats.contains(arcExt)) {
-                    goDir(new ArchivePathContent(currentFile.dir,"/"));
+                    goDir(new ArchivePathContent(currentFile.dir,"/"),null);
                     return;
                 }
             }
@@ -641,6 +644,7 @@ public class MainActivity extends EffectActivity {
         // if(!sharedPrefs.contains("SOFTKEYS")) throw new RuntimeException("Softkeys item not set");
         boolean hasPermanentMenuKey = !(sharedPrefs.getBoolean("SOFTKEYS",true));
 
+        progressCircleForGoDirOps = findViewById(R.id.progressCircleForGoDirOps);
         operationButtonsLayoutSwitcher = findViewById(R.id.operationButtonsLayoutSwitcher);
         fileOperationHelperSwitcher = findViewById(R.id.toggleRootHelperButton);
 
@@ -1037,7 +1041,7 @@ public class MainActivity extends EffectActivity {
                     try {
                         currentHelper.copyMoveFilesToDirectory(copyMoveList,destPath);
                         copyMoveList = null;
-                        browserPagerAdapter.showDirContent(getCurrentDirCommander().refresh(),browserPager.getCurrentItem());
+                        browserPagerAdapter.showDirContent(getCurrentDirCommander().refresh(),browserPager.getCurrentItem(),null);
                         Toast.makeText(this,"Remote-to-remote move completed",Toast.LENGTH_SHORT).show();
                     }
                     catch (IOException e) {
@@ -1114,32 +1118,53 @@ public class MainActivity extends EffectActivity {
         startActivity(new Intent(MainActivity.this,ChecksumActivity.class));
     }
 
+    // false when starting, true after end
+    void toggleGoDirOpsIndeterminateProgress(boolean status) {
+        int[] a = status ? new int[]{View.VISIBLE,View.GONE}:
+                new int[]{View.GONE,View.VISIBLE};
+
+        operationButtonsLayoutSwitcher.setVisibility(a[0]);
+        progressCircleForGoDirOps.setVisibility(a[1]);
+    }
+
     void upOneLevel() {
         BasePathContent parentFile = getCurrentDirCommander().getCurrentDirectoryPathname().getParent();
         if (parentFile == null) {
             Toast.makeText(this,"Already on root path for the current filesystem",Toast.LENGTH_SHORT).show();
             return;
         }
-        goDir(parentFile);
+        goDir_async(parentFile,null);
     }
 
     public void goDirOrArchive(LocalPathContent path) {
         BasePathContent path_ = (getRootHelperClient().isDir(path))? path: new ArchivePathContent(path.dir,"");
         GenericDirWithContent gdwc = goDir_inner(path_);
-        completeGoDir(gdwc,path_);
+        completeGoDir(gdwc,path_,null);
     }
 
-    public FileOpsErrorCodes goDir(Object dirOrDirection, String... targetFilenameToHighlight) {
-        GenericDirWithContent gdwc = goDir_inner(dirOrDirection,targetFilenameToHighlight);
-        completeGoDir(gdwc,dirOrDirection,targetFilenameToHighlight);
+    public FileOpsErrorCodes goDir(Object dirOrDirection, @Nullable String targetFilenameToHighlight, Runnable... onCompletion) {
+        GenericDirWithContent gdwc = goDir_inner(dirOrDirection);
+        completeGoDir(gdwc,dirOrDirection,targetFilenameToHighlight,onCompletion);
         return gdwc.errorCode;
+    }
+
+    public void goDir_async(Object dirOrDirection, @Nullable String targetFilenameToHighlight) {
+        final Thread t = new Thread(()->goDir(
+                dirOrDirection,
+                targetFilenameToHighlight,
+                new Runnable[]{() -> toggleGoDirOpsIndeterminateProgress(true)}));
+        t.start();
+        new Handler().postDelayed(() -> {
+            if (t.getState() != Thread.State.TERMINATED)
+                toggleGoDirOpsIndeterminateProgress(false);
+        },250);
     }
 
     /**
      * @param dirOrDirection Target path to be loaded, or direction as boolean (back or ahead)
      * @param targetFilenameToHighlight Target filename to be highlighted and centered in the listview (in case of Locate command from {@link FindActivity})
      */
-    public GenericDirWithContent goDir_inner(Object dirOrDirection, String... targetFilenameToHighlight) {
+    public GenericDirWithContent goDir_inner(Object dirOrDirection) {
         GenericDirWithContent dwc;
         int prevPos = getCurrentMainBrowserView().getFirstVisiblePosition();
         if (dirOrDirection instanceof Boolean) {
@@ -1156,7 +1181,7 @@ public class MainActivity extends EffectActivity {
     }
 
     // this part can be submitted to UI
-    public void completeGoDir(GenericDirWithContent dwc, Object dirOrDirection, String... targetFilenameToHighlight) {
+    public void completeGoDir(GenericDirWithContent dwc, Object dirOrDirection, @Nullable String targetFilenameToHighlight, Runnable... onCompletion) {
         runOnUiThread(()->{
             if(dwc.errorCode != null && dwc.errorCode != FileOpsErrorCodes.OK) {
                 switch(dwc.errorCode) {
@@ -1197,6 +1222,8 @@ public class MainActivity extends EffectActivity {
             }
 
             browserPagerAdapter.showDirContent(dwc,browserPager.getCurrentItem(),targetFilenameToHighlight);
+
+            if(onCompletion.length > 0) onCompletion[0].run();
         });
     }
 
@@ -1622,9 +1649,9 @@ public class MainActivity extends EffectActivity {
                 paste();break;
 
             case R.id.goBackButton:
-                goDir(Boolean.TRUE);break;
+                goDir_async(Boolean.TRUE,null);break;
             case R.id.goAheadButton:
-                goDir(Boolean.FALSE);break;
+                goDir_async(Boolean.FALSE,null);break;
 
             case R.id.newFileButton:
                 CreateFileOrDirectoryDialog createFileDialog = new CreateFileOrDirectoryDialog(this, FileMode.FILE);

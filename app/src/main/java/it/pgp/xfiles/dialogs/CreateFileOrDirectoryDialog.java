@@ -127,9 +127,10 @@ public class CreateFileOrDirectoryDialog extends BaseDialog implements Runnable 
         }
         finally {
             mainActivity.runOnUiThread(()->{
-                mainActivity.browserPagerAdapter.showDirContent(mainActivity.getCurrentDirCommander().refresh(),mainActivity.browserPager.getCurrentItem(),
-                        nameToLocate.isEmpty()?
-                                new String[0]:new String[]{nameToLocate.get(0)});
+                mainActivity.browserPagerAdapter.showDirContent(
+                        mainActivity.getCurrentDirCommander().refresh(),
+                        mainActivity.browserPager.getCurrentItem(),
+                        nameToLocate.isEmpty()?null:nameToLocate.get(0));
                 dismiss();
             });
         }

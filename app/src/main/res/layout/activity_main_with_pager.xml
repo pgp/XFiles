@@ -20,6 +20,17 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
 
+<!--        either this        -->
+        <ProgressBar
+            android:scaleType="fitCenter"
+            android:adjustViewBounds="true"
+            android:background="@null"
+            android:id="@+id/progressCircleForGoDirOps"
+            android:visibility="gone"
+            android:layout_alignParentStart="true"
+            android:layout_width="30dp"
+            android:layout_height="wrap_content" />
+<!--        or this        -->
         <ImageButton
             android:scaleType="fitCenter"
             android:adjustViewBounds="true"

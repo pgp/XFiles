@@ -307,7 +307,7 @@ public class GenericChangeDirectoryDialog extends Dialog {
                 if (fe == null || fe == FileOpsErrorCodes.OK) dismiss();
                 else reenableOkButton(fe);
             });
-            mainActivity.completeGoDir(gdwc,path);
+            mainActivity.completeGoDir(gdwc,path,null);
         }
         else if (idx == 5) {
             // start download service

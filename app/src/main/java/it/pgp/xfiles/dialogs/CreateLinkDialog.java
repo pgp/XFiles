@@ -79,10 +79,10 @@ public class CreateLinkDialog extends BaseDialog {
             MainActivity.showToastOnUI("Link creation error, reason: "+e.getMessage());
         }
         finally {
-            mainActivity.browserPagerAdapter.showDirContent(mainActivity.getCurrentDirCommander().refresh(),mainActivity.browserPager.getCurrentItem(),
-                    nameToLocate.isEmpty()?
-                            new String[0]:new String[]{nameToLocate.get(0)});
-
+            mainActivity.browserPagerAdapter.showDirContent(
+                    mainActivity.getCurrentDirCommander().refresh(),
+                    mainActivity.browserPager.getCurrentItem(),
+                    nameToLocate.isEmpty()?null:nameToLocate.get(0));
             dismiss();
         }
     }

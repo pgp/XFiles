@@ -85,7 +85,7 @@ public class ExtractTask extends RootHelperClientTask {
             if (activity == null) return; // activity closed while service active, nothing to refresh
             BasePathContent cd = activity.getCurrentDirCommander().getCurrentDirectoryPathname();
             if (cd.equals(currentDir))
-                activity.browserPagerAdapter.showDirContent(activity.getCurrentDirCommander().refresh(),activity.browserPager.getCurrentItem());
+                activity.browserPagerAdapter.showDirContent(activity.getCurrentDirCommander().refresh(),activity.browserPager.getCurrentItem(),null);
             Toast.makeText(service.getApplicationContext(), "Extract completed", Toast.LENGTH_LONG).show();
         }
         else if (result == FileOpsErrorCodes.NULL_OR_WRONG_PASSWORD) {
