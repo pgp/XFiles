@@ -12,6 +12,7 @@ import java.net.URL;
 import it.pgp.xfiles.MainActivity;
 import it.pgp.xfiles.enums.FileOpsErrorCodes;
 import it.pgp.xfiles.enums.ProviderType;
+import it.pgp.xfiles.enums.ServiceStatus;
 import it.pgp.xfiles.service.params.DownloadParams;
 import it.pgp.xfiles.service.visualization.MovingRibbon;
 import it.pgp.xfiles.utils.Misc;
@@ -157,7 +158,8 @@ public class HTTPDownloadTask extends RootHelperClientTask {
                 activity.browserPagerAdapter.showDirContent(activity.getCurrentDirCommander().refresh(),activity.browserPager.getCurrentItem(),targetFileNameOnly[0]);
         }
         else {
-            Toast.makeText(service, "Download error", Toast.LENGTH_SHORT).show();
+            Toast.makeText(service, "Download "+
+                    (status == ServiceStatus.CANCELLED ? "cancelled" : "error"), Toast.LENGTH_SHORT).show();
         }
     }
 }

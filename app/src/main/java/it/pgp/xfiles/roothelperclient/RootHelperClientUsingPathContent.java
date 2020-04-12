@@ -1336,7 +1336,8 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
 
     // Using RH's internal HTTPS client
     public void downloadHttpsUrl(String url, int port, String destPath, String[] targetFilename) throws IOException {
-        try(StreamsPair rs = getStreams()) {
+        try {
+            rs = getStreams();
             try (FlushingBufferedOutputStream nbf = new FlushingBufferedOutputStream(rs.o)) { // send a single packet instead of multiple ones
                 nbf.write(ControlCodes.ACTION_HTTPS_URL_DOWNLOAD.getValue());
                 Misc.sendStringWithLen(nbf,url);
@@ -1355,8 +1356,7 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
                     byte[] errno_ = new byte[4];
                     rs.i.readFully(errno_);
                     int errno = (int) Misc.castBytesToUnsignedNumber(errno_,4);
-                    Log.e("RHHttpsClient", "Error returned from roothelper server: " + errno);
-                    return;
+                    throw new IOException("Error returned from roothelper server: " + errno);
                 }
                 byte[] tlsSessionHash = new byte[32];
                 rs.i.readFully(tlsSessionHash);
@@ -1374,6 +1374,9 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
                     task.publishProgressWrapper((int) (progress * 100 / downloadSize));
             }
             Log.d("RHHttpsClient","Download completed");
+        }
+        finally {
+            rs.close();
         }
     }
 
