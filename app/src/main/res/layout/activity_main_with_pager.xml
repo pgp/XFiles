@@ -26,6 +26,7 @@
             android:adjustViewBounds="true"
             android:background="@null"
             android:id="@+id/progressCircleForGoDirOps"
+            android:onClick="switchOperationButtonsLayout"
             android:visibility="gone"
             android:layout_alignParentStart="true"
             android:layout_width="30dp"

@@ -826,17 +826,6 @@ public class MainActivity extends EffectActivity {
         activity.startActivity(startMain);
     }
 
-    public void simulateRecentPress() {
-        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
-            Intent intent = new Intent("com.android.systemui.recent.action.TOGGLE_RECENTS");
-            intent.setComponent(new ComponentName("com.android.systemui", "com.android.systemui.recent.RecentsActivity"));
-            startActivity(intent);
-        }
-        else {
-            Toast.makeText(this,"Recents button not implemented on android != Kitkat",Toast.LENGTH_SHORT).show();
-        }
-    }
-
     public void openWithDefaultApp(File file) {
         // get extension
         String extension = "";
@@ -1642,8 +1631,6 @@ public class MainActivity extends EffectActivity {
                 onBackPressed();break;
             case R.id.androidGoHomeButton:
                 simulateHomePress(this);break;
-            case R.id.androidGoRecentButton:
-                simulateRecentPress();break;
 
             case R.id.upOneLevelButton:
                 upOneLevel();break;
