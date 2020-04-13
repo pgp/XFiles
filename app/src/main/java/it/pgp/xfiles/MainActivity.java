@@ -603,6 +603,8 @@ public class MainActivity extends EffectActivity {
         return sp.getBoolean("1stRun",true);
     }
 
+    boolean hasPermanentMenuKey;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -642,7 +644,7 @@ public class MainActivity extends EffectActivity {
         firstRunCheck();
 
         // if(!sharedPrefs.contains("SOFTKEYS")) throw new RuntimeException("Softkeys item not set");
-        boolean hasPermanentMenuKey = !(sharedPrefs.getBoolean("SOFTKEYS",true));
+        hasPermanentMenuKey = !(sharedPrefs.getBoolean("SOFTKEYS",true));
 
         progressCircleForGoDirOps = findViewById(R.id.progressCircleForGoDirOps);
         operationButtonsLayoutSwitcher = findViewById(R.id.operationButtonsLayoutSwitcher);
@@ -1118,13 +1120,13 @@ public class MainActivity extends EffectActivity {
         startActivity(new Intent(MainActivity.this,ChecksumActivity.class));
     }
 
+    private final int[] goDirOpsStatuses = new int[]{View.VISIBLE,View.GONE};
+
     // false when starting, true after end
     void toggleGoDirOpsIndeterminateProgress(boolean status) {
-        int[] a = status ? new int[]{View.VISIBLE,View.GONE}:
-                new int[]{View.GONE,View.VISIBLE};
-
-        operationButtonsLayoutSwitcher.setVisibility(a[0]);
-        progressCircleForGoDirOps.setVisibility(a[1]);
+        if(!hasPermanentMenuKey) // if device has physical buttons, status is always GONE
+            operationButtonsLayoutSwitcher.setVisibility(status?goDirOpsStatuses[0]:goDirOpsStatuses[1]);
+        progressCircleForGoDirOps.setVisibility(status?goDirOpsStatuses[1]:goDirOpsStatuses[0]);
     }
 
     void upOneLevel() {
