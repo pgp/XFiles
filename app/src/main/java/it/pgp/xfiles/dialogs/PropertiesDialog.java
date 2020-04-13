@@ -1,10 +1,11 @@
 package it.pgp.xfiles.dialogs;
 
 import android.app.Dialog;
-import android.content.Context;
+import android.app.Activity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,20 +23,25 @@ import it.pgp.xfiles.utils.pathcontent.BasePathContent;
  */
 public class PropertiesDialog extends Dialog {
 
+    private final Activity activity;
     private TextView childrenFiles,childrenFolders,totalFiles,totalFolders,totalSize;
     private SingleStatsItem stats;
     private folderStats_resp statsFolderOrMultipleItems;
 
     private LinearLayout singleItemLayout;
     private LinearLayout aggregatesLayout;
+    private ProgressBar progressCircle;
 
     // Constructor for showing properties of a single file or a single folder
     // TODO maybe it's better to inherit a FolderPropertiesDialog from this
-    public PropertiesDialog(final Context context, FileMode fileMode, List<BasePathContent> pathname_) {
-        super(context);
+    public PropertiesDialog(final Activity activity, FileMode fileMode, List<BasePathContent> pathname_) {
+        super(activity);
+        this.activity = activity;
         setContentView(R.layout.properties_file_dialog);
+
         singleItemLayout = findViewById(R.id.propertiesSingleItemLayout);
         aggregatesLayout = findViewById(R.id.propertiesAggregatesLayout);
+        progressCircle = findViewById(R.id.progressCircle);
 
         if (pathname_.size() != 1) {
             setTitle("Multiple items properties");
@@ -86,74 +92,47 @@ public class PropertiesDialog extends Dialog {
                 throw new RuntimeException("Unknown operation mode, only dir and file allowed");
         }
 
-        try {
-            if (pathname_.size() != 1) { // ignore filemode, stats multiple items
-                statsFolderOrMultipleItems = MainActivity.currentHelper.statFiles(pathname_);
-            }
-            else {
-                stats = MainActivity.currentHelper.statFile(pathname_.get(0));
-                if (fileMode == FileMode.DIRECTORY) {
-                    statsFolderOrMultipleItems = MainActivity.currentHelper.statFolder(pathname_.get(0));
-                }
-
-                pathname.setText(pathname_.get(0).toString());
-                // TODO type setText MIME type
-                size.setText(""+stats.size);
-                created.setText(""+stats.creationTime);
-                modified.setText(""+stats.modificationTime);
-                lastAccessed.setText(""+stats.lastAccessTime);
-                permissions.setText(stats.permissions);
-                owner.setText(stats.owner);
-                group.setText(stats.group);
-            }
-
-            if (pathname_.size() != 1 || fileMode == FileMode.DIRECTORY) {
-                childrenFiles.setText(""+ statsFolderOrMultipleItems.childrenFiles);
-                childrenFolders.setText(""+ statsFolderOrMultipleItems.childrenDirs);
-                totalFiles.setText(""+ statsFolderOrMultipleItems.totalFiles);
-                totalFolders.setText(""+ statsFolderOrMultipleItems.totalDirs);
-                totalSize.setText(""+ statsFolderOrMultipleItems.totalSize);
-            }
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-            Toast.makeText(context, "Generic stats error, reason: "+e.getMessage(), Toast.LENGTH_SHORT).show();
-        }
-
-        /*// @@@
-        try {
-            stats = MainActivity.currentHelper.statFile(pathname_);
-        } catch (IOException e) {
-            if (MainActivity.currentHelper instanceof XFilesUtilsUsingPathContent) {
-                Toast.makeText(context,"It seems that Java implementation of file stats is only in Java NIO Files (not included in Android); however, reverting to roothelper failed (cannot start roothelper or connection error)",Toast.LENGTH_LONG).show();
-            }
-
-            Toast.makeText(context,"Unable to stat file",Toast.LENGTH_SHORT).show();
-            cancel(); // TODO dismiss/cancel not working inside constructor, need to try catch from activity
-            return;
-        }
-
-        // @@@
-        if (fileMode == FileMode.DIRECTORY) {
+        new Thread(() -> {
+            Exception[] lastException = {null};
             try {
-                statsFolderOrMultipleItems = MainActivity.currentHelper.statFolder(pathname_);
-            } catch (IOException e) {
-                Toast.makeText(context, "Unable to stat folder", Toast.LENGTH_SHORT).show();
-                cancel();
-                return;
+                if (pathname_.size() != 1) // ignore filemode, stats multiple items
+                    statsFolderOrMultipleItems = MainActivity.currentHelper.statFiles(pathname_);
+                else {
+                    stats = MainActivity.currentHelper.statFile(pathname_.get(0));
+                    if (fileMode == FileMode.DIRECTORY)
+                        statsFolderOrMultipleItems = MainActivity.currentHelper.statFolder(pathname_.get(0));
+                }
             }
-        }
-
-        if (stats == null) {
-            Toast.makeText(context, "Unable to stat file", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        if (fileMode == FileMode.DIRECTORY) {
-            if (statsFolderOrMultipleItems == null) {
-                Toast.makeText(context, "Unable to stat folder", Toast.LENGTH_SHORT).show();
-                return;
+            catch (Exception e) {
+                e.printStackTrace();
+                lastException[0] = e;
             }
-        }*/
+            activity.runOnUiThread(() -> {
+                if(lastException[0] != null)
+                    Toast.makeText(activity, "Generic stats error, reason: "+lastException[0].getMessage(), Toast.LENGTH_SHORT).show();
+                else {
+                    if (pathname_.size() == 1) {
+                        pathname.setText(pathname_.get(0).toString());
+                        // TODO type setText MIME type
+                        size.setText(""+stats.size);
+                        created.setText(""+stats.creationTime);
+                        modified.setText(""+stats.modificationTime);
+                        lastAccessed.setText(""+stats.lastAccessTime);
+                        permissions.setText(stats.permissions);
+                        owner.setText(stats.owner);
+                        group.setText(stats.group);
+                    }
+
+                    if (pathname_.size() != 1 || fileMode == FileMode.DIRECTORY) {
+                        childrenFiles.setText(""+ statsFolderOrMultipleItems.childrenFiles);
+                        childrenFolders.setText(""+ statsFolderOrMultipleItems.childrenDirs);
+                        totalFiles.setText(""+ statsFolderOrMultipleItems.totalFiles);
+                        totalFolders.setText(""+ statsFolderOrMultipleItems.totalDirs);
+                        totalSize.setText(""+ statsFolderOrMultipleItems.totalSize);
+                    }
+                }
+                progressCircle.setVisibility(View.GONE);
+            });
+        }).start();
     }
 }

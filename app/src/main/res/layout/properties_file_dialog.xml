@@ -7,6 +7,14 @@
 
     <include layout="@layout/properties_aggragates_dialog" />
 
+    <ProgressBar
+        android:scaleType="fitCenter"
+        android:adjustViewBounds="true"
+        android:background="@null"
+        android:id="@+id/progressCircle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
     <Button
         android:text="Close"
         android:id="@+id/propertiesDismissButton"
