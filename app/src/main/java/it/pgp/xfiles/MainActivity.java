@@ -1128,14 +1128,16 @@ public class MainActivity extends EffectActivity {
     }
 
     public void goDirOrArchive(LocalPathContent path) {
+        final int targetViewPagerPosition = browserPager.getCurrentItem();
         BasePathContent path_ = (getRootHelperClient().isDir(path))? path: new ArchivePathContent(path.dir,"");
         GenericDirWithContent gdwc = goDir_inner(path_);
-        completeGoDir(gdwc,path_,null);
+        completeGoDir(gdwc,path_,targetViewPagerPosition,null);
     }
 
     public FileOpsErrorCodes goDir(Object dirOrDirection, @Nullable String targetFilenameToHighlight, Runnable... onCompletion) {
+        final int targetViewPagerPosition = browserPager.getCurrentItem();
         GenericDirWithContent gdwc = goDir_inner(dirOrDirection);
-        completeGoDir(gdwc,dirOrDirection,targetFilenameToHighlight,onCompletion);
+        completeGoDir(gdwc,dirOrDirection,targetViewPagerPosition,targetFilenameToHighlight,onCompletion);
         return gdwc.errorCode;
     }
 
@@ -1172,7 +1174,7 @@ public class MainActivity extends EffectActivity {
     }
 
     // this part can be submitted to UI
-    public void completeGoDir(GenericDirWithContent dwc, Object dirOrDirection, @Nullable String targetFilenameToHighlight, Runnable... onCompletion) {
+    public void completeGoDir(GenericDirWithContent dwc, Object dirOrDirection, int position, @Nullable String targetFilenameToHighlight, Runnable... onCompletion) {
         runOnUiThread(()->{
             if(dwc.errorCode != null && dwc.errorCode != FileOpsErrorCodes.OK) {
                 switch(dwc.errorCode) {
@@ -1212,7 +1214,7 @@ public class MainActivity extends EffectActivity {
                 }
             }
 
-            browserPagerAdapter.showDirContent(dwc,browserPager.getCurrentItem(),targetFilenameToHighlight);
+            browserPagerAdapter.showDirContent(dwc,position,targetFilenameToHighlight);
 
             if(onCompletion.length > 0) onCompletion[0].run();
         });

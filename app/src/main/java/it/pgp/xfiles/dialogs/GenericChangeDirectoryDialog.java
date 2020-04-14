@@ -301,13 +301,14 @@ public class GenericChangeDirectoryDialog extends Dialog {
                     break;
 
             }
+            final int targetViewPagerPosition = mainActivity.browserPager.getCurrentItem();
             GenericDirWithContent gdwc = mainActivity.goDir_inner(path);
             FileOpsErrorCodes fe = gdwc.errorCode;
             mainActivity.runOnUiThread(()-> {
                 if (fe == null || fe == FileOpsErrorCodes.OK) dismiss();
                 else reenableOkButton(fe);
             });
-            mainActivity.completeGoDir(gdwc,path,null);
+            mainActivity.completeGoDir(gdwc,path,targetViewPagerPosition,null);
         }
         else if (idx == 5) {
             // start download service
