@@ -63,7 +63,7 @@ public class AskPasswordDialogOnListing extends BaseDialog {
 
         // cancel is called before dismiss, anyway don't rely on that order
         setOnDismissListener(dialog -> {
-            if (pendingArchivePath_ != null) activity.goDir(pendingArchivePath_,null);
+            if (pendingArchivePath_ != null) activity.goDir(pendingArchivePath_,activity.browserPager.getCurrentItem(),null);
             // wrong password will trigger a new dialog open
         });
     }

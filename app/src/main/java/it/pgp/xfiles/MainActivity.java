@@ -61,6 +61,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.concurrent.Future;
 
 import it.pgp.xfiles.adapters.BrowserAdapter;
 import it.pgp.xfiles.adapters.BrowserPagerAdapter;
@@ -280,12 +281,13 @@ public class MainActivity extends EffectActivity {
                     AlertDialog.Builder bld = new AlertDialog.Builder(MainActivity.this);
                     bld.setTitle("Choose APK action");
                     bld.setNegativeButton("Install", (dialog, which) -> openWithDefaultApp(new File(currentFile.dir)));
-                    bld.setPositiveButton("Open as archive", (dialog, which) -> goDir(new ArchivePathContent(currentFile.dir,"/"),null));
+                    bld.setPositiveButton("Open as archive",
+                            (dialog, which) -> goDir(new ArchivePathContent(currentFile.dir,"/"),browserPager.getCurrentItem(),null));
                     bld.create().show();
                     return;
                 }
                 if(ArchiveType.formats.contains(arcExt)) {
-                    goDir(new ArchivePathContent(currentFile.dir,"/"),null);
+                    goDir(new ArchivePathContent(currentFile.dir,"/"),browserPager.getCurrentItem(),null);
                     return;
                 }
             }
@@ -1134,21 +1136,21 @@ public class MainActivity extends EffectActivity {
         completeGoDir(gdwc,path_,targetViewPagerPosition,null);
     }
 
-    public FileOpsErrorCodes goDir(Object dirOrDirection, @Nullable String targetFilenameToHighlight, Runnable... onCompletion) {
-        final int targetViewPagerPosition = browserPager.getCurrentItem();
+    public FileOpsErrorCodes goDir(Object dirOrDirection, int targetViewPagerPosition, @Nullable String targetFilenameToHighlight, Runnable... onCompletion) {
         GenericDirWithContent gdwc = goDir_inner(dirOrDirection);
         completeGoDir(gdwc,dirOrDirection,targetViewPagerPosition,targetFilenameToHighlight,onCompletion);
         return gdwc.errorCode;
     }
 
     public void goDir_async(Object dirOrDirection, @Nullable String targetFilenameToHighlight) {
-        final Thread t = new Thread(()->goDir(
+        Future<FileOpsErrorCodes> ff = browserPagerAdapter.goDirExecutors[browserPager.getCurrentItem()].submit(() -> goDir(
                 dirOrDirection,
+                browserPager.getCurrentItem(),
                 targetFilenameToHighlight,
                 new Runnable[]{() -> toggleGoDirOpsIndeterminateProgress(true)}));
-        t.start();
+        if(ff == null) return;
         new Handler().postDelayed(() -> {
-            if (t.getState() != Thread.State.TERMINATED)
+            if (!ff.isDone())
                 toggleGoDirOpsIndeterminateProgress(false);
         },250);
     }

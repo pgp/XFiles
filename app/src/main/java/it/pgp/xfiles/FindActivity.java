@@ -63,7 +63,10 @@ public class FindActivity extends EffectActivity implements FileSelectFragment.C
         switch (item.getItemId()) {
             case R.id.findItemLocate:
                 finish();
-                MainActivity.mainActivity.goDir(new LocalPathContent(b.getFilename()).getParent(),b.getFilename());
+                MainActivity.mainActivity.goDir(
+                        new LocalPathContent(b.getFilename()).getParent(),
+                        MainActivity.mainActivity.browserPager.getCurrentItem(),
+                        b.getFilename());
                 break;
             case R.id.findItemProperties:
                 new PropertiesDialog(this,

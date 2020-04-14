@@ -34,6 +34,7 @@ import it.pgp.xfiles.enums.BrowserViewMode;
 import it.pgp.xfiles.enums.ComparatorField;
 import it.pgp.xfiles.enums.FileOpsErrorCodes;
 import it.pgp.xfiles.exceptions.DirCommanderException;
+import it.pgp.xfiles.utils.CheckableSingleExecutor;
 import it.pgp.xfiles.utils.DirCommanderCUsingBrowserItemsAndPathContent;
 import it.pgp.xfiles.utils.Misc;
 import it.pgp.xfiles.utils.Pair;
@@ -51,6 +52,8 @@ public class BrowserPagerAdapter extends PagerAdapter {
     private final MainActivity mainActivity;
 
     private static final int ADAPTER_SIZE = 2;
+
+    public final CheckableSingleExecutor[] goDirExecutors;
 
     private final ViewGroup[] rootLayouts = new ViewGroup[ADAPTER_SIZE];
 
@@ -96,6 +99,7 @@ public class BrowserPagerAdapter extends PagerAdapter {
     public BrowserPagerAdapter(Context context, final MainActivity mainActivity) {
         mContext = context;
         this.mainActivity = mainActivity;
+        this.goDirExecutors = new CheckableSingleExecutor[]{new CheckableSingleExecutor(context),new CheckableSingleExecutor(context)};
         createStandardCommanders();
     }
 
@@ -153,13 +157,13 @@ public class BrowserPagerAdapter extends PagerAdapter {
         swipeRefreshLayouts[position].setParentActivity(mainActivity);
         swipeRefreshLayouts[position].setOnRefreshListener(() -> {
             if(browserAdapters[position].getSelectedCount() == 0) {
-                new Thread(refreshRunnable).start();
+                goDirExecutors[position].submit(refreshRunnable);
             }
             else {
                 AlertDialog.Builder bld = new AlertDialog.Builder(mainActivity);
                 bld.setTitle("Refreshing will clear active selection");
                 bld.setNegativeButton(R.string.alert_cancel, (dialog, which) -> swipeRefreshLayouts[position].setRefreshing(false));
-                bld.setPositiveButton(R.string.alert_OK, (dialog, which) -> new Thread(refreshRunnable).start());
+                bld.setPositiveButton(R.string.alert_OK, (dialog, which) -> goDirExecutors[position].submit(refreshRunnable));
                 bld.create().show();
             }
         });

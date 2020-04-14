@@ -30,6 +30,6 @@ public class SftpRetryLsListener implements Dialog.OnDismissListener {
             Toast.makeText(activity.getApplicationContext(),"No pending request in SFTP retry",Toast.LENGTH_LONG).show();
             return;
         }
-        activity.goDir(d.pendingLsPath,null);
+        activity.goDir(d.pendingLsPath,activity.browserPager.getCurrentItem(),null);
     }
 }
