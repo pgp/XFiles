@@ -42,9 +42,10 @@ public class SSHAlreadyInKnownHostsDialog extends SSHKnownHostsBaseDialog {
         Button accept = findViewById(R.id.hostKeyAcceptOverwriteButton);
         Button discard = findViewById(R.id.hostKeyKeepOldAndDisconnectButton);
 
-        oldFingerprint.setText(KeyType.fromKey(oldHostKey)+" "+
-                oldHostKey.getAlgorithm()+" "+
-                oldHostKey.getFormat());
+        if(oldHostKey != null)
+            oldFingerprint.setText(KeyType.fromKey(oldHostKey)+" "+
+                    oldHostKey.getAlgorithm()+" "+
+                    oldHostKey.getFormat());
 
         newFingerprint.setText(KeyType.fromKey(newHostKey)+" "+
                 newHostKey.getAlgorithm()+" "+

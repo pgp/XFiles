@@ -7,8 +7,8 @@ android {
         minSdkVersion 19
         targetSdkVersion 28
         multiDexEnabled true
-        versionCode 160200414
-        versionName "1.6.0"
+        versionCode 161200417
+        versionName "1.6.1"
         externalNativeBuild {
             cmake {
                 cppFlags "-std=c++11 -pthread -frtti -fexceptions"
@@ -68,10 +68,9 @@ dependencies {
     implementation 'com.android.support:appcompat-v7:28.0.0'
     implementation 'com.android.support:recyclerview-v7:28.0.0'
     implementation 'com.android.support:multidex:1.0.3'
-    implementation group: 'com.madgag.spongycastle', name: 'core', version: '1.58.0.0'
-    implementation group: 'com.madgag.spongycastle', name: 'prov', version: '1.58.0.0'
+    implementation group: 'org.bouncycastle', name: 'bcprov-jdk15on', version: '1.65'
     implementation group: 'org.slf4j', name: 'slf4j-android', version: '1.7.25'
-    implementation group: 'com.hierynomus', name: 'sshj', version: '0.26.0'
+    implementation group: 'com.hierynomus', name: 'sshj', version: '0.27.0'
     implementation group: 'org.apache.ftpserver', name: 'ftpserver-core', version: '1.1.0'
     // newest version of ftpserver.core causes manifest merge error
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.8.1'

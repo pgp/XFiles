@@ -43,8 +43,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import it.pgp.xfiles.BrowserItem;
 import it.pgp.xfiles.CopyMoveListPathContent;
 import it.pgp.xfiles.MainActivity;
-import it.pgp.xfiles.dialogs.SSHAlreadyInKnownHostsDialog;
-import it.pgp.xfiles.dialogs.SSHNotInKnownHostsDialog;
 import it.pgp.xfiles.enums.CopyMoveMode;
 import it.pgp.xfiles.enums.FileMode;
 import it.pgp.xfiles.enums.FileOpsErrorCodes;

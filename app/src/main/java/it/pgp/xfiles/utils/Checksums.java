@@ -1,6 +1,6 @@
 package it.pgp.xfiles.utils;
 
-import org.spongycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import java.io.BufferedInputStream;
 import java.io.File;

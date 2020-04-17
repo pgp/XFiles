@@ -18,8 +18,8 @@ public class CustomizedAndroidCipherSuiteConfig
 
     static {
         Security.removeProvider("BC"); // disable Android's internal Bouncycastle provider (which has higher priority)
-        int k = Security.insertProviderAt(new org.spongycastle.jce.provider.BouncyCastleProvider(),1);
-        Log.d(CustomizedAndroidCipherSuiteConfig.class.getName(),"Spongycastle registered: "+k);
+        int k = Security.insertProviderAt(new org.bouncycastle.jce.provider.BouncyCastleProvider(),1);
+        Log.d(CustomizedAndroidCipherSuiteConfig.class.getName(),"BouncyCastle registered: "+k);
     }
 
     @Override
