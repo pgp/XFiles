@@ -21,9 +21,47 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <RadioGroup
+            android:id="@+id/rsaBitsRadioGroup"
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="2048" />
+
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="3072" />
+
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="4096" />
+
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="6144" />
+
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="8192" />
+        </RadioGroup>
+
+    </HorizontalScrollView>
+
     <EditText
         android:id="@+id/sshKeygenBitsEditText"
         android:inputType="number"
+        android:text="2048"
         android:imeOptions="actionDone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />

@@ -7,11 +7,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
-
-//import com.jcraft.jsch.JSch;
-//import com.jcraft.jsch.KeyPair;
 
 import net.schmizz.sshj.common.Base64;
 import net.schmizz.sshj.common.Buffer;
@@ -49,6 +48,7 @@ import it.pgp.xfiles.utils.pathcontent.LocalPathContent;
 class SSHKeygenDialog extends Dialog {
     EditText name;
     String name_;
+    RadioGroup rsaBitsRadioGroup;
     private EditText bits;
     TextView wait;
     ProgressBar waitPb;
@@ -67,6 +67,11 @@ class SSHKeygenDialog extends Dialog {
         setTitle("SSH RSA Keygen"); // RSA only, until SSHJ will support ECC for pubkey auth
         setContentView(R.layout.ssh_keygen_dialog);
         name = findViewById(R.id.sshKeygenNameEditText);
+        rsaBitsRadioGroup = findViewById(R.id.rsaBitsRadioGroup);
+        rsaBitsRadioGroup.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            RadioButton rb = buttonView.findViewById(isChecked);
+            bits.setText(rb.getText());
+        });
         bits = findViewById(R.id.sshKeygenBitsEditText);
         wait = findViewById(R.id.sshKeygenWaitTextView);
         waitPb = findViewById(R.id.sshKeygenWaitProgressBar);
@@ -74,9 +79,9 @@ class SSHKeygenDialog extends Dialog {
         ok.setOnClickListener(v -> {
             try { bits_ = Integer.valueOf(bits.getText().toString()); }
             catch (Exception ignored) {}
-            // TODO replace edittext with selector (with "long time" warning on selecting 8192)
-            if (bits_ != 2048 && bits_ != 3072 && bits_ != 4096 && bits_ != 6144 && bits_ != 8192) {
-                Toast.makeText(vaultActivity, "Invalid bits, allowed: 2048, 3072, 4096, 6144, 8192", Toast.LENGTH_SHORT).show();
+            // TODO "long time" warning on selecting >= 8192
+            if (bits_ < 2048) {
+                Toast.makeText(vaultActivity, "Key too weak, please choose at least 2048 bits as length", Toast.LENGTH_SHORT).show();
                 return;
             }
 

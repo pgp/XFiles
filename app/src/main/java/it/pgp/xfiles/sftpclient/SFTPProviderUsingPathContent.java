@@ -61,8 +61,7 @@ import it.pgp.xfiles.utils.pathcontent.RemotePathContent;
 
 /**
  * Created by pgp on 15/05/17
- * Adapted from {@link SFTPProvider}
- * Last updated on 03/11/17 (migration to custom XSFTP types for handling transfer progress)
+ * Updated on 03/11/17 (migration to custom XSFTP types for handling transfer progress)
  */
 
 public class SFTPProviderUsingPathContent implements FileOperationHelperUsingPathContent {
@@ -229,6 +228,7 @@ public class SFTPProviderUsingPathContent implements FileOperationHelperUsingPat
                     KeyProvider keys = c.loadKeys(i.getAbsolutePath());
                     try {
                         c.authPublickey(path.authData.username,keys);
+                        Log.d(getClass().getName(),"Successfully authenticated using private key: "+i.getName());
                         break;
                     }
                     catch (UserAuthException e) {
@@ -331,6 +331,7 @@ public class SFTPProviderUsingPathContent implements FileOperationHelperUsingPat
                     KeyProvider keys = c.loadKeys(i.getAbsolutePath());
                     try {
                         c.authPublickey(authData.username,keys);
+                        Log.d(getClass().getName(),"Successfully authenticated using private key: "+i.getName());
                         break;
                     }
                     catch (UserAuthException e) {
