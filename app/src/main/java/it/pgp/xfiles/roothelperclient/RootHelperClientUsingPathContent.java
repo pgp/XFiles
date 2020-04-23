@@ -55,7 +55,7 @@ import it.pgp.xfiles.roothelperclient.reqs.ls_archive_rq;
 import it.pgp.xfiles.roothelperclient.reqs.ls_rq;
 import it.pgp.xfiles.roothelperclient.reqs.movelist_rq;
 import it.pgp.xfiles.roothelperclient.reqs.multiStats_rq;
-import it.pgp.xfiles.roothelperclient.reqs.pem_keygen_rq;
+import it.pgp.xfiles.roothelperclient.reqs.openssl_rsa_pem_keygen_rq;
 import it.pgp.xfiles.roothelperclient.reqs.setDates_rq;
 import it.pgp.xfiles.roothelperclient.reqs.setPermission_rq;
 import it.pgp.xfiles.roothelperclient.reqs.singleStats_rq;
@@ -1453,7 +1453,7 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
 
     public String[] generatePEMKeyPair(int keySize) {
         try (StreamsPair rs = getStreams()) {
-            pem_keygen_rq rq = new pem_keygen_rq(keySize);
+            openssl_rsa_pem_keygen_rq rq = new openssl_rsa_pem_keygen_rq(keySize);
             rq.write(rs.o);
             if(receiveBaseResponse(rs.i) != 0) return null;
             pem_keygen_resp resp = new pem_keygen_resp(rs.i);
