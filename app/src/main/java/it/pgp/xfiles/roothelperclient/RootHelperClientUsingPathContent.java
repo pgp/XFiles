@@ -36,6 +36,7 @@ import it.pgp.xfiles.enums.FileMode;
 import it.pgp.xfiles.enums.FileOpsErrorCodes;
 import it.pgp.xfiles.enums.ForegroundServiceType;
 import it.pgp.xfiles.enums.ProviderType;
+import it.pgp.xfiles.enums.SshKeyType;
 import it.pgp.xfiles.io.FlushingBufferedOutputStream;
 import it.pgp.xfiles.items.FileCreationAdvancedOptions;
 import it.pgp.xfiles.items.SingleStatsItem;
@@ -55,6 +56,7 @@ import it.pgp.xfiles.roothelperclient.reqs.ls_archive_rq;
 import it.pgp.xfiles.roothelperclient.reqs.ls_rq;
 import it.pgp.xfiles.roothelperclient.reqs.movelist_rq;
 import it.pgp.xfiles.roothelperclient.reqs.multiStats_rq;
+import it.pgp.xfiles.roothelperclient.reqs.openssh_ed25519_keygen_rq;
 import it.pgp.xfiles.roothelperclient.reqs.openssl_rsa_pem_keygen_rq;
 import it.pgp.xfiles.roothelperclient.reqs.setDates_rq;
 import it.pgp.xfiles.roothelperclient.reqs.setPermission_rq;
@@ -62,7 +64,7 @@ import it.pgp.xfiles.roothelperclient.reqs.singleStats_rq;
 import it.pgp.xfiles.roothelperclient.resps.exists_resp;
 import it.pgp.xfiles.roothelperclient.resps.folderStats_resp;
 import it.pgp.xfiles.roothelperclient.resps.ls_resp;
-import it.pgp.xfiles.roothelperclient.resps.pem_keygen_resp;
+import it.pgp.xfiles.roothelperclient.resps.ssh_keygen_resp;
 import it.pgp.xfiles.roothelperclient.resps.singleStats_resp;
 import it.pgp.xfiles.roothelperclient.reqs.setOwnership_rq;
 import it.pgp.xfiles.service.BaseBackgroundTask;
@@ -1451,13 +1453,23 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
         }
     }
 
-    public String[] generatePEMKeyPair(int keySize) {
+    public ssh_keygen_resp generateSSHKeyPair(SshKeyType type, int keySize) {
         try (StreamsPair rs = getStreams()) {
-            openssl_rsa_pem_keygen_rq rq = new openssl_rsa_pem_keygen_rq(keySize);
+            openssl_rsa_pem_keygen_rq rq;
+            switch(type) {
+                case RSA:
+                    rq = new openssl_rsa_pem_keygen_rq(keySize);
+                    break;
+                case ED25519:
+                    rq = new openssh_ed25519_keygen_rq();
+                    break;
+                default:
+                    return null;
+            }
+
             rq.write(rs.o);
             if(receiveBaseResponse(rs.i) != 0) return null;
-            pem_keygen_resp resp = new pem_keygen_resp(rs.i);
-            return new String[]{resp.pkcs8,resp.x509};
+            return new ssh_keygen_resp(rs.i);
         }
         catch (IOException e) {
             e.printStackTrace();

@@ -1,7 +1,7 @@
 package it.pgp.xfiles.roothelperclient.reqs;
 
 public class openssh_ed25519_keygen_rq extends openssl_rsa_pem_keygen_rq {
-    public openssh_ed25519_keygen_rq(int keySize) {
+    public openssh_ed25519_keygen_rq() {
         super(-1); // keysize argument unused
     }
 

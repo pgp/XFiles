@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -34,6 +35,8 @@ import java.security.spec.X509EncodedKeySpec;
 import it.pgp.xfiles.MainActivity;
 import it.pgp.xfiles.R;
 import it.pgp.xfiles.enums.FileOpsErrorCodes;
+import it.pgp.xfiles.enums.SshKeyType;
+import it.pgp.xfiles.roothelperclient.resps.ssh_keygen_resp;
 import it.pgp.xfiles.utils.Misc;
 import it.pgp.xfiles.utils.pathcontent.LocalPathContent;
 
@@ -48,6 +51,9 @@ import it.pgp.xfiles.utils.pathcontent.LocalPathContent;
 class SSHKeygenDialog extends Dialog {
     EditText name;
     String name_;
+    RadioGroup sshKeygenTypeRadioGroup;
+    LinearLayout rsaKeygenLayout;
+
     RadioGroup rsaBitsRadioGroup;
     private EditText bits;
     TextView wait;
@@ -60,13 +66,21 @@ class SSHKeygenDialog extends Dialog {
 
     File destPrv,destPub;
 
+    SshKeyType currentlySelectedKeyType = SshKeyType.RSA;
+
     SSHKeygenDialog(@NonNull VaultActivity vaultActivity) {
         super(vaultActivity);
         this.vaultActivity = vaultActivity;
         destDir = new File(vaultActivity.getFilesDir(),".ssh");
-        setTitle("SSH RSA Keygen"); // RSA only, until SSHJ will support ECC for pubkey auth
+        setTitle("SSH Keygen"); // RSA only, until SSHJ will support ECC for pubkey auth
         setContentView(R.layout.ssh_keygen_dialog);
         name = findViewById(R.id.sshKeygenNameEditText);
+        sshKeygenTypeRadioGroup = findViewById(R.id.sshKeygenTypeRadioGroup);
+        rsaKeygenLayout = findViewById(R.id.rsaKeygenLayout);
+        sshKeygenTypeRadioGroup.setOnCheckedChangeListener((radioGroup,i) -> {
+            currentlySelectedKeyType = i==R.id.rsaKeyTypeRadioButton?SshKeyType.RSA:SshKeyType.ED25519;
+            rsaKeygenLayout.setVisibility(currentlySelectedKeyType==SshKeyType.RSA?View.VISIBLE:View.GONE);
+        });
         rsaBitsRadioGroup = findViewById(R.id.rsaBitsRadioGroup);
         rsaBitsRadioGroup.setOnCheckedChangeListener((buttonView, isChecked) -> {
             RadioButton rb = buttonView.findViewById(isChecked);
@@ -77,7 +91,7 @@ class SSHKeygenDialog extends Dialog {
         waitPb = findViewById(R.id.sshKeygenWaitProgressBar);
         ok = findViewById(R.id.sshKeygenOkButton);
         ok.setOnClickListener(v -> {
-            try { bits_ = Integer.valueOf(bits.getText().toString()); }
+            try { bits_ = Integer.parseInt(bits.getText().toString()); }
             catch (Exception ignored) {}
             // TODO "long time" warning on selecting >= 8192
             if (bits_ < 2048) {
@@ -86,7 +100,7 @@ class SSHKeygenDialog extends Dialog {
             }
 
             name_ = name.getText().toString();
-            String filename = "id_rsa_"+name_;
+            String filename = "id_"+currentlySelectedKeyType.name().toLowerCase()+"_"+name_;
             destPrv = new File(destDir,filename);
             destPub = new File(destDir,filename+".pub");
             if (destPrv.exists() || destPub.exists()) {
@@ -118,14 +132,22 @@ class SSHKeygenDialog extends Dialog {
         @Override
         protected Object doInBackground(Object[] unused) {
             try {
-                String[] keys = MainActivity.getRootHelperClient().generatePEMKeyPair(dialog.bits_); // RSA only for now
+                ssh_keygen_resp keys = MainActivity.getRootHelperClient().generateSSHKeyPair(dialog.currentlySelectedKeyType,dialog.bits_);
                 if (keys == null) {
                     result = FileOpsErrorCodes.CONNECTION_ERROR;
                     return null;
                 }
-                RSAKey[] keypair = PEMToJCEKeypair(keys[0],keys[1]);
-                String sshPubKey = JCEPubKeyToSSHViaSSHJ((RSAPublicKey) keypair[1], dialog.name_+"@botan");
-                String sshPrvKey = JCEPrvKeyToPKCS1((RSAPrivateKey) keypair[0]);
+
+                String sshPrvKey,sshPubKey;
+                if(dialog.currentlySelectedKeyType == SshKeyType.RSA) {
+                    RSAKey[] keypair = PEMToJCEKeypair(keys.privateKey,keys.publicKey);
+                    sshPubKey = JCEPubKeyToSSHViaSSHJ((RSAPublicKey) keypair[1], dialog.name_+"@botan");
+                    sshPrvKey = JCEPrvKeyToPKCS1((RSAPrivateKey) keypair[0]);
+                }
+                else {
+                    sshPrvKey = keys.privateKey;
+                    sshPubKey = keys.publicKey;
+                }
 
                 if (!(Misc.writeStringToFilePath(sshPrvKey,dialog.destPrv.getAbsolutePath()) &&
                         Misc.writeStringToFilePath(sshPubKey,dialog.destPub.getAbsolutePath())))
@@ -154,22 +176,6 @@ class SSHKeygenDialog extends Dialog {
             }
             dialog.dismiss();
         }
-    }
-
-    /* Helper methods for converting PEM output to SSH compatible formats (id_rsa + id_rsa.pub) */
-
-    private static String eolEveryNChars(String input, int n) {
-        char[] x = input.toCharArray();
-        StringBuilder sb = new StringBuilder();
-        int q,r;
-        q = x.length/n;
-        r = x.length%n;
-        for (int i=0;i<q;i++) {
-            sb.append(x,i*n,n);
-            sb.append('\n');
-        }
-        sb.append(x,q*n,r);
-        return sb.toString();
     }
 
     // input from response to ACTION_SSH_KEYGEN request

@@ -10,12 +10,18 @@ import android.widget.ListAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import it.pgp.xfiles.MainActivity;
 import it.pgp.xfiles.R;
+import it.pgp.xfiles.enums.SshKeyType;
+import it.pgp.xfiles.utils.pathcontent.LocalPathContent;
 
 /**
  * Created by pgp on 12/02/17
@@ -30,9 +36,7 @@ public class IdentitiesVaultAdapter extends BaseAdapter implements ListAdapter {
 
     // TODO on choosing private key, if public one is present, copy it as well
     public static final FilenameFilter idFilter = (dir, name) -> {
-        // second condition: no (.pub) extension (e.g. id_ecdsa)
-        return name.startsWith("id_") &&
-                name.indexOf('.') == -1; // follow .ssh standard folder content (do not place known_hosts in another directory ( TODO filename validation/rename needed on identity add )
+        return !name.endsWith(".pub") && !name.equals("known_hosts"); // follow .ssh standard folder content (do not place known_hosts in another directory)
     };
 
     IdentitiesVaultAdapter(final VaultActivity vaultActivity) {
@@ -80,7 +84,15 @@ public class IdentitiesVaultAdapter extends BaseAdapter implements ListAdapter {
         ImageButton showBtn = view.findViewById(R.id.sftp_id_listitem_show);
         ImageButton deleteBtn = view.findViewById(R.id.sftp_id_listitem_delete);
 
-        showBtn.setOnClickListener(v -> {/* TODO show basic text dialog with file content*/});
+        showBtn.setOnClickListener(v -> {
+            /* TODO show basic text dialog with file content*/
+            MainActivity.mainActivity.goDir(
+                    new LocalPathContent(idsDir.getAbsolutePath()),
+                    MainActivity.mainActivity.browserPager.getCurrentItem(),
+                    idFilename
+                    );
+            vaultActivity.finish();
+        });
         deleteBtn.setOnClickListener(v -> {
             String prvkname = idsFilenames.get(position);
             String pubkname = prvkname+".pub";
@@ -107,11 +119,28 @@ public class IdentitiesVaultAdapter extends BaseAdapter implements ListAdapter {
         if (files != null) {
             for (File x : files) {
                 idsFilenames.add(x.getName());
-                idsTypes.add("DUMMY");
+                SshKeyType keyType = getKeyTypeFromHeader(x);
+                idsTypes.add(keyType==null?"UNKNOWN":keyType.name());
                 idsHashes.add("00000000");
             }
         }
 
         super.notifyDataSetChanged();
+    }
+
+    // sloppy parsing, just checks for BEGIN line
+    private static SshKeyType getKeyTypeFromHeader(File f) {
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(f));
+            String line = reader.readLine();
+            if(line != null) {
+                if(line.startsWith("-----BEGIN RSA")) return SshKeyType.RSA;
+                else if(line.startsWith("-----BEGIN OPENSSH")) return SshKeyType.ED25519; // FIXME not only ed25519 keys can be encoded in cusotm openssh format
+            }
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
