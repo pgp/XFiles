@@ -10,17 +10,19 @@ import android.widget.ListAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.BufferedReader;
+import net.schmizz.sshj.SSHClient;
+import net.schmizz.sshj.common.KeyType;
+import net.schmizz.sshj.common.SecurityUtils;
+import net.schmizz.sshj.userauth.keyprovider.KeyProvider;
+
 import java.io.File;
-import java.io.FileReader;
 import java.io.FilenameFilter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import it.pgp.xfiles.MainActivity;
 import it.pgp.xfiles.R;
-import it.pgp.xfiles.enums.SshKeyType;
+import it.pgp.xfiles.utils.Pair;
 import it.pgp.xfiles.utils.pathcontent.LocalPathContent;
 
 /**
@@ -33,6 +35,7 @@ public class IdentitiesVaultAdapter extends BaseAdapter implements ListAdapter {
     private final List<String> idsHashes = new ArrayList<>();
     private final List<String> idsTypes = new ArrayList<>();
     private final File idsDir;
+    private final SSHClient clientForKeyParsing = new SSHClient();
 
     // TODO on choosing private key, if public one is present, copy it as well
     public static final FilenameFilter idFilter = (dir, name) -> {
@@ -112,23 +115,34 @@ public class IdentitiesVaultAdapter extends BaseAdapter implements ListAdapter {
     @Override
     public void notifyDataSetChanged() {
         idsFilenames.clear();
-        idsTypes.clear(); // TODO parse key types and add them to this list
-        idsHashes.clear(); // TODO compute key hashes and add them to this list
+        idsTypes.clear();
+        idsHashes.clear();
         File[] files = idsDir.listFiles(idFilter);
-        // DEBUG
         if (files != null) {
             for (File x : files) {
                 idsFilenames.add(x.getName());
-                SshKeyType keyType = getKeyTypeFromHeader(x);
-                idsTypes.add(keyType==null?"UNKNOWN":keyType.name());
-                idsHashes.add("00000000");
+                Pair<KeyType, String> p = getKeyTypeAndPubkeyFingerprint(x);
+                idsTypes.add(p.i.name());
+                idsHashes.add(p.j);
             }
         }
 
         super.notifyDataSetChanged();
     }
 
-    // sloppy parsing, just checks for BEGIN line
+    private Pair<KeyType,String> getKeyTypeAndPubkeyFingerprint(File f) {
+        try {
+            KeyProvider kprov = clientForKeyParsing.loadKeys(f.getAbsolutePath());
+            String fingerprint = SecurityUtils.getFingerprint(kprov.getPublic());
+            return new Pair<>(kprov.getType(), fingerprint);
+        }
+        catch(Exception e) {
+            e.printStackTrace();
+            return new Pair<>(KeyType.UNKNOWN,"");
+        }
+    }
+
+    /*// sloppy parsing, just checks for BEGIN line
     private static SshKeyType getKeyTypeFromHeader(File f) {
         try {
             BufferedReader reader = new BufferedReader(new FileReader(f));
@@ -142,5 +156,5 @@ public class IdentitiesVaultAdapter extends BaseAdapter implements ListAdapter {
             e.printStackTrace();
         }
         return null;
-    }
+    }*/
 }

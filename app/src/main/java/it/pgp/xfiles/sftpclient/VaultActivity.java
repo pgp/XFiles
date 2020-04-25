@@ -7,6 +7,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import net.schmizz.sshj.SSHClient;
+import net.schmizz.sshj.userauth.keyprovider.KeyProvider;
 
 import java.io.File;
 import java.io.IOException;
@@ -90,11 +91,18 @@ public class VaultActivity extends EffectActivity implements FileSelectFragment.
             destPath = new File(destPath,fileName);
 
             // check private key format before copying
-            SSHClient c = new SSHClient();
             try {
-                c.loadKeys(inputPrivKey.getAbsolutePath());
+                KeyProvider kprov = new SSHClient().loadKeys(inputPrivKey.getAbsolutePath());
+                switch (kprov.getType()) {
+                    case RSA:
+                    case ED25519:
+                        break;
+                    default:
+                        Toast.makeText(getApplicationContext(),"Only RSA and ED25519 keys allowed",Toast.LENGTH_SHORT).show();
+                        return;
+                }
             }
-            catch (IOException i) { // wrong key format or read error
+            catch (Exception i) { // wrong key format or read error
                 Toast.makeText(getApplicationContext(),"Wrong key format or key read error",Toast.LENGTH_SHORT).show();
                 return;
             }
