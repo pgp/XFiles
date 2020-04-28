@@ -14,6 +14,7 @@ import java.security.PublicKey;
 
 public class InteractiveHostKeyVerifier extends OpenSSHKnownHosts {
 
+    public static KnownHostEntry oldHostEntry;
     public static PublicKey currentHostKey;
     public static Boolean lastHostKeyHasChanged;
 
@@ -49,6 +50,7 @@ public class InteractiveHostKeyVerifier extends OpenSSHKnownHosts {
                     if (e.verify(key)) return true;
                     // here, host key has changed
                     lastHostKeyHasChanged = true;
+                    oldHostEntry = e;
                     currentHostKey = key;
 //                    return hostKeyChangedAction(e, adjustedHostname, key); // sshj 0.21.2
                     return hostKeyChangedAction(adjustedHostname, key);

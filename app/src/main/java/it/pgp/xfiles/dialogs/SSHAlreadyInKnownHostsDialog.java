@@ -6,6 +6,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import net.schmizz.sshj.common.KeyType;
+import net.schmizz.sshj.transport.verification.OpenSSHKnownHosts;
 
 import java.io.IOException;
 import java.security.PublicKey;
@@ -29,7 +30,7 @@ public class SSHAlreadyInKnownHostsDialog extends SSHKnownHostsBaseDialog {
 
     public SSHAlreadyInKnownHostsDialog(final Context context,
                                         final AuthData authData,
-                                        final PublicKey oldHostKey,
+                                        final OpenSSHKnownHosts.KnownHostEntry oldHostEntry,
                                         final PublicKey newHostKey,
                                         final SFTPProviderUsingPathContent provider,
                                         final BasePathContent pendingLsPath) {
@@ -42,14 +43,10 @@ public class SSHAlreadyInKnownHostsDialog extends SSHKnownHostsBaseDialog {
         Button accept = findViewById(R.id.hostKeyAcceptOverwriteButton);
         Button discard = findViewById(R.id.hostKeyKeepOldAndDisconnectButton);
 
-        if(oldHostKey != null)
-            oldFingerprint.setText(KeyType.fromKey(oldHostKey)+" "+
-                    oldHostKey.getAlgorithm()+" "+
-                    oldHostKey.getFormat());
+        if(oldHostEntry != null)
+            oldFingerprint.setText(oldHostEntry.getType().name()+"\n"+oldHostEntry.getFingerprint());
 
-        newFingerprint.setText(KeyType.fromKey(newHostKey)+" "+
-                newHostKey.getAlgorithm()+" "+
-                newHostKey.getFormat());
+        newFingerprint.setText(KeyType.fromKey(newHostKey)+" "+newHostKey.getAlgorithm()+" "+newHostKey.getFormat()+"\n"+getHostkeyFingerprint(newHostKey));
 
         accept.setOnClickListener(v -> {
             try {

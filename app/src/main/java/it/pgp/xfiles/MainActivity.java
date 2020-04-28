@@ -1202,7 +1202,7 @@ public class MainActivity extends EffectActivity {
                         new SSHAlreadyInKnownHostsDialog(
                                 MainActivity.this,
                                 ((SftpDirWithContent)dwc).authData,
-                                null, // FIXME need to have old host key here
+                                InteractiveHostKeyVerifier.oldHostEntry,
                                 InteractiveHostKeyVerifier.currentHostKey,
                                 MainActivity.sftpProvider,
                                 new RemotePathContent(

@@ -10,12 +10,6 @@
         android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium" />
 
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="SHA256 Fingerprint:"
-        android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium" />
-
-    <TextView
         android:id="@+id/hostKeyFingerprintTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />

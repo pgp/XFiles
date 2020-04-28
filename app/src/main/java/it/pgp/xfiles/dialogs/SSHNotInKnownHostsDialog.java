@@ -39,7 +39,7 @@ public class SSHNotInKnownHostsDialog extends SSHKnownHostsBaseDialog {
         Button accept = findViewById(R.id.hostKeyAcceptButton);
         Button discard = findViewById(R.id.hostKeyDiscardButton);
 
-        fingerprint.setText(KeyType.fromKey(hostKey)+" "+hostKey.getAlgorithm()+" "+hostKey.getFormat());
+        fingerprint.setText(KeyType.fromKey(hostKey)+" "+hostKey.getAlgorithm()+" "+hostKey.getFormat()+"\n"+getHostkeyFingerprint(hostKey));
 
         accept.setOnClickListener(v -> {
             try {
