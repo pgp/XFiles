@@ -20,10 +20,8 @@ import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.List;
 
-import it.pgp.xfiles.MainActivity;
 import it.pgp.xfiles.R;
 import it.pgp.xfiles.utils.Pair;
-import it.pgp.xfiles.utils.pathcontent.LocalPathContent;
 
 /**
  * Created by pgp on 12/02/17
@@ -87,15 +85,7 @@ public class IdentitiesVaultAdapter extends BaseAdapter implements ListAdapter {
         ImageButton showBtn = view.findViewById(R.id.sftp_id_listitem_show);
         ImageButton deleteBtn = view.findViewById(R.id.sftp_id_listitem_delete);
 
-        showBtn.setOnClickListener(v -> {
-            /* TODO show basic text dialog with file content*/
-            MainActivity.mainActivity.goDir(
-                    new LocalPathContent(idsDir.getAbsolutePath()),
-                    MainActivity.mainActivity.browserPager.getCurrentItem(),
-                    idFilename
-                    );
-            vaultActivity.finish();
-        });
+        showBtn.setOnClickListener(v -> new SSHKeyInfoDialog(vaultActivity,idsDir,idsFilenames.get(position)).show());
         deleteBtn.setOnClickListener(v -> {
             String prvkname = idsFilenames.get(position);
             String pubkname = prvkname+".pub";
@@ -141,20 +131,4 @@ public class IdentitiesVaultAdapter extends BaseAdapter implements ListAdapter {
             return new Pair<>(KeyType.UNKNOWN,"");
         }
     }
-
-    /*// sloppy parsing, just checks for BEGIN line
-    private static SshKeyType getKeyTypeFromHeader(File f) {
-        try {
-            BufferedReader reader = new BufferedReader(new FileReader(f));
-            String line = reader.readLine();
-            if(line != null) {
-                if(line.startsWith("-----BEGIN RSA")) return SshKeyType.RSA;
-                else if(line.startsWith("-----BEGIN OPENSSH")) return SshKeyType.ED25519; // FIXME not only ed25519 keys can be encoded in cusotm openssh format
-            }
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }*/
 }
