@@ -1,7 +1,7 @@
 package it.pgp.xfiles.dialogs;
 
 import android.app.Dialog;
-import android.content.Context;
+import android.widget.Toast;
 
 import net.schmizz.sshj.common.KeyType;
 import net.schmizz.sshj.common.SecurityUtils;
@@ -32,9 +32,17 @@ public abstract class SSHKnownHostsBaseDialog extends Dialog {
         pendingLsPath = null;
     }
 
-    public SSHKnownHostsBaseDialog(Context context, BasePathContent pendingLsPath) {
-        super(context);
+    public SSHKnownHostsBaseDialog(MainActivity activity, BasePathContent pendingLsPath) {
+        super(activity);
         this.pendingLsPath = (RemotePathContent) pendingLsPath;
-        setOnDismissListener(MainActivity.sftpRetryLsListener);
+
+        setOnDismissListener(d_-> {
+            SSHKnownHostsBaseDialog d = (SSHKnownHostsBaseDialog)d_;
+            if (d.pendingLsPath == null) {
+                Toast.makeText(activity.getApplicationContext(),"No pending request in SFTP retry",Toast.LENGTH_LONG).show();
+                return;
+            }
+            activity.goDir(pendingLsPath,activity.browserPager.getCurrentItem(),null);
+        });
     }
 }

@@ -26,7 +26,7 @@ import it.pgp.xfiles.utils.pathcontent.BasePathContent;
 public class BrowserAdapter extends ArrayAdapter<BrowserItem> {
 
     public static Bitmap dirIV,fileIV,linkIV;
-    public static Map<String,Bitmap> archiveIcons;
+    public static final Map<String,Bitmap> archiveIcons = new HashMap<>();
 
     public static Bitmap overlay(Bitmap bmp1, Bitmap bmp2) {
         Bitmap bmOverlay = Bitmap.createBitmap(bmp1.getWidth(), bmp1.getHeight(), bmp1.getConfig());
@@ -37,7 +37,7 @@ public class BrowserAdapter extends ArrayAdapter<BrowserItem> {
     }
 
     private static void loadArchiveIcons(Context context) {
-        archiveIcons = new HashMap<>();
+        if(!archiveIcons.isEmpty()) return;
         archiveIcons.put(ArchiveType._7Z.getValue(),BitmapFactory.decodeResource(context.getResources(), R.drawable.xfiles_archive_7z));
         archiveIcons.put(ArchiveType.XZ.getValue(),BitmapFactory.decodeResource(context.getResources(), R.drawable.xfiles_archive_xz));
         archiveIcons.put(ArchiveType.RAR.getValue(),BitmapFactory.decodeResource(context.getResources(), R.drawable.xfiles_archive_rar));
@@ -78,7 +78,7 @@ public class BrowserAdapter extends ArrayAdapter<BrowserItem> {
         if (dirIV == null) dirIV = BitmapFactory.decodeResource(context.getResources(), R.drawable.xf_dir_blu);
         if (fileIV == null) fileIV = BitmapFactory.decodeResource(context.getResources(), R.drawable.xfiles_file_icon);
         if (linkIV == null) linkIV = BitmapFactory.decodeResource(context.getResources(), R.drawable.xfiles_link_icon);
-        if (archiveIcons == null) loadArchiveIcons(context);
+        loadArchiveIcons(context);
     }
 
     @Override

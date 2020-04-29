@@ -108,7 +108,6 @@ import it.pgp.xfiles.service.params.DownloadParams;
 import it.pgp.xfiles.service.visualization.ProgressIndicator;
 import it.pgp.xfiles.sftpclient.InteractiveHostKeyVerifier;
 import it.pgp.xfiles.sftpclient.SFTPProviderUsingPathContent;
-import it.pgp.xfiles.sftpclient.SftpRetryLsListener;
 import it.pgp.xfiles.sftpclient.VaultActivity;
 import it.pgp.xfiles.smbclient.SmbProviderUsingPathContent;
 import it.pgp.xfiles.smbclient.SmbVaultActivity;
@@ -157,7 +156,6 @@ public class MainActivity extends EffectActivity {
     // File Operations Helpers
     public static SmbProviderUsingPathContent smbProvider;
     public static SFTPProviderUsingPathContent sftpProvider;
-    public static SftpRetryLsListener sftpRetryLsListener;
 
     public static XFilesUtilsUsingPathContent xFilesUtils;
     private static RootHelperClientUsingPathContent rootHelperClient;
@@ -637,7 +635,6 @@ public class MainActivity extends EffectActivity {
 
         smbProvider = new SmbProviderUsingPathContent(mainActivityContext,this);
         sftpProvider = new SFTPProviderUsingPathContent(this);
-        sftpRetryLsListener = new SftpRetryLsListener(this);
 
 
         layoutInflater = LayoutInflater.from(MainActivity.this);

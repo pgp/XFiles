@@ -11,6 +11,7 @@ import net.schmizz.sshj.transport.verification.OpenSSHKnownHosts;
 import java.io.IOException;
 import java.security.PublicKey;
 
+import it.pgp.xfiles.MainActivity;
 import it.pgp.xfiles.R;
 import it.pgp.xfiles.sftpclient.AuthData;
 import it.pgp.xfiles.sftpclient.SFTPProviderUsingPathContent;
@@ -28,13 +29,13 @@ import it.pgp.xfiles.utils.pathcontent.BasePathContent;
 
 public class SSHAlreadyInKnownHostsDialog extends SSHKnownHostsBaseDialog {
 
-    public SSHAlreadyInKnownHostsDialog(final Context context,
+    public SSHAlreadyInKnownHostsDialog(final MainActivity activity,
                                         final AuthData authData,
                                         final OpenSSHKnownHosts.KnownHostEntry oldHostEntry,
                                         final PublicKey newHostKey,
                                         final SFTPProviderUsingPathContent provider,
                                         final BasePathContent pendingLsPath) {
-        super(context,pendingLsPath);
+        super(activity,pendingLsPath);
 
         setTitle("Conflicting host key");
         setContentView(R.layout.ssh_already_in_known_hosts_dialog);
@@ -52,11 +53,11 @@ public class SSHAlreadyInKnownHostsDialog extends SSHKnownHostsBaseDialog {
             try {
                 final String adjustedHostname = (authData.port != 22) ? "[" + authData.domain + "]:" + authData.port : authData.domain;
                 provider.updateHostKey(adjustedHostname,newHostKey);
-                Toast.makeText(context,"Host key updated in known hosts",Toast.LENGTH_LONG).show();
+                Toast.makeText(activity,"Host key updated in known hosts",Toast.LENGTH_LONG).show();
                 dismiss();
                 // retry getChannel and LS pending request (if any) is done in dismiss listener
             } catch (IOException e) {
-                Toast.makeText(context,"Unable to update host key in known hosts",Toast.LENGTH_LONG).show();
+                Toast.makeText(activity,"Unable to update host key in known hosts",Toast.LENGTH_LONG).show();
                 resetPath();
                 cancel();
             }
