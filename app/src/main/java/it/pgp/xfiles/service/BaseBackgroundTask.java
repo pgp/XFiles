@@ -9,7 +9,7 @@ import android.view.WindowManager;
 
 import java.io.Serializable;
 import java.util.Deque;
-import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.ArrayDeque;
 
 import it.pgp.xfiles.enums.FileOpsErrorCodes;
 import it.pgp.xfiles.enums.ForegroundServiceType;
@@ -32,7 +32,7 @@ public abstract class BaseBackgroundTask extends AsyncTask<Object,Integer,Object
 
     public Serializable params; // to be down-casted in subclasses
 
-    public static final Deque<Runnable> nextAutoTasks = new ConcurrentLinkedDeque<>();
+    public static final Deque<Runnable> nextAutoTasks = new ArrayDeque<>();
 
     public BaseBackgroundTask(Serializable params) {
         this.params = params;

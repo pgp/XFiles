@@ -442,7 +442,7 @@ public class FileSelectFragment extends DialogFragment
 		// new
 		GenericDirWithContent gdwc = MainActivity.getRootHelperClient().listDirectory(new LocalPathContent(directory.getAbsolutePath()));
 		if (gdwc.errorCode != null) {
-			Toast.makeText(getContext(), "Error listing directories: "+gdwc.errorCode.getValue(), Toast.LENGTH_SHORT).show();
+			Toast.makeText(getActivity(), "Error listing directories: "+gdwc.errorCode.getValue(), Toast.LENGTH_SHORT).show();
 			return displayedContent;
 		}
 		
