@@ -68,10 +68,10 @@ public class UpdateCheckDialog extends Dialog {
     List<Map> releases;
 
     private void compareReleases(final MainActivity activity) throws ParseException {
-        if(releases.isEmpty())
-            throw new JsonParseDuringCompareException("Empty releases list");
+        if(releases == null || releases.isEmpty())
+            throw new JsonParseDuringCompareException("Null or empty releases list");
 
-        Collections.sort(releases,(o1,o2) -> {
+        /*Collections.sort(releases,(o1,o2) -> {
             try {
                 Date d1 = df.parse((String) o1.get("created_at"));
                 Date d2 = df.parse((String) o2.get("created_at"));
@@ -80,7 +80,7 @@ public class UpdateCheckDialog extends Dialog {
             catch(Exception e) {
                 throw new JsonParseDuringCompareException(e);
             }
-        });
+        });*/
 
         Map<String,Integer> tagnames = new HashMap<>();
         int cnt=0;
@@ -143,13 +143,11 @@ public class UpdateCheckDialog extends Dialog {
         updateMessage.setText("Checking for updates...");
         new Thread(()->{
             try {
-                byte[] x = MainActivity.getRootHelperClient().downloadHttpsUrlInMemory("api.github.com/repos/pgp/XFiles/releases",443);
+                byte[] x = MainActivity.getRootHelperClient().downloadHttpsUrlInMemory("api.github.com/repos/pgp/XFiles/releases/latest",443);
                 Log.d(UpdateCheckDialog.class.getName(),new String(x));
-                releases = new ObjectMapper().readValue(x, List.class);
+                releases = Collections.singletonList(new ObjectMapper().readValue(x, Map.class));
                 compareReleases(activity);
-                activity.runOnUiThread(()->{
-                    downloadButton.setEnabled(true);
-                });
+                activity.runOnUiThread(()-> downloadButton.setEnabled(true));
             }
             catch(JsonParseDuringCompareException e) {
                 e.printStackTrace();
