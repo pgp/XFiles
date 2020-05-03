@@ -270,7 +270,7 @@ public class GenericChangeDirectoryDialog extends Dialog {
                             new AuthData(
                                     user.getText().toString(),
                                     domain.getText().toString(),
-                                    Integer.valueOf(port.getText().toString()),
+                                    Integer.parseInt(port.getText().toString()),
                                     password.getText().toString()
                             ),
                             remotePath.getText().toString()
@@ -293,7 +293,7 @@ public class GenericChangeDirectoryDialog extends Dialog {
                                     smbUser.getText().toString(),
                                     smbDomain.getText().toString(),
                                     smbHost.getText().toString(),
-                                    Integer.valueOf(smbPort.getText().toString()),
+                                    Integer.parseInt(smbPort.getText().toString()),
                                     smbPassword.getText().toString()
                             ),
                             smbRemotePath.getText().toString()

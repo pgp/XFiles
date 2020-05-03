@@ -757,7 +757,7 @@ public class SFTPProviderUsingPathContent implements FileOperationHelperUsingPat
                     (fe==FileOpsErrorCodes.HOST_KEY_CHANGED_ERROR ||
                             fe==FileOpsErrorCodes.HOST_KEY_INEXISTENT_ERROR)?
                             directory.dir:null);
-        };
+        }
         XSFTPClient channelSftp = (XSFTPClient) channelSftp_;
 
         // list dir

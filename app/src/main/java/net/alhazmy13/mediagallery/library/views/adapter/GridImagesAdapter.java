@@ -106,7 +106,7 @@ public class GridImagesAdapter extends RecyclerView.Adapter<GridImagesAdapter.Vi
         this.mHeight = height;
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder {
+    static class ViewHolder extends RecyclerView.ViewHolder {
         public ImageView image;
 
         ViewHolder(View itemView) {

@@ -76,7 +76,7 @@ public class ContentProviderUtils {
 
                 final String id = DocumentsContract.getDocumentId(uri);
                 final Uri contentUri = ContentUris.withAppendedId(
-                        Uri.parse("content://downloads/public_downloads"), Long.valueOf(id));
+                        Uri.parse("content://downloads/public_downloads"), Long.parseLong(id));
 
                 return getDataColumn(resolver, contentUri, null, null);
             }
@@ -147,7 +147,7 @@ public class ContentProviderUtils {
                     fileSize = cursor.getString(sizeIndex);
                 }
             }
-            return Long.valueOf(fileSize);
+            return Long.parseLong(fileSize);
         }
         catch (Exception e) {
             e.printStackTrace();

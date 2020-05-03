@@ -30,7 +30,6 @@ import java.util.Map;
 
 import it.pgp.xfiles.MainActivity;
 import it.pgp.xfiles.R;
-import it.pgp.xfiles.roothelperclient.RootHelperClientUsingPathContent;
 import it.pgp.xfiles.service.BaseBackgroundService;
 import it.pgp.xfiles.service.BaseBackgroundTask;
 import it.pgp.xfiles.service.ExtractService;

@@ -65,7 +65,7 @@ public class XSSHClient extends SSHClient implements AutoCloseable {
                 String output = IOUtils.readFully(is).toString().trim();
                 long exitStatus = cmd.getExitStatus();
                 if (exitStatus==0) {
-                    total = Long.valueOf(output);
+                    total = Long.parseLong(output);
                     total += totalFirstLevelRegularFiles;
                     Log.d("TOTALTOTAL","Current total is "+total);
                 }
@@ -99,7 +99,7 @@ public class XSSHClient extends SSHClient implements AutoCloseable {
                     List<String> outputLines = Misc.splitByteArrayOverByteAndEncode(commandOutput, (byte)0); // -0 param of du separates lines with \0
                     for (String outputLine : outputLines) {
                         String[] sLine = outputLine.split("[ \t]");
-                        if (sLine.length > 1) total += Long.valueOf(sLine[0]); // take only first cell, contains size
+                        if (sLine.length > 1) total += Long.parseLong(sLine[0]); // take only first cell, contains size
                         else Log.w("TOTALSIZE","du returned success, but parsed line with less than 2 cells, ignoring it. Line is:\n"+outputLine);
                     }
                     return total;
@@ -134,7 +134,7 @@ public class XSSHClient extends SSHClient implements AutoCloseable {
                  InputStream is = cmd.getInputStream()) {
                 String commandOutput = IOUtils.readFully(is).toString().trim();
                 long exitStatus = cmd.getExitStatus();
-                return exitStatus!=0?-1:Long.valueOf(commandOutput);
+                return exitStatus!=0?-1:Long.parseLong(commandOutput);
             }
             catch (Exception e) {
                 e.printStackTrace();
@@ -179,8 +179,8 @@ public class XSSHClient extends SSHClient implements AutoCloseable {
                         else {
                             Matcher matcher = pattern.matcher(commandOutput);
                             if (matcher.find()) {
-                                totalFiles += Long.valueOf(matcher.group(1));
-                                total += Long.valueOf(matcher.group(3));
+                                totalFiles += Long.parseLong(matcher.group(1));
+                                total += Long.parseLong(matcher.group(3));
                             }
                             else Log.e(getClass().getName(),"No match found for dir cmd output: "+commandOutput);
                         }
@@ -251,7 +251,7 @@ public class XSSHClient extends SSHClient implements AutoCloseable {
             String output = IOUtils.readFully(is).toString().replace("\n","");
             long exitStatus = cmd.getExitStatus();
             if (exitStatus==0) {
-                resp.totalDirs = Long.valueOf(output);
+                resp.totalDirs = Long.parseLong(output);
             }
         }
         catch (IOException e) {
@@ -265,7 +265,7 @@ public class XSSHClient extends SSHClient implements AutoCloseable {
             String output = IOUtils.readFully(is).toString().replace("\n","");
             long exitStatus = cmd.getExitStatus();
             if (exitStatus==0) {
-                resp.totalFiles = Long.valueOf(output);
+                resp.totalFiles = Long.parseLong(output);
                 resp.totalFiles += totalFirstLevelRegularFiles;
             }
         }

@@ -28,7 +28,7 @@ public class AuthData implements Serializable {
         username = s1[0];
         domain = s2[0];
         try {
-            port = Integer.valueOf(s2[1]);
+            port = Integer.parseInt(s2[1]);
         }
         catch (NumberFormatException n) {
             throw r;

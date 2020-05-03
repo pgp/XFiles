@@ -2,7 +2,6 @@ package it.pgp.xfiles.roothelperclient.reqs;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.nio.charset.Charset;
 import java.util.BitSet;
 import java.util.List;
 

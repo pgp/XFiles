@@ -116,7 +116,7 @@ public class HorizontalListAdapters extends RecyclerView.Adapter<HorizontalListA
     /**
      * The type View holder.
      */
-    class ViewHolder extends RecyclerView.ViewHolder {
+    static class ViewHolder extends RecyclerView.ViewHolder {
         /**
          * The Image.
          */

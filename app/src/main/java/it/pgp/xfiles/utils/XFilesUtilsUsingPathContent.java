@@ -25,8 +25,6 @@ import it.pgp.xfiles.roothelperclient.HashRequestCodes;
 import it.pgp.xfiles.roothelperclient.RootHelperClientUsingPathContent;
 import it.pgp.xfiles.roothelperclient.resps.folderStats_resp;
 import it.pgp.xfiles.service.BaseBackgroundTask;
-import it.pgp.xfiles.service.CompressTask;
-import it.pgp.xfiles.service.ExtractTask;
 import it.pgp.xfiles.utils.dircontent.GenericDirWithContent;
 import it.pgp.xfiles.utils.dircontent.LocalDirWithContent;
 import it.pgp.xfiles.utils.pathcontent.BasePathContent;

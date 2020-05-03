@@ -13,7 +13,7 @@ public class DirTreeWalkerRel implements Iterator<DirTreeWalkerRel.BaseAndTarget
     public DirTreeWalkerRel(File baseDir, File targetDir, Collection<String> filenames) {
         this.stack = new Stack<>();
         for (String fn : filenames) {
-            stack.push(new BaseAndTargetFiles(new File(baseDir,fn),new File(targetDir,fn)));
+            stack.push(new BaseAndTargetFiles(new File(baseDir, fn), new File(targetDir, fn)));
         }
     }
 
@@ -31,14 +31,14 @@ public class DirTreeWalkerRel implements Iterator<DirTreeWalkerRel.BaseAndTarget
             for (File x : bt.startFile.listFiles()) {
                 String fn = x.getName();
                 File y = new File(bt.targetFile,fn);
-                stack.push(new BaseAndTargetFiles(x,y));
+                stack.push(new BaseAndTargetFiles(x, y));
             }
         }
 
         return bt;
     }
 
-    public class BaseAndTargetFiles {
+    public static class BaseAndTargetFiles {
         public File startFile;
         public File targetFile;
 

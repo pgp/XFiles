@@ -66,7 +66,7 @@ public class InsertEditDialog extends Dialog {
                                 vaultAdapter instanceof SmbVaultAdapter?SmbAuthData.ref:AuthData.ref,
                                 user.getText().toString(),
                                 domain.getText().toString(),
-                                Integer.valueOf(port.getText().toString()),
+                                Integer.parseInt(port.getText().toString()),
                                 password.getText().toString(),
                                 vaultAdapter instanceof SmbVaultAdapter?new String[]{host.getText().toString()}:new String[]{});
                 vaultAdapter.syncInsertFromDialog(entry.getKey(),entry.getValue());
@@ -112,13 +112,13 @@ public class InsertEditDialog extends Dialog {
                         user.getText().toString(),
                         domain.getText().toString(),
                         host.getText().toString(),
-                        Integer.valueOf(port.getText().toString()),
+                        Integer.parseInt(port.getText().toString()),
                         password.getText().toString());
             else
                 newAuthData = new AuthData(
                         user.getText().toString(),
                         domain.getText().toString(),
-                        Integer.valueOf(port.getText().toString()),
+                        Integer.parseInt(port.getText().toString()),
                         password.getText().toString());
 
             if (dbh.updateCred(currentOid,newAuthData)) {
