@@ -757,16 +757,15 @@ public class MainActivity extends EffectActivity {
     }
 
     public void toggleRootHelper(View v) {
-        boolean isRootHelperUsed = currentHelper instanceof RootHelperClientUsingPathContent;
-        String h = isRootHelperUsed ? "standard" : "roothelper-enabled";
+        String h = usingRootHelperForLocal ? "standard" : "roothelper-enabled";
         AlertDialog.Builder bld = new AlertDialog.Builder(MainActivity.this);
         bld.setTitle("Switch dir commander to "+h+" one?");
-        bld.setIcon(isRootHelperUsed?R.drawable.xfiles_root_off:R.drawable.xfiles_root_on);
+        bld.setIcon(usingRootHelperForLocal?R.drawable.xfiles_root_off:R.drawable.xfiles_root_on);
         bld.setNegativeButton("No", BaseBackgroundService.emptyListener);
         bld.setPositiveButton("Yes", (dialog, which) -> {
             // disabled, better user experience, to be tested
             // browserPagerAdapter.createStandardCommanders();
-            if (isRootHelperUsed) { // switch to normal dircommander
+            if (usingRootHelperForLocal) { // switch to normal dircommander
                 currentHelper = xFilesUtils;
                 usingRootHelperForLocal = false;
                 fileOperationHelperSwitcher.setImageResource(R.drawable.xfiles_root_off);
