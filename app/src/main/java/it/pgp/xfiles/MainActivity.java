@@ -329,11 +329,11 @@ public class MainActivity extends EffectActivity {
                 int posToRestore = browserPagerAdapter.mainBrowserViews[browserPager.getCurrentItem()].getFirstVisiblePosition();
 
                 currentHelper.deleteFilesOrDirectories(selection);
-                Toast.makeText(MainActivity.this,selection.size()+" files deleted",Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this,((size==1)?name:(size+" items"))+" deleted",Toast.LENGTH_SHORT).show();
                 browserPagerAdapter.showDirContent(getCurrentDirCommander().refresh(),browserPager.getCurrentItem(),posToRestore);
             } catch (IOException e) {
                 e.printStackTrace();
-                Toast.makeText(MainActivity.this,"Unable to delete some files",Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this,"Unable to delete some items",Toast.LENGTH_SHORT).show();
             }
         });
         AlertDialog alertDialog = bld.create();
