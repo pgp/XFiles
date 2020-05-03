@@ -17,12 +17,8 @@ public abstract class RootHelperClientTask extends BaseBackgroundTask {
     public RootHelperClientUsingPathContent rh;
     public ContentResolver resolver; // for XRE direct share and compress from 3rd party providers
 
-    // launch a new RootHelper process on the given unix socket name,
-    // then create a new RootHelperClient instance connected to that process
-    // at the end, terminate the process
     public RootHelperClientTask(Serializable params) {
         super(params);
-//        rh = RootHandler.startAndGetRH(socketName);
 
         MainActivity.getRootHelperClient(); // ensure started (not sure if instance can be re-used here)
         rh = new RootHelperClientUsingPathContent();

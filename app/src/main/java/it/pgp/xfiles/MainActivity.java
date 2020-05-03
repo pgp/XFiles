@@ -175,7 +175,6 @@ public class MainActivity extends EffectActivity {
     public static void killRHWrapper() {
         try {
             rootHelperClient.killServer();
-            rootHelperClient = null;
         }
         catch (NullPointerException n) {
             Log.e("RH","Unable to kill roothelper server, reference already null");
@@ -183,6 +182,7 @@ public class MainActivity extends EffectActivity {
         catch (Exception e) {
             Log.e("RH","Unable to kill roothelper server",e);
         }
+        rootHelperClient = null;
     }
 
     public static final RemoteClientManager rootHelperRemoteClientManager = new RemoteClientManager();
@@ -680,7 +680,7 @@ public class MainActivity extends EffectActivity {
         credsFavsButton.setOnClickListener(this::openContextMenu);
         registerForContextMenu(chooseBrowserViewButton);
 
-        getRootHelperClient();
+//        getRootHelperClient();
 
         browserPagerAdapter = new BrowserPagerAdapter(this,this);
 
@@ -772,6 +772,7 @@ public class MainActivity extends EffectActivity {
                 fileOperationHelperSwitcher.setImageResource(R.drawable.xfiles_root_off);
             }
             else { // switch to roothelper-based dircommander
+                getRootHelperClient();
                 currentHelper = rootHelperClient;
                 usingRootHelperForLocal = true;
                 fileOperationHelperSwitcher.setImageResource(R.drawable.xfiles_root_on);
@@ -1143,7 +1144,7 @@ public class MainActivity extends EffectActivity {
                 dirOrDirection,
                 browserPager.getCurrentItem(),
                 targetFilenameToHighlight,
-                new Runnable[]{() -> toggleGoDirOpsIndeterminateProgress(true)}));
+                () -> toggleGoDirOpsIndeterminateProgress(true)));
         if(ff == null) return;
         new Handler().postDelayed(() -> {
             if (!ff.isDone())

@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Stack;
 
 import it.pgp.xfiles.BrowserItem;
+import it.pgp.xfiles.MainActivity;
 import it.pgp.xfiles.enums.FileMode;
 import it.pgp.xfiles.io.RobustLocalFileInputStream;
 import it.pgp.xfiles.io.RobustLocalFileOutputStream;
@@ -39,7 +40,7 @@ public class XFileSystemFile implements LocalSourceFile, LocalDestFile {
 
     protected final Logger log = LoggerFactory.getLogger(getClass());
 
-    private final RootHelperClientUsingPathContent rhc = new RootHelperClientUsingPathContent();
+    private final RootHelperClientUsingPathContent rhc = MainActivity.getRootHelperClient();
     private RobustLocalFileInputStream fis;
     private RobustLocalFileOutputStream fos;
 

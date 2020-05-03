@@ -124,7 +124,7 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
         this.address = defaultaddress;
     }
 
-    public RootHelperClientUsingPathContent(SocketNames address) {
+    RootHelperClientUsingPathContent(SocketNames address) {
         this.address = address;
     }
 

@@ -109,6 +109,9 @@ public class RemoteRHServerManagementDialog extends Dialog {
                     (rhssSendXreAnnounceCheckbox!=null && rhssSendXreAnnounceCheckbox.isChecked())?
                             RemoteServerManager.RHSS_ACTION.START_ANNOUNCE:
                             RemoteServerManager.RHSS_ACTION.START;
+
+            MainActivity.getRootHelperClient(); // ensure RH local server is started
+
             int result = RemoteServerManager.rhss_action(targetAction,
                     xreHomePath.getText().toString(),
                     xreAnnouncedPath.getText().toString(),

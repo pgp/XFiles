@@ -7,7 +7,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import it.pgp.xfiles.roothelperclient.RootHelperClientUsingPathContent;
+import it.pgp.xfiles.MainActivity;
 
 public class RobustLocalFileOutputStream extends OutputStream {
 
@@ -22,7 +22,12 @@ public class RobustLocalFileOutputStream extends OutputStream {
             e.printStackTrace();
             Log.e("XFiles-IO", getClass().getName()+": open for writing failed in in-app mode, trying with roothelper-proxy file streams...");
         }
-        o = new RootHelperClientUsingPathContent().getOutputStream(path);
+        try {
+            o = MainActivity.getRootHelperClient().getOutputStream(path);
+        }
+        catch(NullPointerException e) {
+            throw new IOException(e);
+        }
     }
 
     @Override

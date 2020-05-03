@@ -21,7 +21,7 @@ import it.pgp.xfiles.utils.pathcontent.BasePathContent;
 public class ExtractTask extends RootHelperClientTask {
 
 //    public static final SocketNames extractSocketName = SocketNames.theextractor;
-    public static final SocketNames extractSocketName = SocketNames.theroothelper;
+//    public static final SocketNames extractSocketName = SocketNames.theroothelper;
 
     // direct input to extractArchive
     private BasePathContent srcArchive; // subDir taken from here

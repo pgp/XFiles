@@ -42,6 +42,14 @@ public class XFilesUtilsUsingPathContent implements FileOperationHelperUsingPath
     // for publishing progress from within a long term task (copy/move/compress/extract/upload/download)
     BaseBackgroundTask task;
     long totalFilesForProgress,currentFilesForProgress;
+
+    private RootHelperClientUsingPathContent rhc;
+
+    private void refreshRHClient() throws IOException {
+        rhc = MainActivity.getRootHelperClient();
+        if(rhc == null) throw new IOException("Unable to connect to RootHelper");
+    }
+
     @Override
     public void initProgressSupport(BaseBackgroundTask task) {
         this.task = task;
@@ -196,7 +204,8 @@ public class XFilesUtilsUsingPathContent implements FileOperationHelperUsingPath
 
     @Override
     public void createLink(BasePathContent originPath, BasePathContent linkPath, boolean isHardLink) throws IOException {
-        new RootHelperClientUsingPathContent().createLink(originPath,linkPath,isHardLink);
+        refreshRHClient();
+        rhc.createLink(originPath,linkPath,isHardLink);
     }
 
     public static void deleteDirectory(File dir) {
@@ -233,18 +242,21 @@ public class XFilesUtilsUsingPathContent implements FileOperationHelperUsingPath
     public SingleStatsItem statFile(BasePathContent pathname) throws IOException {
         // it seems that Java implementation of file stats is only in Java NIO Files (not included in Android)
         // reverting to roothelper
-        return (new RootHelperClientUsingPathContent()).statFile(pathname);
+        refreshRHClient();
+        return rhc.statFile(pathname);
     }
 
     @Override
     public folderStats_resp statFiles(List<BasePathContent> files) throws IOException {
-        return (new RootHelperClientUsingPathContent()).statFiles(files);
+        refreshRHClient();
+        return rhc.statFiles(files);
     }
 
     @Override
     public folderStats_resp statFolder(BasePathContent pathname) throws IOException {
         // here one can use DirTreeWalker to count files and folders
-        return (new RootHelperClientUsingPathContent()).statFolder(pathname);
+        refreshRHClient();
+        return rhc.statFolder(pathname);
     }
 
     @Override
@@ -269,7 +281,8 @@ public class XFilesUtilsUsingPathContent implements FileOperationHelperUsingPath
     public byte[] hashFile(BasePathContent pathname,
                            HashRequestCodes hashAlgorithm,
                            BitSet dirHashOpts) throws IOException {
-        return new RootHelperClientUsingPathContent().hashFile(pathname,hashAlgorithm,dirHashOpts);
+        refreshRHClient();
+        return rhc.hashFile(pathname,hashAlgorithm,dirHashOpts);
 //        File f = new File(pathname.dir);
 //        byte[] digest = null;
 //        try {
@@ -293,8 +306,11 @@ public class XFilesUtilsUsingPathContent implements FileOperationHelperUsingPath
 
     @Override
     public GenericDirWithContent listDirectory(BasePathContent directory) {
-        if (directory instanceof XFilesRemotePathContent)
-            return new RootHelperClientUsingPathContent().listDirectory(directory);
+        if (directory instanceof XFilesRemotePathContent) {
+            try {refreshRHClient();}
+            catch(IOException e) {return new GenericDirWithContent(FileOpsErrorCodes.ROOTHELPER_INIT_ERROR);}
+            return rhc.listDirectory(directory);
+        }
         File[] content = new File(directory.dir).listFiles();
         if (content == null) return new LocalDirWithContent(FileOpsErrorCodes.COMMANDER_CANNOT_ACCESS); // TODO specialize error code (enum to be created) in callers from dir commander
         ArrayList<BrowserItem> l = new ArrayList<>();
@@ -309,7 +325,9 @@ public class XFilesUtilsUsingPathContent implements FileOperationHelperUsingPath
 
     @Override
     public GenericDirWithContent listArchive(BasePathContent archivePath) {
-        return (new RootHelperClientUsingPathContent()).listArchive(archivePath);
+        try {refreshRHClient();}
+        catch(IOException e) {return new GenericDirWithContent(FileOpsErrorCodes.ROOTHELPER_INIT_ERROR);}
+        return rhc.listArchive(archivePath);
     }
 
     @Override
@@ -320,7 +338,9 @@ public class XFilesUtilsUsingPathContent implements FileOperationHelperUsingPath
                                   @Nullable Boolean solidMode,
                                   String password,
                                   List<String> filenames) throws IOException {
-        return (new RootHelperClientUsingPathContent(CompressTask.compressSocketName)).compressToArchive(
+        RootHelperClientUsingPathContent rh = MainActivity.getRootHelperClient();
+        if(rh == null) return -1;
+        return rh.compressToArchive(
                 srcDirectory,
                 destArchive,
                 compressionLevel,
@@ -332,7 +352,9 @@ public class XFilesUtilsUsingPathContent implements FileOperationHelperUsingPath
 
     @Override
     public FileOpsErrorCodes extractFromArchive(BasePathContent srcArchive, BasePathContent destDirectory, @Nullable String password, @Nullable List<String> filenames, boolean smartDirectoryCreation) throws IOException {
-        return (new RootHelperClientUsingPathContent(ExtractTask.extractSocketName)).extractFromArchive(srcArchive,destDirectory,password,filenames,smartDirectoryCreation);
+        RootHelperClientUsingPathContent rh = MainActivity.getRootHelperClient();
+        if(rh == null) return FileOpsErrorCodes.ROOTHELPER_INIT_ERROR;
+        return rh.extractFromArchive(srcArchive,destDirectory,password,filenames,smartDirectoryCreation);
     }
 
     @Override

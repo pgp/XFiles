@@ -150,7 +150,9 @@ public class BrowserPagerAdapter extends PagerAdapter {
                     else Toast.makeText(mainActivity,"Current dir is no longer available, went back of " + dwc.listViewPosition + " positions", Toast.LENGTH_SHORT).show();
                 });
             }
-            mainActivity.runOnUiThread(()->showDirContent(dwc,position,null));
+
+            if(dwc.listViewPosition != null)
+                mainActivity.runOnUiThread(()->showDirContent(dwc,position,null));
         };
 
         swipeRefreshLayouts[position] = browserPageLayout.findViewById(R.id.activity_main_swipe_refresh_layout);

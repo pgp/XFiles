@@ -7,7 +7,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import it.pgp.xfiles.roothelperclient.RootHelperClientUsingPathContent;
+import it.pgp.xfiles.MainActivity;
 
 public class RobustLocalFileInputStream extends InputStream {
 
@@ -21,7 +21,12 @@ public class RobustLocalFileInputStream extends InputStream {
         catch (IOException e) {
             Log.e("XFiles-IO", getClass().getName()+": open for reading failed in in-app mode, trying with roothelper-proxy file streams...", e);
         }
-        i = new RootHelperClientUsingPathContent().getInputStream(path);
+        try {
+            i = MainActivity.getRootHelperClient().getInputStream(path);
+        }
+        catch (NullPointerException e) {
+            throw new IOException(e);
+        }
     }
 
     @Override

@@ -143,7 +143,7 @@ public class UpdateCheckDialog extends Dialog {
         updateMessage.setText("Checking for updates...");
         new Thread(()->{
             try {
-                byte[] x = new RootHelperClientUsingPathContent().downloadHttpsUrlInMemory("api.github.com/repos/pgp/XFiles/releases",443);
+                byte[] x = MainActivity.getRootHelperClient().downloadHttpsUrlInMemory("api.github.com/repos/pgp/XFiles/releases",443);
                 Log.d(UpdateCheckDialog.class.getName(),new String(x));
                 releases = new ObjectMapper().readValue(x, List.class);
                 compareReleases(activity);
@@ -223,9 +223,9 @@ public class UpdateCheckDialog extends Dialog {
                 return;
             }
             try {
-                new RootHelperClientUsingPathContent().deleteFilesOrDirectories(Collections.singletonList(srcArchive));
+                MainActivity.getRootHelperClient().deleteFilesOrDirectories(Collections.singletonList(srcArchive));
             }
-            catch (IOException e) {
+            catch (IOException|NullPointerException e) {
                 MainActivity.showToastOnUI("Unable to delete zipped apk file", activity);
             }
 
