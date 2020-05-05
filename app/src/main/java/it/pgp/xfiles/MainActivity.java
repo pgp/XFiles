@@ -274,17 +274,17 @@ public class MainActivity extends EffectActivity {
             // open local archive
             if (browserItem.hasExt()) {
                 String arcExt = browserItem.getFileExt();
+                ArchivePathContent apc = new ArchivePathContent(currentFile.dir,"/");
                 if(ArchiveType.APK.name().equals(arcExt.toUpperCase())) {
                     AlertDialog.Builder bld = new AlertDialog.Builder(MainActivity.this);
                     bld.setTitle("Choose APK action");
                     bld.setNegativeButton("Install", (dialog, which) -> openWithDefaultApp(new File(currentFile.dir)));
-                    bld.setPositiveButton("Open as archive",
-                            (dialog, which) -> goDir(new ArchivePathContent(currentFile.dir,"/"),browserPager.getCurrentItem(),null));
+                    bld.setPositiveButton("Open as archive", (dialog, which) -> goDir_async(apc,null));
                     bld.create().show();
                     return;
                 }
                 if(ArchiveType.formats.contains(arcExt)) {
-                    goDir(new ArchivePathContent(currentFile.dir,"/"),browserPager.getCurrentItem(),null);
+                    goDir_async(apc,null);
                     return;
                 }
             }
