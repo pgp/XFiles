@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:id="@+id/createNewFile"
+        android:icon="@drawable/xf_new_file"
+        android:title="New file" />
+
+    <item android:id="@+id/createNewDirectory"
+        android:icon="@drawable/xf_new_dir"
+        android:title="New directory" />
+
+</menu>

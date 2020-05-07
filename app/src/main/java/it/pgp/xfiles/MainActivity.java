@@ -1240,7 +1240,10 @@ public class MainActivity extends EffectActivity {
         MenuInflater inflater = mypopupmenu.getMenuInflater();
         Menu menu = mypopupmenu.getMenu();
 
-        if (getCurrentBrowserAdapter().getSelectedCount() == 0) { // long-click on single file, without active selection
+        if(v.getId()==R.id.newFileButton) {
+            inflater.inflate(R.menu.menu_new, menu);
+        }
+        else if (getCurrentBrowserAdapter().getSelectedCount() == 0) { // long-click on single file, without active selection
             switch(getCurrentDirCommander().getCurrentDirectoryPathname().providerType) {
                 case LOCAL:
                     inflater.inflate(R.menu.menu_single, menu);
@@ -1459,6 +1462,12 @@ public class MainActivity extends EffectActivity {
                     b = getCurrentBrowserAdapter().getItem(position1);
                     getStats(b);
                     return true;
+
+                case R.id.createNewFile:
+                case R.id.createNewDirectory:
+                    new CreateFileOrDirectoryDialog(MainActivity.this,
+                            ((itemId==R.id.createNewFile)?FileMode.FILE:FileMode.DIRECTORY)).show();
+                    return true;
                 default:
                     return true;
             }
@@ -1636,13 +1645,8 @@ public class MainActivity extends EffectActivity {
             case R.id.goAheadButton:
                 goDir_async(Boolean.FALSE,null);break;
 
-            case R.id.newFileButton:
-                CreateFileOrDirectoryDialog createFileDialog = new CreateFileOrDirectoryDialog(this, FileMode.FILE);
-                createFileDialog.show();
-                break;
-            case R.id.newDirectoryButton:
-                CreateFileOrDirectoryDialog createDirectoryDialog = new CreateFileOrDirectoryDialog(this, FileMode.DIRECTORY);
-                createDirectoryDialog.show();
+            case R.id.newFileButton: // context menu with both file and dir options
+                showPopup(null,v,0,v.getId());
                 break;
 
             case R.id.cutButton:
