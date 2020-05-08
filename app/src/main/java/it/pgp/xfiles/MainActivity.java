@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.graphics.Point;
 import android.net.Uri;
 import android.net.wifi.WifiInfo;
@@ -603,6 +604,12 @@ public class MainActivity extends EffectActivity {
     }
 
     boolean hasPermanentMenuKey;
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        setOperationButtonsLayout(currentMode);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -1591,14 +1598,23 @@ public class MainActivity extends EffectActivity {
 
         operationButtonsLayout = findViewById(R.id.operationButtonsLayout);
         operationButtonsLayout.removeAllViews();
-        View targetLayout;
-        if (standardMode) {
-            targetLayout = layoutInflater.inflate(R.layout.standard_operational_layout,operationButtonsLayout);
+
+        boolean isHorizontal = getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
+
+        if(isHorizontal) {
+            // no need for switching layouts when one has all the possible buttons available
+            operationButtonsLayoutSwitcher.setVisibility(View.GONE);
+            layoutInflater.inflate(R.layout.horizontal_operational_layout,operationButtonsLayout);
         }
         else {
-            targetLayout = layoutInflater.inflate(R.layout.overriding_home_buttons_operational_layout,operationButtonsLayout);
+            operationButtonsLayoutSwitcher.setVisibility(hasPermanentMenuKey?View.GONE:View.VISIBLE);
+            if (standardMode) {
+                layoutInflater.inflate(R.layout.standard_operational_layout,operationButtonsLayout);
+            }
+            else {
+                layoutInflater.inflate(R.layout.overriding_home_buttons_operational_layout,operationButtonsLayout);
+            }
         }
-//        operationButtonsLayout.addView(targetLayout);
     }
 
     public void multiSelectAction(View v) {
