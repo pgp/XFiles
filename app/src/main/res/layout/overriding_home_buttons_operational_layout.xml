@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal"
-    android:layout_weight=".1"
     android:layout_width="match_parent"
-    android:layout_height="0dp">
+    android:layout_height="wrap_content">
 
     <ImageButton
         android:onClick="operationBarOnClick"
@@ -23,9 +22,9 @@
         android:background="@null"
         android:id="@+id/upOneLevelButton"
         android:src="@drawable/xf_up_dir"
+        android:layout_weight="1"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1" />
+        android:layout_height="wrap_content" />
 
     <ImageButton
         android:onClick="operationBarOnClick"
@@ -87,9 +86,21 @@
         android:scaleType="fitCenter"
         android:adjustViewBounds="true"
         android:background="@null"
+        android:src="@drawable/xfiles_archive"
+        android:id="@+id/compressButton"
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content" />
+
+    <ImageButton
+        android:onClick="operationBarOnClick"
+        android:scaleType="fitCenter"
+        android:adjustViewBounds="true"
+        android:background="@null"
         android:src="@drawable/xf_share"
         android:id="@+id/shareButton"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content" />
 
 </LinearLayout>

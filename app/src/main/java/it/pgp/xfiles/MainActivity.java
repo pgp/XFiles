@@ -1593,12 +1593,12 @@ public class MainActivity extends EffectActivity {
         operationButtonsLayout.removeAllViews();
         View targetLayout;
         if (standardMode) {
-            targetLayout = layoutInflater.inflate(R.layout.standard_operational_layout,null);
+            targetLayout = layoutInflater.inflate(R.layout.standard_operational_layout,operationButtonsLayout);
         }
         else {
-            targetLayout = layoutInflater.inflate(R.layout.overriding_home_buttons_operational_layout,null);
+            targetLayout = layoutInflater.inflate(R.layout.overriding_home_buttons_operational_layout,operationButtonsLayout);
         }
-        operationButtonsLayout.addView(targetLayout);
+//        operationButtonsLayout.addView(targetLayout);
     }
 
     public void multiSelectAction(View v) {
