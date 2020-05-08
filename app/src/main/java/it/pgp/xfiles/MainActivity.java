@@ -579,13 +579,23 @@ public class MainActivity extends EffectActivity {
         sharedPrefs = getSharedPreferences(
                 mainActivityContext.getPackageName(), Context.MODE_PRIVATE);
         boolean copied = sharedPrefs.getBoolean("FR",false);
+        SharedPreferences.Editor editor = null;
         if (!copied) {
             FirstRunAssetsExtract.copyInstallNamesToRuntimeNames(mainActivityContext);
-            SharedPreferences.Editor editor = sharedPrefs.edit();
+            editor = sharedPrefs.edit();
             editor.putBoolean("FR",true);
             editor.putBoolean("SOFTKEYS",hasSoftKeys());
-            editor.commit();
+            editor.apply();
         }
+
+        int isTablet_ = sharedPrefs.getInt("ISTABLET",-1);
+        if(isTablet_ < 0) {
+            if(editor == null) editor = sharedPrefs.edit();
+            isTablet_ = getDisplayDiagonalSizeInches()>=6.5?1:0;
+            editor.putInt("ISTABLET",isTablet_);
+            editor.apply();
+        }
+        isTablet = isTablet_==1;
     }
 
     // 2 bits: LSB for dang, MSB for sign
@@ -604,6 +614,15 @@ public class MainActivity extends EffectActivity {
     }
 
     boolean hasPermanentMenuKey;
+
+    public double getDisplayDiagonalSizeInches() {
+        DisplayMetrics metrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(metrics);
+
+        float yInches = metrics.heightPixels/metrics.ydpi;
+        float xInches = metrics.widthPixels/metrics.xdpi;
+        return Math.sqrt(xInches*xInches + yInches*yInches);
+    }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
@@ -1591,6 +1610,7 @@ public class MainActivity extends EffectActivity {
         new Handler().postDelayed(() -> doubleBackToExitPressedOnce=false, 2000);
     }
 
+    boolean isTablet;
     boolean currentMode;
     public void setOperationButtonsLayout(boolean standardMode) {
         this.currentMode = standardMode;
@@ -1601,18 +1621,23 @@ public class MainActivity extends EffectActivity {
 
         boolean isHorizontal = getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
 
-        if(isHorizontal) {
+        if(isHorizontal || (isTablet && !hasPermanentMenuKey)) {
             // no need for switching layouts when one has all the possible buttons available
             operationButtonsLayoutSwitcher.setVisibility(View.GONE);
             layoutInflater.inflate(R.layout.horizontal_operational_layout,operationButtonsLayout);
         }
-        else {
-            operationButtonsLayoutSwitcher.setVisibility(hasPermanentMenuKey?View.GONE:View.VISIBLE);
-            if (standardMode) {
+        else { // vertical mode AND (smartphone OR (tablet with physical buttons))
+            if(isTablet) {
+                // (tablet with physical buttons) in vertical mode, show all buttons except Back and Home
+                operationButtonsLayoutSwitcher.setVisibility(View.GONE);
                 layoutInflater.inflate(R.layout.standard_operational_layout,operationButtonsLayout);
             }
             else {
-                layoutInflater.inflate(R.layout.overriding_home_buttons_operational_layout,operationButtonsLayout);
+                operationButtonsLayoutSwitcher.setVisibility(hasPermanentMenuKey?View.GONE:View.VISIBLE);
+                if (standardMode)
+                    layoutInflater.inflate(R.layout.standard_operational_layout,operationButtonsLayout);
+                else
+                    layoutInflater.inflate(R.layout.overriding_home_buttons_operational_layout,operationButtonsLayout);
             }
         }
     }
