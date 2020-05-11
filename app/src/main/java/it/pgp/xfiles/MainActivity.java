@@ -1130,7 +1130,7 @@ public class MainActivity extends EffectActivity {
     private final int[] goDirOpsStatuses = new int[]{View.VISIBLE,View.GONE};
 
     // false when starting, true after end
-    void toggleGoDirOpsIndeterminateProgress(boolean status) {
+    public void toggleGoDirOpsIndeterminateProgress(boolean status) {
         if(!hasPermanentMenuKey) // if device has physical buttons, status is always GONE
             operationButtonsLayoutSwitcher.setVisibility(status?goDirOpsStatuses[0]:goDirOpsStatuses[1]);
         progressCircleForGoDirOps.setVisibility(status?goDirOpsStatuses[1]:goDirOpsStatuses[0]);
