@@ -11,7 +11,7 @@ check_android_task:
     - echo y | sdkmanager "build-tools;29.0.3"
     - echo y | sdkmanager "platforms;android-28"
     - echo y | sdkmanager "ndk-bundle"
-    - echo y | sdkmanager "ndk;20.0.5594570"
+    - echo y | sdkmanager "ndk;21.3.6528147"
     - echo y | sdkmanager "cmake;3.10.2.4988404"
   
   assemble_script:
