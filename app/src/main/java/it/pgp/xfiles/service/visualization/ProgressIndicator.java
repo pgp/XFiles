@@ -1,7 +1,6 @@
 package it.pgp.xfiles.service.visualization;
 
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
 
@@ -38,7 +37,7 @@ public abstract class ProgressIndicator {
     protected LinearLayout oView;
     protected View topLeftView;
 
-    public void addViewToOverlay(View view, ViewGroup.LayoutParams params) {
+    public void addViewToOverlay(View view, WindowManager.LayoutParams params) {
         if (overlayNotAvailable) return;
         try {
             wm.addView(view, params);
