@@ -37,16 +37,12 @@ public class BrowserAdapter extends ArrayAdapter<BrowserItem> {
     }
 
     private static void loadArchiveIcons(Context context) {
-        if(!archiveIcons.isEmpty()) return;
-        archiveIcons.put(ArchiveType._7Z.getValue(),BitmapFactory.decodeResource(context.getResources(), R.drawable.xfiles_archive_7z));
-        archiveIcons.put(ArchiveType.XZ.getValue(),BitmapFactory.decodeResource(context.getResources(), R.drawable.xfiles_archive_xz));
-        archiveIcons.put(ArchiveType.RAR.getValue(),BitmapFactory.decodeResource(context.getResources(), R.drawable.xfiles_archive_rar));
-        archiveIcons.put(ArchiveType.ZIP.getValue(),BitmapFactory.decodeResource(context.getResources(), R.drawable.xfiles_archive_zip));
-        archiveIcons.put(ArchiveType.CAB.getValue(),BitmapFactory.decodeResource(context.getResources(), R.drawable.xfiles_archive_cab));
-        archiveIcons.put(ArchiveType.GZ.getValue(),BitmapFactory.decodeResource(context.getResources(), R.drawable.xfiles_archive_gz));
-        archiveIcons.put(ArchiveType.BZ2.getValue(),BitmapFactory.decodeResource(context.getResources(), R.drawable.xfiles_archive_bz2));
-        archiveIcons.put(ArchiveType.TAR.getValue(),BitmapFactory.decodeResource(context.getResources(), R.drawable.xfiles_archive_tar));
-        archiveIcons.put(ArchiveType.APK.getValue(),BitmapFactory.decodeResource(context.getResources(), R.drawable.xfiles_archive_apk));
+        if(archiveIcons.isEmpty()) {
+            for(ArchiveType a : ArchiveType.values()) {
+                if (a == ArchiveType.RAR5 || a == ArchiveType.UNKNOWN) continue;
+                archiveIcons.put(a.s,BitmapFactory.decodeResource(context.getResources(), a.resId));
+            }
+        }
     }
 
     public static Bitmap getBitmapByExtension(BrowserItem item) {
