@@ -145,7 +145,6 @@ public class MainActivity extends EffectActivity {
     private CopyMoveListPathContent copyMoveList = null; // only one for the entire ViewPager (you may want to copy files from one browser view to the other one)
 
     private LayoutInflater layoutInflater;
-    private LinearLayout operationButtonsLayout; // target container for conditional inflating
 
     public BrowserPagerAdapter browserPagerAdapter;
 
@@ -1607,7 +1606,7 @@ public class MainActivity extends EffectActivity {
 
     boolean isTablet;
     public void setOperationButtonsLayout() {
-        operationButtonsLayout = findViewById(R.id.operationButtonsLayout);
+        LinearLayout operationButtonsLayout = findViewById(R.id.operationButtonsLayout);
         operationButtonsLayout.removeAllViews();
 
         ViewPager vp = new ViewPager(this);

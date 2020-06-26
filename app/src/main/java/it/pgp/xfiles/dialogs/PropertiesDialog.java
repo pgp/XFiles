@@ -23,7 +23,6 @@ import it.pgp.xfiles.utils.pathcontent.BasePathContent;
  */
 public class PropertiesDialog extends Dialog {
 
-    private final Activity activity;
     private TextView childrenFiles,childrenFolders,totalFiles,totalFolders,totalSize;
     private SingleStatsItem stats;
     private folderStats_resp statsFolderOrMultipleItems;
@@ -36,7 +35,6 @@ public class PropertiesDialog extends Dialog {
     // TODO maybe it's better to inherit a FolderPropertiesDialog from this
     public PropertiesDialog(final Activity activity, FileMode fileMode, List<BasePathContent> pathname_) {
         super(activity);
-        this.activity = activity;
         setContentView(R.layout.properties_file_dialog);
 
         singleItemLayout = findViewById(R.id.propertiesSingleItemLayout);

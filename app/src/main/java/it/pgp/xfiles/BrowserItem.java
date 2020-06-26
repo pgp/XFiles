@@ -47,15 +47,14 @@ public class BrowserItem implements Serializable, Checkable, Comparable<BrowserI
             this.size = 0L;
             this.date = new Date(0);
             this.isLink = false; // assume no directory softlink in archive
-            this.checked = false;
         }
         else {
             this.size = nodeProperties.containsKey("size")?(Long)nodeProperties.get("size"):0;
             this.date = nodeProperties.containsKey("date")?(Date)nodeProperties.get("date"):new Date(0);
             this.isDirectory = nodeProperties.containsKey("isDir")?(Boolean)nodeProperties.get("isDir"):true;
             this.isLink = nodeProperties.containsKey("isLink")?(Boolean)nodeProperties.get("isLink"):false;
-            this.checked = false;
         }
+        this.checked = false;
     }
 
     public String getFileExt() {
