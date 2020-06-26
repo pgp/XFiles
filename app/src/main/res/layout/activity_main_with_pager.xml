@@ -20,24 +20,12 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
 
-<!--        either this        -->
         <ProgressBar
             android:scaleType="fitCenter"
             android:adjustViewBounds="true"
             android:background="@null"
             android:id="@+id/progressCircleForGoDirOps"
-            android:onClick="switchOperationButtonsLayout"
             android:visibility="gone"
-            android:layout_alignParentStart="true"
-            android:layout_width="30dp"
-            android:layout_height="wrap_content" />
-<!--        or this        -->
-        <ImageButton
-            android:scaleType="fitCenter"
-            android:adjustViewBounds="true"
-            android:background="@null"
-            android:id="@+id/operationButtonsLayoutSwitcher"
-            android:onClick="switchOperationButtonsLayout"
             android:layout_alignParentStart="true"
             android:layout_width="30dp"
             android:layout_height="wrap_content" />
@@ -59,29 +47,6 @@
                 android:layout_weight="5"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content" >
-
-                <!-- merged in one button for both start/stop server and show connections -->
-                <!--<ImageButton-->
-                <!--android:scaleType="fitCenter"-->
-                <!--android:adjustViewBounds="true"-->
-                <!--android:background="@null"-->
-                <!--android:src="@drawable/xf_share"-->
-                <!--android:id="@+id/showXREConnectionsButton"-->
-                <!--android:onClick="showXREConnections"-->
-                <!--android:layout_weight="1"-->
-                <!--android:layout_width="0dp"-->
-                <!--android:layout_height="wrap_content" />-->
-
-                <!--<ImageButton-->
-                <!--android:scaleType="fitCenter"-->
-                <!--android:adjustViewBounds="true"-->
-                <!--android:background="@null"-->
-                <!--android:src="@drawable/xf_share"-->
-                <!--android:id="@+id/startRHRemoteServerButton"-->
-                <!--android:onClick="showStartRHRemoteServerDialog"-->
-                <!--android:layout_weight="1"-->
-                <!--android:layout_width="0dp"-->
-                <!--android:layout_height="wrap_content" />-->
 
                 <ImageButton
                     android:scaleType="fitCenter"

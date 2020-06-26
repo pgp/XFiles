@@ -12,7 +12,7 @@
         android:layout_height="0dp"
         android:layout_weight=".1">
 
-        <!--empty padder for operationButtonsLayoutSwitcher -->
+        <!--empty padder originally left for operationButtonsLayoutSwitcher, now for progressCircle -->
         <View
             android:scaleType="fitCenter"
             android:adjustViewBounds="true"

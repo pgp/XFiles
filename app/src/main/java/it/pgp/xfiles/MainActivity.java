@@ -24,6 +24,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.view.ViewPager;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -65,6 +66,7 @@ import java.util.concurrent.Future;
 
 import it.pgp.xfiles.adapters.BrowserAdapter;
 import it.pgp.xfiles.adapters.BrowserPagerAdapter;
+import it.pgp.xfiles.adapters.OperationalPagerAdapter;
 import it.pgp.xfiles.dialogs.AboutDialog;
 import it.pgp.xfiles.dialogs.AdvancedSortingDialog;
 import it.pgp.xfiles.dialogs.ChecksumActivity;
@@ -233,7 +235,6 @@ public class MainActivity extends EffectActivity {
     }
 
     public ProgressBar progressCircleForGoDirOps;
-    public ImageButton operationButtonsLayoutSwitcher;
     public ImageButton fileOperationHelperSwitcher;
 
     ImageButton quickFindButton,
@@ -671,11 +672,7 @@ public class MainActivity extends EffectActivity {
         hasPermanentMenuKey = !(sharedPrefs.getBoolean("SOFTKEYS",true));
 
         progressCircleForGoDirOps = findViewById(R.id.progressCircleForGoDirOps);
-        operationButtonsLayoutSwitcher = findViewById(R.id.operationButtonsLayoutSwitcher);
         fileOperationHelperSwitcher = findViewById(R.id.toggleRootHelperButton);
-
-        if (hasPermanentMenuKey)
-            operationButtonsLayoutSwitcher.setVisibility(View.GONE); // home-buttons embedding layout not needed in devices with hardware button
 
         // conditional inflating
         setOperationButtonsLayout(hasPermanentMenuKey);
@@ -1131,8 +1128,6 @@ public class MainActivity extends EffectActivity {
 
     // false when starting, true after end
     public void toggleGoDirOpsIndeterminateProgress(boolean status) {
-        if(!hasPermanentMenuKey) // if device has physical buttons, status is always GONE
-            operationButtonsLayoutSwitcher.setVisibility(status?goDirOpsStatuses[0]:goDirOpsStatuses[1]);
         progressCircleForGoDirOps.setVisibility(status?goDirOpsStatuses[1]:goDirOpsStatuses[0]);
     }
 
@@ -1614,31 +1609,40 @@ public class MainActivity extends EffectActivity {
     boolean currentMode;
     public void setOperationButtonsLayout(boolean standardMode) {
         this.currentMode = standardMode;
-        operationButtonsLayoutSwitcher.setImageResource(standardMode?R.drawable.xfiles_switch_operation_buttons_blue:R.drawable.xfiles_switch_operation_buttons_green);
 
         operationButtonsLayout = findViewById(R.id.operationButtonsLayout);
         operationButtonsLayout.removeAllViews();
+
+        ViewPager vp = new ViewPager(this);
+        int[] l1 = new int[]{R.layout.overriding_home_buttons_operational_layout, R.layout.standard_operational_layout};
+        int[] l2 = new int[]{R.layout.standard_operational_layout};
+        int[] l3 = new int[]{R.layout.horizontal_operational_layout};
+
+        int[] targetLayout;
 
         boolean isHorizontal = getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
 
         if(isHorizontal || (isTablet && !hasPermanentMenuKey)) {
             // no need for switching layouts when one has all the possible buttons available
-            operationButtonsLayoutSwitcher.setVisibility(View.GONE);
-            layoutInflater.inflate(R.layout.horizontal_operational_layout,operationButtonsLayout);
+            targetLayout = l3;
         }
         else { // vertical mode AND (smartphone OR (tablet with physical buttons))
             if(isTablet) {
                 // (tablet with physical buttons) in vertical mode, show all buttons except Back and Home
-                operationButtonsLayoutSwitcher.setVisibility(View.GONE);
-                layoutInflater.inflate(R.layout.standard_operational_layout,operationButtonsLayout);
+                targetLayout = l2;
             }
             else {
-                operationButtonsLayoutSwitcher.setVisibility(hasPermanentMenuKey?View.GONE:View.VISIBLE);
-                if (standardMode)
-                    layoutInflater.inflate(R.layout.standard_operational_layout,operationButtonsLayout);
-                else
-                    layoutInflater.inflate(R.layout.overriding_home_buttons_operational_layout,operationButtonsLayout);
+                if (standardMode) targetLayout = l2;
+                else targetLayout = l1;
             }
+        }
+
+        if(targetLayout == l1) { // more than one layout, needs ViewPager
+            vp.setAdapter(new OperationalPagerAdapter(this, targetLayout));
+            operationButtonsLayout.addView(vp);
+        }
+        else {
+            layoutInflater.inflate(targetLayout[0],operationButtonsLayout);
         }
     }
 
@@ -1663,10 +1667,6 @@ public class MainActivity extends EffectActivity {
                 fsd.show();
                 return;
         }
-    }
-
-    public void switchOperationButtonsLayout(View v) {
-        setOperationButtonsLayout(!currentMode);
     }
 
     public void operationBarOnClick(View v) {
