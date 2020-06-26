@@ -628,7 +628,7 @@ public class MainActivity extends EffectActivity {
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        setOperationButtonsLayout(currentMode);
+        setOperationButtonsLayout();
     }
 
     @Override
@@ -675,7 +675,7 @@ public class MainActivity extends EffectActivity {
         fileOperationHelperSwitcher = findViewById(R.id.toggleRootHelperButton);
 
         // conditional inflating
-        setOperationButtonsLayout(hasPermanentMenuKey);
+        setOperationButtonsLayout();
 
         sortButton = findViewById(R.id.sortButton);
         sortButton.setOnClickListener(this::showAdvancedSortingDialogOrMenu);
@@ -1606,10 +1606,7 @@ public class MainActivity extends EffectActivity {
     }
 
     boolean isTablet;
-    boolean currentMode;
-    public void setOperationButtonsLayout(boolean standardMode) {
-        this.currentMode = standardMode;
-
+    public void setOperationButtonsLayout() {
         operationButtonsLayout = findViewById(R.id.operationButtonsLayout);
         operationButtonsLayout.removeAllViews();
 
@@ -1632,7 +1629,7 @@ public class MainActivity extends EffectActivity {
                 targetLayout = l2;
             }
             else {
-                if (standardMode) targetLayout = l2;
+                if (hasPermanentMenuKey) targetLayout = l2;
                 else targetLayout = l1;
             }
         }
