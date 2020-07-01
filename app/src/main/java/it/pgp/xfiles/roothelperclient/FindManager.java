@@ -88,6 +88,7 @@ public class FindManager implements AutoCloseable {
 
     public static int find_action(FIND_ACTION action, find_rq... request) {
         if (action == FIND_ACTION.START) {
+            MainActivity.getRootHelperClient();
             // without auto-close
             try {return (new FindManager().start_find(request[0])) ? 1 : 0;}
             catch (IOException e) {return -1;}
