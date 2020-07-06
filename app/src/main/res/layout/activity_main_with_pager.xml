@@ -127,6 +127,7 @@
         android:id="@+id/operationButtonsLayout"
         android:orientation="horizontal"
         android:layout_width="match_parent"
+        android:gravity="bottom"
         android:layout_weight="1"
         android:layout_height="0dp" />
 
