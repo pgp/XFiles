@@ -155,6 +155,8 @@ public class MainActivity extends EffectActivity {
             | View.SYSTEM_UI_FLAG_FULLSCREEN
             | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
 
+    public int defaultUIVisibility;
+
     // File Operations Helpers
     public static SmbProviderUsingPathContent smbProvider;
     public static SFTPProviderUsingPathContent sftpProvider;
@@ -596,6 +598,7 @@ public class MainActivity extends EffectActivity {
             editor.apply();
         }
         isTablet = isTablet_==1;
+        hasPermanentMenuKey = !(sharedPrefs.getBoolean("SOFTKEYS",true));
     }
 
     // 2 bits: LSB for dang, MSB for sign
@@ -627,6 +630,10 @@ public class MainActivity extends EffectActivity {
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
+        if(isTablet || hasPermanentMenuKey || newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            getWindow().getDecorView().setSystemUiVisibility(defaultUIVisibility);
+        }
+        else getWindow().getDecorView().setSystemUiVisibility(fullScreenVisibility);
         setOperationButtonsLayout();
     }
 
@@ -665,10 +672,9 @@ public class MainActivity extends EffectActivity {
 
         layoutInflater = LayoutInflater.from(MainActivity.this);
 
-        firstRunCheck();
+        defaultUIVisibility = getWindow().getDecorView().getSystemUiVisibility();
 
-        // if(!sharedPrefs.contains("SOFTKEYS")) throw new RuntimeException("Softkeys item not set");
-        hasPermanentMenuKey = !(sharedPrefs.getBoolean("SOFTKEYS",true));
+        firstRunCheck();
 
         progressCircleForGoDirOps = findViewById(R.id.progressCircleForGoDirOps);
         fileOperationHelperSwitcher = findViewById(R.id.toggleRootHelperButton);
@@ -806,6 +812,10 @@ public class MainActivity extends EffectActivity {
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
+        if(isTablet || hasPermanentMenuKey || getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            return;
+        }
+
         if (hasFocus) {
             getWindow().getDecorView().setSystemUiVisibility(fullScreenVisibility);
         }
@@ -1232,11 +1242,13 @@ public class MainActivity extends EffectActivity {
         });
     }
 
-    public static void hideDefaultControls(@NonNull final Activity activity) {
-//        activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
-        activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+    public void hideDefaultControls() {
+        if(isTablet || hasPermanentMenuKey || getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE)
+            return;
+//        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-        final Window window = activity.getWindow();
+        final Window window = getWindow();
 
         if (window == null) {
             return;
