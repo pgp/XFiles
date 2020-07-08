@@ -37,11 +37,11 @@ public class HashView extends View {
     PaintRect[][] M;
 
     private int width,height;
-    public HashView(Context context, byte[] in, int gridSize, int bitsPerCell, int width, int height) {
+    public HashView(Context context, byte[] in, int gridSize, int bitsPerCell, int width, int height, int... truncateSize) {
         super(context);
         this.width = width;
         this.height = height;
-        M = gridCalculator(in, gridSize, bitsPerCell, width, height);
+        M = gridCalculator(in, gridSize, bitsPerCell, width, height, truncateSize.length>0 ? truncateSize[0] : gridSize);
     }
 
     @Override
@@ -77,16 +77,16 @@ public class HashView extends View {
         return a;
     }
 
-    PaintRect[][] gridCalculator(byte[] b, int gridSize, int bitsPerCell, int width, int height) {
-        int rSize = Math.min(width, height) / gridSize;
+    PaintRect[][] gridCalculator(byte[] b, int gridSize, int bitsPerCell, int width, int height, int truncateSize) {
+        int rSize = Math.min(width, height) / truncateSize;
         int outSize = gridSize * gridSize * bitsPerCell;
-        PaintRect[][] M = new PaintRect[gridSize][gridSize];
+        PaintRect[][] M = new PaintRect[truncateSize][truncateSize];
 
         byte[] outDigest = Native.spongeForHashViewShake(b,b.length,outSize/8);
         boolean[] bb = byteArrayToBitArray(outDigest);
 
-        for (int i = 0; i < gridSize; i++)
-            for (int j = 0; j < gridSize; j++) {
+        for (int i = 0; i < truncateSize; i++)
+            for (int j = 0; j < truncateSize; j++) {
                 Rect currentRect = new Rect(i * rSize, j * rSize, (i + 1) * rSize, (j + 1) * rSize);
                 int rColor = getBitSeqFromBooleanArray(bitsPerCell*(gridSize*i+j),bitsPerCell,bb);
 

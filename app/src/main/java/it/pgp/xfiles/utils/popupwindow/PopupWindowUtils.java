@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
@@ -29,22 +30,43 @@ public class PopupWindowUtils {
         DisplayMetrics displayMetrics = new DisplayMetrics();
         // using 50% of screen width
         activity.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        HashView hv = new HashView(
+        // 0: reduced, 1: full (lazy init)
+        HashView[] hvs = {new HashView(
                 activity,
                 dataForVisualHash,
                 16,3,
                 displayMetrics.widthPixels/2,
-                displayMetrics.widthPixels/2);
+                displayMetrics.widthPixels/2,
+                9), null};
 
         LayoutInflater layoutInflater = (LayoutInflater)activity.getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
         View popupView = layoutInflater.inflate(R.layout.hashview_popup_window, null);
 
         LinearLayout container = popupView.findViewById(R.id.hvLayout);
-        container.addView(hv);
+        container.addView(hvs[0]);
 
 
         TextView htv = popupView.findViewById(R.id.hvTextView);
         TextView tv = popupView.findViewById(R.id.hashview_timeout_alert_textview);
+
+        ((CheckBox)popupView.findViewById(R.id.hvShowFull)).setOnCheckedChangeListener((buttonView, isChecked) -> {
+            int newIndex = isChecked?1:0;
+            if(newIndex == 1 && hvs[1] == null)
+                hvs[1] = new HashView(
+                        activity,
+                        dataForVisualHash,
+                        16,3,
+                        displayMetrics.widthPixels/2,
+                        displayMetrics.widthPixels/2);
+
+            HashView currentHv = hvs[1 - newIndex];
+            HashView newHv = hvs[newIndex];
+
+            ViewGroup parent = (ViewGroup) currentHv.getParent();
+            int targetIndex = parent.indexOfChild(currentHv);
+            container.removeView(currentHv);
+            container.addView(newHv,targetIndex);
+        });
 
 
         MovablePopupWindowWithAutoClose popupWindow = new MovablePopupWindowWithAutoClose(
