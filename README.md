@@ -26,7 +26,7 @@ Two main components:
 - Roothelper native executable (which gets cloned from [here](https://github.com/pgp/XFilesRootHelper) and built automatically by the Android gradle script)
 
 ### Releases
-Prebuilt APKs are available in the [Releases](https://github.com/pgp/XFiles/releases) section of this repo. RootHelper standalone binaries will be available soon.
+Prebuilt APKs are available in the [Releases](https://github.com/pgp/XFiles/releases) section of this repo. RootHelper standalone binaries are available [here](https://github.com/pgp/XFilesRootHelper/releases) as well.
 
 ### Demos
 Usage demos are available [here](https://github.com/pgp/XFilesDemos).
