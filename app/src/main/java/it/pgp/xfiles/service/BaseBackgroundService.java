@@ -95,6 +95,7 @@ public abstract class BaseBackgroundService extends Service {
             case START_ACTION:
                 if (!onStartAction()) {
                     Toast.makeText(getApplicationContext(), "Cannot start service, overlay is busy", Toast.LENGTH_SHORT).show();
+                    stopSelf();
                     return;
                 }
                 wakeLock.acquire();
