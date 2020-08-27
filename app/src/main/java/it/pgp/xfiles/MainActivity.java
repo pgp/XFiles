@@ -155,6 +155,9 @@ public class MainActivity extends EffectActivity {
             | View.SYSTEM_UI_FLAG_FULLSCREEN
             | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
 
+    public static final int horizontalVisibility = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+            | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+
     public int defaultUIVisibility;
 
     // File Operations Helpers
@@ -630,10 +633,8 @@ public class MainActivity extends EffectActivity {
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        if(isTablet || hasPermanentMenuKey || newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            getWindow().getDecorView().setSystemUiVisibility(defaultUIVisibility);
-        }
-        else getWindow().getDecorView().setSystemUiVisibility(fullScreenVisibility);
+        boolean isHorizontal = newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE;
+        getWindow().getDecorView().setSystemUiVisibility(horizontalVisibility);
         setOperationButtonsLayout();
     }
 
@@ -673,6 +674,7 @@ public class MainActivity extends EffectActivity {
         layoutInflater = LayoutInflater.from(MainActivity.this);
 
         defaultUIVisibility = getWindow().getDecorView().getSystemUiVisibility();
+        getWindow().getDecorView().setSystemUiVisibility(horizontalVisibility);
 
         firstRunCheck();
 
@@ -812,12 +814,9 @@ public class MainActivity extends EffectActivity {
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
+        getWindow().getDecorView().setSystemUiVisibility(horizontalVisibility);
         if(isTablet || hasPermanentMenuKey || getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             return;
-        }
-
-        if (hasFocus) {
-            getWindow().getDecorView().setSystemUiVisibility(fullScreenVisibility);
         }
         /**
          * Web source:
@@ -834,7 +833,7 @@ public class MainActivity extends EffectActivity {
                 viewsField.setAccessible(true);
 
                 List<View> views = (List<View>) viewsField.get(wmgInstance);
-                views.get(views.size()-1).setSystemUiVisibility(fullScreenVisibility);
+                views.get(views.size()-1).setSystemUiVisibility(horizontalVisibility);
 //                v.setOnSystemUiVisibilityChangeListener(i->{v.setSystemUiVisibility(i);});
             }
             catch (Exception e) {
@@ -1242,28 +1241,6 @@ public class MainActivity extends EffectActivity {
         });
     }
 
-    public void hideDefaultControls() {
-        if(isTablet || hasPermanentMenuKey || getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE)
-            return;
-//        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
-        final Window window = getWindow();
-
-        if (window == null) {
-            return;
-        }
-
-        final View decorView = window.getDecorView();
-
-        if (decorView != null) {
-            int uiOptions = decorView.getSystemUiVisibility();
-            uiOptions |= View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
-
-            decorView.setSystemUiVisibility(uiOptions);
-        }
-    }
-
     public void showPopup(AdapterView<?> parent, View v, int position1, long id) {
         Context wrapper = new ContextThemeWrapper(this, R.style.popupMenuStyle);
         PopupMenu mypopupmenu = new PopupMenu(wrapper, v);
@@ -1310,7 +1287,19 @@ public class MainActivity extends EffectActivity {
             }
         }
 
+////        getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+////                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
+////
+////        getWindow().getDecorView().setSystemUiVisibility(horizontalVisibility);
+
         mypopupmenu.show();
+
+////        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
+////
+////        //Update the WindowManager with the new attributes (no nicer way I know of to do this)..
+////        WindowManager wm = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
+////        wm.updateViewLayout(getWindow().getDecorView(), getWindow().getAttributes());
+
 //        mypopupmenu.getMenu().getItem(0).setIcon(getResources().getDrawable(R.mipmap.ic_launcher));
         mypopupmenu.setOnMenuItemClickListener(item -> {
             BrowserItem b;

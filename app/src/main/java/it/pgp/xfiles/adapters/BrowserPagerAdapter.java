@@ -186,7 +186,6 @@ public class BrowserPagerAdapter extends PagerAdapter {
 
         mainBrowserViews[position].setOnItemClickListener(mainActivity.listViewLevelOICL);
         mainBrowserViews[position].setOnItemLongClickListener((parent, view, position1, id) -> {
-            mainActivity.hideDefaultControls();
             mainActivity.showPopup(parent,view,position1,id);
             return true;
         });
@@ -217,7 +216,6 @@ public class BrowserPagerAdapter extends PagerAdapter {
         // mainBrowserViews[position].setAdapter(browserAdapters[position]); // already called in showDirContent
         mainBrowserViews[position].setOnItemClickListener(mainActivity.listViewLevelOICL);
         mainBrowserViews[position].setOnItemLongClickListener((parent, view, position1, id) -> {
-            mainActivity.hideDefaultControls();
             mainActivity.showPopup(parent,view,position1,id);
             return true;
         });
