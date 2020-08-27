@@ -91,15 +91,13 @@ public abstract class BaseBackgroundService extends Service {
     }
 	
 	public void startAndShowNotificationBar() {
-        wakeLock.acquire();
-
         switch (currentAction) {
             case START_ACTION:
                 if (!onStartAction()) {
                     Toast.makeText(getApplicationContext(), "Cannot start service, overlay is busy", Toast.LENGTH_SHORT).show();
-                    wakeLock.release();
                     return;
                 }
+                wakeLock.acquire();
                 break;
             // Forbidden zone
             case CANCEL_ACTION:
