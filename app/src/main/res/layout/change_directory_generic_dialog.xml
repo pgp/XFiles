@@ -62,7 +62,7 @@
             android:layout_height="match_parent" >
 
             <TextView
-                android:text="Toggle wifi and hotstop state from here, long click on wifi icon to show networks"
+                android:text="Toggle wifi and hotspot state from here, long click on wifi icon to show networks"
                 android:focusable="true"
                 android:focusableInTouchMode="true"
                 android:layout_width="match_parent"

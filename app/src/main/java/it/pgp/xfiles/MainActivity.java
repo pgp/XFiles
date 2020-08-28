@@ -546,8 +546,7 @@ public class MainActivity extends EffectActivity {
             }
         }
         else if (intent.getData() !=null) {
-            boolean launchedFromHistory = (intent.getFlags() & Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY) != 0;
-            if(launchedFromHistory) return; // avoid spurious download intents when re-opening from Recent Apps menu
+            if((intent.getFlags() & Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY) != 0) return; // avoid spurious download intents when re-opening from Recent Apps menu
             try {
                 Uri data = intent.getData();
                 String path = ContentProviderUtils.getPathFromUri(this, data);
@@ -557,14 +556,8 @@ public class MainActivity extends EffectActivity {
                 // obviously, this doesn't work if the path is a in-archive (with relative-to-root subpath not empty) or remote one
                 if (path != null) goDirOrArchive(new LocalPathContent(path));
                 else if ("https".equalsIgnoreCase(data.getScheme()) || "http".equalsIgnoreCase(data.getScheme())) {
-                    // start download service
-                    DownloadParams params = new DownloadParams(
-                            data.toString(), null,null);
-
-                    Intent startIntent = new Intent(this,HTTPDownloadService.class);
-                    startIntent.setAction(BaseBackgroundService.START_ACTION);
-                    startIntent.putExtra("params",params);
-                    mainActivity.startService(startIntent);
+                    // launch URL download dialog, populating it with the received URL
+                    showChangeDirectoryDialog_(data.toString());
                 }
             }
             catch (Exception e) {
@@ -778,12 +771,20 @@ public class MainActivity extends EffectActivity {
     }
 
     public static GenericChangeDirectoryDialog cdd;
-    public void showChangeDirectoryDialog(View v) {
+    public void showChangeDirectoryDialog_(String... downloadUrlToPopulate) {
         cdd = new GenericChangeDirectoryDialog(
                 MainActivity.this,
                 getCurrentDirCommander().getCurrentDirectoryPathname()
         );
         cdd.show();
+        if(downloadUrlToPopulate.length > 0) {
+            cdd.findViewById(R.id.httpUrlDownload).performClick();
+            ((EditText)cdd.findViewById(R.id.httpUrlEditText)).setText(downloadUrlToPopulate[0]);
+        }
+    }
+
+    public void showChangeDirectoryDialog(View v) {
+        showChangeDirectoryDialog_();
     }
 
     public void toggleRootHelper(View v) {
