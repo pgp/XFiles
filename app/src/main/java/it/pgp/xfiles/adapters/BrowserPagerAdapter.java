@@ -2,6 +2,8 @@ package it.pgp.xfiles.adapters;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.view.PagerAdapter;
@@ -277,7 +279,9 @@ public class BrowserPagerAdapter extends PagerAdapter {
                 int locatedPos = browserAdapters[position].findPositionByFilename((String)targetFilenameToHighlight);
                 if (locatedPos < 0)
                     MainActivity.showToastOnUI("Unable to find file position in browser adapter");
-                else mainBrowserViews[position].setSelection(locatedPos);
+                else {
+                    setSelectionOnAbsListView(mainBrowserViews[position],locatedPos,position);
+                }
             }
             else { // reposition listview after delete operation
                 Integer locatedPos = (Integer)targetFilenameToHighlight;
@@ -288,6 +292,31 @@ public class BrowserPagerAdapter extends PagerAdapter {
             mainBrowserViews[position].setSelection(dirWithContent.listViewPosition);
         }
         swipeRefreshLayouts[position].setRefreshing(false);
+    }
+
+    public View getViewByPosition(int pos, AbsListView listView) {
+        final int firstListItemPosition = listView.getFirstVisiblePosition();
+        final int lastListItemPosition = firstListItemPosition + listView.getChildCount() - 1;
+
+        if (pos < firstListItemPosition || pos > lastListItemPosition) {
+            return listView.getAdapter().getView(pos, null, listView);
+        } else {
+            final int childIndex = pos - firstListItemPosition;
+            return listView.getChildAt(childIndex);
+        }
+    }
+
+    // web source:
+    // https://stackoverflow.com/questions/47750005/highlight-a-row-with-simple-animation-in-an-android-listview
+    public void highlightListViewItem(int pos, int viewPagerPos) {
+        final Handler handler = new Handler();
+        final View view = getViewByPosition(pos, mainBrowserViews[viewPagerPos]);
+        final Drawable oldBg = view.getBackground();
+        view.setBackgroundResource(R.color.green);
+        handler.postDelayed(() -> {
+            view.setBackground(oldBg);
+            // getCurrentMainBrowserView().setOnScrollListener(null);
+        }, 1500);
     }
 
     public void showSortedDirContent(GenericDirWithContent dirWithContent, Pair<ComparatorField,Boolean> whichAttribute_reverse, int position) {
@@ -405,5 +434,11 @@ public class BrowserPagerAdapter extends PagerAdapter {
     public void switchQuickFindMode(int position) {
         quickFindModes[position] = !quickFindModes[position];
         setQuickFindModeLayout(quickFindModes[position],position);
+    }
+
+    // use a method here, instead of inserting intermediate class between AbsListView and (ListView and GridView)
+    public void setSelectionOnAbsListView(AbsListView absListView, int targetPos, int viewPagerPos) {
+        absListView.setSelection(targetPos);
+        new Handler().postDelayed(()-> highlightListViewItem(targetPos, viewPagerPos),1000);
     }
 }

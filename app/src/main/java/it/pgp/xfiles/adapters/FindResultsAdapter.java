@@ -30,7 +30,7 @@ public class FindResultsAdapter extends BrowserListAdapter { // uses FindBrowser
 
     public static synchronized void createIfNotExisting() {
         if (instance == null) {
-            instance = new FindResultsAdapter(MainActivity.mainActivity.getApplicationContext());
+            instance = new FindResultsAdapter(MainActivity.mainActivityContext);
         }
     }
 
