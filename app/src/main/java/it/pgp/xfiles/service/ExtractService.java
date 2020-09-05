@@ -64,7 +64,7 @@ public class ExtractService extends BaseBackgroundService {
         Bitmap icon = Bitmap.createScaledBitmap(
                 BitmapFactory.decodeResource(
                         getResources(),
-                        R.drawable.xfiles_archive),
+                        R.drawable.xfiles_extract),
                 128, 128, false);
 
         return new NotificationCompat.Builder(this)
