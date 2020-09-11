@@ -34,8 +34,8 @@ Usage demos are available [here](https://github.com/pgp/XFilesDemos).
 ### Building from source 
 ## Prerequisites
 
-1. Windows, Linux or MacOS with git preinstalled
-1. [Android Studio 3.4+](https://developer.android.com/studio/index.html) with CMake and NDK plugins (it is recommended to install them from SDK Manager BEFORE importing the project)
+1. Windows, Linux or MacOS with git preinstalled;
+1. [Android Studio 3.4+](https://developer.android.com/studio/index.html) with CMake and NDK plugins (it is recommended to install them from SDK Manager BEFORE importing the project).
 
 ### Build instructions
 
