@@ -42,8 +42,6 @@ import it.pgp.xfiles.utils.pathcontent.LocalPathContent;
 
 /**
  * Created by pgp on 04/12/17
- * TODO selector with types: RSA, ED25519
- * inflating dynamic layout containing selector
  *      RSA: 2048 - 4096 - custom
  *      ED25519: no options (ECC for public key auth unsupported in SSHJ)
  */
