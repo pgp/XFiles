@@ -1,6 +1,6 @@
 set -e
 
-NDKDIR=$HOME/Android/Sdk/ndk-bundle
+NDKDIR=$HOME/Android/Sdk/ndk/21.3.6528147
 RHDIR=$(pwd)/XFilesRootHelper
 XFILES_ASSET_DIR=$(pwd)/libs
 mkdir -p $XFILES_ASSET_DIR

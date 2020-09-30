@@ -15,5 +15,5 @@ check_android_task:
     - echo y | sdkmanager "cmake;3.10.2.4988404"
   
   assemble_script:
-    - export PATH=$PATH:$ANDROID_HOME/ndk-bundle
+    - export PATH=$PATH:$ANDROID_HOME/ndk/21.3.6528147
     - ./gradlew clean assemble

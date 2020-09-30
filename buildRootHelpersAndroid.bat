@@ -1,7 +1,7 @@
 setlocal enableextensions enabledelayedexpansion
 REM TODO set -e
 
-SET "NDKDIR=%appdata%\..\Local\Android\Sdk\ndk-bundle"
+SET "NDKDIR=%appdata%\..\Local\Android\Sdk\ndk\21.3.6528147"
 SET "RHDIR=%cd%\XFilesRootHelper"
 SET "XFILES_ASSET_DIR=%cd%\libs"
 md %XFILES_ASSET_DIR%
