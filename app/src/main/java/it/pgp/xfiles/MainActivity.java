@@ -973,7 +973,7 @@ public class MainActivity extends EffectActivity {
 
         // if destPath is a sub-folder of some item in the copy/move selection, cancel file transfer
         for (BrowserItem fn : copyMoveList.files) {
-            if (copyMoveList.parentDir.concat(fn.filename).isParentOf(destPath)) {
+            if (copyMoveList.parentDir.concat(fn.filename).isParentOrSameOf(destPath)) {
                 Toast.makeText(this, "Cannot copy or move a directory into one of its descendants", Toast.LENGTH_SHORT).show();
                 return;
             }

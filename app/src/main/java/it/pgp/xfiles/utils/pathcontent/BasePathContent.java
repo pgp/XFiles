@@ -2,6 +2,8 @@ package it.pgp.xfiles.utils.pathcontent;
 
 import java.io.Serializable;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
 import it.pgp.xfiles.enums.FileOpsErrorCodes;
 import it.pgp.xfiles.enums.ProviderType;
@@ -52,13 +54,44 @@ public abstract class BasePathContent implements Serializable {
 
     public abstract BasePathContent getParent();
 
-    // method to avoid copy of parent path into child path (which could cause path overflow)
-    // or filesystem saturation
-    public boolean isParentOf(BasePathContent content) {
+//    public static boolean isParentOrSamePathNoDuplicateSlashes(String currentDir, String targetDir) {
+//        String[] p1 = currentDir.split("/");
+//        if(p1.length == 0) return false;
+//        String[] p2 = targetDir.split("/");
+//        if(p2.length == 0) return false;
+//        if(p1.length > p2.length) return false;
+//        for(int i=0;i<p1.length;i++) {
+//            if(!p1[i].equals(p2[i])) return false;
+//        }
+//        return true;
+//    }
+
+    // FIXME precondition: paths both starting with "/" -> conflicts with dir member in ArchivePathContent
+    public static boolean isParentOrSamePath(String currentDir, String targetDir) {
+//        if(!currentDir.startsWith("/") || !targetDir.startsWith("/"))
+//            throw new RuntimeException("Paths must start with \"/\"");
+        String[] p1 = currentDir.split("/");
+        String[] p2 = targetDir.split("/");
+        List<String> l1 = new ArrayList<>();
+        List<String> l2 = new ArrayList<>();
+        for(String s : p1) if(!s.isEmpty()) l1.add(s);
+        for(String s : p2) if(!s.isEmpty()) l2.add(s);
+        int l1s = l1.size();
+        int l2s = l2.size();
+        if(l1s == 0) return true; // "/" is parent of everyone, at worst it's the same with itself
+        if(l1s > l2s) return false;
+        for(int i=0;i<l1.size();i++) {
+            if(!l1.get(i).equals(l2.get(i))) return false;
+        }
+        return true;
+    }
+
+    // method to avoid copy of parent path into child path (which could cause path overflow or filesystem saturation)
+    public boolean isParentOrSameOf(BasePathContent content) {
         if (this.providerType == ProviderType.LOCAL && content.providerType == ProviderType.LOCAL)
-            return content.dir.startsWith(this.dir);
+            return isParentOrSamePath(this.dir, content.dir);
         if (this.providerType == ProviderType.LOCAL && content.providerType == ProviderType.LOCAL_WITHIN_ARCHIVE)
-            return ((ArchivePathContent)content).archivePath.startsWith(this.dir);
+            return isParentOrSamePath(this.dir, ((ArchivePathContent)content).archivePath);
         if (this.providerType == ProviderType.LOCAL_WITHIN_ARCHIVE
                 && content.providerType == ProviderType.LOCAL_WITHIN_ARCHIVE)
             return ((ArchivePathContent)content).archivePath.equals(((ArchivePathContent)this).archivePath)
@@ -66,16 +99,16 @@ public abstract class BasePathContent implements Serializable {
 
         if (this.providerType==ProviderType.SFTP && content.providerType==ProviderType.SFTP)
             return ((RemotePathContent)content).authData.equals(((RemotePathContent)this).authData)
-            && content.dir.startsWith(this.dir);
+            && isParentOrSamePath(this.dir, content.dir);
 
         if (this.providerType==ProviderType.XFILES_REMOTE && content.providerType==ProviderType.XFILES_REMOTE)
             return ((XFilesRemotePathContent)content).serverHost.equals(((XFilesRemotePathContent)this).serverHost) &&
                     ((XFilesRemotePathContent)content).serverPort == ((XFilesRemotePathContent)this).serverPort &&
-                    content.dir.startsWith(this.dir);
+                    isParentOrSamePath(this.dir, content.dir);
 
         if (this.providerType==ProviderType.SMB && content.providerType==ProviderType.SMB)
             return ((SmbRemotePathContent)content).smbAuthData.equals(((SmbRemotePathContent)this).smbAuthData)
-                    && content.dir.startsWith(this.dir);
+                    && isParentOrSamePath(this.dir, content.dir);
 
         return false;
     }
