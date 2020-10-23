@@ -43,6 +43,7 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
@@ -117,6 +118,7 @@ import it.pgp.xfiles.smbclient.SmbVaultActivity;
 import it.pgp.xfiles.utils.ContentProviderUtils;
 import it.pgp.xfiles.utils.DirCommanderCUsingBrowserItemsAndPathContent;
 import it.pgp.xfiles.utils.FileOperationHelperUsingPathContent;
+import it.pgp.xfiles.utils.Misc;
 import it.pgp.xfiles.utils.XFilesUtilsUsingPathContent;
 import it.pgp.xfiles.utils.dircontent.GenericDirWithContent;
 import it.pgp.xfiles.utils.dircontent.SftpDirWithContent;
@@ -1399,10 +1401,12 @@ public class MainActivity extends EffectActivity {
                     return true;
                 case R.id.itemRename:
                     b = getCurrentBrowserAdapter().getItem(position1);
-                    new RenameDialog(
-                            MainActivity.this,
-                            path.concat(b.filename)
-                    ).show();
+                    AbsListView lv = getCurrentMainBrowserView();
+                    if(lv instanceof ListView)
+                        RenameDialog.toggleFastRename(this, (ListView)lv, position1,
+                            path.concat(b.filename),true);
+                    else
+                        new RenameDialog(MainActivity.this, path.concat(b.filename)).show();
                     return true;
                 case R.id.itemChecksum:
                     if (path.providerType != ProviderType.LOCAL &&

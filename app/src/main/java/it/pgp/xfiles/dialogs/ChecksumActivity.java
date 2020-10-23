@@ -85,18 +85,6 @@ public class ChecksumActivity extends EffectActivity implements FileSaveFragment
         hashLegendDialog.show();
     }
 
-    public View getViewByPosition(int pos, AbsListView listView) {
-        final int firstListItemPosition = listView.getFirstVisiblePosition();
-        final int lastListItemPosition = firstListItemPosition + listView.getChildCount() - 1;
-
-        if (pos < firstListItemPosition || pos > lastListItemPosition ) {
-            return listView.getAdapter().getView(pos, null, listView);
-        } else {
-            final int childIndex = pos - firstListItemPosition;
-            return listView.getChildAt(childIndex);
-        }
-    }
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -149,7 +137,7 @@ public class ChecksumActivity extends EffectActivity implements FileSaveFragment
         exportChecksumsJSONButton = findViewById(R.id.exportChecksumsJSONButton);
 
         // check SHA-256 by default
-        getViewByPosition(HashRequestCodes.sha256.ordinal(),hashSelectorView).findViewById(R.id.checksum_checkbox).performClick();
+        Misc.getViewByPosition(HashRequestCodes.sha256.ordinal(),hashSelectorView).findViewById(R.id.checksum_checkbox).performClick();
 
     }
 

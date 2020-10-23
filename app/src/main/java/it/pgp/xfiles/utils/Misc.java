@@ -2,6 +2,8 @@ package it.pgp.xfiles.utils;
 
 import android.os.Environment;
 import android.util.Log;
+import android.view.View;
+import android.widget.AbsListView;
 
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
@@ -229,6 +231,18 @@ public class Misc {
         // fine to have IndexOutOfBounds with empty list
         o.write(escapeForCSV(row.get(row.size()-1)).getBytes(StandardCharsets.UTF_8));
         o.write(crlf);
+    }
+
+    public static View getViewByPosition(int pos, AbsListView listView) {
+        final int firstListItemPosition = listView.getFirstVisiblePosition();
+        final int lastListItemPosition = firstListItemPosition + listView.getChildCount() - 1;
+
+        if (pos < firstListItemPosition || pos > lastListItemPosition ) {
+            return listView.getAdapter().getView(pos, null, listView);
+        } else {
+            final int childIndex = pos - firstListItemPosition;
+            return listView.getChildAt(childIndex);
+        }
     }
 
 }

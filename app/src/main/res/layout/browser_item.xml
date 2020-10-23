@@ -16,6 +16,16 @@
         android:layout_width="0dp"
         android:layout_height="match_parent">
 
+        <EditText
+            android:id="@+id/browserItemFilename_edit"
+            android:visibility="gone"
+            android:maxLines="1"
+            android:textColor="#CCCCCC"
+            android:textSize="18sp"
+            android:layout_weight="5"
+            android:layout_width="match_parent"
+            android:layout_height="0dp" />
+
         <TextView
             android:id="@+id/browserItemFilename"
             android:textColor="#CCCCCC"

@@ -15,7 +15,7 @@ import it.pgp.xfiles.roothelperclient.resps.ls_resp;
 public class BrowserItem implements Serializable, Checkable, Comparable<BrowserItem> {
     public Boolean isDirectory;
     public Boolean isLink;
-    protected String filename;
+    public String filename;
     public Long size;
     public Date date;
     private boolean checked = false;
