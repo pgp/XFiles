@@ -69,6 +69,8 @@ public class BrowserPagerAdapter extends PagerAdapter {
     public final RelativeLayout[] mainBrowserViewLayouts = new RelativeLayout[ADAPTER_SIZE]; // target container for inflating different browser views (list, grid)
     public final RelativeLayout[] mainBrowserViewLayoutParents = new RelativeLayout[ADAPTER_SIZE];
 
+    public final View[] fastRenameModeViews = new View[ADAPTER_SIZE];
+
 
     private final SwipeRefreshLayoutChildCanScroll[] swipeRefreshLayouts = new SwipeRefreshLayoutChildCanScroll[ADAPTER_SIZE];
 
@@ -253,6 +255,7 @@ public class BrowserPagerAdapter extends PagerAdapter {
     public void recreateAdapterAndSelectMode(BrowserViewMode m, int position, GenericDirWithContent dirWithContent) {
         boolean[] lastcontselmode = (csCheckBoxes[position] != null)?csCheckBoxes[position].getAsBooleans():new boolean[]{false,false,false};
         browserAdapters[position] = m.newAdapter(mainActivity,dirWithContent.content);
+        fastRenameModeViews[position] = null;
         setMultiSelectModeLayout(multiSelectModes[position],position);
         int[] resIds = {R.id.toggleSelectMode,R.id.invertSelection,R.id.stickySelection};
         for(int i=0;i<resIds.length;i++) {

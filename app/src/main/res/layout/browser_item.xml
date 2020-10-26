@@ -19,6 +19,7 @@
         <EditText
             android:id="@+id/browserItemFilename_edit"
             android:visibility="gone"
+            android:imeOptions="actionDone"
             android:maxLines="1"
             android:textColor="#CCCCCC"
             android:textSize="18sp"

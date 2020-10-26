@@ -1403,7 +1403,7 @@ public class MainActivity extends EffectActivity {
                     b = getCurrentBrowserAdapter().getItem(position1);
                     AbsListView lv = getCurrentMainBrowserView();
                     if(lv instanceof ListView)
-                        RenameDialog.toggleFastRename(this, (ListView)lv, position1,
+                        RenameDialog.toggleFastRename(this, position1,
                             path.concat(b.filename),true);
                     else
                         new RenameDialog(MainActivity.this, path.concat(b.filename)).show();
@@ -1575,6 +1575,12 @@ public class MainActivity extends EffectActivity {
         // TODO maybe should handle mode exit differently (not both at once)
         // TODO decide if it is needed to restore original adapter content on quick find mode exit
         int pos = browserPager.getCurrentItem();
+
+        if(browserPagerAdapter.fastRenameModeViews[pos] != null) {
+            RenameDialog.resetRenameMode(pos,browserPagerAdapter.fastRenameModeViews);
+            return;
+        }
+
         if (browserPagerAdapter.multiSelectModes[pos] ||
                 browserPagerAdapter.quickFindModes[pos])
         {
