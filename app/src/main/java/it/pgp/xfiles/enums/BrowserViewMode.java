@@ -1,6 +1,5 @@
 package it.pgp.xfiles.enums;
 
-import android.content.Context;
 import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
 import android.widget.Checkable;
@@ -8,6 +7,7 @@ import android.widget.Checkable;
 import java.util.List;
 
 import it.pgp.xfiles.BrowserItem;
+import it.pgp.xfiles.MainActivity;
 import it.pgp.xfiles.R;
 import it.pgp.xfiles.adapters.BrowserAdapter;
 import it.pgp.xfiles.adapters.BrowserGridAdapter;
@@ -35,8 +35,8 @@ public enum BrowserViewMode {
 
     static final RuntimeException invalidMode = new RuntimeException("Invalid browser view mode");
 
-    public BrowserAdapter newAdapter(Context context, List<BrowserItem> objects) {
-        return (this==LIST)?new BrowserListAdapter(context,objects):new BrowserGridAdapter(context,objects);
+    public BrowserAdapter newAdapter(MainActivity mainActivity, List<BrowserItem> objects) {
+        return (this==LIST)?new BrowserListAdapter(mainActivity,objects):new BrowserGridAdapter(mainActivity,objects);
     }
 
     public BrowserViewMode next() {

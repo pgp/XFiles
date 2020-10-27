@@ -1,6 +1,5 @@
 package it.pgp.xfiles.adapters;
 
-import android.content.Context;
 import android.graphics.Color;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +9,7 @@ import android.widget.TextView;
 import java.util.List;
 
 import it.pgp.xfiles.BrowserItem;
+import it.pgp.xfiles.MainActivity;
 import it.pgp.xfiles.R;
 
 /**
@@ -26,8 +26,8 @@ public class BrowserGridAdapter extends BrowserAdapter {
         }
     }
 
-    public BrowserGridAdapter(Context context, List<BrowserItem> objects) {
-        super(context, objects);
+    public BrowserGridAdapter(MainActivity mainActivity, List<BrowserItem> objects) {
+        super(mainActivity, objects);
         containerLayout = R.layout.browser_item_grid;
     }
 
@@ -55,7 +55,6 @@ public class BrowserGridAdapter extends BrowserAdapter {
 
         name.setText(item.getFilename());
 
-//        imageView.setImageBitmap(item.isDirectory?dirIV:fileIV);
         imageView.setImageBitmap(getBitmapByExtension(item));
         return convertView;
     }

@@ -23,7 +23,7 @@ import it.pgp.xfiles.utils.pathcontent.BasePathContent;
  * Created by pgp on 26/09/16
  */
 
-public class BrowserAdapter extends ArrayAdapter<BrowserItem> {
+public abstract class BrowserAdapter extends ArrayAdapter<BrowserItem> {
 
     public static Bitmap dirIV,fileIV,linkIV;
     public static final Map<String,Bitmap> archiveIcons = new HashMap<>();
@@ -60,21 +60,23 @@ public class BrowserAdapter extends ArrayAdapter<BrowserItem> {
         return target;
     }
 
+    protected final MainActivity mainActivity;
     protected LayoutInflater inflater;
     protected int containerLayout; // to be assigned in subclasses constructors
     public List<BrowserItem> objects,currentObjects;
     // "objects" (full objects) as reference list, and currentObjects for quick find currently shown results
 
-    BrowserAdapter(Context context, List<BrowserItem> objects) {
-        super(context, android.R.layout.simple_list_item_1, objects);
+    BrowserAdapter(MainActivity mainActivity, List<BrowserItem> objects) {
+        super(mainActivity, android.R.layout.simple_list_item_1, objects);
+        this.mainActivity = mainActivity;
         this.objects = objects;
         this.currentObjects = objects;
-        inflater = LayoutInflater.from(context);
+        inflater = LayoutInflater.from(mainActivity);
 
-        if (dirIV == null) dirIV = BitmapFactory.decodeResource(context.getResources(), R.drawable.xf_dir_blu);
-        if (fileIV == null) fileIV = BitmapFactory.decodeResource(context.getResources(), R.drawable.xfiles_file_icon);
-        if (linkIV == null) linkIV = BitmapFactory.decodeResource(context.getResources(), R.drawable.xfiles_link_icon);
-        loadArchiveIcons(context);
+        if (dirIV == null) dirIV = BitmapFactory.decodeResource(mainActivity.getResources(), R.drawable.xf_dir_blu);
+        if (fileIV == null) fileIV = BitmapFactory.decodeResource(mainActivity.getResources(), R.drawable.xfiles_file_icon);
+        if (linkIV == null) linkIV = BitmapFactory.decodeResource(mainActivity.getResources(), R.drawable.xfiles_link_icon);
+        loadArchiveIcons(mainActivity);
     }
 
     @Override

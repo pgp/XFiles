@@ -1,6 +1,5 @@
 package it.pgp.xfiles.adapters;
 
-import android.content.Context;
 import android.graphics.Color;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +11,7 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 
 import it.pgp.xfiles.BrowserItem;
+import it.pgp.xfiles.MainActivity;
 import it.pgp.xfiles.R;
 
 /**
@@ -19,8 +19,9 @@ import it.pgp.xfiles.R;
  */
 
 public class BrowserListAdapter extends BrowserAdapter {
-    public BrowserListAdapter(Context context, List<BrowserItem> objects) {
-        super(context, objects);
+
+    public BrowserListAdapter(MainActivity mainActivity, List<BrowserItem> objects) {
+        super(mainActivity, objects);
         containerLayout = R.layout.browser_item;
     }
 
@@ -68,8 +69,8 @@ public class BrowserListAdapter extends BrowserAdapter {
         size.setText(""+item.size);
         date.setText(formatter.format(item.date));
 
-//        imageView.setImageBitmap(item.isDirectory?dirIV:fileIV);
         imageView.setImageBitmap(getBitmapByExtension(item));
+        imageView.setOnClickListener(v-> mainActivity.showPopup(null,v,position,v.getId()));
 
         return convertView;
     }

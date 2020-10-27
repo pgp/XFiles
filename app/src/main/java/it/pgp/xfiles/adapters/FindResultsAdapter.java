@@ -1,6 +1,5 @@
 package it.pgp.xfiles.adapters;
 
-import android.content.Context;
 import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
@@ -23,14 +22,14 @@ public class FindResultsAdapter extends BrowserListAdapter { // uses FindBrowser
 
     public find_rq request; // the request which started this search - non-null, the whole adapter instance would be null otherwise
 
-    private FindResultsAdapter(@NonNull Context context) {
+    private FindResultsAdapter(@NonNull MainActivity mainActivity) {
 //        super(context,android.R.layout.simple_list_item_1);
-        super(context,new ArrayList<>());
+        super(mainActivity,new ArrayList<>());
     }
 
     public static synchronized void createIfNotExisting() {
         if (instance == null) {
-            instance = new FindResultsAdapter(MainActivity.mainActivityContext);
+            instance = new FindResultsAdapter(MainActivity.mainActivity);
         }
     }
 
