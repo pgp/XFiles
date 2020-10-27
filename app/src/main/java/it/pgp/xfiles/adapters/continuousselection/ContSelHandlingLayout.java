@@ -1,6 +1,5 @@
 package it.pgp.xfiles.adapters.continuousselection;
 
-import android.app.Activity;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -10,7 +9,7 @@ import it.pgp.xfiles.R;
 
 public class ContSelHandlingLayout extends RelativeLayout {
 
-    public final Activity activity;
+    public final MainActivity mainActivity;
     public final OnTouchListener listener;
 
     public LinearLayout barLayout;
@@ -35,12 +34,12 @@ public class ContSelHandlingLayout extends RelativeLayout {
         selStatus = !selStatus;
         padLayout.setVisibility(selStatus?VISIBLE:GONE);
         if (selStatus) barLayout.bringToFront();
-        MainActivity.mainActivity.browserPager.switchNeutralArea();
+        mainActivity.browserPager.switchNeutralArea();
     }
 
-    public ContSelHandlingLayout(Activity context, OnTouchListener listener, CSCheckboxes csCheckboxes, boolean fullScreenPadLayout) {
+    public ContSelHandlingLayout(MainActivity context, OnTouchListener listener, CSCheckboxes csCheckboxes, boolean fullScreenPadLayout) {
         super(context);
-        activity = context;
+        mainActivity = context;
         this.listener = listener;
         this.csCheckboxes = csCheckboxes;
 

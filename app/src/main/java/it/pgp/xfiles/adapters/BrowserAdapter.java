@@ -161,7 +161,7 @@ public abstract class BrowserAdapter extends ArrayAdapter<BrowserItem> {
         for(int i=0; i<getCount() ; i++) {
             BrowserItem b = getItem(i);
             if (b.isChecked()) {
-                BasePathContent f = MainActivity.mainActivity.getCurrentDirCommander().getCurrentDirectoryPathname().concat(b.getFilename());
+                BasePathContent f = mainActivity.getCurrentDirCommander().getCurrentDirectoryPathname().concat(b.getFilename());
                 selectedFiles.add(f);
             }
         }

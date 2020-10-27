@@ -18,18 +18,22 @@ import android.view.MotionEvent;
 
 public class BrowserViewPager extends ViewPager {
 
+    public final MainActivity mainActivity;
+
     public BrowserViewPager(Context context) {
         super(context);
+        this.mainActivity = (MainActivity) context;
     }
 
     public BrowserViewPager(Context context, AttributeSet attrs) {
         super(context, attrs);
+        this.mainActivity = (MainActivity) context;
     }
 
     private void update() {
-        MainActivity.mainActivity.updateScreenDimensions();
-        startX = 0.15f*(MainActivity.mainActivity.currentScreenDimensions.x);
-        endX = 0.85f*(MainActivity.mainActivity.currentScreenDimensions.x);
+        mainActivity.updateScreenDimensions();
+        startX = 0.15f*(mainActivity.currentScreenDimensions.x);
+        endX = 0.85f*(mainActivity.currentScreenDimensions.x);
         Log.d(getClass().getName(),"startX: "+startX+" endX: "+endX);
     }
 
