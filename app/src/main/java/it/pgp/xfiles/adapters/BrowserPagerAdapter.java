@@ -1,7 +1,11 @@
 package it.pgp.xfiles.adapters;
 
+import android.animation.ArgbEvaluator;
+import android.animation.ObjectAnimator;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -310,16 +314,16 @@ public class BrowserPagerAdapter extends PagerAdapter {
     }
 
     // web source:
-    // https://stackoverflow.com/questions/47750005/highlight-a-row-with-simple-animation-in-an-android-listview
+    // https://ssaurel.medium.com/create-a-blink-effect-on-android-3c76b5e0e36b
     public void highlightListViewItem(int pos, int viewPagerPos) {
-        final Handler handler = new Handler();
         final View view = getViewByPosition(pos, mainBrowserViews[viewPagerPos]);
         final Drawable oldBg = view.getBackground();
-        view.setBackgroundResource(R.color.green);
-        handler.postDelayed(() -> {
-            view.setBackground(oldBg);
-            // getCurrentMainBrowserView().setOnScrollListener(null);
-        }, 1500);
+        int oldBgColor = (oldBg instanceof ColorDrawable) ? ((ColorDrawable) oldBg).getColor() : Color.TRANSPARENT;
+        ObjectAnimator anim = ObjectAnimator.ofInt(view,"backgroundColor", oldBgColor, Color.GREEN, oldBgColor);
+        anim.setDuration(2000);
+        anim.setEvaluator(new ArgbEvaluator());
+        anim.setRepeatCount(0);
+        anim.start();
     }
 
     public void showSortedDirContent(GenericDirWithContent dirWithContent, Pair<ComparatorField,Boolean> whichAttribute_reverse, int position) {
@@ -442,6 +446,6 @@ public class BrowserPagerAdapter extends PagerAdapter {
     // use a method here, instead of inserting intermediate class between AbsListView and (ListView and GridView)
     public void setSelectionOnAbsListView(AbsListView absListView, int targetPos, int viewPagerPos) {
         absListView.setSelection(targetPos);
-        new Handler().postDelayed(()-> highlightListViewItem(targetPos, viewPagerPos),1000);
+        new Handler().postDelayed(()-> highlightListViewItem(targetPos, viewPagerPos),250);
     }
 }
