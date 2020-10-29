@@ -20,6 +20,7 @@ import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.locks.LockSupport;
 
 import it.pgp.xfiles.adapters.XreAnnouncesAdapter;
 import it.pgp.xfiles.dialogs.GenericChangeDirectoryDialog;
@@ -239,8 +240,7 @@ public class XREDirectShareActivity extends EffectActivity {
                         });
                         break;
                     }
-                    try {Thread.sleep(500);}
-                    catch (InterruptedException e) {break;}
+                    LockSupport.parkNanos(500000000);
                 }
                 Log.d("UNATTENDED","Thread ended");
             });

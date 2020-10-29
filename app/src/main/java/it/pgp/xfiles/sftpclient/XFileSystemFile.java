@@ -128,8 +128,8 @@ public class XFileSystemFile implements LocalSourceFile, LocalDestFile {
     @Override
     public int getPermissions() throws IOException {
         BitSet x = rhc.existsIsFileIsDir(new LocalPathContent(file),true,true,true);
-        if (x.get(2)) return 0755;
-        else if (x.get(1)) return 0644;
+        if (x.get(2)) return FileMode.DIRECTORY.getDefaultMask();
+        else if (x.get(1)) return FileMode.FILE.getDefaultMask();
         else throw new IOException("Unsupported file type or non-existing file");
     }
 

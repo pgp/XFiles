@@ -4,10 +4,13 @@ import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.support.v4.app.NotificationCompat;
@@ -15,6 +18,8 @@ import android.widget.Toast;
 
 import java.io.Serializable;
 
+import it.pgp.xfiles.MainActivity;
+import it.pgp.xfiles.R;
 import it.pgp.xfiles.enums.ForegroundServiceType;
 import it.pgp.xfiles.service.visualization.ViewType;
 
@@ -39,6 +44,15 @@ public abstract class BaseBackgroundService extends Service {
 	public BaseBackgroundTask task;
     public Serializable params;
 
+    public static final String BROADCAST_ACTION = "base_service_broadcast_action";
+
+    public String foreground_content_text;
+    public String foreground_ticker;
+    public String foreground_pause_action_label;
+    public String foreground_stop_action_label;
+
+    public abstract int getServiceIconRes();
+
     public static final DialogInterface.OnClickListener emptyListener = (dialog, which) -> {};
 
     public abstract int getForegroundServiceNotificationId();
@@ -61,9 +75,48 @@ public abstract class BaseBackgroundService extends Service {
     }
 	
 	protected abstract void prepareLabels();
-	protected abstract NotificationCompat.Builder getForegroundNotificationBuilder();
 
-	protected static NotificationChannel notificationChannel;
+    public NotificationCompat.Builder getForegroundNotificationBuilder() {
+        Intent notificationIntent = new Intent(this, MainActivity.class);
+        notificationIntent.setAction(BROADCAST_ACTION);
+        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
+                notificationIntent, 0);
+
+        Intent pauseIntent = new Intent(this, getClass());
+        pauseIntent.setAction(PAUSE_ACTION);
+        PendingIntent ppauseIntent = PendingIntent.getService(this, 0,
+                pauseIntent, 0);
+
+        Intent stopIntent = new Intent(this, getClass());
+        stopIntent.setAction(CANCEL_ACTION);
+        PendingIntent pstopIntent = PendingIntent.getService(this, 0,
+                stopIntent, 0);
+
+        Bitmap icon = Bitmap.createScaledBitmap(
+                BitmapFactory.decodeResource(
+                        getResources(),
+                        getServiceIconRes()),
+                128, 128, false);
+
+        return new NotificationCompat.Builder(this, getPackageName())
+                .setContentTitle("XFiles")
+                .setTicker(foreground_ticker)
+                .setContentText(foreground_content_text)
+                .setSmallIcon(R.drawable.xfiles_new_app_icon)
+                .setLargeIcon(icon)
+                .setContentIntent(pendingIntent)
+                .setOngoing(true)
+                .addAction(android.R.drawable.ic_media_pause, foreground_pause_action_label,
+                        ppauseIntent)
+                .addAction(R.drawable.ic_media_stop, foreground_stop_action_label,
+                        pstopIntent);
+    }
+
+
+    protected static NotificationChannel notificationChannel;
 	protected void createNotificationChannelForService() {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             if (notificationChannel == null) {
@@ -122,7 +175,14 @@ public abstract class BaseBackgroundService extends Service {
         startForeground(getForegroundServiceNotificationId(),notification);
     }
 
-    protected abstract boolean onStartAction();
+    protected abstract BaseBackgroundTask getTask();
+
+    public boolean onStartAction() {
+        task = getTask();
+        if (!task.init(this)) return false;
+        task.execute((Void[])null);
+        return true;
+    }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
