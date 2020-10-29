@@ -106,7 +106,7 @@ public class XREDirectShareActivity extends EffectActivity {
         setActivityIcon(R.drawable.xf_xre_server_up);
         MainActivity.mainActivityContext = getApplicationContext();
         MainActivity.refreshToastHandler(MainActivity.mainActivityContext);
-        MainActivity.getRootHelperClient();
+        final RootHelperClientUsingPathContent rh = MainActivity.getRootHelperClient();
 
         // CHECK SHARE INTENT
         List<Uri> uris = IntentUtil.getShareSelectionFromIntent(getIntent());
@@ -129,8 +129,6 @@ public class XREDirectShareActivity extends EffectActivity {
             Map.Entry<BasePathContent,List<String>> me = IntentUtil.getCommonAncestorAndItems(this,uris);
             filesToUpload_ = me.getValue();
             srcPath = me.getKey();
-
-            RootHelperClientUsingPathContent rh = MainActivity.getRootHelperClient();
 
             // anonymous local classes are not serializable, so should populate it the standard way
             List<BrowserItem> lb = new ArrayList<>();
@@ -204,8 +202,6 @@ public class XREDirectShareActivity extends EffectActivity {
 
         findViewById(R.id.xreDirectShareOkButton).setOnClickListener(this::ok);
 
-        GenericChangeDirectoryDialog.startXreAnnounceListenerThread(this,xreAnnouncesAdapter);
-
         /**
          * check extras for unattended direct share:
          * creates a cancelable progressdialog, waits for some xre server to send an announce,
@@ -252,6 +248,7 @@ public class XREDirectShareActivity extends EffectActivity {
     protected void onResume() {
         super.onResume();
         wbl.registerListeners();
+        GenericChangeDirectoryDialog.startXreAnnounceListenerThread(this,xreAnnouncesAdapter);
     }
 
     @Override
