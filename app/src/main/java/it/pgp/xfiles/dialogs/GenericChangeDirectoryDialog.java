@@ -1,10 +1,8 @@
 package it.pgp.xfiles.dialogs;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
@@ -20,14 +18,10 @@ import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.nio.charset.StandardCharsets;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
-import java.util.zip.CRC32;
 
 import it.pgp.xfiles.MainActivity;
 import it.pgp.xfiles.R;
@@ -42,6 +36,7 @@ import it.pgp.xfiles.smbclient.SmbAuthData;
 import it.pgp.xfiles.utils.FavoritesList;
 import it.pgp.xfiles.utils.GenericDBHelper;
 import it.pgp.xfiles.utils.Misc;
+import it.pgp.xfiles.utils.MulticastUtils;
 import it.pgp.xfiles.utils.Pair;
 import it.pgp.xfiles.utils.dircontent.GenericDirWithContent;
 import it.pgp.xfiles.utils.pathcontent.ArchivePathContent;
@@ -98,8 +93,6 @@ public class GenericChangeDirectoryDialog extends Dialog {
     EditText xreRemotePath;
     Map.Entry<String,String>[] xreItems;
 
-    public static final String xreAnnounceLogTag = "XREANNOUNCE";
-
     final AdapterView.OnItemSelectedListener defaultSpinnerItemSelectListener = new AdapterView.OnItemSelectedListener() {
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -124,82 +117,6 @@ public class GenericChangeDirectoryDialog extends Dialog {
             xreRemotePath.setText(item.j);
         };
     }
-
-    public static XFilesRemotePathContent fromXREAnnounce(DatagramPacket packet) {
-        try {
-            byte[] origin = packet.getData();
-            int o = packet.getOffset();
-            int l = packet.getLength();
-            byte[] receivedChecksum = new byte[4];
-            byte[] payload = new byte[l-4];
-            System.arraycopy(origin,o,receivedChecksum,0,4);
-            System.arraycopy(origin,o+4,payload,0,l-4);
-
-            // verify checksum
-            CRC32 crc = new CRC32();
-            crc.update(payload);
-            long computedChecksum = crc.getValue();
-            if (computedChecksum != Misc.castBytesToUnsignedNumber(receivedChecksum,4)) {
-                Log.e(xreAnnounceLogTag,"Verification failed for XRE announce");
-                return null;
-            }
-
-            // format: 2 bytes for port, 2 bytes string length + host, 2 bytes string length + path
-            byte[] tmp = new byte[2];
-            System.arraycopy(payload,0,tmp,0,2);
-            int port = (int)Misc.castBytesToUnsignedNumber(tmp,2);
-            System.arraycopy(payload,2,tmp,0,2);
-            int hostLength = (int)Misc.castBytesToUnsignedNumber(tmp,2);
-            String host = new String(payload,4,hostLength, StandardCharsets.UTF_8);
-            System.arraycopy(payload,4+hostLength,tmp,0,2);
-            int pathLength = (int)Misc.castBytesToUnsignedNumber(tmp,2);
-            String path = new String(payload,6+hostLength,pathLength, StandardCharsets.UTF_8);
-
-            // while received in the UDP packet, port is still default (11111) hence ignored
-            return new XFilesRemotePathContent(host,path);
-        }
-        catch(Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    public static void startXreAnnounceListenerThread(Activity activity, XreAnnouncesAdapter xreAnnouncesAdapter) {
-        if(xreAnnounceReceiveSocket == null)
-            new Thread(() -> {
-                Log.d(xreAnnounceLogTag,"XRE announce receiver thread started");
-                try {
-                    xreAnnounceReceiveSocket = new DatagramSocket(11111);
-                    for(;;) {
-                        DatagramPacket data = new DatagramPacket(new byte[256], 256);
-                        xreAnnounceReceiveSocket.receive(data);
-                        String received = new String(data.getData(), data.getOffset(), data.getLength(), StandardCharsets.UTF_8);
-                        Log.e(xreAnnounceLogTag,received);
-
-                        XFilesRemotePathContent xrpc = fromXREAnnounce(data);
-                        if(xrpc != null) activity.runOnUiThread(()-> {
-//                    xreRemotePath.setText(xrpc.dir);
-//                    xreServerHost.setText(xrpc.serverHost);
-//                        xreAnnounceTextView.setTextColor(R.color.green);
-//                        xreAnnounceTextView.setText("");
-                            xreAnnouncesAdapter.add(new Pair<>(xrpc.serverHost,xrpc.dir));
-                        });
-//                    else activity.runOnUiThread(()->{
-//                        xreAnnounceTextView.setTextColor(R.color.red);
-//                        xreAnnounceTextView.setText(received + " " + System.currentTimeMillis());
-//                    });
-                    }
-                }
-                catch(Exception e) {
-                    e.printStackTrace();
-                }
-                xreAnnounceReceiveSocket = null; // the dismiss listener or trhe onPause method in XREDirectShareActivity have closed the socket
-                Log.d(xreAnnounceLogTag,"XRE announce receiver thread ended");
-            }).start();
-        else Log.w(xreAnnounceLogTag, "Announce receiver thread already running, updates could be not visible if the adapter has been recreated meanwhile");
-    }
-
-    public static DatagramSocket xreAnnounceReceiveSocket;
 
     final XreAnnouncesAdapter xreAnnouncesAdapter;
 
@@ -610,9 +527,8 @@ public class GenericChangeDirectoryDialog extends Dialog {
         ((RadioButton)pathContentTypeSelector.getChildAt(providerType.ordinal())).setChecked(true);
 
         if(providerType == ProviderType.XFILES_REMOTE)
-            startXreAnnounceListenerThread(MainActivity.mainActivity,xreAnnouncesAdapter);
-        else if(xreAnnounceReceiveSocket != null)
-            xreAnnounceReceiveSocket.close();
+            MulticastUtils.startXreAnnounceListenerThread(MainActivity.mainActivity,xreAnnouncesAdapter);
+        else MulticastUtils.shutdownMulticastListening();
     }
 
     public GenericChangeDirectoryDialog(MainActivity mainActivity, BasePathContent curDirPath) {
@@ -649,8 +565,7 @@ public class GenericChangeDirectoryDialog extends Dialog {
         setOnDismissListener(dialog->{
             wbl.unregisterListeners();
             MainActivity.cdd = null;
-            if(xreAnnounceReceiveSocket != null)
-                xreAnnounceReceiveSocket.close();
+            MulticastUtils.shutdownMulticastListening();
         });
     }
 

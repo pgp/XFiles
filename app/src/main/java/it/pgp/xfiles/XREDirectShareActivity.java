@@ -32,6 +32,7 @@ import it.pgp.xfiles.service.NonInteractiveXFilesRemoteTransferService;
 import it.pgp.xfiles.service.params.CopyMoveParams;
 import it.pgp.xfiles.utils.GenericDBHelper;
 import it.pgp.xfiles.utils.IntentUtil;
+import it.pgp.xfiles.utils.MulticastUtils;
 import it.pgp.xfiles.utils.pathcontent.BasePathContent;
 import it.pgp.xfiles.utils.pathcontent.XFilesRemotePathContent;
 import it.pgp.xfiles.utils.wifi.WifiButtonsLayout;
@@ -248,15 +249,14 @@ public class XREDirectShareActivity extends EffectActivity {
     protected void onResume() {
         super.onResume();
         wbl.registerListeners();
-        GenericChangeDirectoryDialog.startXreAnnounceListenerThread(this,xreAnnouncesAdapter);
+        MulticastUtils.startXreAnnounceListenerThread(this,xreAnnouncesAdapter);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         if (wbl != null) wbl.unregisterListeners();
-        if(GenericChangeDirectoryDialog.xreAnnounceReceiveSocket != null)
-            GenericChangeDirectoryDialog.xreAnnounceReceiveSocket.close();
+        MulticastUtils.shutdownMulticastListening();
     }
 
     @Override
