@@ -122,7 +122,6 @@ public class NonInteractiveXFilesRemoteTransferTask extends RootHelperClientTask
         if (result == null || result == FileOpsErrorCodes.OK) {
             // refresh dir only if it's the same of when the task started
             Toast.makeText(service,"Remote transfer completed",Toast.LENGTH_LONG).show();
-            if (activity == null) return; // activity closed while service active, nothing to refresh
             BasePathContent cd = activity.getCurrentDirCommander().getCurrentDirectoryPathname();
             if (cd.equals(currentDir))
                 activity.browserPagerAdapter.showDirContent(activity.getCurrentDirCommander().refresh(),activity.browserPager.getCurrentItem(),params.getFirstFilename(resolver));
