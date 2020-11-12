@@ -7,6 +7,7 @@ import java.io.Serializable;
 
 import it.pgp.xfiles.CopyListUris;
 import it.pgp.xfiles.MainActivity;
+import it.pgp.xfiles.XREDirectShareActivity;
 import it.pgp.xfiles.enums.FileOpsErrorCodes;
 import it.pgp.xfiles.enums.ProviderType;
 import it.pgp.xfiles.enums.ServiceStatus;
@@ -115,6 +116,10 @@ public class NonInteractiveXFilesRemoteTransferTask extends RootHelperClientTask
                             params.list.copyOrMove.name().toLowerCase()+" error in standalone mode: "+result.getValue()
                     , Toast.LENGTH_SHORT).show();
             MainActivity.rootHelperRemoteClientManager.closeAllSessions();
+            // workaround in order to avoid showing again XREDirectShareActivity after opening and closing the app again after transfer end
+//            if(params.list instanceof CopyListUris)
+            if(XREDirectShareActivity.instance != null)
+                XREDirectShareActivity.instance.finishAffinity();
             return;
         }
 

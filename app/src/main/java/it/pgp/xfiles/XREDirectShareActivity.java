@@ -58,6 +58,8 @@ public class XREDirectShareActivity extends EffectActivity {
 
     XreAnnouncesAdapter xreAnnouncesAdapter;
 
+    public static XREDirectShareActivity instance;
+
     private void ok(View unused) {
         BasePathContent path;
 
@@ -104,6 +106,7 @@ public class XREDirectShareActivity extends EffectActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        instance = this;
         setActivityIcon(R.drawable.xf_xre_server_up);
         MainActivity.mainActivityContext = getApplicationContext();
         MainActivity.refreshToastHandler(MainActivity.mainActivityContext);
@@ -262,6 +265,7 @@ public class XREDirectShareActivity extends EffectActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        instance = null;
         if (MainActivity.mainActivity == null) MainActivity.mainActivityContext = null;
     }
 }
