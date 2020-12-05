@@ -22,6 +22,7 @@ import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import it.pgp.xfiles.MainActivity;
 import it.pgp.xfiles.R;
@@ -46,6 +47,7 @@ import it.pgp.xfiles.utils.pathcontent.RemotePathContent;
 import it.pgp.xfiles.utils.pathcontent.SmbRemotePathContent;
 import it.pgp.xfiles.utils.pathcontent.XFilesRemotePathContent;
 import it.pgp.xfiles.utils.wifi.WifiButtonsLayout;
+import it.pgp.xfiles.viewmodels.XREDirectoryViewModel;
 
 /**
  * Created by pgp on 14/05/17
@@ -86,29 +88,6 @@ public class GenericChangeDirectoryDialog extends Dialog {
 
     FavoritesList<AuthData>[] credsWithFavs;
 
-    // xfiles remote dir
-    Spinner xreStoredData;
-    EditText xreServerHost;
-//    EditText xreServerPort;
-    EditText xreRemotePath;
-    Map.Entry<String,String>[] xreItems;
-
-    final AdapterView.OnItemSelectedListener defaultSpinnerItemSelectListener = new AdapterView.OnItemSelectedListener() {
-        @Override
-        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-            if (currentDirAutofillOverride) {
-                currentDirAutofillOverride = false;
-                return;
-            }
-
-            Map.Entry<String,String> item = (Map.Entry<String, String>) parent.getItemAtPosition(position);
-            xreServerHost.setText(item.getKey());
-            xreRemotePath.setText(item.getValue());
-        }
-
-        @Override
-        public void onNothingSelected(AdapterView<?> parent) {}
-    };
 
     public static AdapterView.OnItemClickListener getDefaultAnnounceItemSelectListener(EditText xreServerHost, EditText xreRemotePath) {
         return (parent,view,position,id) -> {
@@ -118,7 +97,7 @@ public class GenericChangeDirectoryDialog extends Dialog {
         };
     }
 
-    final XreAnnouncesAdapter xreAnnouncesAdapter;
+    final XREDirectoryViewModel xreDirectoryViewModel;
 
     // smb remote dir
     Spinner smbStoredUsers;
@@ -136,7 +115,7 @@ public class GenericChangeDirectoryDialog extends Dialog {
     EditText httpDestPath; // if empty, take currently shown path in browser view
     EditText httpTargetFilename;
 
-    private boolean currentDirAutofillOverride = true;
+    private final AtomicBoolean currentDirAutofillOverride = new AtomicBoolean(true);
 
     private void ok(View unused) {
         okButton.setEnabled(false);
@@ -194,12 +173,12 @@ public class GenericChangeDirectoryDialog extends Dialog {
                     );
                     break;
                 case 3: // XFILES_REMOTE
-                    ret = basicNonEmptyValidation(xreServerHost);
+                    ret = basicNonEmptyValidation(xreDirectoryViewModel.xreServerHost);
                     if (!ret.isEmpty()) return reenableOkButton(ret);
                     path = new XFilesRemotePathContent(
-                            xreServerHost.getText().toString(),
+                            xreDirectoryViewModel.xreServerHost.getText().toString(),
 //                        Integer.valueOf(xreServerPort.getText().toString()),
-                            xreRemotePath.getText().toString()
+                            xreDirectoryViewModel.xreRemotePath.getText().toString()
                     );
                     break;
                 case 4: // SMB
@@ -281,15 +260,7 @@ public class GenericChangeDirectoryDialog extends Dialog {
             case XFILES_REMOTE:
                 targetLayout = layoutInflater.inflate(R.layout.change_directory_dialog_frame_xre, null);
                 containerLayout.addView(targetLayout);
-                xreStoredData = findViewById(R.id.xreConnectionStoredDataSpinner);
-                xreServerHost = findViewById(R.id.xreConnectionDomainEditText);
-//                xreServerPort = findViewById(R.id.xreConnectionPortEditText);
-                xreRemotePath = findViewById(R.id.xreRemoteDirEditText);
-
-//                xreAnnounceTextView = findViewById(R.id.xreAnnounceTextView);
-                ListView xreAnnouncesListView = findViewById(R.id.xreAnnouncesListView);
-                xreAnnouncesListView.setAdapter(xreAnnouncesAdapter);
-                xreAnnouncesListView.setOnItemClickListener(getDefaultAnnounceItemSelectListener(xreServerHost,xreRemotePath));
+                xreDirectoryViewModel.initViews();
                 break;
             case SMB:
                 targetLayout = layoutInflater.inflate(R.layout.change_directory_dialog_frame_smb, null);
@@ -339,8 +310,8 @@ public class GenericChangeDirectoryDialog extends Dialog {
                 localStoredData.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                        if (currentDirAutofillOverride) {
-                            currentDirAutofillOverride = false;
+                        if (currentDirAutofillOverride.get()) {
+                            currentDirAutofillOverride.set(false);
                             return;
                         }
                         localPath.setText((String)parent.getItemAtPosition(position));
@@ -367,8 +338,8 @@ public class GenericChangeDirectoryDialog extends Dialog {
                 storedUsers.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                        if (currentDirAutofillOverride) {
-                            currentDirAutofillOverride = false;
+                        if (currentDirAutofillOverride.get()) {
+                            currentDirAutofillOverride.set(false);
                             return;
                         }
 
@@ -410,20 +381,7 @@ public class GenericChangeDirectoryDialog extends Dialog {
                 remotePath.setOnClickListener(v -> remotePath.showDropDown());
                 break;
             case XFILES_REMOTE:
-                ArrayList<Map.Entry<String,String>> xreitems_ = new ArrayList<>();
-                xreitems_.add(new AbstractMap.SimpleEntry<>("","")); // empty item for no selection
-                xreitems_.add(new AbstractMap.SimpleEntry<>("192.168.43.1","")); // default remote server and offered home path when server provides network access with its WiFi hotspot
-                xreitems_.addAll(dbh.getAllRowsOfXreFavoritesTable().values());
-                xreItems = new Map.Entry[xreitems_.size()];
-                xreitems_.toArray(xreItems);
-
-                ArrayAdapter<Map.Entry<String,String>> xreAdapter = new ArrayAdapter<>(
-                        mainActivity,
-                        android.R.layout.simple_spinner_dropdown_item,
-                        xreItems);
-                xreStoredData.setAdapter(xreAdapter);
-                xreStoredData.setOnItemSelectedListener(defaultSpinnerItemSelectListener);
-
+                // initViews() already called in viewmodel
                 break;
             case SMB:
                 items = new ArrayList<>();
@@ -440,8 +398,8 @@ public class GenericChangeDirectoryDialog extends Dialog {
                 smbStoredUsers.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                        if (currentDirAutofillOverride) {
-                            currentDirAutofillOverride = false;
+                        if (currentDirAutofillOverride.get()) {
+                            currentDirAutofillOverride.set(false);
                             return;
                         }
 
@@ -507,8 +465,8 @@ public class GenericChangeDirectoryDialog extends Dialog {
                     break;
                 case XFILES_REMOTE:
                     XFilesRemotePathContent xrpc = (XFilesRemotePathContent)currentDir[0];
-                    xreServerHost.setText(xrpc.serverHost);
-                    xreRemotePath.setText(xrpc.dir);
+                    xreDirectoryViewModel.xreServerHost.setText(xrpc.serverHost);
+                    xreDirectoryViewModel.xreRemotePath.setText(xrpc.dir);
                     break;
                 case SMB:
                     SmbRemotePathContent srpc = (SmbRemotePathContent) currentDir[0];
@@ -527,7 +485,7 @@ public class GenericChangeDirectoryDialog extends Dialog {
         ((RadioButton)pathContentTypeSelector.getChildAt(providerType.ordinal())).setChecked(true);
 
         if(providerType == ProviderType.XFILES_REMOTE)
-            MulticastUtils.startXreAnnounceListenerThread(MainActivity.mainActivity,xreAnnouncesAdapter);
+            MulticastUtils.startXreAnnounceListenerThread(MainActivity.mainActivity,xreDirectoryViewModel.xreAnnouncesAdapter);
         else MulticastUtils.shutdownMulticastListening();
     }
 
@@ -540,7 +498,7 @@ public class GenericChangeDirectoryDialog extends Dialog {
         dbh = new GenericDBHelper(mainActivity);
         layoutInflater = (LayoutInflater) mainActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-        xreAnnouncesAdapter = new XreAnnouncesAdapter(mainActivity,new ArrayList<>());
+        xreDirectoryViewModel = new XREDirectoryViewModel(mainActivity, this, dbh, currentDirAutofillOverride);
 
         setContentView(R.layout.change_directory_generic_dialog);
         pathContentTypeSelector = findViewById(R.id.pathContentRadioGroup);

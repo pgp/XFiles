@@ -20,6 +20,7 @@ import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.LockSupport;
 
 import it.pgp.xfiles.adapters.XreAnnouncesAdapter;
@@ -36,6 +37,7 @@ import it.pgp.xfiles.utils.MulticastUtils;
 import it.pgp.xfiles.utils.pathcontent.BasePathContent;
 import it.pgp.xfiles.utils.pathcontent.XFilesRemotePathContent;
 import it.pgp.xfiles.utils.wifi.WifiButtonsLayout;
+import it.pgp.xfiles.viewmodels.XREDirectoryViewModel;
 
 public class XREDirectShareActivity extends EffectActivity {
 
@@ -54,9 +56,9 @@ public class XREDirectShareActivity extends EffectActivity {
     BasePathContent srcPath; // to be converged into CopyMoveListPathContent below
     CopyMoveListPathContent filesToUpload;
 
-    private boolean currentDirAutofillOverride = true;
+    private final AtomicBoolean currentDirAutofillOverride = new AtomicBoolean(true);
 
-    XreAnnouncesAdapter xreAnnouncesAdapter;
+    XREDirectoryViewModel xreDirectoryViewModel;
 
     public static XREDirectShareActivity instance;
 
@@ -123,7 +125,6 @@ public class XREDirectShareActivity extends EffectActivity {
             */
         }
 
-        // TODO bugfix: on Oreo, intent is redirected to compressActivity instead of arriving here
         if ("content".equals(uris.get(0).getScheme())) { // TODO check if condition is well written
             Log.d("DIRECTSHARE", "Populating from content uris");
             filesToUpload = CopyListUris.getFromUriList(uris);
@@ -158,51 +159,8 @@ public class XREDirectShareActivity extends EffectActivity {
         LinearLayout target = findViewById(R.id.targetWifiButtonsLayout);
         target.addView(wbl);
 
-        xreAnnouncesAdapter = new XreAnnouncesAdapter(this,new ArrayList<>());
-
-        // duplicated logic from GenericChangeDirectoryDialog (XRE switch branches)
-
-        //////////////////////////////////
-
-        xreStoredData = xre_embedded_layout.findViewById(R.id.xreConnectionStoredDataSpinner);
-        xreServerHost = xre_embedded_layout.findViewById(R.id.xreConnectionDomainEditText);
-//                xreServerPort = xre_embedded_layout.findViewById(R.id.xreConnectionPortEditText);
-        xreRemotePath = xre_embedded_layout.findViewById(R.id.xreRemoteDirEditText);
-
-        ListView xreAnnouncesListView = findViewById(R.id.xreAnnouncesListView);
-        xreAnnouncesListView.setAdapter(xreAnnouncesAdapter);
-        xreAnnouncesListView.setOnItemClickListener(GenericChangeDirectoryDialog.getDefaultAnnounceItemSelectListener(xreServerHost,xreRemotePath));
-
-        //////////////////////////////////
-
-        ArrayList<Map.Entry<String,String>> xreitems_ = new ArrayList<>();
-        xreitems_.add(new AbstractMap.SimpleEntry<>("","")); // empty item for no selection
-        xreitems_.add(new AbstractMap.SimpleEntry<>("192.168.43.1","")); // default remote server and default offered home path when server provides network access with its WiFi hotspot
-        xreitems_.addAll(dbh.getAllRowsOfXreFavoritesTable().values());
-        xreItems = xreitems_.toArray(new Map.Entry[0]);
-
-
-        ArrayAdapter<Map.Entry<String,String>> xreAdapter = new ArrayAdapter<>(
-                this,
-                android.R.layout.simple_spinner_dropdown_item,
-                xreItems);
-        xreStoredData.setAdapter(xreAdapter);
-        xreStoredData.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (currentDirAutofillOverride) {
-                    currentDirAutofillOverride = false;
-                    return;
-                }
-
-                Map.Entry<String,String> item = (Map.Entry<String, String>) parent.getItemAtPosition(position);
-                xreServerHost.setText(item.getKey());
-                xreRemotePath.setText(item.getValue());
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {}
-        });
+        xreDirectoryViewModel = new XREDirectoryViewModel(this, xre_embedded_layout, dbh, currentDirAutofillOverride);
+        xreDirectoryViewModel.initViews();
 
         findViewById(R.id.xreDirectShareOkButton).setOnClickListener(this::ok);
 
@@ -228,14 +186,14 @@ public class XREDirectShareActivity extends EffectActivity {
             // periodically check size of listener adapter, then click item and ok
             t.setRunnable(()->{
                 while(!Thread.currentThread().isInterrupted()) {
-                    if(xreAnnouncesAdapter.items.size() > 0) {
+                    if(xreDirectoryViewModel.xreAnnouncesAdapter.items.size() > 0) {
                         int activePosition = 0;
                         runOnUiThread(()->{
                             pd.dismiss();
-                            xreAnnouncesListView.performItemClick(
-                                    xreAnnouncesListView.getAdapter().getView(activePosition,null,null),
+                            xreDirectoryViewModel.xreAnnouncesListView.performItemClick(
+                                    xreDirectoryViewModel.xreAnnouncesListView.getAdapter().getView(activePosition,null,null),
                                     activePosition,
-                                    xreAnnouncesListView.getAdapter().getItemId(activePosition));
+                                    xreDirectoryViewModel.xreAnnouncesListView.getAdapter().getItemId(activePosition));
                             ok(null);
                         });
                         break;
@@ -252,7 +210,7 @@ public class XREDirectShareActivity extends EffectActivity {
     protected void onResume() {
         super.onResume();
         wbl.registerListeners();
-        MulticastUtils.startXreAnnounceListenerThread(this,xreAnnouncesAdapter);
+        MulticastUtils.startXreAnnounceListenerThread(this,xreDirectoryViewModel.xreAnnouncesAdapter);
     }
 
     @Override
