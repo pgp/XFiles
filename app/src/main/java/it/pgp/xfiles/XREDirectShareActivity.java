@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -53,7 +52,11 @@ public class XREDirectShareActivity extends EffectActivity {
         BasePathContent path;
 
         // empty base path means root path (/), so don't validate it
-        if (!basicNonEmptyValidation(xreDirectoryViewModel.xreServerHost)) return;
+        String ret = XREDirectoryViewModel.basicNonEmptyValidation(xreDirectoryViewModel.xreServerHost);
+        if (!ret.isEmpty()) {
+            Toast.makeText(this, ret, Toast.LENGTH_SHORT).show();
+            return;
+        }
         path = new XFilesRemotePathContent(
                 xreDirectoryViewModel.xreServerHost.getText().toString(),
 //                        Integer.valueOf(xreDirectoryViewModel.xreServerPort.getText().toString()),
@@ -68,15 +71,6 @@ public class XREDirectShareActivity extends EffectActivity {
 //        finish(); // Security Manager prevents using content provider's file objects after the activity has ended
         if(filesToUpload instanceof CopyListUris) MainActivity.simulateHomePress(this); // pause activity instead of finishing it
         else finish();
-    }
-
-    private boolean basicNonEmptyValidation(EditText... fields) {
-        boolean valid = true;
-        for (EditText field : fields) {
-            valid &= (field != null) && !(field.getText().toString().equals(""));
-        }
-        if (!valid) Toast.makeText(this, "Invalid parameters", Toast.LENGTH_SHORT).show();
-        return valid;
     }
 
     static class ThreadWrapper extends Thread {

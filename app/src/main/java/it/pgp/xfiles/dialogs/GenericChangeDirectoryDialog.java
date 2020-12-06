@@ -146,7 +146,7 @@ public class GenericChangeDirectoryDialog extends Dialog {
                  and launches error dialogs (host key not found/not valid and auth error -> provide password)
                  accordingly. Otherwise, a RemotePathContent object needs explicitly a home directory
                  */
-                    String ret = basicNonEmptyValidation(user,domain,port);
+                    String ret = XREDirectoryViewModel.basicNonEmptyValidation(user,domain,port);
                     if (!ret.isEmpty()) return reenableOkButton(ret); // password can be empty
                     path = new RemotePathContent(
                             new AuthData(
@@ -159,7 +159,7 @@ public class GenericChangeDirectoryDialog extends Dialog {
                     );
                     break;
                 case 3: // XFILES_REMOTE
-                    ret = basicNonEmptyValidation(xreDirectoryViewModel.xreServerHost);
+                    ret = XREDirectoryViewModel.basicNonEmptyValidation(xreDirectoryViewModel.xreServerHost);
                     if (!ret.isEmpty()) return reenableOkButton(ret);
                     path = new XFilesRemotePathContent(
                             xreDirectoryViewModel.xreServerHost.getText().toString(),
@@ -168,7 +168,7 @@ public class GenericChangeDirectoryDialog extends Dialog {
                     );
                     break;
                 case 4: // SMB
-                    ret = basicNonEmptyValidation(smbUser,smbDomain,smbHost,smbPort,smbPassword);
+                    ret = XREDirectoryViewModel.basicNonEmptyValidation(smbUser,smbDomain,smbHost,smbPort,smbPassword);
                     if (!ret.isEmpty()) return reenableOkButton(ret); // password cannot be empty (no pubkey authentication for SMB)
                     path = new SmbRemotePathContent(
                             new SmbAuthData(
@@ -511,14 +511,6 @@ public class GenericChangeDirectoryDialog extends Dialog {
             MainActivity.cdd = null;
             MulticastUtils.shutdownMulticastListening();
         });
-    }
-
-    private String basicNonEmptyValidation(EditText... fields) {
-        boolean valid = true;
-        for (EditText field : fields) {
-            valid &= (field != null) && !(field.getText().toString().equals(""));
-        }
-        return valid ? "":"Invalid parameters";
     }
 
 }

@@ -54,6 +54,14 @@ public class XREDirectoryViewModel {
         throw new RuntimeException("Unexpected type in getFvbiInterface");
     }
 
+    public static String basicNonEmptyValidation(EditText... fields) {
+        boolean valid = true;
+        for (EditText field : fields) {
+            valid &= (field != null) && !(field.getText().toString().equals(""));
+        }
+        return valid ? "":"Invalid parameters";
+    }
+
     public static AdapterView.OnItemClickListener getDefaultAnnounceItemSelectListener(EditText xreServerHost, EditText xreRemotePath) {
         return (parent,view,position,id) -> {
             Pair<String,String> item = (Pair<String, String>) parent.getItemAtPosition(position);
