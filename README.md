@@ -30,11 +30,11 @@ Prebuilt APKs are available in the [Releases](https://github.com/pgp/XFiles/rele
 ### Demos
 Usage demos are available [here](https://github.com/pgp/XFilesDemos).
 
-### Building from source 
-## Prerequisites
+## Building
+### Prerequisites
 
 1. Windows, Linux or MacOS with git preinstalled;
-1. [Android Studio 3.4+](https://developer.android.com/studio/index.html) with CMake and NDK plugins (it is recommended to install them from SDK Manager BEFORE importing the project).
+1. [Android Studio 4.1+](https://developer.android.com/studio/index.html) with CMake and NDK plugins (it is recommended to install them from SDK Manager BEFORE importing the project).
 
 ### Build instructions
 
