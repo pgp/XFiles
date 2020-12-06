@@ -12,21 +12,17 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import it.pgp.xfiles.MainActivity;
 import it.pgp.xfiles.R;
-import it.pgp.xfiles.adapters.XreAnnouncesAdapter;
 import it.pgp.xfiles.enums.FileOpsErrorCodes;
 import it.pgp.xfiles.enums.ProviderType;
 import it.pgp.xfiles.service.BaseBackgroundService;
@@ -38,7 +34,6 @@ import it.pgp.xfiles.utils.FavoritesList;
 import it.pgp.xfiles.utils.GenericDBHelper;
 import it.pgp.xfiles.utils.Misc;
 import it.pgp.xfiles.utils.MulticastUtils;
-import it.pgp.xfiles.utils.Pair;
 import it.pgp.xfiles.utils.dircontent.GenericDirWithContent;
 import it.pgp.xfiles.utils.pathcontent.ArchivePathContent;
 import it.pgp.xfiles.utils.pathcontent.BasePathContent;
@@ -87,15 +82,6 @@ public class GenericChangeDirectoryDialog extends Dialog {
     AutoCompleteTextView remotePath;
 
     FavoritesList<AuthData>[] credsWithFavs;
-
-
-    public static AdapterView.OnItemClickListener getDefaultAnnounceItemSelectListener(EditText xreServerHost, EditText xreRemotePath) {
-        return (parent,view,position,id) -> {
-            Pair<String,String> item = (Pair<String, String>) parent.getItemAtPosition(position);
-            xreServerHost.setText(item.i);
-            xreRemotePath.setText(item.j);
-        };
-    }
 
     final XREDirectoryViewModel xreDirectoryViewModel;
 

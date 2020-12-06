@@ -7,24 +7,17 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.Spinner;
 import android.widget.Toast;
 
 import java.io.IOException;
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.LockSupport;
 
-import it.pgp.xfiles.adapters.XreAnnouncesAdapter;
-import it.pgp.xfiles.dialogs.GenericChangeDirectoryDialog;
 import it.pgp.xfiles.enums.CopyMoveMode;
 import it.pgp.xfiles.items.SingleStatsItem;
 import it.pgp.xfiles.roothelperclient.RootHelperClientUsingPathContent;
@@ -46,12 +39,6 @@ public class XREDirectShareActivity extends EffectActivity {
 
     GenericDBHelper dbh;
 
-    Spinner xreStoredData;
-    EditText xreServerHost;
-    //    EditText xreServerPort;
-    EditText xreRemotePath;
-    Map.Entry<String,String>[] xreItems;
-
     List<String> filesToUpload_; // to be converged into CopyMoveListPathContent below
     BasePathContent srcPath; // to be converged into CopyMoveListPathContent below
     CopyMoveListPathContent filesToUpload;
@@ -66,11 +53,11 @@ public class XREDirectShareActivity extends EffectActivity {
         BasePathContent path;
 
         // empty base path means root path (/), so don't validate it
-        if (!basicNonEmptyValidation(xreServerHost)) return;
+        if (!basicNonEmptyValidation(xreDirectoryViewModel.xreServerHost)) return;
         path = new XFilesRemotePathContent(
-                xreServerHost.getText().toString(),
-//                        Integer.valueOf(xreServerPort.getText().toString()),
-                xreRemotePath.getText().toString()
+                xreDirectoryViewModel.xreServerHost.getText().toString(),
+//                        Integer.valueOf(xreDirectoryViewModel.xreServerPort.getText().toString()),
+                xreDirectoryViewModel.xreRemotePath.getText().toString()
         );
 
         // run xre copy service/task

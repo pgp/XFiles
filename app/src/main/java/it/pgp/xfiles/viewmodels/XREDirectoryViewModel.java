@@ -17,8 +17,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import it.pgp.xfiles.R;
 import it.pgp.xfiles.adapters.XreAnnouncesAdapter;
-import it.pgp.xfiles.dialogs.GenericChangeDirectoryDialog;
 import it.pgp.xfiles.utils.GenericDBHelper;
+import it.pgp.xfiles.utils.Pair;
 
 public class XREDirectoryViewModel {
     // xfiles remote dir
@@ -31,8 +31,11 @@ public class XREDirectoryViewModel {
     public final XreAnnouncesAdapter xreAnnouncesAdapter;
     public ListView xreAnnouncesListView;
 
+    public final XreAnnouncesAdapter alreadyConnectedAdapter;
+    public ListView alreadyConnectedListView;
+
     final Context a;
-    final fvbiInterface v;
+    fvbiInterface v;
     final GenericDBHelper dbh;
 
     final AtomicBoolean currentDirAutofillOverride;
@@ -48,7 +51,15 @@ public class XREDirectoryViewModel {
             return ((Dialog)o)::findViewById;
         else if (o instanceof View)
             return ((View)o)::findViewById;
-        throw new RuntimeException("Unexpected type in fromActivity");
+        throw new RuntimeException("Unexpected type in getFvbiInterface");
+    }
+
+    public static AdapterView.OnItemClickListener getDefaultAnnounceItemSelectListener(EditText xreServerHost, EditText xreRemotePath) {
+        return (parent,view,position,id) -> {
+            Pair<String,String> item = (Pair<String, String>) parent.getItemAtPosition(position);
+            xreServerHost.setText(item.i);
+            xreRemotePath.setText(item.j);
+        };
     }
 
     final AdapterView.OnItemSelectedListener defaultSpinnerItemSelectListener = new AdapterView.OnItemSelectedListener() {
@@ -68,20 +79,22 @@ public class XREDirectoryViewModel {
         public void onNothingSelected(AdapterView<?> parent) {}
     };
 
-    public XREDirectoryViewModel(Activity activity, View v, GenericDBHelper dbh, AtomicBoolean currentDirAutofillOverride) {
+    protected XREDirectoryViewModel(Activity activity, GenericDBHelper dbh, AtomicBoolean currentDirAutofillOverride) {
         this.a = activity;
-        this.v = getFvbiInterface(v);
         this.dbh = dbh;
         this.currentDirAutofillOverride = currentDirAutofillOverride;
-        xreAnnouncesAdapter = new XreAnnouncesAdapter(activity, new ArrayList<>());
+        xreAnnouncesAdapter = XreAnnouncesAdapter.from(activity);
+        alreadyConnectedAdapter = XreAnnouncesAdapter.fromAlreadyOpenedConnections(activity);
+    }
+
+    public XREDirectoryViewModel(Activity activity, View v, GenericDBHelper dbh, AtomicBoolean currentDirAutofillOverride) {
+        this(activity, dbh, currentDirAutofillOverride);
+        this.v = getFvbiInterface(v);
     }
 
     public XREDirectoryViewModel(Activity activity, Dialog dialog, GenericDBHelper dbh, AtomicBoolean currentDirAutofillOverride) {
-        this.a = activity;
+        this(activity, dbh, currentDirAutofillOverride);
         this.v = getFvbiInterface(dialog);
-        this.dbh = dbh;
-        this.currentDirAutofillOverride = currentDirAutofillOverride;
-        xreAnnouncesAdapter = new XreAnnouncesAdapter(activity, new ArrayList<>());
     }
 
     public void initViews() {
@@ -92,7 +105,13 @@ public class XREDirectoryViewModel {
 
         xreAnnouncesListView = v.findViewById(R.id.xreAnnouncesListView);
         xreAnnouncesListView.setAdapter(xreAnnouncesAdapter);
-        xreAnnouncesListView.setOnItemClickListener(GenericChangeDirectoryDialog.getDefaultAnnounceItemSelectListener(xreServerHost,xreRemotePath));
+
+        alreadyConnectedListView = v.findViewById(R.id.xreAlreadyConnectedListView);
+        alreadyConnectedListView.setAdapter(alreadyConnectedAdapter);
+
+        AdapterView.OnItemClickListener selectListener = getDefaultAnnounceItemSelectListener(xreServerHost, xreRemotePath);
+        alreadyConnectedListView.setOnItemClickListener(selectListener);
+        xreAnnouncesListView.setOnItemClickListener(selectListener);
 
 
         ArrayList<Map.Entry<String,String>> xreitems_ = new ArrayList<>();
