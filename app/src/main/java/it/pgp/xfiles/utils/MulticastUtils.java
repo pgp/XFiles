@@ -7,6 +7,7 @@ import android.util.Log;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+// import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.util.zip.CRC32;
 
@@ -16,6 +17,10 @@ import it.pgp.xfiles.utils.pathcontent.XFilesRemotePathContent;
 
 public class MulticastUtils {
 
+    /**
+     * Web source:
+     * https://stackoverflow.com/questions/23644997/android-send-udp-broadcast-silently-fails
+     */
     public static synchronized void startXreAnnounceListenerThread(Activity activity, XreAnnouncesAdapter xreAnnouncesAdapter) {
         if(xreAnnounceReceiveSocket != null || xreAnnounceMulticastLock != null) {
             MainActivity.showToastOnUI("Announce receiver thread already running, updates could be not visible if the adapter has been recreated meanwhile", activity);
@@ -31,6 +36,10 @@ public class MulticastUtils {
             Log.d(xreAnnounceLogTag,"XRE announce receiver thread started");
             try {
                 xreAnnounceReceiveSocket = new DatagramSocket(11111);
+//                xreAnnounceReceiveSocket = new DatagramSocket(null);
+//                xreAnnounceReceiveSocket.setReuseAddress(true);
+//                xreAnnounceReceiveSocket.bind(new InetSocketAddress("0.0.0.0",11111));
+//                xreAnnounceReceiveSocket.setBroadcast(true);
                 for(;;) {
                     DatagramPacket data = new DatagramPacket(new byte[256], 256);
                     xreAnnounceReceiveSocket.receive(data);
