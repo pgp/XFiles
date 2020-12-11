@@ -104,7 +104,7 @@ public class RemoteRHServerManagementDialog extends Dialog {
     }
 
     private void switch_rhss_status(View unused) {
-        if (RemoteServerManager.rhssManagerThreadRef.get()==null) { // OFF -> ON
+        if (RemoteServerManager.rhssManagerRef.get()==null) { // OFF -> ON
             RemoteServerManager.RHSS_ACTION targetAction =
                     (rhssSendXreAnnounceCheckbox!=null && rhssSendXreAnnounceCheckbox.isChecked())?
                             RemoteServerManager.RHSS_ACTION.START_ANNOUNCE:
@@ -245,7 +245,7 @@ public class RemoteRHServerManagementDialog extends Dialog {
         rhssSendXreAnnounceCheckbox = findViewById(R.id.rhssAnnounceOptionCheckBox);
 
         // check rhss manager thread status
-        if (RemoteServerManager.rhssManagerThreadRef.get() == null) {
+        if (RemoteServerManager.rhssManagerRef.get() == null) {
             rhss_status_button.setImageResource(R.drawable.xf_xre_server_down);
             togglePathsWidgets(true);
         }

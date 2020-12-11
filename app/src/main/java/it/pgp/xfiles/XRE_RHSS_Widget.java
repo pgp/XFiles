@@ -27,7 +27,7 @@ public class XRE_RHSS_Widget extends AppWidgetProvider {
         RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.xre_rhss_widget);
 
         // check rhss manager thread status
-        if (RemoteServerManager.rhssManagerThreadRef.get() == null) {
+        if (RemoteServerManager.rhssManagerRef.get() == null) {
             remoteViews.setImageViewResource(R.id.rhss_toggle_rhss_button,R.drawable.xf_xre_server_down);
             remoteViews.setTextViewText(R.id.rhssIPAddresses,"");
         }
@@ -71,7 +71,7 @@ public class XRE_RHSS_Widget extends AppWidgetProvider {
                 case onDemand:
                     Log.d("XRE_RHSS","onDemand: toggle server status");
 
-                    if (RemoteServerManager.rhssManagerThreadRef.get() == null) {
+                    if (RemoteServerManager.rhssManagerRef.get() == null) {
                         MainActivity.getRootHelperClient(context);
                         int result = RemoteServerManager.rhss_action(RemoteServerManager.RHSS_ACTION.START_ANNOUNCE);
                         Log.d("XRE_RHSS", "onDemand toggle result (->ON): "+result);

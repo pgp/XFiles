@@ -36,7 +36,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
-import android.view.WindowManager;
 import android.webkit.MimeTypeMap;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
@@ -102,13 +101,11 @@ import it.pgp.xfiles.roothelperclient.RemoteServerManager;
 import it.pgp.xfiles.roothelperclient.RootHandler;
 import it.pgp.xfiles.roothelperclient.RootHelperClientUsingPathContent;
 import it.pgp.xfiles.service.BaseBackgroundService;
-import it.pgp.xfiles.service.HTTPDownloadService;
 import it.pgp.xfiles.service.CopyMoveService;
 import it.pgp.xfiles.service.NonInteractiveSftpService;
 import it.pgp.xfiles.service.NonInteractiveSmbService;
 import it.pgp.xfiles.service.NonInteractiveXFilesRemoteTransferService;
 import it.pgp.xfiles.service.params.CopyMoveParams;
-import it.pgp.xfiles.service.params.DownloadParams;
 import it.pgp.xfiles.service.visualization.ProgressIndicator;
 import it.pgp.xfiles.sftpclient.InteractiveHostKeyVerifier;
 import it.pgp.xfiles.sftpclient.SFTPProviderUsingPathContent;
@@ -118,7 +115,6 @@ import it.pgp.xfiles.smbclient.SmbVaultActivity;
 import it.pgp.xfiles.utils.ContentProviderUtils;
 import it.pgp.xfiles.utils.DirCommanderCUsingBrowserItemsAndPathContent;
 import it.pgp.xfiles.utils.FileOperationHelperUsingPathContent;
-import it.pgp.xfiles.utils.Misc;
 import it.pgp.xfiles.utils.XFilesUtilsUsingPathContent;
 import it.pgp.xfiles.utils.dircontent.GenericDirWithContent;
 import it.pgp.xfiles.utils.dircontent.SftpDirWithContent;
@@ -1466,7 +1462,7 @@ public class MainActivity extends EffectActivity {
                     if(itemId==R.id.itemShareOverXRE) {
                         ((EditText)RemoteRHServerManagementDialog.instance.findViewById(R.id.xreHomePath)).setText(path.dir);
                         RemoteRHServerManagementDialog.instance.show();
-                        if(RemoteServerManager.rhssManagerThreadRef.get() != null) {
+                        if(RemoteServerManager.rhssManagerRef.get() != null) {
                             Toast.makeText(MainActivity.this, "XRE server is already active, please stop it before sharing a new directory", Toast.LENGTH_LONG).show();
                             return true;
                         }
@@ -1537,7 +1533,7 @@ public class MainActivity extends EffectActivity {
                 if (sftpProvider != null) sftpProvider.closeAllSessions();
                 if (smbProvider != null) smbProvider.closeAllSessions();
                 rootHelperRemoteClientManager.closeAllSessions();
-                if (RemoteServerManager.rhssManagerThreadRef.get() == null)
+                if (RemoteServerManager.rhssManagerRef.get() == null)
                     killRHWrapper();
             }
             else {
@@ -1553,7 +1549,7 @@ public class MainActivity extends EffectActivity {
                     case SFTP_TRANSFER:
                         if (smbProvider != null) smbProvider.closeAllSessions();
                         rootHelperRemoteClientManager.closeAllSessions(); // FIXME this shouldn't be done anymore since the use of RobustLocal file streams, to be checked
-                        if (RemoteServerManager.rhssManagerThreadRef.get() == null)
+                        if (RemoteServerManager.rhssManagerRef.get() == null)
                             killRHWrapper();
                         break;
                     case SMB_TRANSFER:
@@ -1592,7 +1588,7 @@ public class MainActivity extends EffectActivity {
         if (doubleBackToExitPressedOnce) {
 
             // check if there is any remote server active and, in case, show dialog
-            if((RemoteServerManager.rhssManagerThreadRef.get() != null) ||
+            if((RemoteServerManager.rhssManagerRef.get() != null) ||
                     FileServer.FTP.isAlive() ||
                     FileServer.HTTP.isAlive()) {
                 new CloseActiveServersDialog(this).show();

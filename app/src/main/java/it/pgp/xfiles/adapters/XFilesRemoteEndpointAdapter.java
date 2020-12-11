@@ -38,7 +38,7 @@ public class XFilesRemoteEndpointAdapter extends BaseAdapter {
     private void fillAdapter() {
         addresses.clear();
         if (serverMode) {
-            if (RemoteServerManager.rhssManagerThreadRef.get()!=null) {
+            if (RemoteServerManager.rhssManagerRef.get()!=null) {
                 addresses.addAll(RHSSServerStatus.StoCSessions.keySet());
             }
         }

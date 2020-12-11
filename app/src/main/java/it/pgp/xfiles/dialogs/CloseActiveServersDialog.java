@@ -41,7 +41,7 @@ public class CloseActiveServersDialog extends Dialog {
         Bftp = findViewById(R.id.active_servers_ftp_button);
         Bhttp = findViewById(R.id.active_servers_http_button);
 
-        if(RemoteServerManager.rhssManagerThreadRef.get() != null) {
+        if(RemoteServerManager.rhssManagerRef.get() != null) {
             Txre.setTextColor(green);
             Bxre.setOnClickListener(v->{
                 RemoteServerManager.rhss_action(RemoteServerManager.RHSS_ACTION.STOP);

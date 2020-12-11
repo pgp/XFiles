@@ -23,7 +23,7 @@ import it.pgp.xfiles.utils.popupwindow.PopupWindowUtils;
 
 public class RemoteServerManager extends RemoteManager {
 
-    public static final AtomicReference<Thread> rhssManagerThreadRef = new AtomicReference<>(null);
+    public static final AtomicReference<RemoteServerManager> rhssManagerRef = new AtomicReference<>(null);
 
     private final byte rq_byte = ControlCodes.REMOTE_SERVER_MANAGEMENT.getValue();
 
@@ -66,7 +66,7 @@ public class RemoteServerManager extends RemoteManager {
         return true;
     }
 
-    private boolean stop_rhss() throws IOException {
+/*    private boolean stop_rhss() throws IOException {
         // stop RH remote server instance
         o.write(rq_byte); // flags: 000
 
@@ -76,13 +76,12 @@ public class RemoteServerManager extends RemoteManager {
             return false;
         }
         // ok, streams connected and RH remote server instance stopped, now terminate local updates thread
-//        MainActivity.rhssManagerThreadRef.get().close();
         rhssManagerThreadRef.set(null);
         return true;
-    }
+    }*/
 
     // true: running, false: not running
-    private boolean status_rhss() throws IOException {
+    /*private boolean status_rhss() throws IOException {
         byte rq = (byte)(rq_byte ^ (2 << ControlCodes.rq_bit_length)); // flags: 010
         o.write(rq);
 
@@ -95,12 +94,12 @@ public class RemoteServerManager extends RemoteManager {
         // receive status byte
         byte status = i.readByte();
         return (status == 0);
-    }
+    }*/
 
     ////////////////////////////////////
     // methods with auto-close after request send
 
-    public enum RHSS_ACTION {START,START_ANNOUNCE,STOP,STATUS}
+    public enum RHSS_ACTION {START,START_ANNOUNCE,STOP /*,STATUS*/}
 
     public static int rhss_action(RHSS_ACTION action, String... servedPaths) {
         switch (action) {
@@ -110,15 +109,22 @@ public class RemoteServerManager extends RemoteManager {
                 try {return (new RemoteServerManager().start_rhss(action==RHSS_ACTION.START_ANNOUNCE,servedPaths)) ? 1 : 0;}
                 catch (IOException e) {return -1;}
             case STOP:
-            case STATUS:
-                // with auto-close
-                try(RemoteServerManager r = new RemoteServerManager()) {
-                    switch (action) {
-                        case STOP: return r.stop_rhss()?1:0;
-                        case STATUS: return r.status_rhss()?1:0;
-                    }
+                try {
+                    rhssManagerRef.get().close();
+                    return 1;
                 }
-                catch (IOException ignored) {}
+                catch (Exception e) {
+                    e.printStackTrace();
+                }
+//            case STATUS:
+//                // with auto-close
+//                try(RemoteServerManager r = new RemoteServerManager()) {
+//                    switch (action) {
+//                        case STOP: return r.stop_rhss()?1:0;
+//                        case STATUS: return r.status_rhss()?1:0;
+//                    }
+//                }
+//                catch (IOException ignored) {}
             default:
                 return -1;
         }
@@ -167,12 +173,11 @@ public class RemoteServerManager extends RemoteManager {
         public void run() {
             try {
                 // strong cas, a thread is guaranteed to win
-                if (!rhssManagerThreadRef.compareAndSet(null,this)) {
+                if (!rhssManagerRef.compareAndSet(null,RemoteServerManager.this)) {
                     MainActivity.showToastOnUIWithHandler("Another rhss thread is already receiving updates");
                     return;
                 }
 
-                // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
                 // update on-screen widgets
                 if (MainActivity.mainActivityContext != null) {
                     Log.d("XRE_RHSS","refreshing XRE widget (-> ON)");
@@ -183,7 +188,6 @@ public class RemoteServerManager extends RemoteManager {
                     throw new Exception();
                 }
                 rhssLocalContext = MainActivity.mainActivityContext; // onDestroy resets mainActivityContext reference before this thread can use it for updating widget to OFF
-                // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
                 for(;;) { // always exits on IOException, when the other socket endpoint is closed
                     // receive started/ended session flag
@@ -221,7 +225,7 @@ public class RemoteServerManager extends RemoteManager {
                 if (!(t instanceof IOException)) t.printStackTrace();
                 // no need for finally, thread always exits with exception
                 close();
-                rhssManagerThreadRef.set(null);
+                rhssManagerRef.set(null);
 
                 // also update local views of dialog to off, if dialog is active
                 RHSSServerStatus.destroyServer();
@@ -233,11 +237,9 @@ public class RemoteServerManager extends RemoteManager {
                 }
 
                 if (rhssLocalContext != null) {
-                    // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
                     // update on-screen widgets, if any, as well
                     Log.d("XRE_RHSS","refreshing XRE widget (-> OFF)");
                     XRE_RHSS_Widget.updateAllDirect(rhssLocalContext);
-                    // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
                 }
 
                 Log.d(getClass().getName(),"Really exiting update thread now!");
