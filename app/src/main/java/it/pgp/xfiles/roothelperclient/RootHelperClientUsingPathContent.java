@@ -695,6 +695,10 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
                                                 @Nullable List<String> filenames,
                                                 boolean smartDirectoryCreation) throws IOException {
 
+        if(destDirectory == null) { // test archive instead of extracting TODO selective testing to be enabled
+            return extract(srcArchive.dir, "", password, null, false);
+        }
+
         if (destDirectory.providerType != ProviderType.LOCAL) {
             throw new RuntimeException("Forbidden type for destination directory");
         }

@@ -11,6 +11,7 @@ import it.pgp.xfiles.dialogs.compress.AskPasswordDialogOnExtract;
 import it.pgp.xfiles.enums.FileOpsErrorCodes;
 import it.pgp.xfiles.enums.ServiceStatus;
 import it.pgp.xfiles.service.params.ExtractParams;
+import it.pgp.xfiles.service.params.TestParams;
 import it.pgp.xfiles.service.visualization.MovingRibbon;
 import it.pgp.xfiles.utils.pathcontent.BasePathContent;
 
@@ -33,6 +34,8 @@ public class ExtractTask extends RootHelperClientTask {
     private static final FileOpsErrorCodes defaultErrorResult = FileOpsErrorCodes.TRANSFER_ERROR;
     private BasePathContent currentDir;
 
+    public String prefix;
+
     ExtractTask(Serializable params_) {
         super(params_);
         ExtractParams params = (ExtractParams) params_;
@@ -41,6 +44,7 @@ public class ExtractTask extends RootHelperClientTask {
         password = params.password;
         filenames = params.filenames;
         smartDirectoryCreation = params.smartDirectoryCreation;
+        prefix = (params_ instanceof TestParams)?"Test":"Extract";
     }
 
     @Override
@@ -86,7 +90,7 @@ public class ExtractTask extends RootHelperClientTask {
             BasePathContent cd = activity.getCurrentDirCommander().getCurrentDirectoryPathname();
             if (cd.equals(currentDir))
                 activity.browserPagerAdapter.showDirContent(activity.getCurrentDirCommander().refresh(),activity.browserPager.getCurrentItem(),null);
-            Toast.makeText(service.getApplicationContext(), "Extract completed", Toast.LENGTH_LONG).show();
+            Toast.makeText(service.getApplicationContext(), prefix+" completed", Toast.LENGTH_LONG).show();
         }
         else if (result == FileOpsErrorCodes.NULL_OR_WRONG_PASSWORD) {
             Toast.makeText(service.getApplicationContext(),"Empty or wrong password",Toast.LENGTH_LONG).show();
@@ -98,9 +102,9 @@ public class ExtractTask extends RootHelperClientTask {
         }
         else {
             if (status != ServiceStatus.CANCELLED)
-                Toast.makeText(service.getApplicationContext(),"Extract error: "+result.getValue(),Toast.LENGTH_LONG).show();
+                Toast.makeText(service.getApplicationContext(),prefix+" error: "+result.getValue(),Toast.LENGTH_LONG).show();
             else
-                Toast.makeText(service,"Extract cancelled",Toast.LENGTH_LONG).show();
+                Toast.makeText(service,prefix+" cancelled",Toast.LENGTH_LONG).show();
         }
     }
 }

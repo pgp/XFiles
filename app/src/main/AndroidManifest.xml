@@ -263,6 +263,10 @@
             android:enabled="true"
             android:exported="true" />
         <service
+            android:name=".service.TestService"
+            android:enabled="true"
+            android:exported="true" />
+        <service
             android:name=".service.NonInteractiveSftpService"
             android:enabled="true"
             android:exported="true" />

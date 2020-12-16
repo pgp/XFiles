@@ -102,10 +102,14 @@ import it.pgp.xfiles.roothelperclient.RootHandler;
 import it.pgp.xfiles.roothelperclient.RootHelperClientUsingPathContent;
 import it.pgp.xfiles.service.BaseBackgroundService;
 import it.pgp.xfiles.service.CopyMoveService;
+import it.pgp.xfiles.service.ExtractService;
 import it.pgp.xfiles.service.NonInteractiveSftpService;
 import it.pgp.xfiles.service.NonInteractiveSmbService;
 import it.pgp.xfiles.service.NonInteractiveXFilesRemoteTransferService;
+import it.pgp.xfiles.service.TestService;
 import it.pgp.xfiles.service.params.CopyMoveParams;
+import it.pgp.xfiles.service.params.ExtractParams;
+import it.pgp.xfiles.service.params.TestParams;
 import it.pgp.xfiles.service.visualization.ProgressIndicator;
 import it.pgp.xfiles.sftpclient.InteractiveHostKeyVerifier;
 import it.pgp.xfiles.sftpclient.SFTPProviderUsingPathContent;
@@ -1383,12 +1387,21 @@ public class MainActivity extends EffectActivity {
                     startActivity(i);
                     return true;
                 case R.id.itemExtract:
+                case R.id.itemTest:
                     b = getCurrentBrowserAdapter().getItem(position1);
                     if(b.isDirectory && path.providerType != ProviderType.LOCAL_WITHIN_ARCHIVE) {
-                        Toast.makeText(MainActivity.this, "Cannot extract files from a directory, please select a compressed archive", Toast.LENGTH_LONG).show();
+                        Toast.makeText(MainActivity.this, "Cannot extract/test files from a directory, please select a compressed archive", Toast.LENGTH_LONG).show();
                         return true;
                     }
-                    extractItem(b);
+                    if(itemId == R.id.itemTest) {
+                        Intent startIntent = new Intent(this, TestService.class);
+                        startIntent.setAction(BaseBackgroundService.START_ACTION);
+                        startIntent.putExtra(
+                                "params",
+                                new TestParams(path.concat(b.filename),null,null));
+                        startService(startIntent);
+                    }
+                    else extractItem(b);
                     return true;
                 case R.id.itemDelete:
                     b = getCurrentBrowserAdapter().getItem(position1);
