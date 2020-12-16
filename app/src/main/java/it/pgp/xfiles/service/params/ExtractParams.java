@@ -21,7 +21,7 @@ public class ExtractParams implements Serializable {
     public boolean smartDirectoryCreation;
 
     public ExtractParams(BasePathContent srcArchive,
-                         BasePathContent destDirectory,
+                         @Nullable BasePathContent destDirectory, // null when testing archive
                          @Nullable String password,
                          @Nullable List<String> filenames,
                          boolean smartDirectoryCreation) {
