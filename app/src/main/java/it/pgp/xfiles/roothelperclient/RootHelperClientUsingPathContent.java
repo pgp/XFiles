@@ -695,18 +695,14 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
                                                 @Nullable List<String> filenames,
                                                 boolean smartDirectoryCreation) throws IOException {
 
-        if(destDirectory == null) { // test archive instead of extracting TODO selective testing to be enabled
-            return extract(srcArchive.dir, "", password, null, false);
-        }
-
-        if (destDirectory.providerType != ProviderType.LOCAL) {
+        if (destDirectory != null && destDirectory.providerType != ProviderType.LOCAL) {
             throw new RuntimeException("Forbidden type for destination directory");
         }
 
         switch (srcArchive.providerType) {
             case LOCAL:
-                // entryIdxs will be ignored, extract all, no need to preload VMap
-                return extract(srcArchive.dir,destDirectory.dir,password,null,smartDirectoryCreation); // extract all
+                // entryIdxs will be ignored, extract/test all, no need to preload VMap
+                return extract(srcArchive.dir, destDirectory==null ? "" : destDirectory.dir,password,null,smartDirectoryCreation); // extract/test all
             case LOCAL_WITHIN_ARCHIVE:
                 break;
             default:
@@ -722,8 +718,8 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
         // srcArchive is ArchivePathContent
         if (filenames == null || filenames.size()==0) {
             if (srcArchive.dir == null || srcArchive.dir.equals("") || srcArchive.dir.equals("/")) {
-                // no selection in root dir of archive, extract all
-                return extract(((ArchivePathContent)srcArchive).archivePath,destDirectory.dir,password,null,smartDirectoryCreation); // extract all
+                // no selection in root dir of archive, extract/test all
+                return extract(((ArchivePathContent)srcArchive).archivePath, destDirectory==null ? "" : destDirectory.dir,password,null,smartDirectoryCreation); // extract all
             }
             else {
                 // no selection in subpath of archive
@@ -740,7 +736,7 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
 
         int stripPathLen = (srcArchive.dir==null||srcArchive.dir.equals("/"))?0:srcArchive.dir.length();
         return extract(((ArchivePathContent)srcArchive).archivePath,
-                destDirectory.dir,
+                destDirectory==null ? "" : destDirectory.dir,
                 password,
                 new RelativeExtractEntries(stripPathLen,entries),
                 smartDirectoryCreation);

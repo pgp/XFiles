@@ -5,6 +5,10 @@
         android:icon="@drawable/xfiles_extract"
         android:title="Extract" />
 
+    <item android:id="@+id/itemsTest"
+        android:icon="@drawable/xfiles_test"
+        android:title="Test" />
+
     <item android:id="@+id/itemsProperties"
         android:icon="@drawable/xfiles_file_icon"
         android:title="Properties" />

@@ -1325,11 +1325,20 @@ public class MainActivity extends EffectActivity {
                     compressSelection();
                     return true;
                 case R.id.itemsExtract:
+                case R.id.itemsTest:
                     if (path.providerType != ProviderType.LOCAL_WITHIN_ARCHIVE) {
-                        Toast.makeText(MainActivity.this,"Cannot extract multiple items if they are not in an archive",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this,"Cannot extract/test multiple items if they are not in an archive",Toast.LENGTH_SHORT).show();
                         return true;
                     }
-                    extractItems();
+                    if(itemId == R.id.itemsExtract) extractItems();
+                    else {
+                        Intent startIntent = new Intent(this, TestService.class);
+                        startIntent.setAction(BaseBackgroundService.START_ACTION);
+                        startIntent.putExtra("params",
+                                new TestParams(getCurrentDirCommander().getCurrentDirectoryPathname(),null,
+                                        getCurrentBrowserAdapter().getSelectedItemsAsNameOnlyStrings()));
+                        startService(startIntent);
+                    }
                     return true;
                 case R.id.itemsDelete:
                     deleteSelection();

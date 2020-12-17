@@ -8,7 +8,7 @@ android {
         minSdkVersion 19
         targetSdkVersion 28
         multiDexEnabled true
-        versionCode 173201216
+        versionCode 173201217
         versionName "1.7.3"
         externalNativeBuild {
             cmake {
