@@ -88,7 +88,7 @@ public class ExtractTask extends RootHelperClientTask {
         if (result == null) {
             if (activity == null) return; // activity closed while service active, nothing to refresh
             BasePathContent cd = activity.getCurrentDirCommander().getCurrentDirectoryPathname();
-            if (cd.equals(currentDir))
+            if (cd.equals(currentDir) && !(params instanceof TestParams))
                 activity.browserPagerAdapter.showDirContent(activity.getCurrentDirCommander().refresh(),activity.browserPager.getCurrentItem(),null);
             Toast.makeText(service.getApplicationContext(), prefix+" completed", Toast.LENGTH_LONG).show();
         }
