@@ -70,7 +70,17 @@ public class BrowserListAdapter extends BrowserAdapter {
         date.setText(formatter.format(item.date));
 
         imageView.setImageBitmap(getBitmapByExtension(item));
-        imageView.setOnClickListener(v-> mainActivity.showPopup(null,v,position,v.getId()));
+
+        imageView.setOnClickListener(v-> {
+            if(!mainActivity.browserPagerAdapter.multiSelectModes[mainActivity.browserPager.getCurrentItem()])
+                mainActivity.showPopup(null,v,position,v.getId());
+            else {
+                // same logic of listViewLevelOICL
+                // FIXME no long click handling in multiselect mode
+                // checking condition in getView generates inconsistencies, unless one forces recycling views on multiselect mode change
+                mainActivity.getCurrentBrowserAdapter().toggleSelectOne(item);
+            }
+        });
 
         return convertView;
     }
