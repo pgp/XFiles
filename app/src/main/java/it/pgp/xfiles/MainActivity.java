@@ -286,7 +286,7 @@ public class MainActivity extends EffectActivity {
                 if(ArchiveType.APK.name().equals(arcExt.toUpperCase())) {
                     AlertDialog.Builder bld = new AlertDialog.Builder(MainActivity.this);
                     bld.setTitle("Choose APK action");
-                    bld.setNegativeButton("Install", (dialog, which) -> openWithDefaultApp(new File(currentFile.dir)));
+                    bld.setNegativeButton("Install", (dialog, which) -> installApk(new File(currentFile.dir)));
                     bld.setPositiveButton("Open as archive", (dialog, which) -> goDir_async(apc,null));
                     bld.create().show();
                     return;
@@ -850,6 +850,24 @@ public class MainActivity extends EffectActivity {
         startMain.addCategory(Intent.CATEGORY_HOME);
         startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         activity.startActivity(startMain);
+    }
+
+    public void installApk(File file) {
+        if(file.exists()) {
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setDataAndType(ContentProviderUtils.getUriFromFile(getApplicationContext(), file), "application/vnd.android.package-archive");
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            try {
+                startActivity(intent);
+            } catch (ActivityNotFoundException e) {
+                e.printStackTrace();
+                Toast.makeText(this, "Error in opening the file as APK for installation", Toast.LENGTH_SHORT).show();
+            }
+        }
+        else {
+            Toast.makeText(this, "APK for installation not existing or not accessible", Toast.LENGTH_SHORT).show();
+        }
     }
 
     public void openWithDefaultApp(File file) {

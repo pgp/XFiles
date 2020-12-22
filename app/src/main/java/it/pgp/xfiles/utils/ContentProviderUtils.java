@@ -10,10 +10,14 @@ import android.os.Build;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
+import android.support.v4.content.FileProvider;
 
+import java.io.File;
 import java.io.FileDescriptor;
 import java.io.IOException;
 import java.lang.reflect.Field;
+
+import it.pgp.xfiles.BuildConfig;
 
 /**
  * Created by pgp on 17/07/17
@@ -203,5 +207,13 @@ public class ContentProviderUtils {
      */
     public static boolean isMediaDocument(Uri uri) {
         return "com.android.providers.media.documents".equals(uri.getAuthority());
+    }
+
+    public static Uri getUriFromFile(Context context, File file) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            return FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID + ".provider", file);
+        } else {
+            return Uri.fromFile(file);
+        }
     }
 }

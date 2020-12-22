@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Web source: https://inthecheesefactory.com/blog/how-to-share-access-to-file-with-fileprovider-on-android-nougat/en -->
 <!-- not needed with StrictMode.VmPolicy.LAX -->
-<paths>
-    <external-path name="x" path="."/>
+<!-- https://stackoverflow.com/questions/59105199/how-to-install-any-android-app-programmatically-in-android-10 -->
+<!-- needed for installing apks on Android 10 onwards -->
+<paths xmlns:android="http://schemas.android.com/apk/res/android">
+    <external-path
+        name="files_root"
+        path="Android/data/${applicationId}" />
+    <external-path
+        name="external_files"
+        path="." />
 </paths>
