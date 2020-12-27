@@ -14,18 +14,18 @@ import it.pgp.xfiles.utils.pathcontent.BasePathContent;
 public class ExtractParams implements Serializable {
 
     // direct input to extractArchive
-    public BasePathContent srcArchive; // subDir taken from here
+    public List<BasePathContent> srcArchives; // subDir taken from here
     public BasePathContent destDirectory;
     public String password;
     public List<String> filenames;
     public boolean smartDirectoryCreation;
 
-    public ExtractParams(BasePathContent srcArchive,
+    public ExtractParams(List<BasePathContent> srcArchives,
                          @Nullable BasePathContent destDirectory, // null when testing archive
                          @Nullable String password,
                          @Nullable List<String> filenames,
                          boolean smartDirectoryCreation) {
-        this.srcArchive = srcArchive;
+        this.srcArchives = srcArchives;
         this.destDirectory = destDirectory;
         this.password = password;
         this.filenames = filenames;

@@ -56,6 +56,7 @@ import it.pgp.xfiles.roothelperclient.reqs.ls_archive_rq;
 import it.pgp.xfiles.roothelperclient.reqs.ls_rq;
 import it.pgp.xfiles.roothelperclient.reqs.movelist_rq;
 import it.pgp.xfiles.roothelperclient.reqs.multiStats_rq;
+import it.pgp.xfiles.roothelperclient.reqs.multi_extract_rq;
 import it.pgp.xfiles.roothelperclient.reqs.openssh_ed25519_keygen_rq;
 import it.pgp.xfiles.roothelperclient.reqs.openssl_rsa_pem_keygen_rq;
 import it.pgp.xfiles.roothelperclient.reqs.setDates_rq;
@@ -689,7 +690,7 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
         - extract some: assumes file browser is currently WITHIN an archive, so vmap MUST exist (throw runtimeexception if it doesn't);
      */
     @Override
-    public FileOpsErrorCodes extractFromArchive(BasePathContent srcArchive,
+    public FileOpsErrorCodes extractFromArchive(List<BasePathContent> srcArchives,
                                                 BasePathContent destDirectory,
                                                 @Nullable String password,
                                                 @Nullable List<String> filenames,
@@ -701,18 +702,21 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
 
         String destDir = destDirectory==null ? "" : destDirectory.dir;
 
-        switch (srcArchive.providerType) {
+        switch (srcArchives.get(0).providerType) {
             case LOCAL:
                 // entryIdxs will be ignored, extract/test all, no need to preload VMap
-                return extract(srcArchive.dir, destDir, password,null,smartDirectoryCreation); // extract/test all
+                return extract(srcArchives, destDir, password,null,smartDirectoryCreation); // extract/test all
             case LOCAL_WITHIN_ARCHIVE:
                 break;
             default:
                 throw new RuntimeException("Forbidden types for archive and/or directories");
         }
 
-        // since this point, we are LOCAL_WITHIN_ARCHIVE
-        ArchiveVMap avm = archiveMRU.getByPath(((ArchivePathContent)srcArchive).archivePath);
+        // since this point, we are LOCAL_WITHIN_ARCHIVE, so srcArchives must have size 1
+        if(srcArchives.size() != 1) throw new RuntimeException("Guard block");
+
+        ArchivePathContent srcArchive = (ArchivePathContent) srcArchives.get(0);
+        ArchiveVMap avm = archiveMRU.getByPath(srcArchive.archivePath);
         if (avm == null) throw new RuntimeException("VMap should be non-null once in archive!");
 
         List<Integer> entries = new ArrayList<>();
@@ -721,7 +725,8 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
         if (filenames == null || filenames.size()==0) {
             if (srcArchive.dir == null || srcArchive.dir.equals("") || srcArchive.dir.equals("/")) {
                 // no selection in root dir of archive, extract/test all
-                return extract(((ArchivePathContent)srcArchive).archivePath, destDir, password,null,smartDirectoryCreation); // extract all
+                return extract(srcArchives, // actually srcArchive as only item in the list
+                        destDir, password,null,smartDirectoryCreation); // extract all
             }
             else {
                 // no selection in subpath of archive
@@ -737,7 +742,7 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
         }
 
         int stripPathLen = (srcArchive.dir==null||srcArchive.dir.equals("/"))?0:srcArchive.dir.length();
-        return extract(((ArchivePathContent)srcArchive).archivePath,
+        return extract(srcArchives, // actually srcArchive as only item in the list
                 destDir,
                 password,
                 new RelativeExtractEntries(stripPathLen,entries),
@@ -802,52 +807,62 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
         return entries;
     }
 
-    private FileOpsErrorCodes extract(String archive,
+    private FileOpsErrorCodes extract(List<BasePathContent> archives,
                                       String directory,
                                       @Nullable String password,
                                       @Nullable RelativeExtractEntries entries,
                                       boolean smartDirectoryCreation) throws IOException {
         rs = getStreams();
 
-        extract_rq rq = new extract_rq(archive,directory,password,null,entries, smartDirectoryCreation);
-        rq.write(rs.o);
-
-        FileOpsErrorCodes ret;
-
-        int errno = receiveBaseResponse(rs.i);
-        if (errno == 0x101010) ret = FileOpsErrorCodes.NULL_OR_WRONG_PASSWORD; // null or wrong password for encrypted filenames archive
-        else if (errno == 0x03) ret = FileOpsErrorCodes.CRC_FAILED; // probably, wrong password for plain filenames archive
-        else if (errno == 0) {// start receiving progress here
-            // receive total
-            long total = Misc.receiveTotalOrProgress(rs.i);
-            long last_progress = 0;
-
-            // receive progress (end progress is -1 as uint64)
-            for(;;) {
-                long progress = Misc.receiveTotalOrProgress(rs.i);
-                if (progress == EOF_ind) {
-                    if (last_progress == total) {
-                        // OK
-                    }
-                    else {
-                        // Warning, last progress before termination value differs from total
-                    }
-                    break;
-                }
-                last_progress = progress;
-                task.publishProgressWrapper((int)Math.round(progress*100.0/total));
-            }
-
-            // receive 1-byte final OK or error response
-            errno = receiveBaseResponse(rs.i);
-            if (errno == 0) ret = null;
-            else if (errno == 0x101010) ret = FileOpsErrorCodes.NULL_OR_WRONG_PASSWORD; // null or wrong password for encrypted filenames archive
-            else if (errno == 0x03) ret = FileOpsErrorCodes.CRC_FAILED; // probably, wrong password for plain filenames archive
-            else ret = FileOpsErrorCodes.TRANSFER_ERROR;
+        if(archives.size() == 1) { // extract/test whole single archive, or extract/test some items from within one single archive
+            BasePathContent bpc = archives.get(0);
+            new extract_rq(bpc instanceof ArchivePathContent ? ((ArchivePathContent) bpc).archivePath : bpc.dir,
+                    directory, password, null, entries, smartDirectoryCreation).write(rs.o);
         }
-        else ret = FileOpsErrorCodes.TRANSFER_ERROR;
+        else {
+            new multi_extract_rq(archives, directory, password, smartDirectoryCreation).write(rs.o);
+        }
+
+        List<FileOpsErrorCodes> rets = new ArrayList<>();
+
+        for(BasePathContent archive : archives) {
+            FileOpsErrorCodes ret;
+            int errno = receiveBaseResponse(rs.i);
+            if (errno == 0x101010) ret = FileOpsErrorCodes.NULL_OR_WRONG_PASSWORD; // null or wrong password for encrypted filenames archive
+            else if (errno == 0x03) ret = FileOpsErrorCodes.CRC_FAILED; // probably, wrong password for plain filenames archive
+            else if (errno == 0) { // start receiving progress here
+                // receive total
+                long total = Misc.receiveTotalOrProgress(rs.i);
+                long last_progress = 0;
+
+                // receive progress (end progress is -1 as uint64)
+                for(;;) {
+                    long progress = Misc.receiveTotalOrProgress(rs.i);
+                    if (progress == EOF_ind) {
+                        if (last_progress == total) {
+                            // OK
+                        }
+                        else {
+                            // Warning, last progress before termination value differs from total
+                        }
+                        break;
+                    }
+                    last_progress = progress;
+                    task.publishProgressWrapper((int)Math.round(progress*100.0/total));
+                }
+
+                // receive 1-byte final OK or error response
+                errno = receiveBaseResponse(rs.i);
+                if (errno == 0) ret = null;
+                else if (errno == 0x101010) ret = FileOpsErrorCodes.NULL_OR_WRONG_PASSWORD; // null or wrong password for encrypted filenames archive
+                else if (errno == 0x03) ret = FileOpsErrorCodes.CRC_FAILED; // probably, wrong password for plain filenames archive
+                else ret = FileOpsErrorCodes.TRANSFER_ERROR;
+            }
+            else ret = FileOpsErrorCodes.TRANSFER_ERROR;
+            rets.add(ret);
+        }
         rs.close();
-        return ret;
+        return rets.get(0); // TODO return all list
     }
 
     // TODO Remove find methods from interface, already implemented RH only

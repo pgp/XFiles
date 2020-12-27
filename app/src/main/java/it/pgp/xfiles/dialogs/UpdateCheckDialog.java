@@ -204,7 +204,7 @@ public class UpdateCheckDialog extends Dialog {
             startIntent.putExtra(
                     "params",
                     new ExtractParams(
-                            srcArchive,
+                            Collections.singletonList(srcArchive),
                             outDir,
                             null,
                             null,

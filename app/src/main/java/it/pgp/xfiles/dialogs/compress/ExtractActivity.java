@@ -41,6 +41,8 @@ public class ExtractActivity extends EffectActivity implements FileSelectFragmen
 
     private BasePathContent srcArchiveWithSubDir;
 
+    private List<BasePathContent> srcArchives;
+
     RadioGroup intermediateDirectoryPolicyRadioGroup; // only enabled when extracting a whole archive (not extracting single items from within the archive)
 
     private boolean smartDirectoryCreation = false;
@@ -86,7 +88,7 @@ public class ExtractActivity extends EffectActivity implements FileSelectFragmen
 
         if (selectedItems.size()==0) selectedItems = null;
 
-        // dialog was loaded from context-menu
+        // dialog was loaded from context-menu, on single selection
         if (filename != null) {
             if (srcArchiveWithSubDir.providerType==ProviderType.LOCAL) {
                 // context-extract from outside archive, so extract content of archive into dest dir
@@ -100,6 +102,11 @@ public class ExtractActivity extends EffectActivity implements FileSelectFragmen
                 Toast.makeText(this,"Unexpected path type",Toast.LENGTH_LONG).show();
                 return;
             }
+        }
+        else { // multiple archives to extract, or multiple items within a single archive
+            if(selectedItems == null) throw new RuntimeException("Guard block");
+            if (isWholeArchiveExtract)
+                srcArchives = MainActivity.mainActivity.getCurrentBrowserAdapter().getSelectedItemsAsPathContents();
         }
 
         LocalPathContent destDir = new LocalPathContent(destDirectoryEditText.getText().toString());
@@ -128,7 +135,7 @@ public class ExtractActivity extends EffectActivity implements FileSelectFragmen
         startIntent.putExtra(
                 "params",
                 new ExtractParams(
-                        srcArchiveWithSubDir,
+                        srcArchives != null ? srcArchives: Collections.singletonList(srcArchiveWithSubDir),
                         destDir,
                         password,
                         selectedItems,

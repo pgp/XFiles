@@ -17,6 +17,10 @@
         android:icon="@drawable/xfiles_extract"
         android:title="Extract" />
 
+    <item android:id="@+id/itemsTest"
+        android:icon="@drawable/xfiles_test"
+        android:title="Test" />
+
     <item android:id="@+id/itemsDelete"
         android:icon="@drawable/xf_recycle_bin"
         android:title="Delete" />

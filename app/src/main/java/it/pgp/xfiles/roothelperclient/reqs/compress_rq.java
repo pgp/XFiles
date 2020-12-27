@@ -36,7 +36,7 @@ public class compress_rq extends PairOfPaths_rq {
         if (filenames == null) return;
         this.filenames = new ArrayList<>();
         for (String x : filenames) {
-            this.filenames.add(x.getBytes(PairOfPaths_rq.UTF8));
+            this.filenames.add(x.getBytes(UTF8));
         }
     }
 

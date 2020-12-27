@@ -52,7 +52,7 @@ public interface FileOperationHelperUsingPathContent {
                            @Nullable String password,
                            @Nullable List<String> filenames) throws IOException;
 
-    FileOpsErrorCodes extractFromArchive(BasePathContent srcArchive, // subDir taken from here
+    FileOpsErrorCodes extractFromArchive(List<BasePathContent> srcArchives, // subDir taken from here
                                          BasePathContent destDirectory,
                                          @Nullable String password,
                                          @Nullable List<String> filenames,

@@ -7,7 +7,7 @@ import java.util.List;
 import it.pgp.xfiles.utils.pathcontent.BasePathContent;
 
 public class TestParams extends ExtractParams {
-    public TestParams(BasePathContent srcArchive, @Nullable String password, @Nullable List<String> filenames) {
-        super(srcArchive, null, password, filenames, false);
+    public TestParams(List<BasePathContent> srcArchives, @Nullable String password, @Nullable List<String> filenames) {
+        super(srcArchives, null, password, filenames, false);
     }
 }

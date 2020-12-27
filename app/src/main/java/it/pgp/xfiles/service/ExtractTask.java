@@ -25,7 +25,7 @@ public class ExtractTask extends RootHelperClientTask {
 //    public static final SocketNames extractSocketName = SocketNames.theroothelper;
 
     // direct input to extractArchive
-    private BasePathContent srcArchive; // subDir taken from here
+    private List<BasePathContent> srcArchives; // subDir taken from here
     private BasePathContent destDirectory;
     private String password;
     private List<String> filenames;
@@ -39,7 +39,7 @@ public class ExtractTask extends RootHelperClientTask {
     ExtractTask(Serializable params_) {
         super(params_);
         ExtractParams params = (ExtractParams) params_;
-        srcArchive = params.srcArchive;
+        srcArchives = params.srcArchives;
         destDirectory = params.destDirectory;
         password = params.password;
         filenames = params.filenames;
@@ -68,7 +68,7 @@ public class ExtractTask extends RootHelperClientTask {
         try {
             rh.initProgressSupport(this);
             result = rh.extractFromArchive(
-                    srcArchive,
+                    srcArchives,
                     destDirectory,
                     password,
                     filenames,

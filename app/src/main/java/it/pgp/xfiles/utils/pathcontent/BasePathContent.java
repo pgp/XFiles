@@ -44,7 +44,7 @@ public abstract class BasePathContent implements Serializable {
     }
 
     public BasePathContent(FileOpsErrorCodes errorCode) {
-        this.providerType = null;
+        this.providerType = null; // FIXME can this be non-null?
         this.errorCode = errorCode;
     }
 

@@ -944,6 +944,17 @@ public class MainActivity extends EffectActivity {
         startActivity(i);
     }
 
+    public void testItems(ProviderType providerType) {
+        Intent startIntent = new Intent(this, TestService.class);
+        startIntent.setAction(BaseBackgroundService.START_ACTION);
+        startIntent.putExtra("params",
+                providerType == ProviderType.LOCAL_WITHIN_ARCHIVE ?
+                        new TestParams(Collections.singletonList(getCurrentDirCommander().getCurrentDirectoryPathname()),
+                                null,getCurrentBrowserAdapter().getSelectedItemsAsNameOnlyStrings()) :
+                        new TestParams(getCurrentBrowserAdapter().getSelectedItemsAsPathContents(), null, null));
+        startService(startIntent);
+    }
+
     public void shareItems(boolean unattended) {
         List<BasePathContent> selection = getCurrentBrowserAdapter().getSelectedItemsAsPathContents();
         if (selection.size()==0) {
@@ -1344,19 +1355,12 @@ public class MainActivity extends EffectActivity {
                     return true;
                 case R.id.itemsExtract:
                 case R.id.itemsTest:
-                    if (path.providerType != ProviderType.LOCAL_WITHIN_ARCHIVE) {
-                        Toast.makeText(MainActivity.this,"Cannot extract/test multiple items if they are not in an archive",Toast.LENGTH_SHORT).show();
+                    if (path.providerType != ProviderType.LOCAL_WITHIN_ARCHIVE && path.providerType != ProviderType.LOCAL) {
+                        Toast.makeText(MainActivity.this,"Cannot extract/test multiple items if they are on remote filesystems",Toast.LENGTH_SHORT).show();
                         return true;
                     }
                     if(itemId == R.id.itemsExtract) extractItems();
-                    else {
-                        Intent startIntent = new Intent(this, TestService.class);
-                        startIntent.setAction(BaseBackgroundService.START_ACTION);
-                        startIntent.putExtra("params",
-                                new TestParams(getCurrentDirCommander().getCurrentDirectoryPathname(),null,
-                                        getCurrentBrowserAdapter().getSelectedItemsAsNameOnlyStrings()));
-                        startService(startIntent);
-                    }
+                    else testItems(path.providerType);
                     return true;
                 case R.id.itemsDelete:
                     deleteSelection();
@@ -1425,7 +1429,7 @@ public class MainActivity extends EffectActivity {
                         startIntent.setAction(BaseBackgroundService.START_ACTION);
                         startIntent.putExtra(
                                 "params",
-                                new TestParams(path.concat(b.filename),null,null));
+                                new TestParams(Collections.singletonList(path.concat(b.filename)),null,null));
                         startService(startIntent);
                     }
                     else extractItem(b);
