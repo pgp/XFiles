@@ -38,7 +38,7 @@ public class CompressTask extends RootHelperClientTask {
     public boolean init(BaseBackgroundService service) {
         if (!super.init(service)) return false;
 
-        mr = new MovingRibbon(service,windowManager);
+        mr = new MovingRibbon(service, wm);
         return true;
     }
 

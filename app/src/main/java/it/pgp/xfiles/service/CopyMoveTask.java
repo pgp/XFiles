@@ -31,7 +31,7 @@ public class CopyMoveTask extends RootHelperClientTask {
     @Override
     public boolean init(BaseBackgroundService service) {
         if (!super.init(service)) return false;
-        mr = new MovingRibbonTwoBars(service,windowManager); // TODO try catch RuntimeException
+        mr = new MovingRibbonTwoBars(service, wm); // TODO try catch RuntimeException
         return true;
     }
 

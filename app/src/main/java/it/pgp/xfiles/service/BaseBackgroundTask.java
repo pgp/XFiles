@@ -18,10 +18,10 @@ import it.pgp.xfiles.service.visualization.ProgressIndicator;
 
 public abstract class BaseBackgroundTask extends AsyncTask<Object,Integer,Object> {
 	
-	protected NotificationCompat.Builder mBuilder;
+	protected NotificationCompat.Builder builder;
     // for notifying progress on foreground service progress bar
-    protected NotificationManager notificationManager;
-    protected WindowManager windowManager;
+    protected NotificationManager nm;
+    protected WindowManager wm;
 
     public ProgressIndicator mr;
 
@@ -46,9 +46,9 @@ public abstract class BaseBackgroundTask extends AsyncTask<Object,Integer,Object
      */
 	public boolean init(BaseBackgroundService service) {
         this.service = service;
-        mBuilder = service.getForegroundNotificationBuilder();
-        notificationManager = (NotificationManager) service.getSystemService(Context.NOTIFICATION_SERVICE);
-        windowManager = (WindowManager) service.getSystemService(Context.WINDOW_SERVICE);
+        builder = service.getForegroundNotificationBuilder();
+        nm = (NotificationManager) service.getSystemService(Context.NOTIFICATION_SERVICE);
+        wm = (WindowManager) service.getSystemService(Context.WINDOW_SERVICE);
         // initialized in subclasses (MovingRibbon for Compress and extract tasks, MovingRibbonTwoBars for copy/move tasks
 //        mr = new MovingRibbon(service,windowManager);
 
@@ -73,8 +73,8 @@ public abstract class BaseBackgroundTask extends AsyncTask<Object,Integer,Object
 	@Override
     protected void onPreExecute() {
         super.onPreExecute();
-        mBuilder.setProgress(100,0,false);
-        notificationManager.notify(service.getForegroundServiceNotificationId(), mBuilder.build());
+        builder.setProgress(100,0,false);
+        nm.notify(service.getForegroundServiceNotificationId(), builder.build());
         status = ServiceStatus.ACTIVE;
     }
 
@@ -90,11 +90,11 @@ public abstract class BaseBackgroundTask extends AsyncTask<Object,Integer,Object
     protected void onProgressUpdate(Integer... values) {
         // Update progress
         mr.setProgress(values);
-        mBuilder.setProgress(100, values[0], false);
+        builder.setProgress(100, values[0], false);
         long current = System.currentTimeMillis();
         if(current - lastProgressUpdate > 500) { // half a second
-            notificationManager.notify(service.getForegroundServiceNotificationId(),
-                    mBuilder.build());
+            nm.notify(service.getForegroundServiceNotificationId(),
+                    builder.build());
             lastProgressUpdate = current;
         }
 

@@ -44,7 +44,7 @@ public class NonInteractiveSmbTask extends BaseBackgroundTask {
     @Override
     public boolean init(BaseBackgroundService service) {
         if (!super.init(service)) return false;
-        mr = new XProgress(service,windowManager);
+        mr = new XProgress(service, wm);
         return true;
     }
 

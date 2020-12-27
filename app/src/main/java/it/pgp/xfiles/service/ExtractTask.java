@@ -13,6 +13,7 @@ import it.pgp.xfiles.enums.ServiceStatus;
 import it.pgp.xfiles.service.params.ExtractParams;
 import it.pgp.xfiles.service.params.TestParams;
 import it.pgp.xfiles.service.visualization.MovingRibbon;
+import it.pgp.xfiles.service.visualization.MovingRibbonTwoBars;
 import it.pgp.xfiles.utils.pathcontent.BasePathContent;
 
 /**
@@ -50,7 +51,7 @@ public class ExtractTask extends RootHelperClientTask {
     @Override
     public boolean init(BaseBackgroundService service) {
         if (!super.init(service)) return false;
-        mr = new MovingRibbon(service,windowManager);
+        mr = srcArchives.size()==1 ? new MovingRibbon(service, wm) : new MovingRibbonTwoBars(service, wm);
         return true;
     }
     @Override

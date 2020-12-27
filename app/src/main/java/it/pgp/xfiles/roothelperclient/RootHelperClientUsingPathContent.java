@@ -825,7 +825,9 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
 
         List<FileOpsErrorCodes> rets = new ArrayList<>();
 
-        for(BasePathContent archive : archives) {
+        int nArchives = archives.size();
+        boolean multiExtract = nArchives > 1;
+        for(int i=0;i<nArchives;i++) {
             FileOpsErrorCodes ret;
             int errno = receiveBaseResponse(rs.i);
             if (errno == 0x101010) ret = FileOpsErrorCodes.NULL_OR_WRONG_PASSWORD; // null or wrong password for encrypted filenames archive
@@ -848,7 +850,12 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
                         break;
                     }
                     last_progress = progress;
-                    task.publishProgressWrapper((int)Math.round(progress*100.0/total));
+                    double inner = Math.round(progress*100.0/total);
+                    if(multiExtract) {
+                        int outer = (int)Math.round((i*100.0 + inner)/nArchives);
+                        task.publishProgressWrapper(outer, (int) inner);
+                    }
+                    else task.publishProgressWrapper((int) inner);
                 }
 
                 // receive 1-byte final OK or error response
