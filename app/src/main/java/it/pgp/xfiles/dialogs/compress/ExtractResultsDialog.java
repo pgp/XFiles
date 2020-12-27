@@ -2,13 +2,13 @@ package it.pgp.xfiles.dialogs.compress;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import it.pgp.xfiles.R;
+import it.pgp.xfiles.adapters.ExtractResultsAdapter;
 import it.pgp.xfiles.enums.FileOpsErrorCodes;
 import it.pgp.xfiles.utils.Pair;
 import it.pgp.xfiles.utils.pathcontent.BasePathContent;
@@ -24,7 +24,7 @@ public class ExtractResultsDialog extends Dialog {
             if(res == null) res = FileOpsErrorCodes.OK;
             support.add(new Pair<>(srcArchives.get(i).toString(), res.toString()));
         }
-        ArrayAdapter<Pair<String,String>> a = new ArrayAdapter<>(context, android.R.layout.simple_list_item_1, support);
+        ExtractResultsAdapter a = new ExtractResultsAdapter(context, srcArchives, results);
         ListView lv = findViewById(R.id.extract_results_view);
         lv.setAdapter(a);
     }
