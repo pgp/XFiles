@@ -806,7 +806,7 @@ public class SFTPProviderUsingPathContent implements FileOperationHelperUsingPat
     }
 
     @Override
-    public FileOpsErrorCodes extractFromArchive(List<BasePathContent> srcArchives,
+    public List<FileOpsErrorCodes> extractFromArchive(List<BasePathContent> srcArchives,
                                                 BasePathContent destDirectory,
                                                 @Nullable String password,
                                                 @Nullable List<String> filenames,

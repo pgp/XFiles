@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -349,9 +350,9 @@ public class XFilesUtilsUsingPathContent implements FileOperationHelperUsingPath
     }
 
     @Override
-    public FileOpsErrorCodes extractFromArchive(List<BasePathContent> srcArchives, BasePathContent destDirectory, @Nullable String password, @Nullable List<String> filenames, boolean smartDirectoryCreation) throws IOException {
+    public List<FileOpsErrorCodes> extractFromArchive(List<BasePathContent> srcArchives, BasePathContent destDirectory, @Nullable String password, @Nullable List<String> filenames, boolean smartDirectoryCreation) throws IOException {
         RootHelperClientUsingPathContent rh = MainActivity.getRootHelperClient();
-        if(rh == null) return FileOpsErrorCodes.ROOTHELPER_INIT_ERROR;
+        if(rh == null) return Collections.singletonList(FileOpsErrorCodes.ROOTHELPER_INIT_ERROR);
         return rh.extractFromArchive(srcArchives,destDirectory,password,filenames,smartDirectoryCreation);
     }
 

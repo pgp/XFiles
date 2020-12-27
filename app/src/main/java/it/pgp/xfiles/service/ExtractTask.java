@@ -8,6 +8,7 @@ import java.util.List;
 
 import it.pgp.xfiles.MainActivity;
 import it.pgp.xfiles.dialogs.compress.AskPasswordDialogOnExtract;
+import it.pgp.xfiles.dialogs.compress.ExtractResultsDialog;
 import it.pgp.xfiles.enums.FileOpsErrorCodes;
 import it.pgp.xfiles.enums.ServiceStatus;
 import it.pgp.xfiles.service.params.ExtractParams;
@@ -36,6 +37,16 @@ public class ExtractTask extends RootHelperClientTask {
     private BasePathContent currentDir;
 
     public String prefix;
+
+    public List<FileOpsErrorCodes> results;
+    public boolean allOk;
+
+    public boolean allResultsOk() {
+        boolean ok = true;
+        for(FileOpsErrorCodes code : results)
+            ok &= (code == null || code == FileOpsErrorCodes.OK);
+        return ok;
+    }
 
     ExtractTask(Serializable params_) {
         super(params_);
@@ -68,12 +79,14 @@ public class ExtractTask extends RootHelperClientTask {
         }
         try {
             rh.initProgressSupport(this);
-            result = rh.extractFromArchive(
+            results = rh.extractFromArchive(
                     srcArchives,
                     destDirectory,
                     password,
                     filenames,
                     smartDirectoryCreation);
+            allOk = allResultsOk();
+            if(!allOk) result = results.get(0); // propagate first error for toast message
         }
         catch (IOException e) {
             e.printStackTrace();
@@ -86,26 +99,32 @@ public class ExtractTask extends RootHelperClientTask {
     protected void onPostExecute(Object o) {
         super.onPostExecute(o);
         MainActivity activity = MainActivity.mainActivity;
-        if (result == null) {
+        if (allOk) {
             if (activity == null) return; // activity closed while service active, nothing to refresh
             BasePathContent cd = activity.getCurrentDirCommander().getCurrentDirectoryPathname();
             if (cd.equals(currentDir) && !(params instanceof TestParams))
                 activity.browserPagerAdapter.showDirContent(activity.getCurrentDirCommander().refresh(),activity.browserPager.getCurrentItem(),null);
             Toast.makeText(service.getApplicationContext(), prefix+" completed", Toast.LENGTH_LONG).show();
         }
-        else if (result == FileOpsErrorCodes.NULL_OR_WRONG_PASSWORD) {
-            Toast.makeText(service.getApplicationContext(),"Empty or wrong password",Toast.LENGTH_LONG).show();
-            if (activity == null) return; // activity closed while service active, nothing to refresh
-            new AskPasswordDialogOnExtract(MainActivity.mainActivity,(ExtractParams)params).show();
+        else if (results.size()==1) {
+            if (result == FileOpsErrorCodes.NULL_OR_WRONG_PASSWORD) {
+                Toast.makeText(service.getApplicationContext(),"Empty or wrong password",Toast.LENGTH_LONG).show();
+                if (activity == null) return; // activity closed while service active, nothing to refresh
+                new AskPasswordDialogOnExtract(MainActivity.mainActivity,(ExtractParams)params).show();
+            }
+            else if (result == FileOpsErrorCodes.CRC_FAILED) {
+                Toast.makeText(service.getApplicationContext(),"CRC failed in data, damaged archive?",Toast.LENGTH_LONG).show();
+            }
+            else {
+                if (status != ServiceStatus.CANCELLED)
+                    Toast.makeText(service.getApplicationContext(),prefix+" error: "+result.getValue(),Toast.LENGTH_LONG).show();
+                else
+                    Toast.makeText(service,prefix+" cancelled",Toast.LENGTH_LONG).show();
+            }
         }
-        else if (result == FileOpsErrorCodes.CRC_FAILED) {
-            Toast.makeText(service.getApplicationContext(),"CRC failed in data, wrong password provided for extraction?",Toast.LENGTH_LONG).show();
-        }
-        else {
-            if (status != ServiceStatus.CANCELLED)
-                Toast.makeText(service.getApplicationContext(),prefix+" error: "+result.getValue(),Toast.LENGTH_LONG).show();
-            else
-                Toast.makeText(service,prefix+" cancelled",Toast.LENGTH_LONG).show();
+        else { // there were errors when extracting from multiple archives, show results dialog
+            if(activity != null) new ExtractResultsDialog(activity, srcArchives, results, params instanceof TestParams).show();
+            else Toast.makeText(activity, "There were extraction/test errors, unable to display them without an active activity", Toast.LENGTH_SHORT).show();
         }
     }
 }

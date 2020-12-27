@@ -690,7 +690,7 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
         - extract some: assumes file browser is currently WITHIN an archive, so vmap MUST exist (throw runtimeexception if it doesn't);
      */
     @Override
-    public FileOpsErrorCodes extractFromArchive(List<BasePathContent> srcArchives,
+    public List<FileOpsErrorCodes> extractFromArchive(List<BasePathContent> srcArchives,
                                                 BasePathContent destDirectory,
                                                 @Nullable String password,
                                                 @Nullable List<String> filenames,
@@ -807,7 +807,7 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
         return entries;
     }
 
-    private FileOpsErrorCodes extract(List<BasePathContent> archives,
+    private List<FileOpsErrorCodes> extract(List<BasePathContent> archives,
                                       String directory,
                                       @Nullable String password,
                                       @Nullable RelativeExtractEntries entries,
@@ -869,7 +869,7 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
             rets.add(ret);
         }
         rs.close();
-        return rets.get(0); // TODO return all list
+        return rets;
     }
 
     // TODO Remove find methods from interface, already implemented RH only
