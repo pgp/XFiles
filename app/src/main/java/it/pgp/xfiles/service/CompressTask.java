@@ -19,9 +19,6 @@ import it.pgp.xfiles.utils.pathcontent.BasePathContent;
 
 public class CompressTask extends RootHelperClientTask {
 
-//    public static final SocketNames compressSocketName = SocketNames.thecompressor;
-//    public static final SocketNames compressSocketName = SocketNames.theroothelper;
-
     // direct input to compressArchive
     public CompressParams params;
 

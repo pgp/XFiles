@@ -23,9 +23,6 @@ import it.pgp.xfiles.utils.pathcontent.BasePathContent;
 
 public class ExtractTask extends RootHelperClientTask {
 
-//    public static final SocketNames extractSocketName = SocketNames.theextractor;
-//    public static final SocketNames extractSocketName = SocketNames.theroothelper;
-
     // direct input to extractArchive
     private List<BasePathContent> srcArchives; // subDir taken from here
     private BasePathContent destDirectory;
@@ -100,17 +97,14 @@ public class ExtractTask extends RootHelperClientTask {
         super.onPostExecute(o);
         MainActivity activity = MainActivity.mainActivity;
         if (allOk) {
-            if (activity == null) return; // activity closed while service active, nothing to refresh
-            BasePathContent cd = activity.getCurrentDirCommander().getCurrentDirectoryPathname();
-            if (cd.equals(currentDir) && !(params instanceof TestParams))
-                activity.browserPagerAdapter.showDirContent(activity.getCurrentDirCommander().refresh(),activity.browserPager.getCurrentItem(),null);
             Toast.makeText(service.getApplicationContext(), prefix+" completed", Toast.LENGTH_LONG).show();
         }
         else if (results.size()==1) {
             if (result == FileOpsErrorCodes.NULL_OR_WRONG_PASSWORD) {
                 Toast.makeText(service.getApplicationContext(),"Empty or wrong password",Toast.LENGTH_LONG).show();
-                if (activity == null) return; // activity closed while service active, nothing to refresh
-                new AskPasswordDialogOnExtract(MainActivity.mainActivity,(ExtractParams)params).show();
+                if (activity != null)
+                    new AskPasswordDialogOnExtract(activity,(ExtractParams)params).show();
+                return;
             }
             else if (result == FileOpsErrorCodes.CRC_FAILED) {
                 Toast.makeText(service.getApplicationContext(),"CRC failed in data, damaged archive?",Toast.LENGTH_LONG).show();
@@ -125,6 +119,13 @@ public class ExtractTask extends RootHelperClientTask {
         else { // there were errors when extracting from multiple archives, show results dialog
             if(activity != null) new ExtractResultsDialog(activity, srcArchives, results, params instanceof TestParams).show();
             else Toast.makeText(activity, "There were extraction/test errors, unable to display them without an active activity", Toast.LENGTH_SHORT).show();
+        }
+
+        // anyway, if we are not testing archives, refresh adapter if we are in the same folder
+        if(activity != null && !(params instanceof TestParams)) {
+            BasePathContent cd = activity.getCurrentDirCommander().getCurrentDirectoryPathname();
+            if (cd.equals(currentDir))
+                activity.browserPagerAdapter.showDirContent(activity.getCurrentDirCommander().refresh(),activity.browserPager.getCurrentItem(),null);
         }
     }
 }
