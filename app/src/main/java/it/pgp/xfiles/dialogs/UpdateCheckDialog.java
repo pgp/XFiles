@@ -236,7 +236,7 @@ public class UpdateCheckDialog extends Dialog {
                     // since the RH process (being root) cannot be terminated till restart
                     // (even if the executable on the filesystem is actually updated)
                     MainActivity.killRHWrapper();
-                    activity.openWithDefaultApp(apkFile);
+                    activity.installApk(apkFile);
                 });
                 AlertDialog alertDialog = bld.create();
                 alertDialog.getWindow().setType(ViewType.OVERLAY_WINDOW_TYPE);
