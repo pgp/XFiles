@@ -3,6 +3,7 @@ package it.pgp.xfiles.dialogs;
 import android.content.Context;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AbsListView;
 import android.widget.Button;
@@ -86,11 +87,13 @@ public class RenameDialog extends ImmersiveModeDialog {
             tv.setVisibility(View.GONE);
             et.setText(tv.getText().toString());
             et.setVisibility(View.VISIBLE);
-            et.setOnKeyListener((v, keyCode, event) -> {
+            et.setOnEditorActionListener((v, actionId, event) -> {
                 // If the event is a key-down event on the "enter" button
-                if ((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
+                if ((event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER) ||
+                        (actionId == EditorInfo.IME_ACTION_DONE)) {
                     // Perform action on key press
                     toggleFastRename(mainActivity,pos,f,false);
+                    v.clearFocus();
                     return true;
                 }
                 return false;
