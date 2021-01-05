@@ -93,7 +93,8 @@ public class RenameDialog extends ImmersiveModeDialog {
                         (actionId == EditorInfo.IME_ACTION_DONE)) {
                     // Perform action on key press
                     toggleFastRename(mainActivity,pos,f,false);
-                    v.clearFocus();
+                    InputMethodManager imm = (InputMethodManager)v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
                     return true;
                 }
                 return false;
