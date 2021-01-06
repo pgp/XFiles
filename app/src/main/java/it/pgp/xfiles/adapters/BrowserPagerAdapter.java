@@ -387,8 +387,8 @@ public class BrowserPagerAdapter extends PagerAdapter {
         togglePaddingToMainBrowserView(position,active);
 
         // reset swipe settings on BrowserViewPager
-        if(!active && MainActivity.mainActivity != null)
-            MainActivity.mainActivity.browserPager.swipeDisabled = false;
+        if(!active)
+            mainActivity.browserPager.swipeDisabled = false;
     }
 
     private final EditText[] quickFindEditTexts = new EditText[ADAPTER_SIZE];
@@ -446,6 +446,6 @@ public class BrowserPagerAdapter extends PagerAdapter {
     // use a method here, instead of inserting intermediate class between AbsListView and (ListView and GridView)
     public void setSelectionOnAbsListView(AbsListView absListView, int targetPos, int viewPagerPos) {
         absListView.setSelection(targetPos);
-        new Handler().postDelayed(()-> highlightListViewItem(targetPos, viewPagerPos),250);
+        mainActivity.handler.postDelayed(()-> highlightListViewItem(targetPos, viewPagerPos),250);
     }
 }

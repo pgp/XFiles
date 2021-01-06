@@ -102,13 +102,11 @@ import it.pgp.xfiles.roothelperclient.RootHandler;
 import it.pgp.xfiles.roothelperclient.RootHelperClientUsingPathContent;
 import it.pgp.xfiles.service.BaseBackgroundService;
 import it.pgp.xfiles.service.CopyMoveService;
-import it.pgp.xfiles.service.ExtractService;
 import it.pgp.xfiles.service.NonInteractiveSftpService;
 import it.pgp.xfiles.service.NonInteractiveSmbService;
 import it.pgp.xfiles.service.NonInteractiveXFilesRemoteTransferService;
 import it.pgp.xfiles.service.TestService;
 import it.pgp.xfiles.service.params.CopyMoveParams;
-import it.pgp.xfiles.service.params.ExtractParams;
 import it.pgp.xfiles.service.params.TestParams;
 import it.pgp.xfiles.service.visualization.ProgressIndicator;
 import it.pgp.xfiles.sftpclient.InteractiveHostKeyVerifier;
@@ -141,6 +139,8 @@ public class MainActivity extends EffectActivity {
 
     public static Context mainActivityContext;
     public static MainActivity mainActivity;
+
+    public final Handler handler = new Handler();
 
     public BrowserViewPager browserPager;
 
@@ -1200,7 +1200,7 @@ public class MainActivity extends EffectActivity {
                 targetFilenameToHighlight,
                 () -> toggleGoDirOpsIndeterminateProgress(true)));
         if(ff == null) return;
-        new Handler().postDelayed(() -> {
+        handler.postDelayed(() -> {
             if (!ff.isDone())
                 toggleGoDirOpsIndeterminateProgress(false);
         },250);
@@ -1653,7 +1653,7 @@ public class MainActivity extends EffectActivity {
         this.doubleBackToExitPressedOnce = true;
         Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show();
 
-        new Handler().postDelayed(() -> doubleBackToExitPressedOnce=false, 2000);
+        handler.postDelayed(() -> doubleBackToExitPressedOnce=false, 2000);
     }
 
     boolean isTablet;
