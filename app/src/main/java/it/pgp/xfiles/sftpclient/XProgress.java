@@ -7,6 +7,7 @@ import java.io.IOException;
 
 import it.pgp.xfiles.exceptions.InterruptedTransferAsIOException;
 import it.pgp.xfiles.service.visualization.MovingRibbonTwoBars;
+import it.pgp.xfiles.utils.Pair;
 
 /**
  * Adapter class preserving external progress state to be used with SSHJ progress listeners
@@ -43,13 +44,13 @@ public class XProgress extends MovingRibbonTwoBars {
     protected void publish() {
         if(isDetailedProgress)
             setProgress(
-                    (int)Math.floor((completedFilesSizeSoFar + currentSize)*100/totalFilesSize),
-                    (int)Math.floor(currentSize*100/totalSize)
+                    new Pair<>((int)(completedFilesSizeSoFar + currentSize),(int)totalFilesSize),
+                    new Pair<>((int)currentSize,(int)totalSize)
             );
         else
             setProgress(
-                    (int)Math.floor(currentFiles*100/totalFiles),
-                    (int)Math.floor(currentSize*100/totalSize)
+                    new Pair<>((int)currentFiles,(int)totalFiles),
+                    new Pair<>((int)currentSize,(int)totalSize)
             );
     }
 

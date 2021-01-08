@@ -14,6 +14,8 @@ import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
+import it.pgp.xfiles.utils.Pair;
+
 public class MovingRibbon extends ProgressIndicator implements View.OnTouchListener{
 
     public ProgressBar pb;
@@ -120,8 +122,8 @@ public class MovingRibbon extends ProgressIndicator implements View.OnTouchListe
     }
 
     @Override
-    public void setProgress(Integer... values) {
-        pb.setProgress(values[0]);
+    public void setProgress(Pair<Integer,Integer>... values) {
+        pb.setProgress((int) Math.round(values[0].i * 100.0 / values[0].j));
     }
 
     @Override

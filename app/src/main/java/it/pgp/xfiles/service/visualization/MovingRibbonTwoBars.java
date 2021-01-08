@@ -7,8 +7,10 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import it.pgp.xfiles.R;
+import it.pgp.xfiles.utils.Pair;
 
 import static android.content.Context.LAYOUT_INFLATER_SERVICE;
 
@@ -21,6 +23,10 @@ public class MovingRibbonTwoBars extends ProgressIndicator implements View.OnTou
 
     public ProgressBar pbOuter;
     public ProgressBar pbInner; // outer progress: current number of files, inner: current size
+    public TextView pbSpeed;
+
+    public long lastProgressTime = 0;
+    public Pair<Integer,Integer> lastOuterProgress;
 
     private float offsetX;
     private float offsetY;
@@ -36,6 +42,8 @@ public class MovingRibbonTwoBars extends ProgressIndicator implements View.OnTou
 
         pbOuter = oView.findViewById(R.id.pbOuter);
         pbInner = oView.findViewById(R.id.pbInner);
+        pbSpeed = oView.findViewById(R.id.pbSpeed);
+        lastProgressTime = System.currentTimeMillis();
 
         pbOuter.setMax(100);
         pbOuter.setIndeterminate(false);
@@ -110,8 +118,25 @@ public class MovingRibbonTwoBars extends ProgressIndicator implements View.OnTou
     }
 
     @Override
-    public void setProgress(Integer... values) {
-        pbOuter.setProgress(values[0]);
-        pbInner.setProgress(values[1]);
+    public void setProgress(Pair<Integer,Integer>... values) {
+        pbOuter.setProgress((int) Math.round(values[0].i * 100.0 / values[0].j));
+        pbInner.setProgress((int) Math.round(values[1].i * 100.0 / values[1].j));
+        if(lastOuterProgress == null) {
+            lastProgressTime = System.currentTimeMillis();
+            lastOuterProgress = values[0];
+            pbSpeed.setText("0 Mbps");
+        }
+        else {
+            long dt = lastProgressTime;
+            lastProgressTime = System.currentTimeMillis();
+            dt = lastProgressTime - dt;
+
+            long ds = lastOuterProgress.i;
+            lastOuterProgress = values[0];
+            ds = lastOuterProgress.i - ds;
+
+            double speedMbps = ds/(dt*1000.0);
+            pbSpeed.setText(String.format("%.2f Mbps",speedMbps));
+        }
     }
 }

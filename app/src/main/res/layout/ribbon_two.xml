@@ -17,4 +17,12 @@
         android:layout_width="match_parent"
         android:layout_height="0dp" />
 
+    <TextView
+        android:background="@color/colorPrimary"
+        android:textColor="@color/green"
+        android:id="@+id/pbSpeed"
+        android:layout_weight="1"
+        android:layout_width="match_parent"
+        android:layout_height="0dp" />
+
 </LinearLayout>

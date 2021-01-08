@@ -15,8 +15,9 @@ import it.pgp.xfiles.enums.FileOpsErrorCodes;
 import it.pgp.xfiles.enums.ForegroundServiceType;
 import it.pgp.xfiles.enums.ServiceStatus;
 import it.pgp.xfiles.service.visualization.ProgressIndicator;
+import it.pgp.xfiles.utils.Pair;
 
-public abstract class BaseBackgroundTask extends AsyncTask<Object,Integer,Object> {
+public abstract class BaseBackgroundTask extends AsyncTask<Object,Pair<Integer,Integer>,Object> {
 	
 	protected NotificationCompat.Builder builder;
     // for notifying progress on foreground service progress bar
@@ -87,10 +88,10 @@ public abstract class BaseBackgroundTask extends AsyncTask<Object,Integer,Object
     protected long lastProgressUpdate = 0;
 
     @Override
-    protected void onProgressUpdate(Integer... values) {
+    protected void onProgressUpdate(Pair<Integer,Integer>... values) {
         // Update progress
         mr.setProgress(values);
-        builder.setProgress(100, values[0], false);
+        builder.setProgress(100, (int) Math.round(values[0].i * 100.0 / values[0].j), false);
         long current = System.currentTimeMillis();
         if(current - lastProgressUpdate > 500) { // half a second
             nm.notify(service.getForegroundServiceNotificationId(),
@@ -129,7 +130,7 @@ public abstract class BaseBackgroundTask extends AsyncTask<Object,Integer,Object
     @Override
     protected abstract Object doInBackground(Object[] params);
 
-    public void publishProgressWrapper(Integer... values) {
+    public void publishProgressWrapper(Pair<Integer,Integer>... values) {
         publishProgress(values);
     }
 }

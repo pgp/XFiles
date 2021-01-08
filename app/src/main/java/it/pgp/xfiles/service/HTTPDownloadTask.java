@@ -16,6 +16,7 @@ import it.pgp.xfiles.enums.ServiceStatus;
 import it.pgp.xfiles.service.params.DownloadParams;
 import it.pgp.xfiles.service.visualization.MovingRibbon;
 import it.pgp.xfiles.utils.Misc;
+import it.pgp.xfiles.utils.Pair;
 import it.pgp.xfiles.utils.pathcontent.BasePathContent;
 
 /**
@@ -50,10 +51,10 @@ public class HTTPDownloadTask extends RootHelperClientTask {
     }
 
     @Override
-    protected void onProgressUpdate(Integer... values) {
+    protected void onProgressUpdate(Pair<Integer,Integer>... values) {
         ((MovingRibbon)mr).pb.setIndeterminate(false);
         mr.setProgress(values);
-        builder.setProgress(100, values[0], false);
+        builder.setProgress(100, (int) Math.round(values[0].i * 100.0 / values[0].j), false);
         nm.notify(service.getForegroundServiceNotificationId(),
                 builder.build());
         super.onProgressUpdate(values);

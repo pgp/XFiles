@@ -76,6 +76,7 @@ import it.pgp.xfiles.utils.ContentProviderUtils;
 import it.pgp.xfiles.utils.FileOperationHelperUsingPathContent;
 import it.pgp.xfiles.utils.GenericMRU;
 import it.pgp.xfiles.utils.Misc;
+import it.pgp.xfiles.utils.Pair;
 import it.pgp.xfiles.utils.ProgressConflictHandler;
 import it.pgp.xfiles.utils.StreamsPair;
 import it.pgp.xfiles.utils.dircontent.ArchiveSubDirWithContent;
@@ -478,7 +479,7 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
             last_progress = progress;
 //            builder.setProgress((int) total, (int) progress,false);
 //            notifyManager.notify(NOTIF_ID, builder.build());
-            task.publishProgressWrapper((int)Math.round(progress*100.0/total));
+            task.publishProgressWrapper(new Pair<>((int)progress,(int)total));
 
 //            Log.d("setCompleted ","publishProgressWrapper progress:\t"+progress+"\ttotal: "+total);
 //            Log.d("setCompleted ","publishProgressWrapper round:\t"+Math.round(progress*100.0/total));
@@ -524,7 +525,7 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
             else {
                 if (progress - last_progress > 1000000) {
                     last_progress = progress;
-                    task.publishProgressWrapper((int)Math.round(progress*100.0/total));
+                    task.publishProgressWrapper(new Pair<>((int)progress,(int)total));
                 }
             }
         }
@@ -850,12 +851,13 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
                         break;
                     }
                     last_progress = progress;
-                    double inner = Math.round(progress*100.0/total);
+                    Pair<Integer, Integer> inner =  new Pair<>((int)progress, (int)total);
                     if(multiExtract) {
-                        int outer = (int)Math.round((i*100.0 + inner)/nArchives);
-                        task.publishProgressWrapper(outer, (int) inner);
+//                        int outer = (int)Math.round((i*100.0 + inner)/nArchives);
+//                        task.publishProgressWrapper(outer,inner);
+                        task.publishProgressWrapper(inner); // TODO workaround incompatible with new progress model, show only inner for now
                     }
-                    else task.publishProgressWrapper((int) inner);
+                    else task.publishProgressWrapper(inner);
                 }
 
                 // receive 1-byte final OK or error response
@@ -1397,7 +1399,7 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
                 long progress = Misc.receiveTotalOrProgress(rs.i);
                 if (progress == EOF_ind) break;
                 if (downloadSize > 0)
-                    task.publishProgressWrapper((int) (progress * 100 / downloadSize));
+                    task.publishProgressWrapper(new Pair<>((int)progress,(int)downloadSize));
             }
             Log.d("RHHttpsClient","Download completed");
         }
@@ -1470,7 +1472,7 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
             if (fileLength > 0) {
                 if (total - latest > 100000) {
                     latest = total;
-                    task.publishProgressWrapper((int) (total * 100 / fileLength));
+                    task.publishProgressWrapper(new Pair<>((int)total,(int)fileLength));
                 }
             }
             rs.o.write(data,0,count);

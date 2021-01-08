@@ -24,6 +24,7 @@ import it.pgp.xfiles.service.BaseBackgroundTask;
 import it.pgp.xfiles.service.NonInteractiveXFilesRemoteTransferTask;
 import it.pgp.xfiles.utils.ContentProviderUtils;
 import it.pgp.xfiles.utils.Misc;
+import it.pgp.xfiles.utils.Pair;
 import it.pgp.xfiles.utils.ProgressConflictHandler;
 import it.pgp.xfiles.utils.pathcontent.BasePathContent;
 import it.pgp.xfiles.utils.pathcontent.XFilesRemotePathContent;
@@ -134,8 +135,8 @@ public class RemoteClientManager {
         Log.d("XREProgress","It's progress: "+progress);
         if (this.progressTask != null) {
             this.progressTask.publishProgressWrapper(
-                    (int) Math.round((totalSizeSoFar+progress) * 100.0 / totalSize),
-                    (int) Math.round(progress * 100.0 / currentFileSize)
+                    new Pair<>((int) (totalSizeSoFar + progress), (int) totalSize),
+                    new Pair<>((int)progress,(int)currentFileSize)
             );
         }
     }
@@ -276,8 +277,8 @@ public class RemoteClientManager {
                         currentFileCount++;
                         totalSizeSoFar += currentFileSize;
                         this.progressTask.publishProgressWrapper(
-                                (int)Math.round(totalSizeSoFar*100.0/totalSize),
-                                0
+                                new Pair<>((int)totalSizeSoFar,(int)totalSize),
+                                new Pair<>(0,1)
                         );
                     }
                     else if (tmp == EOFs_ind) {
@@ -296,8 +297,8 @@ public class RemoteClientManager {
                             hasReceivedSizeForCurrentFile = true;
                             if (this.progressTask != null) {
                                 this.progressTask.publishProgressWrapper(
-                                        (int) Math.round(totalSizeSoFar * 100.0 / totalSize),
-                                        0
+                                        new Pair<>((int)totalSizeSoFar,(int)totalSize),
+                                        new Pair<>(0,1)
                                 );
                             }
                         }

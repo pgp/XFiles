@@ -8,6 +8,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import it.pgp.xfiles.MainActivity;
 import it.pgp.xfiles.enums.ForegroundServiceType;
+import it.pgp.xfiles.utils.Pair;
 
 /**
  * Created by pgp on 21/08/17
@@ -25,7 +26,7 @@ public abstract class ProgressIndicator {
         busy.set(null);
     }
 
-    public abstract void setProgress(Integer... values);
+    public abstract void setProgress(Pair<Integer,Integer>... values);
 
     public void destroy() {
         try{ wm.removeView(oView); } catch(Throwable ignored) {}

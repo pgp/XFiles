@@ -86,7 +86,7 @@ public class XFilesUtilsUsingPathContent implements FileOperationHelperUsingPath
 
             if(task != null) {
                 currentFilesForProgress++;
-                task.publishProgressWrapper((int)Math.round(currentFilesForProgress*100.0/totalFilesForProgress));
+                task.publishProgressWrapper(new Pair<>((int)currentFilesForProgress,(int)totalFilesForProgress));
             }
         }
     }
