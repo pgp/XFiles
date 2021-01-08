@@ -26,7 +26,7 @@ public class MovingRibbonTwoBars extends ProgressIndicator implements View.OnTou
     public TextView pbSpeed;
 
     public long lastProgressTime = 0;
-    public Pair<Integer,Integer> lastOuterProgress;
+    public Pair<Long,Long> lastOuterProgress;
 
     private float offsetX;
     private float offsetY;
@@ -118,7 +118,7 @@ public class MovingRibbonTwoBars extends ProgressIndicator implements View.OnTou
     }
 
     @Override
-    public void setProgress(Pair<Integer,Integer>... values) {
+    public void setProgress(Pair<Long,Long>... values) {
         pbOuter.setProgress((int) Math.round(values[0].i * 100.0 / values[0].j));
         pbInner.setProgress((int) Math.round(values[1].i * 100.0 / values[1].j));
         if(lastOuterProgress == null) {

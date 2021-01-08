@@ -17,7 +17,7 @@ import it.pgp.xfiles.enums.ServiceStatus;
 import it.pgp.xfiles.service.visualization.ProgressIndicator;
 import it.pgp.xfiles.utils.Pair;
 
-public abstract class BaseBackgroundTask extends AsyncTask<Object,Pair<Integer,Integer>,Object> {
+public abstract class BaseBackgroundTask extends AsyncTask<Object,Pair<Long,Long>,Object> {
 	
 	protected NotificationCompat.Builder builder;
     // for notifying progress on foreground service progress bar
@@ -88,7 +88,7 @@ public abstract class BaseBackgroundTask extends AsyncTask<Object,Pair<Integer,I
     protected long lastProgressUpdate = 0;
 
     @Override
-    protected void onProgressUpdate(Pair<Integer,Integer>... values) {
+    protected void onProgressUpdate(Pair<Long,Long>... values) {
         // Update progress
         mr.setProgress(values);
         builder.setProgress(100, (int) Math.round(values[0].i * 100.0 / values[0].j), false);
@@ -130,7 +130,7 @@ public abstract class BaseBackgroundTask extends AsyncTask<Object,Pair<Integer,I
     @Override
     protected abstract Object doInBackground(Object[] params);
 
-    public void publishProgressWrapper(Pair<Integer,Integer>... values) {
+    public void publishProgressWrapper(Pair<Long,Long>... values) {
         publishProgress(values);
     }
 }

@@ -135,8 +135,8 @@ public class RemoteClientManager {
         Log.d("XREProgress","It's progress: "+progress);
         if (this.progressTask != null) {
             this.progressTask.publishProgressWrapper(
-                    new Pair<>((int) (totalSizeSoFar + progress), (int) totalSize),
-                    new Pair<>((int)progress,(int)currentFileSize)
+                    new Pair<>(totalSizeSoFar + progress, totalSize),
+                    new Pair<>(progress, currentFileSize)
             );
         }
     }
@@ -277,8 +277,8 @@ public class RemoteClientManager {
                         currentFileCount++;
                         totalSizeSoFar += currentFileSize;
                         this.progressTask.publishProgressWrapper(
-                                new Pair<>((int)totalSizeSoFar,(int)totalSize),
-                                new Pair<>(0,1)
+                                new Pair<>(totalSizeSoFar, totalSize),
+                                new Pair<>(0L,1L)
                         );
                     }
                     else if (tmp == EOFs_ind) {
@@ -297,8 +297,8 @@ public class RemoteClientManager {
                             hasReceivedSizeForCurrentFile = true;
                             if (this.progressTask != null) {
                                 this.progressTask.publishProgressWrapper(
-                                        new Pair<>((int)totalSizeSoFar,(int)totalSize),
-                                        new Pair<>(0,1)
+                                        new Pair<>(totalSizeSoFar, totalSize),
+                                        new Pair<>(0L,1L)
                                 );
                             }
                         }

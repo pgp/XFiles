@@ -25,7 +25,7 @@ public class MovingRibbon extends ProgressIndicator implements View.OnTouchListe
     public TextView pbSpeed;
 
     public long lastProgressTime;
-    public Pair<Integer,Integer> lastProgress;
+    public Pair<Long,Long> lastProgress;
 
     private float offsetX;
     private float offsetY;
@@ -111,7 +111,7 @@ public class MovingRibbon extends ProgressIndicator implements View.OnTouchListe
     }
 
     @Override
-    public void setProgress(Pair<Integer,Integer>... values) {
+    public void setProgress(Pair<Long,Long>... values) {
         pb.setProgress((int) Math.round(values[0].i * 100.0 / values[0].j));
         if(lastProgress == null) {
             lastProgressTime = System.currentTimeMillis();

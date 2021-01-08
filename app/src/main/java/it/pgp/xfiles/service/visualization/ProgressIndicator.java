@@ -26,7 +26,7 @@ public abstract class ProgressIndicator {
         busy.set(null);
     }
 
-    public abstract void setProgress(Pair<Integer,Integer>... values);
+    public abstract void setProgress(Pair<Long,Long>... values);
 
     public void destroy() {
         try{ wm.removeView(oView); } catch(Throwable ignored) {}

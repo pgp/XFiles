@@ -44,13 +44,13 @@ public class XProgress extends MovingRibbonTwoBars {
     protected void publish() {
         if(isDetailedProgress)
             setProgress(
-                    new Pair<>((int)(completedFilesSizeSoFar + currentSize),(int)totalFilesSize),
-                    new Pair<>((int)currentSize,(int)totalSize)
+                    new Pair<>(completedFilesSizeSoFar + currentSize, totalFilesSize),
+                    new Pair<>(currentSize, totalSize)
             );
         else
             setProgress(
-                    new Pair<>((int)currentFiles,(int)totalFiles),
-                    new Pair<>((int)currentSize,(int)totalSize)
+                    new Pair<>(currentFiles, totalFiles),
+                    new Pair<>(currentSize, totalSize)
             );
     }
 

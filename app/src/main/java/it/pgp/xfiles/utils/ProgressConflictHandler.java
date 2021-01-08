@@ -48,8 +48,8 @@ public class ProgressConflictHandler {
     private static void publishAfterSizeReceived(ProgressConflictHandler handler, long n) throws IOException {
         handler.currentFileSize = n;
         handler.task.publishProgressWrapper(
-                new Pair<>((int)handler.currentFileCount,(int)handler.totalFileCount),
-                new Pair<>(0,1)
+                new Pair<>(handler.currentFileCount,handler.totalFileCount),
+                new Pair<>(0L,1L)
         );
     }
 
@@ -67,8 +67,8 @@ public class ProgressConflictHandler {
 
         // NEW, uses total size info
         handler.task.publishProgressWrapper(
-                new Pair<>((int)handler.totalSizeSoFar,(int)handler.totalSize),
-                new Pair<>(0,1)
+                new Pair<>(handler.totalSizeSoFar,handler.totalSize),
+                new Pair<>(0L,1L)
         );
 
         commonTransition(handler);
@@ -134,8 +134,8 @@ public class ProgressConflictHandler {
 
         // END
         handler.task.publishProgressWrapper(
-                new Pair<>((int)handler.totalSizeSoFar,(int)handler.totalSize),
-                new Pair<>(1,0)
+                new Pair<>(handler.totalSizeSoFar,handler.totalSize),
+                new Pair<>(0L,1L)
         );
 
         commonTransition(handler);
@@ -185,8 +185,8 @@ public class ProgressConflictHandler {
 //            );
             // NEW, uses total size info
             handler.task.publishProgressWrapper(
-                    new Pair<>((int)(handler.totalSizeSoFar+n),(int)handler.totalSize),
-                    new Pair<>((int)n,(int)handler.currentFileSize)
+                    new Pair<>((handler.totalSizeSoFar+n),handler.totalSize),
+                    new Pair<>(n,handler.currentFileSize)
             );
 
             handler.currentStatus = Status.PROGRESS;

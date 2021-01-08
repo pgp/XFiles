@@ -479,7 +479,7 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
             last_progress = progress;
 //            builder.setProgress((int) total, (int) progress,false);
 //            notifyManager.notify(NOTIF_ID, builder.build());
-            task.publishProgressWrapper(new Pair<>((int)progress,(int)total));
+            task.publishProgressWrapper(new Pair<>(progress, total));
 
 //            Log.d("setCompleted ","publishProgressWrapper progress:\t"+progress+"\ttotal: "+total);
 //            Log.d("setCompleted ","publishProgressWrapper round:\t"+Math.round(progress*100.0/total));
@@ -525,7 +525,7 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
             else {
                 if (progress - last_progress > 1000000) {
                     last_progress = progress;
-                    task.publishProgressWrapper(new Pair<>((int)progress,(int)total));
+                    task.publishProgressWrapper(new Pair<>(progress, total));
                 }
             }
         }
@@ -851,7 +851,7 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
                         break;
                     }
                     last_progress = progress;
-                    Pair<Integer, Integer> inner =  new Pair<>((int)progress, (int)total);
+                    Pair<Long, Long> inner =  new Pair<>(progress, total);
                     if(multiExtract) {
 //                        int outer = (int)Math.round((i*100.0 + inner)/nArchives);
 //                        task.publishProgressWrapper(outer,inner);
@@ -1399,7 +1399,7 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
                 long progress = Misc.receiveTotalOrProgress(rs.i);
                 if (progress == EOF_ind) break;
                 if (downloadSize > 0)
-                    task.publishProgressWrapper(new Pair<>((int)progress,(int)downloadSize));
+                    task.publishProgressWrapper(new Pair<>(progress, downloadSize));
             }
             Log.d("RHHttpsClient","Download completed");
         }
@@ -1472,7 +1472,7 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
             if (fileLength > 0) {
                 if (total - latest > 100000) {
                     latest = total;
-                    task.publishProgressWrapper(new Pair<>((int)total,(int)fileLength));
+                    task.publishProgressWrapper(new Pair<>(total, fileLength));
                 }
             }
             rs.o.write(data,0,count);
