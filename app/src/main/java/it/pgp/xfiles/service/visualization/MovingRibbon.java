@@ -6,19 +6,26 @@ package it.pgp.xfiles.service.visualization;
  */
 
 import android.app.Service;
-import android.graphics.PixelFormat;
-import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
+import it.pgp.xfiles.R;
 import it.pgp.xfiles.utils.Pair;
+
+import static android.content.Context.LAYOUT_INFLATER_SERVICE;
 
 public class MovingRibbon extends ProgressIndicator implements View.OnTouchListener{
 
     public ProgressBar pb;
+    public TextView pbSpeed;
+
+    public long lastProgressTime;
+    public Pair<Integer,Integer> lastProgress;
 
     private float offsetX;
     private float offsetY;
@@ -28,44 +35,26 @@ public class MovingRibbon extends ProgressIndicator implements View.OnTouchListe
 
     public MovingRibbon(final Service service, final WindowManager wm) {
         this.wm = wm;
-        oView = new LinearLayout(service);
-        oView.setBackgroundColor(0x88174a6e); // Semi-transparent dark blue
-        WindowManager.LayoutParams params = new WindowManager.LayoutParams(
-                WindowManager.LayoutParams.MATCH_PARENT,
-                100,
-                ViewType.OVERLAY_WINDOW_TYPE,
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL,
-                PixelFormat.TRANSLUCENT);
-        params.gravity = Gravity.START | Gravity.TOP;
-        params.x = 0;
-        params.y = 0;
+        LayoutInflater inflater = (LayoutInflater) service.getSystemService(LAYOUT_INFLATER_SERVICE);
+        oView = (LinearLayout) inflater.inflate(R.layout.ribbon_one, null);
 
-        pb = new ProgressBar(service,null,android.R.attr.progressBarStyleHorizontal);
+        pb = oView.findViewById(R.id.pbInner);
+        pbSpeed = oView.findViewById(R.id.pbSpeed);
+        lastProgressTime = System.currentTimeMillis();
+
         pb.setMax(100);
         pb.setIndeterminate(false);
-        pb.setLayoutParams(params);
-        oView.addView(pb);
+        pb.setBackgroundColor(0x8800ff00);
 
         oView.setOnTouchListener(this);
 
         // wm.addView(oView, params);
-        addViewToOverlay(oView,params);
+        addViewToOverlay(oView,ViewType.CONTAINER.getParams());
 
         topLeftView = new View(service);
-        WindowManager.LayoutParams topLeftParams = new WindowManager.LayoutParams(
-                WindowManager.LayoutParams.WRAP_CONTENT,
-                WindowManager.LayoutParams.WRAP_CONTENT,
-                ViewType.OVERLAY_WINDOW_TYPE,
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL,
-                PixelFormat.TRANSLUCENT);
-        topLeftParams.gravity = Gravity.START | Gravity.TOP;
-        topLeftParams.x = 0;
-        topLeftParams.y = 0;
-        topLeftParams.width = 0;
-        topLeftParams.height = 0;
 
 //        wm.addView(topLeftView,topLeftParams);
-        addViewToOverlay(topLeftView,topLeftParams);
+        addViewToOverlay(topLeftView,ViewType.ANCHOR.getParams());
     }
 
     @Override
@@ -124,6 +113,23 @@ public class MovingRibbon extends ProgressIndicator implements View.OnTouchListe
     @Override
     public void setProgress(Pair<Integer,Integer>... values) {
         pb.setProgress((int) Math.round(values[0].i * 100.0 / values[0].j));
+        if(lastProgress == null) {
+            lastProgressTime = System.currentTimeMillis();
+            lastProgress = values[0];
+            pbSpeed.setText("0 Mbps");
+        }
+        else {
+            long dt = lastProgressTime;
+            lastProgressTime = System.currentTimeMillis();
+            dt = lastProgressTime - dt;
+
+            long ds = lastProgress.i;
+            lastProgress = values[0];
+            ds = lastProgress.i - ds;
+
+            double speedMbps = ds/(dt*1000.0);
+            pbSpeed.setText(String.format("%.2f Mbps",speedMbps));
+        }
     }
 
     @Override
