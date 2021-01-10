@@ -53,10 +53,6 @@ public class HTTPDownloadTask extends RootHelperClientTask {
     @Override
     protected void onProgressUpdate(Pair<Long,Long>... values) {
         ((MovingRibbon)mr).pb.setIndeterminate(false);
-        mr.setProgress(values);
-        builder.setProgress(100, (int) Math.round(values[0].i * 100.0 / values[0].j), false);
-        nm.notify(service.getForegroundServiceNotificationId(),
-                builder.build());
         super.onProgressUpdate(values);
     }
 

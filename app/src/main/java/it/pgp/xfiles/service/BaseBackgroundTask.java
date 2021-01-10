@@ -85,18 +85,24 @@ public abstract class BaseBackgroundTask extends AsyncTask<Object,Pair<Long,Long
      * https://stackoverflow.com/questions/6390016/android-notification-progressbar-freezing/28336857
      */
 
-    protected long lastProgressUpdate = 0;
+    protected long lastProgressUpdate = 0; // for overlay ribbon (fine)
+    protected long lastProgressUpdateFgNotif = 0; // for foreground notification (coarse)
+
+    public static final int OVERLAY_UPDATE_INTERVAL = 150;
+    public static final int FGNOTIF_UPDATE_INTERVAL = 500;
 
     @Override
     protected void onProgressUpdate(Pair<Long,Long>... values) {
         // Update progress
-        mr.setProgress(values);
-        builder.setProgress(100, (int) Math.round(values[0].i * 100.0 / values[0].j), false);
         long current = System.currentTimeMillis();
-        if(current - lastProgressUpdate > 500) { // half a second
-            nm.notify(service.getForegroundServiceNotificationId(),
-                    builder.build());
+        if(current - lastProgressUpdate > OVERLAY_UPDATE_INTERVAL) { // milliseconds
+            mr.setProgress(values);
             lastProgressUpdate = current;
+        }
+        if(current - lastProgressUpdateFgNotif > FGNOTIF_UPDATE_INTERVAL) {
+            builder.setProgress(100, (int) Math.round(values[0].i * 100.0 / values[0].j), false);
+            nm.notify(service.getForegroundServiceNotificationId(), builder.build());
+            lastProgressUpdateFgNotif = current;
         }
 
         super.onProgressUpdate(values);
