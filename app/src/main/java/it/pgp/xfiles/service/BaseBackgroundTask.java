@@ -88,7 +88,7 @@ public abstract class BaseBackgroundTask extends AsyncTask<Object,Pair<Long,Long
     protected long lastProgressUpdate = 0; // for overlay ribbon (fine)
     protected long lastProgressUpdateFgNotif = 0; // for foreground notification (coarse)
 
-    public static final int OVERLAY_UPDATE_INTERVAL = 150;
+    public static final int OVERLAY_UPDATE_INTERVAL = 25;
     public static final int FGNOTIF_UPDATE_INTERVAL = 500;
 
     @Override
