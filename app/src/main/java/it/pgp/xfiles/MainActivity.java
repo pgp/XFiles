@@ -27,6 +27,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.ViewPager;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.ContextMenu;
 import android.view.ContextThemeWrapper;
 import android.view.Display;
@@ -39,6 +40,7 @@ import android.view.Window;
 import android.webkit.MimeTypeMap;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -46,6 +48,7 @@ import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import net.alhazmy13.mediagallery.library.activity.MediaGallery;
@@ -344,23 +347,41 @@ public class MainActivity extends EffectActivity {
         AlertDialog.Builder bld = new AlertDialog.Builder(MainActivity.this);
         int size = selection.size();
         String name = size==1?selection.get(0).getName():""+size+" items";
-        bld.setTitle("Confirm delete "+name);
+        bld.setTitle("Delete items");
         bld.setIcon(R.drawable.xf_recycle_bin);
-        bld.setNegativeButton("No", BaseBackgroundService.emptyListener);
-        bld.setPositiveButton("Yes", (dialog, which) -> {
-            try {
-                int posToRestore = browserPagerAdapter.mainBrowserViews[browserPager.getCurrentItem()].getFirstVisiblePosition();
+        bld.setNegativeButton(android.R.string.cancel, null);
+        bld.setPositiveButton(android.R.string.ok, null);
 
-                mainActivity.getFileOpsHelper(selection.get(0).providerType).deleteFilesOrDirectories(selection);
-                Toast.makeText(MainActivity.this,((size==1)?name:(size+" items"))+" deleted",Toast.LENGTH_SHORT).show();
-                browserPagerAdapter.showDirContent(getCurrentDirCommander().refresh(),browserPager.getCurrentItem(),posToRestore);
-            } catch (IOException e) {
-                e.printStackTrace();
-                Toast.makeText(MainActivity.this,"Unable to delete some items",Toast.LENGTH_SHORT).show();
-            }
-        });
+        TextView a = new TextView(this);
+        a.setText("Confirm delete "+name);
+        a.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
+        bld.setView(a);
+
         AlertDialog alertDialog = bld.create();
         alertDialog.show();
+
+        Button ok = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
+        Button no = alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+        ok.setOnClickListener(view -> {
+            int posToRestore = browserPagerAdapter.mainBrowserViews[browserPager.getCurrentItem()].getFirstVisiblePosition();
+            a.setText("Deleting...");
+            ok.setEnabled(false);
+            no.setEnabled(false);
+            new Thread(()->{
+                try {
+                    mainActivity.getFileOpsHelper(selection.get(0).providerType).deleteFilesOrDirectories(selection);
+                    runOnUiThread(()->{
+                        Toast.makeText(MainActivity.this,((size==1)?name:(size+" items"))+" deleted", Toast.LENGTH_SHORT).show();
+                        browserPagerAdapter.showDirContent(getCurrentDirCommander().refresh(),browserPager.getCurrentItem(),posToRestore);
+                    });
+                }
+                catch (IOException e) {
+                    e.printStackTrace();
+                    showToastOnUI("Unable to delete some items");
+                }
+                alertDialog.dismiss();
+            }).start();
+        });
     }
 
     private byte[] reverseByteArray(byte[] b) {
