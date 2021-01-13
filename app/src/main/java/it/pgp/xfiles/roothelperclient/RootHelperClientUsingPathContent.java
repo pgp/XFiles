@@ -333,9 +333,6 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
                     throw new RuntimeException("Unexpected response code from roothelper server: "+(int)responseByte);
             }
 
-            // successful return, change current helper
-            MainActivity.currentHelper = this;
-
             if (dirPath instanceof LocalPathContent)
                 return new LocalDirWithContent(dirPath.dir,dirContent);
             else

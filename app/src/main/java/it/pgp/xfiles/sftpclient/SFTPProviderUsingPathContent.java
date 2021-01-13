@@ -780,8 +780,6 @@ public class SFTPProviderUsingPathContent implements FileOperationHelperUsingPat
                         isLink));
             }
 
-            // successful return, change current helper
-            MainActivity.currentHelper = MainActivity.sftpProvider; // or = this
             return new SftpDirWithContent(g.authData,directory.dir,l);
         }
         catch (IOException e) {

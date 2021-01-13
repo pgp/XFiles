@@ -333,8 +333,6 @@ public class SmbProviderUsingPathContent implements FileOperationHelperUsingPath
                 );
             }
 
-            // successful return, change current helper
-            MainActivity.currentHelper = MainActivity.smbProvider; // or = this
             return new SmbDirWithContent(g.smbAuthData,directory.dir,l);
         }
         catch (Exception e) {

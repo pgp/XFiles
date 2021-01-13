@@ -12,7 +12,6 @@ import android.view.ContextMenu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
-import android.widget.AbsListView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.GridView;
@@ -42,6 +41,7 @@ import it.pgp.xfiles.MainActivity;
 import it.pgp.xfiles.R;
 import it.pgp.xfiles.adapters.HashAlgorithmsAdapter;
 import it.pgp.xfiles.roothelperclient.HashRequestCodes;
+import it.pgp.xfiles.utils.FileOperationHelperUsingPathContent;
 import it.pgp.xfiles.utils.FileSaveFragment;
 import it.pgp.xfiles.utils.Misc;
 import it.pgp.xfiles.utils.pathcontent.BasePathContent;
@@ -261,7 +261,7 @@ public class ChecksumActivity extends EffectActivity implements FileSaveFragment
             standardResultsLayout.removeAllViews();
         }
 
-        private byte[] computeHashForLocalOrXREPaths(BasePathContent path, HashRequestCodes s) throws IOException {
+        private byte[] computeHashForLocalOrXREPaths(BasePathContent path, HashRequestCodes s, FileOperationHelperUsingPathContent helper) throws IOException {
             switch (path.providerType) {
                 case LOCAL:
                 case XFILES_REMOTE:
@@ -270,7 +270,7 @@ public class ChecksumActivity extends EffectActivity implements FileSaveFragment
                     dirHashOpts.set(1,dirHashIgnoreThumbsFiles.isChecked());
                     dirHashOpts.set(2,dirHashIgnoreUnixHiddenFiles.isChecked());
                     dirHashOpts.set(3,dirHashIgnoreEmptyDirs.isChecked());
-                    return MainActivity.currentHelper.hashFile(path,s,dirHashOpts);
+                    return helper.hashFile(path,s,dirHashOpts);
                 default:
                     throw new RuntimeException("Only local and XRE paths allowed for hashing");
             }
@@ -290,6 +290,7 @@ public class ChecksumActivity extends EffectActivity implements FileSaveFragment
                     List<HashTextView> lhtv = new ArrayList<>(); // for csv/json export, keep the format coherent (1 row, multiple columns)
                     hashMatrix.add(lhtv);
                     BasePathContent file = parentDir.concat(files.get(0).getFilename());
+                    FileOperationHelperUsingPathContent helper = MainActivity.mainActivity.getFileOpsHelper(file.providerType);
                     for (HashRequestCodes s : selectedHashAlgorithms) {
                         if (checksumInterrupted) {
                             MainActivity.showToastOnUI("Checksum task interrupted");
@@ -298,7 +299,7 @@ public class ChecksumActivity extends EffectActivity implements FileSaveFragment
                         TableRow tr = new TableRow(ChecksumActivity.this);
                         runOnUiThread(()->standardResultsLayout.addView(tr));
 
-                        byte[] digest = computeHashForLocalOrXREPaths(file,s);
+                        byte[] digest = computeHashForLocalOrXREPaths(file,s, helper);
 
                         // run on UI thread
                         HashTextView t = new HashTextView(
@@ -317,6 +318,8 @@ public class ChecksumActivity extends EffectActivity implements FileSaveFragment
                     List<HashTextView> lhtv = new ArrayList<>();
                     hashMatrix.add(lhtv);
                     runOnUiThread(()->standardResultsLayout.addView(tr));
+                    BasePathContent file1 = parentDir.concat(file.getFilename());
+                    FileOperationHelperUsingPathContent helper = MainActivity.mainActivity.getFileOpsHelper(file1.providerType);
 
                     for (HashRequestCodes s : selectedHashAlgorithms) {
                         if (checksumInterrupted) {
@@ -324,7 +327,7 @@ public class ChecksumActivity extends EffectActivity implements FileSaveFragment
                             return null;
                         }
 
-                        byte[] digest = computeHashForLocalOrXREPaths(parentDir.concat(file.getFilename()),s);
+                        byte[] digest = computeHashForLocalOrXREPaths(file1, s, helper);
 
                         // run on UI thread
                         HashTextView t = new HashTextView(

@@ -70,7 +70,7 @@ public class CreateLinkDialog extends BaseDialog {
                     throw new IOException("");
             }
             else*/
-            MainActivity.currentHelper.createLink(originPath,linkPath,isHardLink.isChecked());
+            mainActivity.getFileOpsHelper(originPath.providerType).createLink(originPath,linkPath,isHardLink.isChecked());
             Toast.makeText(mainActivity, "Link created", Toast.LENGTH_SHORT).show();
         }
         catch (IOException e) {

@@ -50,7 +50,7 @@ public class RenameDialog extends ImmersiveModeDialog {
         boolean ok = false;
 
         try {
-            ok = MainActivity.currentHelper.renameFile(f,ff);
+            ok = mainActivity.getFileOpsHelper(f.providerType).renameFile(f,ff);
             Toast.makeText(mainActivity, ok?"Renamed":"Error renaming item", Toast.LENGTH_SHORT).show();
         }
         catch (IOException e) {

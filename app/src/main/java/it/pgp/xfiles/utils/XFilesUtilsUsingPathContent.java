@@ -317,8 +317,6 @@ public class XFilesUtilsUsingPathContent implements FileOperationHelperUsingPath
             l.add(new BrowserItem(f.getName(),f.length(),new Date(f.lastModified()),f.isDirectory(), Native.isSymLink(f.getAbsolutePath())>0)); // getCanonicalPath not enough to fully determine symlink attribute (files in symlinked folders), and Files.isSymbolicLink is available only with minAPI >= 26
         }
 
-        // successful return, change current helper
-        MainActivity.currentHelper = MainActivity.xFilesUtils; // or = this
         return new LocalDirWithContent(directory.dir, l);
     }
 

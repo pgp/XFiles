@@ -16,6 +16,7 @@ import it.pgp.xfiles.R;
 import it.pgp.xfiles.enums.FileMode;
 import it.pgp.xfiles.items.SingleStatsItem;
 import it.pgp.xfiles.roothelperclient.resps.folderStats_resp;
+import it.pgp.xfiles.utils.FileOperationHelperUsingPathContent;
 import it.pgp.xfiles.utils.pathcontent.BasePathContent;
 
 /**
@@ -93,12 +94,14 @@ public class PropertiesDialog extends Dialog {
         new Thread(() -> {
             Exception[] lastException = {null};
             try {
+                BasePathContent firstPath = pathname_.get(0);
+                FileOperationHelperUsingPathContent helper = MainActivity.mainActivity.getFileOpsHelper(firstPath.providerType);
                 if (pathname_.size() != 1) // ignore filemode, stats multiple items
-                    statsFolderOrMultipleItems = MainActivity.currentHelper.statFiles(pathname_);
+                    statsFolderOrMultipleItems = helper.statFiles(pathname_);
                 else {
-                    stats = MainActivity.currentHelper.statFile(pathname_.get(0));
+                    stats = helper.statFile(firstPath);
                     if (fileMode == FileMode.DIRECTORY)
-                        statsFolderOrMultipleItems = MainActivity.currentHelper.statFolder(pathname_.get(0));
+                        statsFolderOrMultipleItems = helper.statFolder(firstPath);
                 }
             }
             catch (Exception e) {

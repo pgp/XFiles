@@ -169,6 +169,23 @@ public class MainActivity extends EffectActivity {
     public static XFilesUtilsUsingPathContent xFilesUtils;
     private static RootHelperClientUsingPathContent rootHelperClient;
 
+    public FileOperationHelperUsingPathContent getFileOpsHelper(ProviderType providerType) {
+        switch(providerType) {
+            case LOCAL:
+                return xFilesUtils;
+            case LOCAL_WITHIN_ARCHIVE:
+            case XFILES_REMOTE:
+            case URL_DOWNLOAD:
+                return getRootHelperClient();
+            case SFTP:
+                return sftpProvider;
+            case SMB:
+                return smbProvider;
+            default:
+                return null;
+        }
+    }
+
     public static RootHelperClientUsingPathContent getRootHelperClient(Context... context) {
         if (rootHelperClient == null) {
             rootHelperClient = RootHandler.startAndGetRH(context);
@@ -196,8 +213,6 @@ public class MainActivity extends EffectActivity {
 
     public static final RemoteClientManager rootHelperRemoteClientManager = new RemoteClientManager();
     public static boolean usingRootHelperForLocal = false;
-
-    public static FileOperationHelperUsingPathContent currentHelper;
 
     public BrowserAdapter getCurrentBrowserAdapter() {
         return browserPagerAdapter.browserAdapters[browserPager.getCurrentItem()];
@@ -336,7 +351,7 @@ public class MainActivity extends EffectActivity {
             try {
                 int posToRestore = browserPagerAdapter.mainBrowserViews[browserPager.getCurrentItem()].getFirstVisiblePosition();
 
-                currentHelper.deleteFilesOrDirectories(selection);
+                mainActivity.getFileOpsHelper(selection.get(0).providerType).deleteFilesOrDirectories(selection);
                 Toast.makeText(MainActivity.this,((size==1)?name:(size+" items"))+" deleted",Toast.LENGTH_SHORT).show();
                 browserPagerAdapter.showDirContent(getCurrentDirCommander().refresh(),browserPager.getCurrentItem(),posToRestore);
             } catch (IOException e) {
@@ -660,7 +675,6 @@ public class MainActivity extends EffectActivity {
         }
 
         xFilesUtils = new XFilesUtilsUsingPathContent();
-        currentHelper = xFilesUtils; // start with non-root (Java) file ops helper
 
         smbProvider = new SmbProviderUsingPathContent(mainActivityContext,this);
         sftpProvider = new SFTPProviderUsingPathContent(this);
@@ -799,13 +813,11 @@ public class MainActivity extends EffectActivity {
             // disabled, better user experience, to be tested
             // browserPagerAdapter.createStandardCommanders();
             if (usingRootHelperForLocal) { // switch to normal dircommander
-                currentHelper = xFilesUtils;
                 usingRootHelperForLocal = false;
                 fileOperationHelperSwitcher.setImageResource(R.drawable.xfiles_root_off);
             }
             else { // switch to roothelper-based dircommander
                 getRootHelperClient();
-                currentHelper = rootHelperClient;
                 usingRootHelperForLocal = true;
                 fileOperationHelperSwitcher.setImageResource(R.drawable.xfiles_root_on);
             }
@@ -1085,7 +1097,7 @@ public class MainActivity extends EffectActivity {
                 // move (rename) on the remote host
                 if (copyMoveList.copyOrMove == CopyMoveMode.MOVE) {
                     try {
-                        currentHelper.copyMoveFilesToDirectory(copyMoveList,destPath);
+                        sftpProvider.copyMoveFilesToDirectory(copyMoveList,destPath);
                         copyMoveList = null;
                         browserPagerAdapter.showDirContent(getCurrentDirCommander().refresh(),browserPager.getCurrentItem(),null);
                         Toast.makeText(this,"Remote-to-remote move completed",Toast.LENGTH_SHORT).show();
