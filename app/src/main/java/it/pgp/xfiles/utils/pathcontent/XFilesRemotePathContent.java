@@ -28,7 +28,7 @@ public class XFilesRemotePathContent extends BasePathContent {
     }
 
     public XFilesRemotePathContent(String serverHost, FileOpsErrorCodes errorCode) {
-        super(errorCode);
+        super(provType, errorCode);
         this.serverHost = serverHost;
         this.serverPort = defaultRHRemoteServerPort;
     }

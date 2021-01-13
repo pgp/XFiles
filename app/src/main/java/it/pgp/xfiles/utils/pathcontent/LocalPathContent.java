@@ -21,7 +21,7 @@ public class LocalPathContent extends BasePathContent {
     }
 
     public LocalPathContent(FileOpsErrorCodes errorCode) {
-        super(errorCode);
+        super(provType, errorCode);
     }
 
     @Override

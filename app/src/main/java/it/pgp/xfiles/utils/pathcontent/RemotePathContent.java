@@ -26,7 +26,7 @@ public class RemotePathContent extends BasePathContent {
     }
 
     public RemotePathContent(AuthData authData, FileOpsErrorCodes errorCode) {
-        super(errorCode);
+        super(provType, errorCode);
         this.authData = authData;
     }
 

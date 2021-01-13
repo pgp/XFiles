@@ -32,7 +32,7 @@ public class ArchivePathContent extends BasePathContent {
     }
 
     public ArchivePathContent(String archivePath, FileOpsErrorCodes errorCode) {
-        super(errorCode);
+        super(provType, errorCode);
         this.archivePath = archivePath;
     }
 

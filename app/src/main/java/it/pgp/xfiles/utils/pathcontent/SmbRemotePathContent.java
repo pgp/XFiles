@@ -25,7 +25,7 @@ public class SmbRemotePathContent extends BasePathContent {
     }
 
     public SmbRemotePathContent(SmbAuthData smbAuthData, FileOpsErrorCodes errorCode) {
-        super(errorCode);
+        super(provType, errorCode);
         this.smbAuthData = smbAuthData;
     }
 
