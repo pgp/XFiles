@@ -12,7 +12,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -30,7 +29,6 @@ import java.util.Set;
 import it.pgp.xfiles.BrowserItem;
 import it.pgp.xfiles.MainActivity;
 import it.pgp.xfiles.R;
-import it.pgp.xfiles.service.BaseBackgroundService;
 import it.pgp.xfiles.service.visualization.ViewType;
 import it.pgp.xfiles.utils.pathcontent.BasePathContent;
 
@@ -43,7 +41,6 @@ public class MediaGalleryActivity extends BaseActivity implements ViewPager.OnPa
     private RecyclerView imagesHorizontalList;
     private HorizontalListAdapters hAdapter;
     private RelativeLayout mMainLayout;
-    private ImageButton showImageOnLockScreen;
 
     public static final Set<String> allowedImageExtensions = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(".bmp",".gif",".jpg",".png")));
 
@@ -123,13 +120,12 @@ public class MediaGalleryActivity extends BaseActivity implements ViewPager.OnPa
         if (backgroundColor != -1){
             mMainLayout.setBackgroundColor(ContextCompat.getColor(this,backgroundColor));
         }
-        showImageOnLockScreen = findViewById(R.id.showImageOnLockScreen);
     }
 
     public void setShowImageOnLockScreen(View unused) {
         AlertDialog.Builder bld = new AlertDialog.Builder(this);
         bld.setTitle("Show this gallery on lock screen, if any?");
-        bld.setNegativeButton("No", BaseBackgroundService.emptyListener);
+        bld.setNegativeButton("No", null);
         bld.setPositiveButton("Yes", (dialog, which) -> {
             Intent i = new Intent(this, MediaGalleryActivity.class);
             i.putExtras(getIntent().getExtras());

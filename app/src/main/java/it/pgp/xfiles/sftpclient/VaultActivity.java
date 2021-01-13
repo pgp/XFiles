@@ -16,7 +16,6 @@ import java.util.Map;
 import it.pgp.xfiles.EffectActivity;
 import it.pgp.xfiles.MainActivity;
 import it.pgp.xfiles.R;
-import it.pgp.xfiles.service.BaseBackgroundService;
 import it.pgp.xfiles.utils.FileSelectFragment;
 import it.pgp.xfiles.utils.GenericDBHelper;
 import it.pgp.xfiles.utils.XFilesUtilsUsingPathContent;
@@ -138,7 +137,7 @@ public class VaultActivity extends EffectActivity implements FileSelectFragment.
         AlertDialog.Builder b = new AlertDialog.Builder(this);
         b.setTitle("Reset connected clients in order to update private key ids?");
         b.setIcon(R.drawable.xf_xre_server_down);
-        b.setNegativeButton("No", BaseBackgroundService.emptyListener);
+        b.setNegativeButton("No", null);
         b.setPositiveButton("Yes",(dialog,which)->
                 MainActivity.sftpProvider.closeAllSessions());
         b.create().show();

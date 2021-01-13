@@ -53,8 +53,6 @@ public abstract class BaseBackgroundService extends Service {
 
     public abstract int getServiceIconRes();
 
-    public static final DialogInterface.OnClickListener emptyListener = (dialog, which) -> {};
-
     public abstract int getForegroundServiceNotificationId();
 
     public abstract ForegroundServiceType getForegroundServiceType();
@@ -67,7 +65,7 @@ public abstract class BaseBackgroundService extends Service {
 	private void abortServiceWithConfirmation() {
         AlertDialog.Builder bld = new AlertDialog.Builder(this);
         bld.setTitle("Cancel "+getClass().getName()+"?");
-        bld.setNegativeButton("No", emptyListener);
+        bld.setNegativeButton("No", null);
         bld.setPositiveButton("Yes", (dialog, which) -> task.cancelTask());
         AlertDialog alertDialog = bld.create();
         alertDialog.getWindow().setType(ViewType.OVERLAY_WINDOW_TYPE);
