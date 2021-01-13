@@ -90,7 +90,10 @@ public class WifiButtonsLayout extends LinearLayout {
 
     private void switchWifi(View unused) {
         toggleButtons(false);
-        wifiManager.setWifiEnabled(!wifiManager.isWifiEnabled());
+        if(!wifiManager.setWifiEnabled(!wifiManager.isWifiEnabled())) {
+            toggleButtons(true);
+            MainActivity.showToastOnUIWithHandler("Unable to switch WiFi state, is airplane mode active?");
+        }
     }
 
     private static final int RECHECK_AP_CHANGED_TIMEOUT_SEC = 10;
