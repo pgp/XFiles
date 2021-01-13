@@ -16,12 +16,12 @@ public class ArchivePathContent extends BasePathContent {
     // archivePath: archive absolute pathname in the local filesystem
     // dir: directory path relative to the archive root
     public ArchivePathContent(String archivePath, String dir) {
-        super(dir,provType);
+        super(provType, dir);
         this.archivePath = archivePath;
     }
 
     public ArchivePathContent(String archivePath, String dir, String password) {
-        super(dir,provType);
+        super(provType, dir);
         this.archivePath = archivePath;
         this.password = password;
     }

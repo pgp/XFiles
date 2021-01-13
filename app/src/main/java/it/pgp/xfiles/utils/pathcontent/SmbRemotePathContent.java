@@ -15,7 +15,7 @@ public class SmbRemotePathContent extends BasePathContent {
     public SmbAuthData smbAuthData; // user@domain:host:port, to display in address bar
 
     public SmbRemotePathContent(SmbAuthData smbAuthData, String dir) {
-        super(dir,provType);
+        super(provType, dir);
         this.smbAuthData = smbAuthData;
     }
 

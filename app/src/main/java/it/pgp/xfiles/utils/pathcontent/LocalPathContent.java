@@ -12,7 +12,7 @@ public class LocalPathContent extends BasePathContent {
     private static final ProviderType provType = ProviderType.LOCAL;
 
     public LocalPathContent(String dir) {
-        super(dir,provType);
+        super(provType, dir);
     }
 
     public LocalPathContent(FileOpsErrorCodes errorCode) {

@@ -16,7 +16,7 @@ public class RemotePathContent extends BasePathContent {
     public AuthData authData; // user@domain:port, to display in address bar
 
     public RemotePathContent(AuthData authData, String dir) {
-        super(dir,provType);
+        super(provType, dir);
         this.authData = authData;
     }
 

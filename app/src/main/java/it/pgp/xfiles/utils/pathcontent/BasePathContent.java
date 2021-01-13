@@ -31,7 +31,7 @@ public abstract class BasePathContent implements Serializable {
 
     public FileOpsErrorCodes errorCode; // null on success, errno-equivalent or descriptive commander error otherwise
 
-    protected BasePathContent(String dir, ProviderType providerType) {
+    protected BasePathContent(ProviderType providerType, String dir) {
         this.providerType = providerType;
         // not the best solution (embed subclass logic in the parent class),
         // just to avoid duplicating this check in all subclasses

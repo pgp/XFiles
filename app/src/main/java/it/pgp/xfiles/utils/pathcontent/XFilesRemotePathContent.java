@@ -17,7 +17,7 @@ public class XFilesRemotePathContent extends BasePathContent {
     int serverPort;
 
     public XFilesRemotePathContent(String serverHost, String dir) {
-        super(dir,provType);
+        super(provType, dir);
         this.serverHost = serverHost;
         this.serverPort = defaultRHRemoteServerPort;
     }
