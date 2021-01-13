@@ -37,6 +37,7 @@ public class DirCommanderCUsingBrowserItemsAndPathContent {
         previousListViewPositions = tmp2;
     }
 
+    // FIXME duplicated logic with MainActivity's getFileOpsHelper
     private GenericDirWithContent validateDirAccess(BasePathContent dir) {
         switch (dir.providerType) {
             case LOCAL:

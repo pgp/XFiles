@@ -172,7 +172,7 @@ public class MainActivity extends EffectActivity {
     public FileOperationHelperUsingPathContent getFileOpsHelper(ProviderType providerType) {
         switch(providerType) {
             case LOCAL:
-                return xFilesUtils;
+                return usingRootHelperForLocal?getRootHelperClient():xFilesUtils;
             case LOCAL_WITHIN_ARCHIVE:
             case XFILES_REMOTE:
             case URL_DOWNLOAD:
@@ -1199,6 +1199,9 @@ public class MainActivity extends EffectActivity {
         completeGoDir(gdwc,path_,targetViewPagerPosition,null);
     }
 
+    /**
+     * @param targetFilenameToHighlight Target filename to be highlighted and centered in the listview (in case of Locate command from {@link FindActivity})
+     */
     public FileOpsErrorCodes goDir(Object dirOrDirection, int targetViewPagerPosition, @Nullable String targetFilenameToHighlight, Runnable... onCompletion) {
         GenericDirWithContent gdwc = goDir_inner(dirOrDirection);
         completeGoDir(gdwc,dirOrDirection,targetViewPagerPosition,targetFilenameToHighlight,onCompletion);
@@ -1220,7 +1223,6 @@ public class MainActivity extends EffectActivity {
 
     /**
      * @param dirOrDirection Target path to be loaded, or direction as boolean (back or ahead)
-     * @param targetFilenameToHighlight Target filename to be highlighted and centered in the listview (in case of Locate command from {@link FindActivity})
      */
     public GenericDirWithContent goDir_inner(Object dirOrDirection) {
         GenericDirWithContent dwc;
