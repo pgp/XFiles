@@ -14,11 +14,6 @@ public class SmbRemotePathContent extends BasePathContent {
 
     public SmbAuthData smbAuthData; // user@domain:host:port, to display in address bar
 
-    // empty constructor used by abstract factory
-    public SmbRemotePathContent() {
-        super(null,provType);
-    }
-
     public SmbRemotePathContent(SmbAuthData smbAuthData, String dir) {
         super(dir,provType);
         this.smbAuthData = smbAuthData;

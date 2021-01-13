@@ -16,11 +16,6 @@ public class XFilesRemotePathContent extends BasePathContent {
     public String serverHost;
     int serverPort;
 
-    // empty constructor used by abstract factory
-    public XFilesRemotePathContent() {
-        super(null,provType);
-    }
-
     public XFilesRemotePathContent(String serverHost, String dir) {
         super(dir,provType);
         this.serverHost = serverHost;

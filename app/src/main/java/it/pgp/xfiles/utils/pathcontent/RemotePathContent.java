@@ -15,11 +15,6 @@ public class RemotePathContent extends BasePathContent {
 
     public AuthData authData; // user@domain:port, to display in address bar
 
-    // empty constructor used by abstract factory
-    public RemotePathContent() {
-        super(null,provType);
-    }
-
     public RemotePathContent(AuthData authData, String dir) {
         super(dir,provType);
         this.authData = authData;

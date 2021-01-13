@@ -11,11 +11,6 @@ public class LocalPathContent extends BasePathContent {
 
     private static final ProviderType provType = ProviderType.LOCAL;
 
-    // empty constructor used by abstract factory
-    public LocalPathContent() {
-        super(null,provType);
-    }
-
     public LocalPathContent(String dir) {
         super(dir,provType);
     }

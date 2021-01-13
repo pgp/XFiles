@@ -13,11 +13,6 @@ public class ArchivePathContent extends BasePathContent {
 
     private static final ProviderType provType = ProviderType.LOCAL_WITHIN_ARCHIVE;
 
-    // empty constructor used by abstract factory
-    public ArchivePathContent() {
-        super(null,provType);
-    }
-
     // archivePath: archive absolute pathname in the local filesystem
     // dir: directory path relative to the archive root
     public ArchivePathContent(String archivePath, String dir) {
