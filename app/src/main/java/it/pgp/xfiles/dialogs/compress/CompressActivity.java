@@ -199,7 +199,7 @@ public class CompressActivity extends EffectActivity implements FileSaveFragment
         populateSelectedItems(intent);
 
         outputArchiveFilePath = findViewById(R.id.outputArchiveFilePath);
-        outputArchiveFilePath.setText(dirPath.concat("archive").toString());
+        outputArchiveFilePath.setText(dirPath.concat((filename==null)?"archive":filename.getFilename()).toString());
         outputArchivePassword = findViewById(R.id.outputArchivePassword);
 
         compressionLevel = findViewById(R.id.compressionLevel);
