@@ -111,6 +111,9 @@ public class PropertiesDialog extends Dialog {
             activity.runOnUiThread(() -> {
                 if(lastException[0] != null)
                     Toast.makeText(activity, "Generic stats error, reason: "+lastException[0].getMessage(), Toast.LENGTH_SHORT).show();
+                else if (statsFolderOrMultipleItems == null) {
+                    Toast.makeText(activity, "Unknown error on stat folder or multiple items", Toast.LENGTH_SHORT).show();
+                }
                 else {
                     if (pathname_.size() == 1) {
                         pathname.setText(pathname_.get(0).toString());

@@ -659,7 +659,6 @@ public class SFTPProviderUsingPathContent implements FileOperationHelperUsingPat
 
     @Override
     public folderStats_resp statFiles(List<BasePathContent> files) throws IOException {
-        // TODO
         return null;
     }
 
@@ -809,7 +808,7 @@ public class SFTPProviderUsingPathContent implements FileOperationHelperUsingPat
                                                 @Nullable String password,
                                                 @Nullable List<String> filenames,
                                                 boolean smartDirectoryCreation) throws IOException {
-        return null;
+        return Collections.singletonList(FileOpsErrorCodes.NOT_IMPLEMENTED);
     }
 
     @Override
