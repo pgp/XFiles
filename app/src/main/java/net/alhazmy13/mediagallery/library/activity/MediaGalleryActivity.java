@@ -125,8 +125,8 @@ public class MediaGalleryActivity extends BaseActivity implements ViewPager.OnPa
     public void setShowImageOnLockScreen(View unused) {
         AlertDialog.Builder bld = new AlertDialog.Builder(this);
         bld.setTitle("Show this gallery on lock screen, if any?");
-        bld.setNegativeButton("No", null);
-        bld.setPositiveButton("Yes", (dialog, which) -> {
+        bld.setNegativeButton(android.R.string.cancel, null);
+        bld.setPositiveButton(android.R.string.ok, (dialog, which) -> {
             Intent i = new Intent(this, MediaGalleryActivity.class);
             i.putExtras(getIntent().getExtras());
             i.putExtra("setShowOnLockScreenFlags",true);

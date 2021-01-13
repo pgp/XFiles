@@ -342,8 +342,8 @@ public class CompressActivity extends EffectActivity implements FileSaveFragment
         // Get an instance supplying a default extension, captions and
         // icon appropriate to the calling application/activity.
         FileSaveFragment fsf = FileSaveFragment.newInstance(ext,
-                R.string.alert_OK,
-                R.string.alert_cancel,
+                android.R.string.ok,
+                android.R.string.cancel,
                 R.string.app_name,
                 R.string.edit_hint,
                 R.string.dest_archive_filename_header,

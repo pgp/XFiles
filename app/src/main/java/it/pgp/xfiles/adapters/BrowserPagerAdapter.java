@@ -172,8 +172,8 @@ public class BrowserPagerAdapter extends PagerAdapter {
             else {
                 AlertDialog.Builder bld = new AlertDialog.Builder(mainActivity);
                 bld.setTitle("Refreshing will clear active selection");
-                bld.setNegativeButton(R.string.alert_cancel, (dialog, which) -> swipeRefreshLayouts[position].setRefreshing(false));
-                bld.setPositiveButton(R.string.alert_OK, (dialog, which) -> goDirExecutors[position].submit(refreshRunnable));
+                bld.setNegativeButton(android.R.string.cancel, (dialog, which) -> swipeRefreshLayouts[position].setRefreshing(false));
+                bld.setPositiveButton(android.R.string.ok, (dialog, which) -> goDirExecutors[position].submit(refreshRunnable));
                 bld.create().show();
             }
         });

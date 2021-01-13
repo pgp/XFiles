@@ -829,8 +829,8 @@ public class MainActivity extends EffectActivity {
         AlertDialog.Builder bld = new AlertDialog.Builder(MainActivity.this);
         bld.setTitle("Switch dir commander to "+h+" one?");
         bld.setIcon(usingRootHelperForLocal?R.drawable.xfiles_root_off:R.drawable.xfiles_root_on);
-        bld.setNegativeButton("No", null);
-        bld.setPositiveButton("Yes", (dialog, which) -> {
+        bld.setNegativeButton(android.R.string.cancel, null);
+        bld.setPositiveButton(android.R.string.ok, (dialog, which) -> {
             // disabled, better user experience, to be tested
             // browserPagerAdapter.createStandardCommanders();
             if (usingRootHelperForLocal) { // switch to normal dircommander

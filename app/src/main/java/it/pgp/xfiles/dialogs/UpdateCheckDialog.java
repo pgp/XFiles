@@ -230,8 +230,8 @@ public class UpdateCheckDialog extends Dialog {
             activity.runOnUiThread(()->{
                 AlertDialog.Builder bld = new AlertDialog.Builder(activity);
                 bld.setTitle("APK file has been downloaded, install now?");
-                bld.setNegativeButton("No", null);
-                bld.setPositiveButton("Yes", (dialog, which) -> {
+                bld.setNegativeButton(android.R.string.cancel, null);
+                bld.setPositiveButton(android.R.string.ok, (dialog, which) -> {
                     // kill RH before updating; this is useful in older versions of Android with root,
                     // since the RH process (being root) cannot be terminated till restart
                     // (even if the executable on the filesystem is actually updated)

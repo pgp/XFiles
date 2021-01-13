@@ -42,8 +42,8 @@ public class VaultActivity extends EffectActivity implements FileSelectFragment.
 
         // Set up a selector for file selection rather than directory selection.
         FileSelectFragment fsf = FileSelectFragment.newInstance(FileSelectFragment.Mode.FileSelector,
-                R.string.alert_OK,
-                R.string.alert_cancel,
+                android.R.string.ok,
+                android.R.string.cancel,
                 R.string.alert_file_select,
                 R.drawable.xfiles_new_app_icon,
                 R.drawable.xf_dir_blu,
@@ -137,9 +137,8 @@ public class VaultActivity extends EffectActivity implements FileSelectFragment.
         AlertDialog.Builder b = new AlertDialog.Builder(this);
         b.setTitle("Reset connected clients in order to update private key ids?");
         b.setIcon(R.drawable.xf_xre_server_down);
-        b.setNegativeButton("No", null);
-        b.setPositiveButton("Yes",(dialog,which)->
-                MainActivity.sftpProvider.closeAllSessions());
+        b.setNegativeButton(android.R.string.cancel, null);
+        b.setPositiveButton(android.R.string.ok, (dialog,which)->MainActivity.sftpProvider.closeAllSessions());
         b.create().show();
     }
 }

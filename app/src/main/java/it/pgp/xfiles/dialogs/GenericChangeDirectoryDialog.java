@@ -114,7 +114,7 @@ public class GenericChangeDirectoryDialog extends Dialog {
         mainActivity.runOnUiThread(()->{
             Toast.makeText(mainActivity, ret.toString(), Toast.LENGTH_SHORT).show();
             okButton.setEnabled(true);
-            okButton.setText(R.string.alert_OK);
+            okButton.setText(android.R.string.ok);
         });
         return 0;
     }

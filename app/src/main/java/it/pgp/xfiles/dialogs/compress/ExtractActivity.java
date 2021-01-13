@@ -162,8 +162,8 @@ public class ExtractActivity extends EffectActivity implements FileSelectFragmen
         // Set up a selector for directory selection.
         FileSelectFragment fsf = FileSelectFragment.newInstance(
                 FileSelectFragment.Mode.DirectorySelector,
-                R.string.alert_OK,
-                R.string.alert_cancel,
+                android.R.string.ok,
+                android.R.string.cancel,
                 R.string.alert_file_select,
                 R.drawable.xfiles_new_app_icon,
                 R.drawable.xf_dir_blu,
