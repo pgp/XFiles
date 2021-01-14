@@ -272,18 +272,19 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
         ls_resp resp = ls_resp.readNext(clientInStream);
         int entryCnt = 0; // for extracting selected files, it is necessary to know their position in the archive entries list
         while (resp != null) {
-            List<String> inArchivePath = new ArrayList<>(Arrays.asList((new String(resp.filename, StandardCharsets.UTF_8)).split("/")));
-            inArchivePath.add(ArchiveVMap.sentinelKeyForNodeProperties);
+            if(resp.permissions[0] != '!') {
+                List<String> inArchivePath = new ArrayList<>(Arrays.asList((new String(resp.filename, StandardCharsets.UTF_8)).split("/")));
+                inArchivePath.add(ArchiveVMap.sentinelKeyForNodeProperties);
 
-            Map<String,Object> nodeProps = new HashMap<>();
+                Map<String,Object> nodeProps = new HashMap<>();
 
-            nodeProps.put("i",entryCnt);
-            nodeProps.put("size",resp.size);
-            nodeProps.put("date",new Date(resp.date*1000L));
-            nodeProps.put("isDir",new String(resp.permissions, StandardCharsets.UTF_8).charAt(0) == 'd');
+                nodeProps.put("i",entryCnt);
+                nodeProps.put("size",resp.size);
+                nodeProps.put("date",new Date(resp.date*1000L));
+                nodeProps.put("isDir",new String(resp.permissions, StandardCharsets.UTF_8).charAt(0) == 'd');
 
-            v.set(nodeProps,inArchivePath.toArray()); // put in vMap with properties
-
+                v.set(nodeProps,inArchivePath.toArray()); // put in vMap with properties
+            }
             resp = ls_resp.readNext(clientInStream);
             entryCnt++;
         }
