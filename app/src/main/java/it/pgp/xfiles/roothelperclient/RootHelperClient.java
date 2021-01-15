@@ -1052,152 +1052,144 @@ public class RootHelperClient implements FileOperationHelper {
     @Override
     public folderStats_resp statFiles(List<BasePathContent> files) throws IOException {
         if (files.isEmpty()) throw new IOException("statfiles list empty, cannot determine provider type");
-        if(files.get(0).providerType==ProviderType.LOCAL) {
-            StreamsPair rs = getStreams();
-            multiStats_rq rq = new multiStats_rq(new ArrayList<String>(){{
-                for (BasePathContent bpc : files) add(bpc.dir);
-            }});
-            rq.write(rs.o);
+        switch(files.get(0).providerType) {
+            case LOCAL:
+                StreamsPair rs = getStreams();
+                multiStats_rq rq = new multiStats_rq(new ArrayList<String>() {{
+                    for (BasePathContent bpc : files) add(bpc.dir);
+                }});
+                rq.write(rs.o);
 
-            int errno = receiveBaseResponse(rs.i);
-            if (errno != 0) {
-                Log.e("roothelperclient","statFiles: Some files could not be stat, error code: "+errno);
-            }
+                int errno = receiveBaseResponse(rs.i);
+                if (errno != 0) {
+                    Log.e("roothelperclient", "statFiles: Some files could not be stat, error code: " + errno);
+                }
 
-            // TODO propagate errno along with response
-            // receive and return response
-            folderStats_resp response = new folderStats_resp(rs.i);
-            rs.close();
-            return response;
-        }
-        else if(files.get(0).providerType==ProviderType.LOCAL_WITHIN_ARCHIVE) {
-            // stat inner folder of archive (that is, archive is already opened and vmap is in memory)
-            ArchiveVMap v = archiveMRU.getByPath(((ArchivePathContent)files.get(0)).archivePath);
-            if (v == null)
-                throw new RuntimeException("ArchiveVMap should already be populated within archive");
+                // TODO propagate errno along with response
+                // receive and return response
+                folderStats_resp response = new folderStats_resp(rs.i);
+                rs.close();
+                return response;
+            case LOCAL_WITHIN_ARCHIVE:
+                // stat inner folder of archive (that is, archive is already opened and vmap is in memory)
+                ArchiveVMap v = archiveMRU.getByPath(((ArchivePathContent) files.get(0)).archivePath);
+                if (v == null)
+                    throw new RuntimeException("ArchiveVMap should already be populated within archive");
 
-            long childrenFiles = 0,childrenDirs = 0, totalFiles = 0, totalDirs = 0, totalSize = 0;
-            for (BasePathContent pathname : files) {
-                VMapSubTreeIterable it = new VMapSubTreeIterable(v,pathname.dir.split("/"));
+                long childrenFiles = 0, childrenDirs = 0, totalFiles = 0, totalDirs = 0, totalSize = 0;
+                for (BasePathContent pathname : files) {
+                    VMapSubTreeIterable it = new VMapSubTreeIterable(v, pathname.dir.split("/"));
 
-                // FIXME currently, also the current folder node is taken into account when iterating (so, totalFolders is shifted up by 1)
-                for (Map.Entry me : it) {
-                    if (me.getKey().equals(ArchiveVMap.sentinelKeyForNodeProperties)) {
-                        Map x = (Map)me.getValue();
-                        // TODO populate children files and dirs as well
-                        boolean isDir = (boolean) x.get("isDir");
-                        if (isDir) {
-                            totalDirs++;
-                        }
-                        else {
-                            totalFiles++;
-                            totalSize += (long)x.get("size");
+                    // FIXME currently, also the current folder node is taken into account when iterating (so, totalFolders is shifted up by 1)
+                    for (Map.Entry me : it) {
+                        if (me.getKey().equals(ArchiveVMap.sentinelKeyForNodeProperties)) {
+                            Map x = (Map) me.getValue();
+                            // TODO populate children files and dirs as well
+                            boolean isDir = (boolean) x.get("isDir");
+                            if (isDir) totalDirs++;
+                            else {
+                                totalFiles++;
+                                totalSize += (long) x.get("size");
+                            }
                         }
                     }
                 }
-            }
 
-            return new folderStats_resp(
-                    childrenDirs,
-                    childrenFiles,
-                    totalDirs,
-                    totalFiles,
-                    totalSize);
+                return new folderStats_resp(
+                        childrenDirs,
+                        childrenFiles,
+                        totalDirs,
+                        totalFiles,
+                        totalSize);
+
+            case XFILES_REMOTE:
+                XREPathContent xrpc = (XREPathContent) files.get(0);
+                RemoteManager rm = MainActivity.rootHelperRemoteClientManager.getClient(xrpc.serverHost, true);
+                if (rm == null) return null;
+
+                rq = new multiStats_rq(new ArrayList<String>() {{
+                    for (BasePathContent bpc : files) add(bpc.dir);
+                }});
+                rq.write(rm.o);
+
+                errno = receiveBaseResponse(rm.i);
+                if (errno != 0) {
+                    Log.e("roothelperclient", "Some files could not be stat, error code: " + errno);
+                }
+
+                // TODO propagate errno along with response
+                // receive and return response
+                return new folderStats_resp(rm.i);
+            default:
+                throw new RuntimeException("Roothelper should not be the current helper when exploring SFTP paths");
         }
-        else if(files.get(0).providerType==ProviderType.XFILES_REMOTE) {
-            XREPathContent xrpc = (XREPathContent) files.get(0);
-            RemoteManager rm = MainActivity.rootHelperRemoteClientManager.getClient(xrpc.serverHost,true);
-            if (rm == null) return null;
-
-            multiStats_rq rq = new multiStats_rq(new ArrayList<String>(){{
-                for (BasePathContent bpc : files) add(bpc.dir);
-            }});
-            rq.write(rm.o);
-
-            int errno = receiveBaseResponse(rm.i);
-            if (errno != 0) {
-                Log.e("roothelperclient","Some files could not be stat, error code: "+errno);
-            }
-
-            // TODO propagate errno along with response
-            // receive and return response
-            return new folderStats_resp(rm.i);
-        }
-        else
-            throw new RuntimeException("Roothelper should not be the current helper when exploring SFTP paths");
     }
 
     @Override
     public folderStats_resp statFolder(BasePathContent pathname) throws IOException {
-        if(pathname.providerType==ProviderType.LOCAL) {
-            StreamsPair rs = getStreams();
+        switch(pathname.providerType) {
+            case LOCAL:
+                StreamsPair rs = getStreams();
+                singleStats_rq rq = new singleStats_rq(pathname.dir, FileMode.DIRECTORY);
+                rq.write(rs.o);
 
-            singleStats_rq rq = new singleStats_rq(pathname.dir,FileMode.DIRECTORY);
-            rq.write(rs.o);
+                int errno = receiveBaseResponse(rs.i);
+                if (errno != 0)
+                    Log.e("roothelperclient", "Some files could not be stat, error code: " + errno);
 
-            int errno = receiveBaseResponse(rs.i);
-            if (errno != 0) {
-                Log.e("roothelperclient","Some files could not be stat, error code: "+errno);
-            }
+                // TODO propagate errno along with response
+                // receive and return response
+                folderStats_resp response = new folderStats_resp(rs.i);
+                rs.close();
+                return response;
+            case LOCAL_WITHIN_ARCHIVE:
+                // stat inner folder of archive (that is, archive is already opened and vmap is in memory)
+                ArchiveVMap v = archiveMRU.getByPath(((ArchivePathContent) pathname).archivePath);
+                if (v == null)
+                    throw new RuntimeException("ArchiveVMap should already be populated within archive");
 
-            // TODO propagate errno along with response
-            // receive and return response
-            folderStats_resp response = new folderStats_resp(rs.i);
-            rs.close();
-            return response;
-        }
-        else if(pathname.providerType==ProviderType.LOCAL_WITHIN_ARCHIVE) {
-            // stat inner folder of archive (that is, archive is already opened and vmap is in memory)
-            ArchiveVMap v = archiveMRU.getByPath(((ArchivePathContent)pathname).archivePath);
-            if (v == null)
-                throw new RuntimeException("ArchiveVMap should already be populated within archive");
+                VMapSubTreeIterable it = new VMapSubTreeIterable(v, pathname.dir.split("/"));
 
-            VMapSubTreeIterable it = new VMapSubTreeIterable(v,pathname.dir.split("/"));
+                long childrenFiles = 0, childrenDirs = 0, totalFiles = 0, totalDirs = 0, totalSize = 0;
 
-            long childrenFiles = 0,childrenDirs = 0, totalFiles = 0, totalDirs = 0, totalSize = 0;
-
-            // FIXME currently, also the current folder node is taken into account when iterating (so, totalFolders is shifted up by 1)
-            for (Map.Entry me : it) {
-                if (me.getKey().equals(ArchiveVMap.sentinelKeyForNodeProperties)) {
-                    Map x = (Map)me.getValue();
-                    // TODO populate children files and dirs as well
-                    boolean isDir = (boolean) x.get("isDir");
-                    if (isDir) {
-                        totalDirs++;
-                    }
-                    else {
-                        totalFiles++;
-                        totalSize += (long)x.get("size");
+                // FIXME currently, also the current folder node is taken into account when iterating (so, totalFolders is shifted up by 1)
+                for (Map.Entry me : it) {
+                    if (me.getKey().equals(ArchiveVMap.sentinelKeyForNodeProperties)) {
+                        Map x = (Map) me.getValue();
+                        // TODO populate children files and dirs as well
+                        boolean isDir = (boolean) x.get("isDir");
+                        if (isDir) totalDirs++;
+                        else {
+                            totalFiles++;
+                            totalSize += (long) x.get("size");
+                        }
                     }
                 }
-            }
 
-            return new folderStats_resp(
-                    childrenDirs,
-                    childrenFiles,
-                    totalDirs,
-                    totalFiles,
-                    totalSize);
+                return new folderStats_resp(
+                        childrenDirs,
+                        childrenFiles,
+                        totalDirs,
+                        totalFiles,
+                        totalSize);
+            case XFILES_REMOTE:
+                XREPathContent xrpc = (XREPathContent) pathname;
+                RemoteManager rm = MainActivity.rootHelperRemoteClientManager.getClient(xrpc.serverHost, true);
+                if (rm == null) return null;
+
+                rq = new singleStats_rq(pathname.dir, FileMode.DIRECTORY);
+                rq.write(rm.o);
+
+                errno = receiveBaseResponse(rm.i);
+                if (errno != 0)
+                    Log.e("roothelperclient", "Some files could not be stat, error code: " + errno);
+
+                // TODO propagate errno along with response
+                // receive and return response
+                return new folderStats_resp(rm.i);
+            default:
+                throw new RuntimeException("Roothelper should not be the current helper when exploring SFTP paths");
         }
-        else if(pathname.providerType==ProviderType.XFILES_REMOTE) {
-            XREPathContent xrpc = (XREPathContent) pathname;
-            RemoteManager rm = MainActivity.rootHelperRemoteClientManager.getClient(xrpc.serverHost,true);
-            if (rm == null) return null;
-
-            singleStats_rq rq = new singleStats_rq(pathname.dir,FileMode.DIRECTORY);
-            rq.write(rm.o);
-
-            int errno = receiveBaseResponse(rm.i);
-            if (errno != 0) {
-                Log.e("roothelperclient","Some files could not be stat, error code: "+errno);
-            }
-
-            // TODO propagate errno along with response
-            // receive and return response
-            return new folderStats_resp(rm.i);
-        }
-        else
-            throw new RuntimeException("Roothelper should not be the current helper when exploring SFTP paths");
     }
 
     @Override
