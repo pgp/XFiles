@@ -812,17 +812,23 @@ public class SFTPProvider implements FileOperationHelper {
 
             for (RemoteResourceInfo entry : lsContent) {
                 boolean isLink = false;
-                FileAttributes fa = entry.getAttributes();
-                if (fa.getType() == net.schmizz.sshj.sftp.FileMode.Type.SYMLINK) {
-                    isLink = true;
-                    fa = channelSftp.stat(g.dir+"/"+entry.getName());
-                }
+                try {
+                    FileAttributes fa = entry.getAttributes();
+                    if (fa.getType() == net.schmizz.sshj.sftp.FileMode.Type.SYMLINK) {
+                        isLink = true;
+                        fa = channelSftp.stat(g.dir+"/"+entry.getName());
+                    }
 
-                l.add(new BrowserItem(entry.getName(),
-                        fa.getSize(),
-                        new Date(fa.getMtime()*1000L),
-                        fa.getType() == net.schmizz.sshj.sftp.FileMode.Type.DIRECTORY,
-                        isLink));
+                    l.add(new BrowserItem(entry.getName(),
+                            fa.getSize(),
+                            new Date(fa.getMtime()*1000L),
+                            fa.getType() == net.schmizz.sshj.sftp.FileMode.Type.DIRECTORY,
+                            isLink));
+                }
+                catch(Exception e) {
+                    e.printStackTrace();
+                    Log.e(getClass().getName(),"skipping inaccessible entry: "+entry.getName());
+                }
             }
 
             return new SftpDirWithContent(g.authData,directory.dir,l);
