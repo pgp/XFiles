@@ -228,7 +228,7 @@ public class XSSHClient extends SSHClient implements AutoCloseable {
     }
 
     public folderStats_resp statFoldersInPaths(Map.Entry<String,Boolean>... paths) {
-        folderStats_resp resp = new folderStats_resp(0,0,0,0,0);
+        folderStats_resp resp = new folderStats_resp();
 
         long totalFirstLevelRegularFiles = 0;
         final StringBuilder builderD = new StringBuilder("(");

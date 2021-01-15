@@ -217,7 +217,6 @@ public class SFTPProvider implements FileOperationHelper {
             if (dbData != null) // found (not necessarily with password)
                 path.authData = dbData;
 
-//            c.setConnectTimeout(100000); // 100 seconds timeout for debugging
             c.setConnectTimeout(CONNECT_TIMEOUT_MS);
             c.setTimeout(CHANNEL_TIMEOUT_MS);
             c.connect(path.authData.domain,path.authData.port);
@@ -659,7 +658,54 @@ public class SFTPProvider implements FileOperationHelper {
 
     @Override
     public folderStats_resp statFiles(List<BasePathContent> files) throws IOException {
-        return null;
+        folderStats_resp resp = new folderStats_resp();
+        AuthData a = ((SFTPPathContent) files.get(0)).authData;
+        // try to get channel
+        Object channelSftp_ = getChannel(a,null);
+        if (channelSftp_ instanceof FileOpsErrorCodes) throw new IOException(((FileOpsErrorCodes) channelSftp_).name()); // abuse of notation
+        XSFTPClient xsftp = (XSFTPClient) channelSftp_;
+        XSSHClient xssh = xsshclients.get(a.toString());
+        if(xssh == null) return null;
+
+        for(BasePathContent file : files) {
+            SFTPPathContent rpc = (SFTPPathContent) file;
+            FileAttributes attrs = xsftp.stat(rpc.dir);
+            switch(attrs.getType()) {
+                case REGULAR:
+                    resp.totalSize += attrs.getSize();
+                    resp.totalFiles++;
+                    break;
+                case DIRECTORY:
+                    try {
+                        folderStats_resp fs = xssh.statFoldersInPaths(new AbstractMap.SimpleEntry<>(rpc.dir,true));
+                        if(fs.totalDirs!=0) fs.totalDirs--; // exclude current directory from find results
+                        resp.totalFiles += fs.totalFiles;
+                        resp.totalDirs += fs.totalDirs;
+
+                        List<RemoteResourceInfo> lsContent = ((XSFTPClient)channelSftp_).ls(rpc.dir);
+
+                        for (RemoteResourceInfo entry : lsContent) {
+                            FileAttributes fa = entry.getAttributes();
+                            if (fa.getType() == net.schmizz.sshj.sftp.FileMode.Type.DIRECTORY)
+                                resp.childrenDirs++;
+                            else resp.childrenFiles++;
+                        }
+                    }
+                    catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    // total size
+                    resp.totalSize += xssh.countTotalSizeInItems(
+                            Collections.singletonList(new AbstractMap.SimpleEntry<>(rpc.dir, null)),
+                            rpc.getParent().dir);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        return resp;
     }
 
     @Override

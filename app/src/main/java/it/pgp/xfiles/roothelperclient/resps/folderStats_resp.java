@@ -50,6 +50,8 @@ public class folderStats_resp {
         this.totalSize = castBytesToUnsignedNumber(tmp);
     }
 
+    public folderStats_resp() {}
+
     public folderStats_resp(long childrenDirs, long childrenFiles, long totalDirs, long totalFiles, long totalSize)  {
         this.childrenDirs = childrenDirs;
         this.childrenFiles = childrenFiles;
