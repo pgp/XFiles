@@ -18,7 +18,7 @@ import it.pgp.xfiles.utils.pathcontent.LocalPathContent;
 /**
  * Created by pgp on 13/05/2017 - adapted from DirCommanderCUsingBrowserItems
  */
-public class DirCommanderCUsingBrowserItemsAndPathContent {
+public class DirCommander {
     private Map<Integer,BasePathContent> recentDirs;
     private Map<Integer,Integer> previousListViewPositions; // position of list view when previous directory was listed
     private int currentIndex;
@@ -76,7 +76,7 @@ public class DirCommanderCUsingBrowserItemsAndPathContent {
         else throw new RuntimeException("Unknown data provider");
     }
 
-    public DirCommanderCUsingBrowserItemsAndPathContent(BasePathContent startingDir) throws DirCommanderException {
+    public DirCommander(BasePathContent startingDir) throws DirCommanderException {
         currentIndex = 0;
         recentDirs = new HashMap<>();
         previousListViewPositions = new HashMap<>();
@@ -87,7 +87,7 @@ public class DirCommanderCUsingBrowserItemsAndPathContent {
         if (dwc == null || dwc.errorCode != null) throw new DirCommanderException();
     }
 
-    public DirCommanderCUsingBrowserItemsAndPathContent(BasePathContent startingDir, BasePathContent fallbackDir) throws DirCommanderException {
+    public DirCommander(BasePathContent startingDir, BasePathContent fallbackDir) throws DirCommanderException {
         currentIndex = 0;
         recentDirs = new HashMap<>();
         previousListViewPositions = new HashMap<>();

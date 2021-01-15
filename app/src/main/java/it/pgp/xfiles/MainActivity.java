@@ -118,7 +118,7 @@ import it.pgp.xfiles.sftpclient.VaultActivity;
 import it.pgp.xfiles.smbclient.SmbProvider;
 import it.pgp.xfiles.smbclient.SmbVaultActivity;
 import it.pgp.xfiles.utils.ContentProviderUtils;
-import it.pgp.xfiles.utils.DirCommanderCUsingBrowserItemsAndPathContent;
+import it.pgp.xfiles.utils.DirCommander;
 import it.pgp.xfiles.utils.FileOperationHelper;
 import it.pgp.xfiles.utils.XFilesUtils;
 import it.pgp.xfiles.utils.dircontent.GenericDirWithContent;
@@ -221,7 +221,7 @@ public class MainActivity extends EffectActivity {
         return browserPagerAdapter.browserAdapters[browserPager.getCurrentItem()];
     }
 
-    public DirCommanderCUsingBrowserItemsAndPathContent getCurrentDirCommander() {
+    public DirCommander getCurrentDirCommander() {
         return browserPagerAdapter.dirCommanders[browserPager.getCurrentItem()];
     }
 

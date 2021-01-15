@@ -7,7 +7,6 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.view.PagerAdapter;
@@ -41,7 +40,7 @@ import it.pgp.xfiles.enums.ComparatorField;
 import it.pgp.xfiles.enums.FileOpsErrorCodes;
 import it.pgp.xfiles.exceptions.DirCommanderException;
 import it.pgp.xfiles.utils.CheckableSingleExecutor;
-import it.pgp.xfiles.utils.DirCommanderCUsingBrowserItemsAndPathContent;
+import it.pgp.xfiles.utils.DirCommander;
 import it.pgp.xfiles.utils.Misc;
 import it.pgp.xfiles.utils.Pair;
 import it.pgp.xfiles.utils.dircontent.GenericDirWithContent;
@@ -64,8 +63,7 @@ public class BrowserPagerAdapter extends PagerAdapter {
     private final ViewGroup[] rootLayouts = new ViewGroup[ADAPTER_SIZE];
 
     // almost every array is initially populated with null objects
-    public final DirCommanderCUsingBrowserItemsAndPathContent[] dirCommanders =
-            new DirCommanderCUsingBrowserItemsAndPathContent[ADAPTER_SIZE];
+    public final DirCommander[] dirCommanders = new DirCommander[ADAPTER_SIZE];
     public final AbsListView[] mainBrowserViews = new AbsListView[ADAPTER_SIZE]; // to be assigned as ListView or GridView (same adapter as support)
     public final BrowserAdapter[] browserAdapters = new BrowserAdapter[ADAPTER_SIZE];
     private final BrowserViewMode[] browserViewModes = new BrowserViewMode[]{BrowserViewMode.LIST,BrowserViewMode.LIST};
@@ -95,8 +93,8 @@ public class BrowserPagerAdapter extends PagerAdapter {
 
         // first commander expected to load an always-accessible directory (fail on first exception)
         try {
-            this.dirCommanders[0] = new DirCommanderCUsingBrowserItemsAndPathContent(path0);
-            this.dirCommanders[1] = new DirCommanderCUsingBrowserItemsAndPathContent(path1,path0);
+            this.dirCommanders[0] = new DirCommander(path0);
+            this.dirCommanders[1] = new DirCommander(path1,path0);
         }
         catch (DirCommanderException e) {
             Toast.makeText(mainActivity, "Unable to create or rebuild dir commanders, exiting...", Toast.LENGTH_SHORT).show();
