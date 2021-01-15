@@ -73,7 +73,7 @@ import it.pgp.xfiles.service.SocketNames;
 import it.pgp.xfiles.service.visualization.ProgressIndicator;
 import it.pgp.xfiles.utils.ArchiveVMap;
 import it.pgp.xfiles.utils.ContentProviderUtils;
-import it.pgp.xfiles.utils.FileOperationHelperUsingPathContent;
+import it.pgp.xfiles.utils.FileOperationHelper;
 import it.pgp.xfiles.utils.GenericMRU;
 import it.pgp.xfiles.utils.Misc;
 import it.pgp.xfiles.utils.Pair;
@@ -93,7 +93,7 @@ import it.pgp.xfiles.utils.pathcontent.XREPathContent;
  * Created by pgp on 20/01/17
  */
 
-public class RootHelperClientUsingPathContent implements FileOperationHelperUsingPathContent {
+public class RootHelperClient implements FileOperationHelper {
 
     private static final long EOF_ind = ProgressConflictHandler.Status.EOF.getStatus(); // end of file
     private static final long EOFs_ind = ProgressConflictHandler.Status.EOFs.getStatus(); // end of files
@@ -122,11 +122,11 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
     public static final SocketNames defaultaddress = SocketNames.theroothelper;
     public SocketNames address;
 
-    public RootHelperClientUsingPathContent() {
+    public RootHelperClient() {
         this.address = defaultaddress;
     }
 
-    RootHelperClientUsingPathContent(SocketNames address) {
+    RootHelperClient(SocketNames address) {
         this.address = address;
     }
 

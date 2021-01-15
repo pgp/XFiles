@@ -22,7 +22,7 @@ import it.pgp.xfiles.utils.pathcontent.BasePathContent;
  * Created by pgp on 26/01/17
  */
 
-public interface FileOperationHelperUsingPathContent {
+public interface FileOperationHelper {
     // TODO change return value of every method to boolean or int and remove IOException
     void createFileOrDirectory(BasePathContent filePath, FileMode fileOrDirectory, FileCreationAdvancedOptions... fileOptions) throws IOException;
     void createLink(BasePathContent originPath, BasePathContent linkPath, boolean isHardLink) throws IOException;

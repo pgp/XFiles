@@ -42,7 +42,7 @@ public class IdentitiesVaultAdapter extends BaseAdapter implements ListAdapter {
 
     IdentitiesVaultAdapter(final VaultActivity vaultActivity) {
         this.vaultActivity = vaultActivity;
-        idsDir = new File(vaultActivity.getFilesDir(), SFTPProviderUsingPathContent.sshIdsDirName);
+        idsDir = new File(vaultActivity.getFilesDir(), SFTPProvider.sshIdsDirName);
         notifyDataSetChanged();
     }
 

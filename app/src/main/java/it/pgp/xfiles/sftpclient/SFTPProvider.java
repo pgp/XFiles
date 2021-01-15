@@ -52,7 +52,7 @@ import it.pgp.xfiles.items.SingleStatsItem;
 import it.pgp.xfiles.roothelperclient.HashRequestCodes;
 import it.pgp.xfiles.roothelperclient.resps.folderStats_resp;
 import it.pgp.xfiles.service.BaseBackgroundTask;
-import it.pgp.xfiles.utils.FileOperationHelperUsingPathContent;
+import it.pgp.xfiles.utils.FileOperationHelper;
 import it.pgp.xfiles.utils.GenericDBHelper;
 import it.pgp.xfiles.utils.dircontent.GenericDirWithContent;
 import it.pgp.xfiles.utils.dircontent.SftpDirWithContent;
@@ -64,7 +64,7 @@ import it.pgp.xfiles.utils.pathcontent.SFTPPathContent;
  * Updated on 03/11/17 (migration to custom XSFTP types for handling transfer progress)
  */
 
-public class SFTPProviderUsingPathContent implements FileOperationHelperUsingPathContent {
+public class SFTPProvider implements FileOperationHelper {
 
     BaseBackgroundTask task;
     @Override
@@ -173,7 +173,7 @@ public class SFTPProviderUsingPathContent implements FileOperationHelperUsingPat
 
     /************************************************************/
 
-    public SFTPProviderUsingPathContent(final MainActivity mainActivity) {
+    public SFTPProvider(final MainActivity mainActivity) {
         this.mainActivity = mainActivity;
         sshIdsDir = new File(mainActivity.getApplicationContext().getFilesDir(),sshIdsDirName);
         if (!sshIdsDir.exists()) sshIdsDir.mkdirs();

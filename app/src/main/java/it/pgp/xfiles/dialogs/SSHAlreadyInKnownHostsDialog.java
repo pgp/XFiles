@@ -13,7 +13,7 @@ import java.security.PublicKey;
 import it.pgp.xfiles.MainActivity;
 import it.pgp.xfiles.R;
 import it.pgp.xfiles.sftpclient.AuthData;
-import it.pgp.xfiles.sftpclient.SFTPProviderUsingPathContent;
+import it.pgp.xfiles.sftpclient.SFTPProvider;
 import it.pgp.xfiles.utils.pathcontent.BasePathContent;
 
 /**
@@ -32,7 +32,7 @@ public class SSHAlreadyInKnownHostsDialog extends SSHKnownHostsBaseDialog {
                                         final AuthData authData,
                                         final OpenSSHKnownHosts.KnownHostEntry oldHostEntry,
                                         final PublicKey newHostKey,
-                                        final SFTPProviderUsingPathContent provider,
+                                        final SFTPProvider provider,
                                         final BasePathContent pendingLsPath) {
         super(activity,pendingLsPath);
 

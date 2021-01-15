@@ -102,7 +102,7 @@ import it.pgp.xfiles.roothelperclient.FirstRunAssetsExtract;
 import it.pgp.xfiles.roothelperclient.RemoteClientManager;
 import it.pgp.xfiles.roothelperclient.RemoteServerManager;
 import it.pgp.xfiles.roothelperclient.RootHandler;
-import it.pgp.xfiles.roothelperclient.RootHelperClientUsingPathContent;
+import it.pgp.xfiles.roothelperclient.RootHelperClient;
 import it.pgp.xfiles.service.BaseBackgroundService;
 import it.pgp.xfiles.service.CopyMoveService;
 import it.pgp.xfiles.service.NonInteractiveSftpService;
@@ -113,14 +113,14 @@ import it.pgp.xfiles.service.params.CopyMoveParams;
 import it.pgp.xfiles.service.params.TestParams;
 import it.pgp.xfiles.service.visualization.ProgressIndicator;
 import it.pgp.xfiles.sftpclient.InteractiveHostKeyVerifier;
-import it.pgp.xfiles.sftpclient.SFTPProviderUsingPathContent;
+import it.pgp.xfiles.sftpclient.SFTPProvider;
 import it.pgp.xfiles.sftpclient.VaultActivity;
-import it.pgp.xfiles.smbclient.SmbProviderUsingPathContent;
+import it.pgp.xfiles.smbclient.SmbProvider;
 import it.pgp.xfiles.smbclient.SmbVaultActivity;
 import it.pgp.xfiles.utils.ContentProviderUtils;
 import it.pgp.xfiles.utils.DirCommanderCUsingBrowserItemsAndPathContent;
-import it.pgp.xfiles.utils.FileOperationHelperUsingPathContent;
-import it.pgp.xfiles.utils.XFilesUtilsUsingPathContent;
+import it.pgp.xfiles.utils.FileOperationHelper;
+import it.pgp.xfiles.utils.XFilesUtils;
 import it.pgp.xfiles.utils.dircontent.GenericDirWithContent;
 import it.pgp.xfiles.utils.dircontent.SftpDirWithContent;
 import it.pgp.xfiles.utils.pathcontent.ArchivePathContent;
@@ -166,13 +166,13 @@ public class MainActivity extends EffectActivity {
     public int defaultUIVisibility;
 
     // File Operations Helpers
-    public static SmbProviderUsingPathContent smbProvider;
-    public static SFTPProviderUsingPathContent sftpProvider;
+    public static SmbProvider smbProvider;
+    public static SFTPProvider sftpProvider;
 
-    public static XFilesUtilsUsingPathContent xFilesUtils;
-    private static RootHelperClientUsingPathContent rootHelperClient;
+    public static XFilesUtils xFilesUtils;
+    private static RootHelperClient rootHelperClient;
 
-    public FileOperationHelperUsingPathContent getFileOpsHelper(ProviderType providerType) {
+    public FileOperationHelper getFileOpsHelper(ProviderType providerType) {
         switch(providerType) {
             case LOCAL:
                 return usingRootHelperForLocal?getRootHelperClient():xFilesUtils;
@@ -189,7 +189,7 @@ public class MainActivity extends EffectActivity {
         }
     }
 
-    public static RootHelperClientUsingPathContent getRootHelperClient(Context... context) {
+    public static RootHelperClient getRootHelperClient(Context... context) {
         if (rootHelperClient == null) {
             rootHelperClient = RootHandler.startAndGetRH(context);
             if (rootHelperClient != null)
@@ -695,10 +695,10 @@ public class MainActivity extends EffectActivity {
             }
         }
 
-        xFilesUtils = new XFilesUtilsUsingPathContent();
+        xFilesUtils = new XFilesUtils();
 
-        smbProvider = new SmbProviderUsingPathContent(mainActivityContext,this);
-        sftpProvider = new SFTPProviderUsingPathContent(this);
+        smbProvider = new SmbProvider(mainActivityContext,this);
+        sftpProvider = new SFTPProvider(this);
 
 
         layoutInflater = LayoutInflater.from(MainActivity.this);

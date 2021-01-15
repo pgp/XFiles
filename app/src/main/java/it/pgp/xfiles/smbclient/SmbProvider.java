@@ -28,7 +28,7 @@ import it.pgp.xfiles.roothelperclient.HashRequestCodes;
 import it.pgp.xfiles.roothelperclient.resps.folderStats_resp;
 import it.pgp.xfiles.service.BaseBackgroundTask;
 import it.pgp.xfiles.sftpclient.XProgress;
-import it.pgp.xfiles.utils.FileOperationHelperUsingPathContent;
+import it.pgp.xfiles.utils.FileOperationHelper;
 import it.pgp.xfiles.utils.GenericDBHelper;
 import it.pgp.xfiles.utils.dircontent.GenericDirWithContent;
 import it.pgp.xfiles.utils.dircontent.SmbDirWithContent;
@@ -46,7 +46,7 @@ import jcifs.smb.SmbFile;
 import jcifs.smb.SmbFileInputStream;
 import jcifs.smb.SmbFileOutputStream;
 
-public class SmbProviderUsingPathContent implements FileOperationHelperUsingPathContent {
+public class SmbProvider implements FileOperationHelper {
 
     BaseBackgroundTask task;
     @Override
@@ -101,7 +101,7 @@ public class SmbProviderUsingPathContent implements FileOperationHelperUsingPath
         smbclients.clear();
     }
 
-    public SmbProviderUsingPathContent(final Context context, final MainActivity mainActivity) {
+    public SmbProvider(final Context context, final MainActivity mainActivity) {
         this.mainActivity = mainActivity;
         this.dbh = new GenericDBHelper(context);
         try {

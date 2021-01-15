@@ -32,7 +32,7 @@ import it.pgp.xfiles.MainActivity;
 import it.pgp.xfiles.enums.FileMode;
 import it.pgp.xfiles.io.RobustLocalFileInputStream;
 import it.pgp.xfiles.io.RobustLocalFileOutputStream;
-import it.pgp.xfiles.roothelperclient.RootHelperClientUsingPathContent;
+import it.pgp.xfiles.roothelperclient.RootHelperClient;
 import it.pgp.xfiles.utils.dircontent.GenericDirWithContent;
 import it.pgp.xfiles.utils.pathcontent.LocalPathContent;
 
@@ -40,7 +40,7 @@ public class XFileSystemFile implements LocalSourceFile, LocalDestFile {
 
     protected final Logger log = LoggerFactory.getLogger(getClass());
 
-    private final RootHelperClientUsingPathContent rhc = MainActivity.getRootHelperClient();
+    private final RootHelperClient rhc = MainActivity.getRootHelperClient();
     private RobustLocalFileInputStream fis;
     private RobustLocalFileOutputStream fos;
 

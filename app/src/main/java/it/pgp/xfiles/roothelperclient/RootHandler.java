@@ -127,18 +127,18 @@ public class RootHandler {
      * and checks connection by the two by sending a ping message.
      * If everything is ok, the RHClient instance is returned, otherwise null.
      */
-    public static RootHelperClientUsingPathContent startAndGetRH(Context... context) {
+    public static RootHelperClient startAndGetRH(Context... context) {
         Context c = context.length > 0 ? context[0]:MainActivity.mainActivityContext;
 
         SocketNames socketName = SocketNames.theroothelper;
-        RootHelperClientUsingPathContent rh = null;
+        RootHelperClient rh = null;
         long pid; // communicated by RH server itself once successfully started
 
         for(boolean asRoot : new Boolean[]{true,false}) {
             try {
                 Process p = runRootHelper(c,asRoot,socketName);
 
-                rh = new RootHelperClientUsingPathContent(socketName);
+                rh = new RootHelperClient(socketName);
                 pid = rh.checkConnection();
                 while (pid < 0) {
                     try {
@@ -175,7 +175,7 @@ public class RootHandler {
         return rh;
     }
 
-    public static String getInternalStoragePathInRootMode(RootHelperClientUsingPathContent rh, Context c) {
+    public static String getInternalStoragePathInRootMode(RootHelperClient rh, Context c) {
         SharedPreferences sp = c.getSharedPreferences(c.getPackageName(), Context.MODE_PRIVATE);
         String rootModeStoragePath = sp.getString("rootModeStoragePath",null);
         if(rootModeStoragePath != null) return rootModeStoragePath; // a working path was already set

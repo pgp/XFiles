@@ -18,7 +18,7 @@ import it.pgp.xfiles.MainActivity;
 import it.pgp.xfiles.R;
 import it.pgp.xfiles.utils.FileSelectFragment;
 import it.pgp.xfiles.utils.GenericDBHelper;
-import it.pgp.xfiles.utils.XFilesUtilsUsingPathContent;
+import it.pgp.xfiles.utils.XFilesUtils;
 
 /**
  * Created by pgp on 11/02/17 (adapted from KeyGuard)
@@ -85,7 +85,7 @@ public class VaultActivity extends EffectActivity implements FileSelectFragment.
     public void onConfirmSelect(String absolutePath, String fileName) {
         if (absolutePath != null && fileName != null) {
             File inputPrivKey = new File(absolutePath,fileName);
-            File destPath = new File(getApplicationContext().getFilesDir(), SFTPProviderUsingPathContent.sshIdsDirName);
+            File destPath = new File(getApplicationContext().getFilesDir(), SFTPProvider.sshIdsDirName);
             if (!destPath.exists()) destPath.mkdirs();
             destPath = new File(destPath,fileName);
 
@@ -113,7 +113,7 @@ public class VaultActivity extends EffectActivity implements FileSelectFragment.
             }
 
             try {
-                XFilesUtilsUsingPathContent.copyFile(inputPrivKey,destPath);
+                XFilesUtils.copyFile(inputPrivKey,destPath);
             }
             catch (IOException e) {
                 Toast.makeText(getApplicationContext(),"Key import error",Toast.LENGTH_SHORT).show();

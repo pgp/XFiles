@@ -11,7 +11,7 @@ import it.pgp.xfiles.enums.ProviderType;
 import it.pgp.xfiles.exceptions.InterruptedTransferAsIOException;
 import it.pgp.xfiles.roothelperclient.ControlCodes;
 import it.pgp.xfiles.service.params.CopyMoveParams;
-import it.pgp.xfiles.sftpclient.SFTPProviderUsingPathContent;
+import it.pgp.xfiles.sftpclient.SFTPProvider;
 import it.pgp.xfiles.sftpclient.XProgress;
 import it.pgp.xfiles.utils.pathcontent.BasePathContent;
 
@@ -64,7 +64,7 @@ public class NonInteractiveSftpTask extends BaseBackgroundTask {
     @Override
     protected Object doInBackground(Object[] unusedParams) {
         try {
-            SFTPProviderUsingPathContent sp = MainActivity.sftpProvider;
+            SFTPProvider sp = MainActivity.sftpProvider;
             sp.initProgressSupport(this);
             sp.copyMoveFilesToDirectory(this.params.list,this.params.destPath);
         }

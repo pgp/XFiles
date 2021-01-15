@@ -19,7 +19,7 @@ import java.util.concurrent.locks.LockSupport;
 
 import it.pgp.xfiles.enums.CopyMoveMode;
 import it.pgp.xfiles.items.SingleStatsItem;
-import it.pgp.xfiles.roothelperclient.RootHelperClientUsingPathContent;
+import it.pgp.xfiles.roothelperclient.RootHelperClient;
 import it.pgp.xfiles.service.BaseBackgroundService;
 import it.pgp.xfiles.service.NonInteractiveXFilesRemoteTransferService;
 import it.pgp.xfiles.service.params.CopyMoveParams;
@@ -93,7 +93,7 @@ public class XREDirectShareActivity extends EffectActivity {
         setActivityIcon(R.drawable.xf_xre_server_up);
         MainActivity.mainActivityContext = getApplicationContext();
         MainActivity.refreshToastHandler(MainActivity.mainActivityContext);
-        final RootHelperClientUsingPathContent rh = MainActivity.getRootHelperClient();
+        final RootHelperClient rh = MainActivity.getRootHelperClient();
 
         // CHECK SHARE INTENT
         List<Uri> uris = IntentUtil.getShareSelectionFromIntent(getIntent());

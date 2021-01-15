@@ -5,7 +5,7 @@ import android.content.ContentResolver;
 import java.io.Serializable;
 
 import it.pgp.xfiles.MainActivity;
-import it.pgp.xfiles.roothelperclient.RootHelperClientUsingPathContent;
+import it.pgp.xfiles.roothelperclient.RootHelperClient;
 
 /**
  * Created by pgp on 06/06/17
@@ -14,14 +14,14 @@ import it.pgp.xfiles.roothelperclient.RootHelperClientUsingPathContent;
 
 public abstract class RootHelperClientTask extends BaseBackgroundTask {
 
-    public RootHelperClientUsingPathContent rh;
+    public RootHelperClient rh;
     public ContentResolver resolver; // for XRE direct share and compress from 3rd party providers
 
     public RootHelperClientTask(Serializable params) {
         super(params);
 
         MainActivity.getRootHelperClient(); // ensure started (not sure if instance can be re-used here)
-        rh = new RootHelperClientUsingPathContent();
+        rh = new RootHelperClient();
     }
 
 

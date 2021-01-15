@@ -3,9 +3,11 @@ package it.pgp.xfiles.utils;
 import java.io.DataInputStream;
 import java.io.OutputStream;
 
+import it.pgp.xfiles.roothelperclient.RootHelperClient;
+
 /**
  * Common supertype for {@link it.pgp.xfiles.roothelperclient.RemoteManager}
- * and {@link it.pgp.xfiles.roothelperclient.RootHelperClientUsingPathContent.RootHelperStreams}
+ * and {@link RootHelperClient.RootHelperStreams}
  */
 public abstract class StreamsPair implements AutoCloseable {
 

@@ -23,7 +23,7 @@ import it.pgp.xfiles.enums.ProviderType;
 import it.pgp.xfiles.items.FileCreationAdvancedOptions;
 import it.pgp.xfiles.items.SingleStatsItem;
 import it.pgp.xfiles.roothelperclient.HashRequestCodes;
-import it.pgp.xfiles.roothelperclient.RootHelperClientUsingPathContent;
+import it.pgp.xfiles.roothelperclient.RootHelperClient;
 import it.pgp.xfiles.roothelperclient.resps.folderStats_resp;
 import it.pgp.xfiles.service.BaseBackgroundTask;
 import it.pgp.xfiles.utils.dircontent.GenericDirWithContent;
@@ -36,13 +36,13 @@ import it.pgp.xfiles.utils.pathcontent.XREPathContent;
  */
 
 // Java-only equivalent to RootHelperClient (in final implementation, these classes should implement the common interface FileOperationHelper)
-public class XFilesUtilsUsingPathContent implements FileOperationHelperUsingPathContent {
+public class XFilesUtils implements FileOperationHelper {
 
     // for publishing progress from within a long term task (copy/move/compress/extract/upload/download)
     BaseBackgroundTask task;
     long totalFilesForProgress,currentFilesForProgress;
 
-    private RootHelperClientUsingPathContent rhc;
+    private RootHelperClient rhc;
 
     private void refreshRHClient() throws IOException {
         rhc = MainActivity.getRootHelperClient();
@@ -335,7 +335,7 @@ public class XFilesUtilsUsingPathContent implements FileOperationHelperUsingPath
                                   @Nullable Boolean solidMode,
                                   String password,
                                   List<String> filenames) throws IOException {
-        RootHelperClientUsingPathContent rh = MainActivity.getRootHelperClient();
+        RootHelperClient rh = MainActivity.getRootHelperClient();
         if(rh == null) return -1;
         return rh.compressToArchive(
                 srcDirectory,
@@ -349,7 +349,7 @@ public class XFilesUtilsUsingPathContent implements FileOperationHelperUsingPath
 
     @Override
     public List<FileOpsErrorCodes> extractFromArchive(List<BasePathContent> srcArchives, BasePathContent destDirectory, @Nullable String password, @Nullable List<String> filenames, boolean smartDirectoryCreation) throws IOException {
-        RootHelperClientUsingPathContent rh = MainActivity.getRootHelperClient();
+        RootHelperClient rh = MainActivity.getRootHelperClient();
         if(rh == null) return Collections.singletonList(FileOpsErrorCodes.ROOTHELPER_INIT_ERROR);
         return rh.extractFromArchive(srcArchives,destDirectory,password,filenames,smartDirectoryCreation);
     }
