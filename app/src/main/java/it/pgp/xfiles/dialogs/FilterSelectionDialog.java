@@ -2,6 +2,7 @@ package it.pgp.xfiles.dialogs;
 
 import android.app.Activity;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 
 import it.pgp.xfiles.adapters.BrowserAdapter;
@@ -14,13 +15,13 @@ public class FilterSelectionDialog extends BaseDialog {
     public FilterSelectionDialog(final Activity activity, final BrowserAdapter browserAdapter, final boolean selectOrDeselect) {
         super(activity);
         setTitle(selectOrDeselect ? "Filter selection" : "Filter deselection");
-        setContentView(R.layout.single_filename_dialog);
+        setContentView(R.layout.filter_selection_dialog);
         setDialogIcon(R.drawable.xfiles_find);
         EditText content = findViewById(R.id.singleFilenameEditText);
+        CheckBox ignoreCase = findViewById(R.id.ignoreCaseCheckbox);
         Button okButton = findViewById(R.id.singleFilenameOkButton);
         okButton.setOnClickListener(v -> {
-            // TODO parse wildcards (e.g. * for any chars)
-            browserAdapter.filterSelection(content.getText().toString(), selectOrDeselect);
+            browserAdapter.filterSelection(content.getText().toString(), selectOrDeselect, ignoreCase.isChecked());
             dismiss();
         });
     }

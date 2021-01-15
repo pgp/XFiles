@@ -205,12 +205,13 @@ public abstract class BrowserAdapter extends ArrayAdapter<BrowserItem> {
     }
 
     // from RAR UI
-    public void filterSelection(String content, boolean selectOrDeselect) {
+    public void filterSelection(String content, boolean selectOrDeselect, boolean ignoreCase) {
         for(int i=0; i<getCount() ; i++) {
             BrowserItem b = getItem(i);
-            if (b.getFilename().contains(content)) {
+            String f = b.getFilename();
+            if((ignoreCase && f.toLowerCase().contains(content.toLowerCase())) ||
+                    (!ignoreCase && f.contains(content)))
                 b.setChecked(selectOrDeselect);
-            }
         }
         notifyDataSetChanged();
     }
