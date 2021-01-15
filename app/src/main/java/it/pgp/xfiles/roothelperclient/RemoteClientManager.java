@@ -141,8 +141,8 @@ public class RemoteClientManager {
         }
     }
 
-    // TODO make RemoteClientManager implementor of FileOperationHelperUsingPathContent and remove duplicated code in RootHelperClientUsingPathContent
-    // TODO use StreamsPair and getStreams(...) in RootHelperClientUsingPathContent, remove duplicated methods from here
+    // TODO make RemoteClientManager implementor of FileOperationHelper and remove duplicated code in RootHelperClient
+    // TODO use StreamsPair and getStreams(...) in RootHelperClient, remove duplicated methods from here
 
     public FileOpsErrorCodes transferItems(CopyMoveListPathContent items, BasePathContent destDir, ControlCodes action, NonInteractiveXFilesRemoteTransferTask progressTask, ContentResolver contentResolver) {
         this.contentResolver = contentResolver;

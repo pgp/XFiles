@@ -293,7 +293,7 @@ public class XFilesUtils implements FileOperationHelper {
 //                    digest = Checksums.sha1(f);
 //                    break;
 //                default:
-//                    Log.e(XFilesUtilsUsingPathContent.class.getName(), "Not implemented");
+//                    Log.e(XFilesUtils.class.getName(), "Not implemented");
 //            }
 //        }
 //        catch (NoSuchAlgorithmException n) {

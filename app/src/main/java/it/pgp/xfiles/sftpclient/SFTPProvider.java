@@ -104,7 +104,7 @@ public class SFTPProvider implements FileOperationHelper {
         for (XSSHClient x : xsshclients.values())
             try {x.close();} catch (Exception ignored) {}
 
-        // actually not needed, on next onCreate a SFTPProviderUsingPathContent is created
+        // actually not needed, on next onCreate a SFTPProvider is created
 //        channels.clear();
 //        xsshclients.clear();
     }
