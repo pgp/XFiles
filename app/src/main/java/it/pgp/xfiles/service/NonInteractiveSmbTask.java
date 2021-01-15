@@ -16,11 +16,11 @@ public class NonInteractiveSmbTask extends BaseBackgroundTask {
     /*
      * determine operation type (DOWNLOAD or UPLOAD) by type inspection of CopyMoveParams:
      * - DOWNLOAD:
-     *      CopyMoveParams.CopyMoveListPathContent.BasePathContent (parentDir) -> RemotePathContent
+     *      CopyMoveParams.CopyMoveListPathContent.BasePathContent (parentDir) -> SMBPathContent
      *      CopyMoveParams.BasePathContent -> LocalPathContent
      * - UPLOAD:
      *      CopyMoveParams.CopyMoveListPathContent.BasePathContent (parentDir) -> LocalPathContent
-     *      CopyMoveParams.BasePathContent -> RemotePathContent
+     *      CopyMoveParams.BasePathContent -> SMBPathContent
      */
     public CopyMoveParams params;
     public ControlCodes action;

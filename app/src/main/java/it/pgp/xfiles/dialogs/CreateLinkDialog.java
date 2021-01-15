@@ -17,7 +17,6 @@ import it.pgp.xfiles.utils.pathcontent.BasePathContent;
 
 public class CreateLinkDialog extends BaseDialog {
 
-    private final FileMode type;
     BasePathContent originPath;
     EditText linkPathEditText;
     Button ok;
@@ -28,7 +27,6 @@ public class CreateLinkDialog extends BaseDialog {
     public CreateLinkDialog(final MainActivity mainActivity, final BasePathContent originPath, final FileMode type) {
         super(mainActivity);
         this.mainActivity = mainActivity;
-        this.type = type;
         this.originPath = originPath;
         setContentView(R.layout.create_link_dialog);
         setDialogIcon(R.drawable.xfiles_link_icon);
@@ -62,14 +60,6 @@ public class CreateLinkDialog extends BaseDialog {
         List<String> nameToLocate = new ArrayList<String>(){{add(linkPath.getName());}};
 
         try {
-            /*if (originPath.providerType == ProviderType.XFILES_REMOTE) {
-                if (!MainActivity.rootHelperRemoteClientManager.createLink(
-                        (XFilesRemotePathContent)originPath,
-                        (XFilesRemotePathContent)linkPath,
-                        isHardLink.isChecked()))
-                    throw new IOException("");
-            }
-            else*/
             mainActivity.getFileOpsHelper(originPath.providerType).createLink(originPath,linkPath,isHardLink.isChecked());
             Toast.makeText(mainActivity, "Link created", Toast.LENGTH_SHORT).show();
         }

@@ -16,7 +16,7 @@ import it.pgp.xfiles.roothelperclient.RemoteManager;
 import it.pgp.xfiles.service.params.CopyMoveParams;
 import it.pgp.xfiles.service.visualization.MovingRibbonTwoBars;
 import it.pgp.xfiles.utils.pathcontent.BasePathContent;
-import it.pgp.xfiles.utils.pathcontent.XFilesRemotePathContent;
+import it.pgp.xfiles.utils.pathcontent.XREPathContent;
 
 /**
  * Created by pgp on 07/10/17
@@ -26,11 +26,11 @@ public class NonInteractiveXFilesRemoteTransferTask extends RootHelperClientTask
     /*
      * determine operation type (DOWNLOAD or UPLOAD) by type inspection of CopyMoveParams:
      * - DOWNLOAD:
-     *      CopyMoveParams.CopyMoveListPathContent.BasePathContent (parentDir) -> XFilesRemotePathContent
+     *      CopyMoveParams.CopyMoveListPathContent.BasePathContent (parentDir) -> XREPathContent
      *      CopyMoveParams.BasePathContent -> LocalPathContent
      * - UPLOAD:
      *      CopyMoveParams.CopyMoveListPathContent.BasePathContent (parentDir) -> LocalPathContent
-     *      CopyMoveParams.BasePathContent -> XFilesRemotePathContent
+     *      CopyMoveParams.BasePathContent -> XREPathContent
      */
     public CopyMoveParams params;
     public ControlCodes action;
@@ -67,9 +67,9 @@ public class NonInteractiveXFilesRemoteTransferTask extends RootHelperClientTask
         status = ServiceStatus.CANCELLED;
         Log.d("XRETASK","Interrupted, closing XRE client connection...");
         try {
-            XFilesRemotePathContent xrePath = (params.destPath instanceof XFilesRemotePathContent)?
-                    (XFilesRemotePathContent) params.destPath :
-                    (XFilesRemotePathContent) params.list.parentDir;
+            XREPathContent xrePath = (params.destPath instanceof XREPathContent)?
+                    (XREPathContent) params.destPath :
+                    (XREPathContent) params.list.parentDir;
             RemoteManager client = MainActivity.rootHelperRemoteClientManager.getClient(
                     xrePath.serverHost, false);
             client.close();

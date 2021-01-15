@@ -7,7 +7,7 @@ import it.pgp.xfiles.enums.ProviderType;
  * Created by pgp on 20/09/17
  */
 
-public class XFilesRemotePathContent extends BasePathContent {
+public class XREPathContent extends BasePathContent {
 
     private static final ProviderType provType = ProviderType.XFILES_REMOTE;
 
@@ -16,13 +16,13 @@ public class XFilesRemotePathContent extends BasePathContent {
     public String serverHost;
     int serverPort;
 
-    public XFilesRemotePathContent(String serverHost, String dir) {
+    public XREPathContent(String serverHost, String dir) {
         super(provType, dir);
         this.serverHost = serverHost;
         this.serverPort = defaultRHRemoteServerPort;
     }
 
-    public XFilesRemotePathContent(String serverHost, FileOpsErrorCodes errorCode) {
+    public XREPathContent(String serverHost, FileOpsErrorCodes errorCode) {
         super(provType, errorCode);
         this.serverHost = serverHost;
         this.serverPort = defaultRHRemoteServerPort;
@@ -36,19 +36,19 @@ public class XFilesRemotePathContent extends BasePathContent {
     @Override
     public BasePathContent concat(String filename) {
         String sep = dir.equals("/")?"":"/";
-        return new XFilesRemotePathContent(serverHost,dir+sep+filename);
+        return new XREPathContent(serverHost,dir+sep+filename);
     }
 
     @Override
     public BasePathContent getParent() {
         if (dir==null || dir.equals("/") || dir.equals("")) return null;
         int idx = dir.lastIndexOf('/');
-        if(idx==0) return new XFilesRemotePathContent(serverHost,"/");
-        return new XFilesRemotePathContent(serverHost,dir.substring(0,idx));
+        if(idx==0) return new XREPathContent(serverHost,"/");
+        return new XREPathContent(serverHost,dir.substring(0,idx));
     }
 
     @Override
     public BasePathContent getCopy() {
-        return new XFilesRemotePathContent(serverHost,dir);
+        return new XREPathContent(serverHost,dir);
     }
 }

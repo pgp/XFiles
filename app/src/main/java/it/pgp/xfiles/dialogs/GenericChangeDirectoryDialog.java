@@ -38,9 +38,9 @@ import it.pgp.xfiles.utils.dircontent.GenericDirWithContent;
 import it.pgp.xfiles.utils.pathcontent.ArchivePathContent;
 import it.pgp.xfiles.utils.pathcontent.BasePathContent;
 import it.pgp.xfiles.utils.pathcontent.LocalPathContent;
-import it.pgp.xfiles.utils.pathcontent.RemotePathContent;
-import it.pgp.xfiles.utils.pathcontent.SmbRemotePathContent;
-import it.pgp.xfiles.utils.pathcontent.XFilesRemotePathContent;
+import it.pgp.xfiles.utils.pathcontent.SFTPPathContent;
+import it.pgp.xfiles.utils.pathcontent.SMBPathContent;
+import it.pgp.xfiles.utils.pathcontent.XREPathContent;
 import it.pgp.xfiles.utils.wifi.WifiButtonsLayout;
 import it.pgp.xfiles.viewmodels.XREDirectoryViewModel;
 
@@ -144,11 +144,11 @@ public class GenericChangeDirectoryDialog extends Dialog {
                  TODO call tryConnectAndGetPath, which returns the default remote home
                  (in order, on success, to perform listDir from SftpProvider and update dir commander)
                  and launches error dialogs (host key not found/not valid and auth error -> provide password)
-                 accordingly. Otherwise, a RemotePathContent object needs explicitly a home directory
+                 accordingly. Otherwise, a SFTPPathContent object needs explicitly a home directory
                  */
                     String ret = XREDirectoryViewModel.basicNonEmptyValidation(user,domain,port);
                     if (!ret.isEmpty()) return reenableOkButton(ret); // password can be empty
-                    path = new RemotePathContent(
+                    path = new SFTPPathContent(
                             new AuthData(
                                     user.getText().toString(),
                                     domain.getText().toString(),
@@ -161,7 +161,7 @@ public class GenericChangeDirectoryDialog extends Dialog {
                 case 3: // XFILES_REMOTE
                     ret = XREDirectoryViewModel.basicNonEmptyValidation(xreDirectoryViewModel.xreServerHost);
                     if (!ret.isEmpty()) return reenableOkButton(ret);
-                    path = new XFilesRemotePathContent(
+                    path = new XREPathContent(
                             xreDirectoryViewModel.xreServerHost.getText().toString(),
 //                        Integer.valueOf(xreServerPort.getText().toString()),
                             xreDirectoryViewModel.xreRemotePath.getText().toString()
@@ -170,7 +170,7 @@ public class GenericChangeDirectoryDialog extends Dialog {
                 case 4: // SMB
                     ret = XREDirectoryViewModel.basicNonEmptyValidation(smbUser,smbDomain,smbHost,smbPort,smbPassword);
                     if (!ret.isEmpty()) return reenableOkButton(ret); // password cannot be empty (no pubkey authentication for SMB)
-                    path = new SmbRemotePathContent(
+                    path = new SMBPathContent(
                             new SmbAuthData(
                                     smbUser.getText().toString(),
                                     smbDomain.getText().toString(),
@@ -440,7 +440,7 @@ public class GenericChangeDirectoryDialog extends Dialog {
                     inArchivePath.setText(apc.dir);
                     break;
                 case SFTP:
-                    RemotePathContent rpc = (RemotePathContent)currentDir[0];
+                    SFTPPathContent rpc = (SFTPPathContent)currentDir[0];
                     if (rpc.authData != null) {
                         user.setText(rpc.authData.username==null?"":rpc.authData.username);
                         // ignore setText of password, which may not be present, AuthData hashcode ignores it, so on login attempt, if any credential is present, it will work anyway
@@ -450,12 +450,12 @@ public class GenericChangeDirectoryDialog extends Dialog {
                     remotePath.setText(rpc.dir);
                     break;
                 case XFILES_REMOTE:
-                    XFilesRemotePathContent xrpc = (XFilesRemotePathContent)currentDir[0];
+                    XREPathContent xrpc = (XREPathContent)currentDir[0];
                     xreDirectoryViewModel.xreServerHost.setText(xrpc.serverHost);
                     xreDirectoryViewModel.xreRemotePath.setText(xrpc.dir);
                     break;
                 case SMB:
-                    SmbRemotePathContent srpc = (SmbRemotePathContent) currentDir[0];
+                    SMBPathContent srpc = (SMBPathContent) currentDir[0];
                     if (srpc.smbAuthData != null) {
                         user.setText(srpc.smbAuthData.username==null?"":srpc.smbAuthData.username);
                         // ignore setText of password, which may not be present, SmbAuthData hashcode ignores it, so on login attempt, if any credential is present, it will work anyway

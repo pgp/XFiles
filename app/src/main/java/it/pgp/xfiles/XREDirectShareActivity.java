@@ -27,7 +27,7 @@ import it.pgp.xfiles.utils.GenericDBHelper;
 import it.pgp.xfiles.utils.IntentUtil;
 import it.pgp.xfiles.utils.MulticastUtils;
 import it.pgp.xfiles.utils.pathcontent.BasePathContent;
-import it.pgp.xfiles.utils.pathcontent.XFilesRemotePathContent;
+import it.pgp.xfiles.utils.pathcontent.XREPathContent;
 import it.pgp.xfiles.utils.wifi.WifiButtonsLayout;
 import it.pgp.xfiles.viewmodels.XREDirectoryViewModel;
 
@@ -57,7 +57,7 @@ public class XREDirectShareActivity extends EffectActivity {
             Toast.makeText(this, ret, Toast.LENGTH_SHORT).show();
             return;
         }
-        path = new XFilesRemotePathContent(
+        path = new XREPathContent(
                 xreDirectoryViewModel.xreServerHost.getText().toString(),
 //                        Integer.valueOf(xreDirectoryViewModel.xreServerPort.getText().toString()),
                 xreDirectoryViewModel.xreRemotePath.getText().toString()

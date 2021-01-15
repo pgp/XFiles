@@ -57,7 +57,7 @@ import it.pgp.xfiles.utils.GenericDBHelper;
 import it.pgp.xfiles.utils.dircontent.GenericDirWithContent;
 import it.pgp.xfiles.utils.dircontent.SftpDirWithContent;
 import it.pgp.xfiles.utils.pathcontent.BasePathContent;
-import it.pgp.xfiles.utils.pathcontent.RemotePathContent;
+import it.pgp.xfiles.utils.pathcontent.SFTPPathContent;
 
 /**
  * Created by pgp on 15/05/17
@@ -191,19 +191,19 @@ public class SFTPProviderUsingPathContent implements FileOperationHelperUsingPat
     }
 
     // better version of getChannel
-    // input: RemotePathContent without dir
-    // output: RemotePathContent with default (home) dir (stat(.) after login) or with FileOpsErrorCodes error
-    public RemotePathContent tryConnectAndGetPath(RemotePathContent path) {
+    // input: SFTPPathContent without dir
+    // output: SFTPPathContent with default (home) dir (stat(.) after login) or with FileOpsErrorCodes error
+    public SFTPPathContent tryConnectAndGetPath(SFTPPathContent path) {
         // try to get channel, if already connected
         XSFTPClient cSFTP = channels.get(path.authData.toString());
 
         if (cSFTP != null) { // connection already active, stat home dir in order to get its pathname
             try {
                 String fullPath = cSFTP.canonicalize("."); // TODO check if canonicalize works
-                return new RemotePathContent(path.authData,fullPath);
+                return new SFTPPathContent(path.authData,fullPath);
             } catch (IOException e) {
                 e.printStackTrace();
-                return new RemotePathContent(path.authData,FileOpsErrorCodes.SFTP_PATH_CANONICALIZE_ERROR);
+                return new SFTPPathContent(path.authData,FileOpsErrorCodes.SFTP_PATH_CANONICALIZE_ERROR);
             }
         }
 
@@ -248,7 +248,7 @@ public class SFTPProviderUsingPathContent implements FileOperationHelperUsingPat
 
             // exhausted auth methods, no valid credentials found
             if (!c.isAuthenticated()) {
-                return new RemotePathContent(path.authData,FileOpsErrorCodes.AUTHENTICATION_ERROR);
+                return new SFTPPathContent(path.authData,FileOpsErrorCodes.AUTHENTICATION_ERROR);
             }
 
             cSFTP = c.newXSFTPClient();
@@ -257,21 +257,21 @@ public class SFTPProviderUsingPathContent implements FileOperationHelperUsingPat
                 xsshclients.put(path.authData.toString(),c);
                 try {
                     String fullPath = cSFTP.canonicalize("."); // TODO check if canonicalize works
-                    return new RemotePathContent(path.authData,fullPath);
+                    return new SFTPPathContent(path.authData,fullPath);
                 } catch (IOException e) {
                     e.printStackTrace();
-                    return new RemotePathContent(path.authData,FileOpsErrorCodes.SFTP_PATH_CANONICALIZE_ERROR);
+                    return new SFTPPathContent(path.authData,FileOpsErrorCodes.SFTP_PATH_CANONICALIZE_ERROR);
                 }
             }
-            else return new RemotePathContent(path.authData,FileOpsErrorCodes.CONNECTION_ERROR);
+            else return new SFTPPathContent(path.authData,FileOpsErrorCodes.CONNECTION_ERROR);
         }
         catch(TransportException e) {
             if (e.getDisconnectReason() == DisconnectReason.HOST_KEY_NOT_VERIFIABLE) {
                 if (InteractiveHostKeyVerifier.lastHostKeyHasChanged != null){
                     if (InteractiveHostKeyVerifier.lastHostKeyHasChanged) {
-                        return new RemotePathContent(path.authData,FileOpsErrorCodes.HOST_KEY_CHANGED_ERROR);
+                        return new SFTPPathContent(path.authData,FileOpsErrorCodes.HOST_KEY_CHANGED_ERROR);
                     } else {
-                        return new RemotePathContent(path.authData,FileOpsErrorCodes.HOST_KEY_INEXISTENT_ERROR);
+                        return new SFTPPathContent(path.authData,FileOpsErrorCodes.HOST_KEY_INEXISTENT_ERROR);
                     }
                 }
             }
@@ -289,7 +289,7 @@ public class SFTPProviderUsingPathContent implements FileOperationHelperUsingPat
             c.disconnect();
         }
         catch (IOException|NullPointerException ignored) {}
-        return new RemotePathContent(path.authData,FileOpsErrorCodes.CONNECTION_ERROR);
+        return new SFTPPathContent(path.authData,FileOpsErrorCodes.CONNECTION_ERROR);
     }
 
     public XSFTPClient getChannelIfAlreadyExists(AuthData authData) throws IOException {
@@ -392,7 +392,7 @@ public class SFTPProviderUsingPathContent implements FileOperationHelperUsingPat
 
     @Override
     public void createFileOrDirectory(BasePathContent filePath, FileMode fileOrDirectory, FileCreationAdvancedOptions... unused) throws IOException {
-        RemotePathContent g = (RemotePathContent) filePath;
+        SFTPPathContent g = (SFTPPathContent) filePath;
 
         // try to get channel, using prefix from last GenericRemotePath object
         Object channelSftp_ = getChannel(g.authData,null);
@@ -417,10 +417,10 @@ public class SFTPProviderUsingPathContent implements FileOperationHelperUsingPat
 
     @Override
     public void createLink(BasePathContent originPath, BasePathContent linkPath, boolean isHardLink) throws IOException {
-        RemotePathContent originPath_,linkPath_;
+        SFTPPathContent originPath_,linkPath_;
         try {
-            originPath_ = (RemotePathContent) originPath;
-            linkPath_ = (RemotePathContent) linkPath;
+            originPath_ = (SFTPPathContent) originPath;
+            linkPath_ = (SFTPPathContent) linkPath;
         }
         catch (ClassCastException e) {
             throw new IOException("Only SFTP paths allowed from here");
@@ -462,13 +462,13 @@ public class SFTPProviderUsingPathContent implements FileOperationHelperUsingPat
 
     @Override
     public void deleteFilesOrDirectories(List<BasePathContent> files) throws IOException {
-        RemotePathContent g = null;
+        SFTPPathContent g = null;
         List<String> remotePaths = new ArrayList<>();
 
         for (BasePathContent x : files) {
             try {
                 // parse generic path
-                g = (RemotePathContent)x;
+                g = (SFTPPathContent)x;
                 remotePaths.add(g.dir);
             }
             catch (RuntimeException r) {
@@ -509,7 +509,7 @@ public class SFTPProviderUsingPathContent implements FileOperationHelperUsingPat
 
         if (files.parentDir.providerType == ProviderType.LOCAL && dstFolder.providerType == ProviderType.SFTP) {
             // upload (assumes remote directory already listed (connection already open))
-            XSFTPClient sftpClient = getChannelIfAlreadyExists(((RemotePathContent)dstFolder).authData);
+            XSFTPClient sftpClient = getChannelIfAlreadyExists(((SFTPPathContent)dstFolder).authData);
 
             // legacy, without progress & service support
 //            for (String localItem : files)
@@ -545,7 +545,7 @@ public class SFTPProviderUsingPathContent implements FileOperationHelperUsingPat
         }
         else if (files.parentDir.providerType == ProviderType.SFTP && dstFolder.providerType == ProviderType.LOCAL) {
             // download
-            AuthData authData = ((RemotePathContent)files.parentDir).authData;
+            AuthData authData = ((SFTPPathContent)files.parentDir).authData;
             XSFTPClient sftpClient = getChannelIfAlreadyExists(authData);
             XSSHClient xsshClient = xsshclients.get(authData.toString()); // needed for remote file counting, must exist if the previous line doesn't throw exception
             if (xsshClient == null) throw new IOException("Unexpected null: xsshclient");
@@ -581,8 +581,8 @@ public class SFTPProviderUsingPathContent implements FileOperationHelperUsingPat
         }
         else if (files.parentDir.providerType == ProviderType.SFTP && dstFolder.providerType == ProviderType.SFTP) {
             if (files.copyOrMove==CopyMoveMode.MOVE) {
-                if (((RemotePathContent)files.parentDir).authData.equals(((RemotePathContent)dstFolder).authData)) {
-                    XSFTPClient sftpClient = getChannelIfAlreadyExists(((RemotePathContent)files.parentDir).authData);
+                if (((SFTPPathContent)files.parentDir).authData.equals(((SFTPPathContent)dstFolder).authData)) {
+                    XSFTPClient sftpClient = getChannelIfAlreadyExists(((SFTPPathContent)files.parentDir).authData);
 
                     for (BrowserItem remoteItemName : files.files) { // iterator over filenames only
                         // remote dir as local path string
@@ -603,8 +603,8 @@ public class SFTPProviderUsingPathContent implements FileOperationHelperUsingPat
     @Override
     public boolean renameFile(BasePathContent oldPathname, BasePathContent newPathname) throws IOException {
         try {
-            RemotePathContent oldPathname_ = (RemotePathContent) oldPathname;
-            RemotePathContent newPathname_ = (RemotePathContent) newPathname;
+            SFTPPathContent oldPathname_ = (SFTPPathContent) oldPathname;
+            SFTPPathContent newPathname_ = (SFTPPathContent) newPathname;
             if (!oldPathname_.authData.equals(newPathname_.authData))
                 throw new IOException("Rename paths must belong to the same remote filesystem");
 
@@ -637,7 +637,7 @@ public class SFTPProviderUsingPathContent implements FileOperationHelperUsingPat
 
     @Override
     public SingleStatsItem statFile(BasePathContent pathname) throws IOException {
-        RemotePathContent g = (RemotePathContent) pathname;
+        SFTPPathContent g = (SFTPPathContent) pathname;
 
         // try to get channel
         Object channelSftp_ = getChannel(g.authData,null);
@@ -664,8 +664,8 @@ public class SFTPProviderUsingPathContent implements FileOperationHelperUsingPat
 
     @Override
     public folderStats_resp statFolder(BasePathContent pathname) throws IOException {
-        if (!(pathname instanceof RemotePathContent)) throw new IOException("Wrong path content type");
-        RemotePathContent rpc = (RemotePathContent) pathname;
+        if (!(pathname instanceof SFTPPathContent)) throw new IOException("Wrong path content type");
+        SFTPPathContent rpc = (SFTPPathContent) pathname;
         XSSHClient xsshClient = xsshclients.get(rpc.authData.toString());
         if (xsshClient==null) return null;
 
@@ -674,7 +674,7 @@ public class SFTPProviderUsingPathContent implements FileOperationHelperUsingPat
         if(fs.totalDirs!=0) fs.totalDirs--; // exclude current directory from find results
 
         // children items
-        RemotePathContent g = (RemotePathContent) pathname;
+        SFTPPathContent g = (SFTPPathContent) pathname;
         Object channelSftp_ = getChannel(g.authData,null);
         if (channelSftp_ instanceof FileOpsErrorCodes) return fs;
         try {
@@ -701,7 +701,7 @@ public class SFTPProviderUsingPathContent implements FileOperationHelperUsingPat
 
     @Override
     public boolean exists(BasePathContent pathname) {
-        RemotePathContent g = (RemotePathContent) pathname;
+        SFTPPathContent g = (SFTPPathContent) pathname;
 
         // try to get channel
         Object channelSftp_ = getChannel(g.authData,null);
@@ -722,7 +722,7 @@ public class SFTPProviderUsingPathContent implements FileOperationHelperUsingPat
 
     @Override
     public boolean isDir(BasePathContent pathname) {
-        RemotePathContent g = (RemotePathContent) pathname;
+        SFTPPathContent g = (SFTPPathContent) pathname;
 
         // try to get channel
         Object channelSftp_ = getChannel(g.authData,null);
@@ -746,7 +746,7 @@ public class SFTPProviderUsingPathContent implements FileOperationHelperUsingPat
 
     @Override
     public GenericDirWithContent listDirectory(BasePathContent directory) {
-        RemotePathContent g = (RemotePathContent) directory;
+        SFTPPathContent g = (SFTPPathContent) directory;
 
         // try to get channel
         Object channelSftp_ = getChannel(g.authData,directory);

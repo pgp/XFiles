@@ -33,7 +33,7 @@ import it.pgp.xfiles.utils.GenericDBHelper;
 import it.pgp.xfiles.utils.dircontent.GenericDirWithContent;
 import it.pgp.xfiles.utils.dircontent.SmbDirWithContent;
 import it.pgp.xfiles.utils.pathcontent.BasePathContent;
-import it.pgp.xfiles.utils.pathcontent.SmbRemotePathContent;
+import it.pgp.xfiles.utils.pathcontent.SMBPathContent;
 import jcifs.CIFSContext;
 import jcifs.CIFSException;
 import jcifs.Configuration;
@@ -228,7 +228,7 @@ public class SmbProviderUsingPathContent implements FileOperationHelperUsingPath
     @Override
     public void copyMoveFilesToDirectory(CopyMoveListPathContent files, BasePathContent dstFolder) throws IOException {
         if (files.parentDir.providerType == ProviderType.LOCAL && dstFolder.providerType == ProviderType.SMB) { // upload
-            CIFSContext cSMB = getChannel(((SmbRemotePathContent)dstFolder).smbAuthData);
+            CIFSContext cSMB = getChannel(((SMBPathContent)dstFolder).smbAuthData);
             XProgress xp = (XProgress) task.mr;
             xp.clear();
 
@@ -248,7 +248,7 @@ public class SmbProviderUsingPathContent implements FileOperationHelperUsingPath
             xp.totalFilesSize = totalLocalSize;
             xp.isDetailedProgress = true;
 
-            try (SmbFile dst = ((SmbRemotePathContent) dstFolder).getSmbFile(cSMB,true)){
+            try (SmbFile dst = ((SMBPathContent) dstFolder).getSmbFile(cSMB,true)){
                 for (BrowserItem localItem : files.files) {
                     String localName = localItem.getFilename();
                     uploadFileOrDirectory(files.parentDir.concat(localName).dir, smbfileConcat(dst,localName, localItem.isDirectory));
@@ -256,12 +256,12 @@ public class SmbProviderUsingPathContent implements FileOperationHelperUsingPath
             }
         }
         else if (files.parentDir.providerType == ProviderType.SMB && dstFolder.providerType == ProviderType.LOCAL) { // download
-            CIFSContext cSMB = getChannel(((SmbRemotePathContent)files.parentDir).smbAuthData);
+            CIFSContext cSMB = getChannel(((SMBPathContent)files.parentDir).smbAuthData);
             ((XProgress)(task.mr)).totalFiles = Long.MAX_VALUE; // FIXME external progress disabled for now
             for (BrowserItem remoteItemName : files.files) { // iterator over filenames only
                 // remote dir as local path string
                 // ending "/" in order to paste a folder as a child of the destination folder
-                try(SmbFile src = ((SmbRemotePathContent)files.parentDir).getSmbFile(cSMB,true)){
+                try(SmbFile src = ((SMBPathContent)files.parentDir).getSmbFile(cSMB,true)){
                     String remoteName = remoteItemName.getFilename();
                     downloadFileOrDirectory(smbfileConcat(src,remoteName),dstFolder.dir+"/"+remoteName);
                 }
@@ -317,7 +317,7 @@ public class SmbProviderUsingPathContent implements FileOperationHelperUsingPath
 
     @Override
     public GenericDirWithContent listDirectory(BasePathContent directory) {
-        SmbRemotePathContent g = (SmbRemotePathContent) directory;
+        SMBPathContent g = (SMBPathContent) directory;
         CIFSContext cSMB = getChannel(g.smbAuthData);
 
         try {

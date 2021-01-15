@@ -23,11 +23,11 @@ public class NonInteractiveSftpTask extends BaseBackgroundTask {
     /*
      * determine operation type (DOWNLOAD or UPLOAD) by type inspection of CopyMoveParams:
      * - DOWNLOAD:
-     *      CopyMoveParams.CopyMoveListPathContent.BasePathContent (parentDir) -> RemotePathContent
+     *      CopyMoveParams.CopyMoveListPathContent.BasePathContent (parentDir) -> SFTPPathContent
      *      CopyMoveParams.BasePathContent -> LocalPathContent
      * - UPLOAD:
      *      CopyMoveParams.CopyMoveListPathContent.BasePathContent (parentDir) -> LocalPathContent
-     *      CopyMoveParams.BasePathContent -> RemotePathContent
+     *      CopyMoveParams.BasePathContent -> SFTPPathContent
      */
     public CopyMoveParams params;
     public ControlCodes action;

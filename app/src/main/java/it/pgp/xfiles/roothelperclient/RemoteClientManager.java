@@ -27,7 +27,7 @@ import it.pgp.xfiles.utils.Misc;
 import it.pgp.xfiles.utils.Pair;
 import it.pgp.xfiles.utils.ProgressConflictHandler;
 import it.pgp.xfiles.utils.pathcontent.BasePathContent;
-import it.pgp.xfiles.utils.pathcontent.XFilesRemotePathContent;
+import it.pgp.xfiles.utils.pathcontent.XREPathContent;
 import it.pgp.xfiles.utils.popupwindow.PopupWindowUtils;
 
 /**
@@ -79,7 +79,7 @@ public class RemoteClientManager {
             client.o.write(hostLen_);
             client.o.write(serverHost_);
             // send port
-            byte[] port_ = Misc.castUnsignedNumberToBytes(XFilesRemotePathContent.defaultRHRemoteServerPort,2);
+            byte[] port_ = Misc.castUnsignedNumberToBytes(XREPathContent.defaultRHRemoteServerPort,2);
             client.o.write(port_);
 
             int resp = client.receiveBaseResponse();
@@ -150,10 +150,10 @@ public class RemoteClientManager {
         String clientKey;
         switch (action) {
             case ACTION_DOWNLOAD:
-                clientKey = ((XFilesRemotePathContent)items.parentDir).serverHost;
+                clientKey = ((XREPathContent)items.parentDir).serverHost;
                 break;
             case ACTION_UPLOAD:
-                clientKey = ((XFilesRemotePathContent)destDir).serverHost;
+                clientKey = ((XREPathContent)destDir).serverHost;
                 break;
             default:
                 throw new RuntimeException("Unexpected action in remote transfer task");

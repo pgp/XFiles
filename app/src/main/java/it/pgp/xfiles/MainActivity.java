@@ -126,7 +126,7 @@ import it.pgp.xfiles.utils.dircontent.SftpDirWithContent;
 import it.pgp.xfiles.utils.pathcontent.ArchivePathContent;
 import it.pgp.xfiles.utils.pathcontent.BasePathContent;
 import it.pgp.xfiles.utils.pathcontent.LocalPathContent;
-import it.pgp.xfiles.utils.pathcontent.RemotePathContent;
+import it.pgp.xfiles.utils.pathcontent.SFTPPathContent;
 
 public class MainActivity extends EffectActivity {
 
@@ -1114,7 +1114,7 @@ public class MainActivity extends EffectActivity {
         else if (copyMoveList.parentDir.providerType == ProviderType.SFTP &&
                 destPath.providerType == ProviderType.SFTP) {
             // remote transfer on the same remote host
-            if (((RemotePathContent)copyMoveList.parentDir).authData.equals(((RemotePathContent)destPath).authData)) {
+            if (((SFTPPathContent)copyMoveList.parentDir).authData.equals(((SFTPPathContent)destPath).authData)) {
                 // move (rename) on the remote host
                 if (copyMoveList.copyOrMove == CopyMoveMode.MOVE) {
                     try {
@@ -1281,7 +1281,7 @@ public class MainActivity extends EffectActivity {
                                 ((SftpDirWithContent)dwc).authData,
                                 InteractiveHostKeyVerifier.currentHostKey,
                                 MainActivity.sftpProvider,
-                                new RemotePathContent(
+                                new SFTPPathContent(
                                         ((SftpDirWithContent)dwc).authData,
                                         ((SftpDirWithContent)dwc).pendingLsPath)).show();
                         return;
@@ -1292,7 +1292,7 @@ public class MainActivity extends EffectActivity {
                                 InteractiveHostKeyVerifier.oldHostEntry,
                                 InteractiveHostKeyVerifier.currentHostKey,
                                 MainActivity.sftpProvider,
-                                new RemotePathContent(
+                                new SFTPPathContent(
                                         ((SftpDirWithContent)dwc).authData,
                                         ((SftpDirWithContent)dwc).pendingLsPath)).show();
                         return;
@@ -1677,13 +1677,6 @@ public class MainActivity extends EffectActivity {
             }
             return;
         }
-
-        // Test case for path content hashcode (should be same hashcode three times)
-//        Toast.makeText(this,
-//                new RemotePathContent(new AuthData("user","domain",22,"notempty"),"/remotedir").hashCode()+"\n"+new RemotePathContent(new AuthData("user","domain",22,"empty"),"/remotedir").hashCode()+"\n"+new RemotePathContent(new AuthData("user","domain",22,null),"/remotedir").hashCode()
-//                ,Toast.LENGTH_LONG
-//                ).show();
-        //
 
         this.doubleBackToExitPressedOnce = true;
         Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show();

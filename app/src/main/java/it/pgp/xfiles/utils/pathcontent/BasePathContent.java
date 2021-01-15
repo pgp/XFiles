@@ -98,16 +98,16 @@ public abstract class BasePathContent implements Serializable {
             && content.dir.startsWith(this.dir);
 
         if (this.providerType==ProviderType.SFTP && content.providerType==ProviderType.SFTP)
-            return ((RemotePathContent)content).authData.equals(((RemotePathContent)this).authData)
+            return ((SFTPPathContent)content).authData.equals(((SFTPPathContent)this).authData)
             && isParentOrSamePath(this.dir, content.dir);
 
         if (this.providerType==ProviderType.XFILES_REMOTE && content.providerType==ProviderType.XFILES_REMOTE)
-            return ((XFilesRemotePathContent)content).serverHost.equals(((XFilesRemotePathContent)this).serverHost) &&
-                    ((XFilesRemotePathContent)content).serverPort == ((XFilesRemotePathContent)this).serverPort &&
+            return ((XREPathContent)content).serverHost.equals(((XREPathContent)this).serverHost) &&
+                    ((XREPathContent)content).serverPort == ((XREPathContent)this).serverPort &&
                     isParentOrSamePath(this.dir, content.dir);
 
         if (this.providerType==ProviderType.SMB && content.providerType==ProviderType.SMB)
-            return ((SmbRemotePathContent)content).smbAuthData.equals(((SmbRemotePathContent)this).smbAuthData)
+            return ((SMBPathContent)content).smbAuthData.equals(((SMBPathContent)this).smbAuthData)
                     && isParentOrSamePath(this.dir, content.dir);
 
         return false;
@@ -131,20 +131,20 @@ public abstract class BasePathContent implements Serializable {
                 if (!lwa.archivePath.equals(lwaobj.archivePath)) return false;
                 break;
             case SFTP:
-                RemotePathContent sftpc = (RemotePathContent)this;
-                RemotePathContent sftpobj = (RemotePathContent)obj;
+                SFTPPathContent sftpc = (SFTPPathContent)this;
+                SFTPPathContent sftpobj = (SFTPPathContent)obj;
                 if (!sftpc.authData.equals(sftpobj.authData)) return false;
                 break;
             case XFILES_REMOTE:
-                XFilesRemotePathContent xre = (XFilesRemotePathContent)this;
-                XFilesRemotePathContent xreobj = (XFilesRemotePathContent)obj;
+                XREPathContent xre = (XREPathContent)this;
+                XREPathContent xreobj = (XREPathContent)obj;
                 if ((!xre.serverHost.equals(xreobj.serverHost)) ||
                         (xre.serverPort != xreobj.serverPort))
                     return false;
                 break;
             case SMB:
-                SmbRemotePathContent smbc = (SmbRemotePathContent) this;
-                SmbRemotePathContent smbobj = (SmbRemotePathContent) obj;
+                SMBPathContent smbc = (SMBPathContent) this;
+                SMBPathContent smbobj = (SMBPathContent) obj;
                 if (!smbc.smbAuthData.equals(smbobj.smbAuthData)) return false;
                 break;
         }
@@ -166,7 +166,7 @@ public abstract class BasePathContent implements Serializable {
                 bb.put(ap);
                 return nHashCode(bb.array());
             case SFTP:
-                AuthData ad = ((RemotePathContent)this).authData;
+                AuthData ad = ((SFTPPathContent)this).authData;
                 // it is fine to have same hash code for null fields and empty string fields
                 byte[] u = (ad.username==null)?new byte[0]:ad.username.getBytes();
                 byte[] dm = (ad.domain==null)?new byte[0]:ad.domain.getBytes();
@@ -176,13 +176,13 @@ public abstract class BasePathContent implements Serializable {
                 bb.put(u);bb.put(dm);bb.putInt(ad.port);bb.put(d);
                 return nHashCode(bb.array());
             case XFILES_REMOTE:
-                XFilesRemotePathContent xpc = (XFilesRemotePathContent)this;
+                XREPathContent xpc = (XREPathContent)this;
                 byte[] h = (xpc.serverHost==null)?new byte[0]:xpc.serverHost.getBytes();
                 bb = ByteBuffer.allocate(h.length+4+d.length);
                 bb.put(h);bb.putInt(xpc.serverPort);bb.put(d);
                 return nHashCode(bb.array());
             case SMB:
-                SmbAuthData smb_ad = ((SmbRemotePathContent)this).smbAuthData;
+                SmbAuthData smb_ad = ((SMBPathContent)this).smbAuthData;
                 // it is fine to have same hash code for null fields and empty string fields
                 u = (smb_ad.username==null)?new byte[0]:smb_ad.username.getBytes();
                 dm = (smb_ad.domain==null)?new byte[0]:smb_ad.domain.getBytes();

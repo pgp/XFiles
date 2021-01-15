@@ -13,7 +13,7 @@ import java.util.zip.CRC32;
 
 import it.pgp.xfiles.MainActivity;
 import it.pgp.xfiles.adapters.XreAnnouncesAdapter;
-import it.pgp.xfiles.utils.pathcontent.XFilesRemotePathContent;
+import it.pgp.xfiles.utils.pathcontent.XREPathContent;
 
 public class MulticastUtils {
 
@@ -46,7 +46,7 @@ public class MulticastUtils {
                     String received = new String(data.getData(), data.getOffset(), data.getLength(), StandardCharsets.UTF_8);
                     Log.e(xreAnnounceLogTag,received);
 
-                    XFilesRemotePathContent xrpc = fromXREAnnounce(data);
+                    XREPathContent xrpc = fromXREAnnounce(data);
                     if(xrpc != null) activity.runOnUiThread(()-> xreAnnouncesAdapter.add(new Pair<>(xrpc.serverHost,xrpc.dir)));
                 }
             }
@@ -69,7 +69,7 @@ public class MulticastUtils {
         }
     }
 
-    public static XFilesRemotePathContent fromXREAnnounce(DatagramPacket packet) {
+    public static XREPathContent fromXREAnnounce(DatagramPacket packet) {
         try {
             byte[] origin = packet.getData();
             int o = packet.getOffset();
@@ -100,7 +100,7 @@ public class MulticastUtils {
             String path = new String(payload,6+hostLength,pathLength, StandardCharsets.UTF_8);
 
             // while received in the UDP packet, port is still default (11111) hence ignored
-            return new XFilesRemotePathContent(host,path);
+            return new XREPathContent(host,path);
         }
         catch(Exception e) {
             e.printStackTrace();

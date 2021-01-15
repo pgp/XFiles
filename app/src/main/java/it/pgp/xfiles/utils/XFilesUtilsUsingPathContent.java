@@ -29,7 +29,7 @@ import it.pgp.xfiles.service.BaseBackgroundTask;
 import it.pgp.xfiles.utils.dircontent.GenericDirWithContent;
 import it.pgp.xfiles.utils.dircontent.LocalDirWithContent;
 import it.pgp.xfiles.utils.pathcontent.BasePathContent;
-import it.pgp.xfiles.utils.pathcontent.XFilesRemotePathContent;
+import it.pgp.xfiles.utils.pathcontent.XREPathContent;
 
 /**
  * Created by pgp on 27/09/16
@@ -305,7 +305,7 @@ public class XFilesUtilsUsingPathContent implements FileOperationHelperUsingPath
 
     @Override
     public GenericDirWithContent listDirectory(BasePathContent directory) {
-        if (directory instanceof XFilesRemotePathContent) {
+        if (directory instanceof XREPathContent) {
             try {refreshRHClient();}
             catch(IOException e) {return new GenericDirWithContent(FileOpsErrorCodes.ROOTHELPER_INIT_ERROR);}
             return rhc.listDirectory(directory);

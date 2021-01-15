@@ -87,7 +87,7 @@ import it.pgp.xfiles.utils.iterators.VMapSubTreeIterable;
 import it.pgp.xfiles.utils.pathcontent.ArchivePathContent;
 import it.pgp.xfiles.utils.pathcontent.BasePathContent;
 import it.pgp.xfiles.utils.pathcontent.LocalPathContent;
-import it.pgp.xfiles.utils.pathcontent.XFilesRemotePathContent;
+import it.pgp.xfiles.utils.pathcontent.XREPathContent;
 
 /**
  * Created by pgp on 20/01/17
@@ -168,8 +168,8 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
         if (bpc instanceof LocalPathContent) {
             return new RootHelperStreams();
         }
-        else if (bpc instanceof XFilesRemotePathContent) {
-            XFilesRemotePathContent xrpc = (XFilesRemotePathContent) bpc;
+        else if (bpc instanceof XREPathContent) {
+            XREPathContent xrpc = (XREPathContent) bpc;
             RemoteManager rm = MainActivity.rootHelperRemoteClientManager.getClient(xrpc.serverHost,isFastClient);
             if (rm == null) throw new IOException("XRE Session not connected");
             return rm;
@@ -338,7 +338,7 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
                 return new LocalDirWithContent(dirPath.dir,dirContent);
             else
                 return new XFilesRemoteDirWithContent(
-                        ((XFilesRemotePathContent)dirPath).serverHost,
+                        ((XREPathContent)dirPath).serverHost,
                         dirPath.dir,
                         dirContent);
         }
@@ -347,9 +347,9 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
             if (dirPath instanceof LocalPathContent)
                 return new LocalDirWithContent(FileOpsErrorCodes.COMMANDER_CANNOT_ACCESS);
             else {
-                MainActivity.rootHelperRemoteClientManager.fastClients.remove(((XFilesRemotePathContent)dirPath).serverHost);
+                MainActivity.rootHelperRemoteClientManager.fastClients.remove(((XREPathContent)dirPath).serverHost);
                 return new XFilesRemoteDirWithContent(
-                        ((XFilesRemotePathContent)dirPath).serverHost,
+                        ((XREPathContent)dirPath).serverHost,
                         FileOpsErrorCodes.COMMANDER_CANNOT_ACCESS);
             }
         }
@@ -890,9 +890,9 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
     @Override
     public void createLink(BasePathContent originPath, BasePathContent linkPath, boolean isHardLink) throws IOException {
         if(originPath.providerType != linkPath.providerType) throw new RuntimeException("Target and link paths must belong to the same filesystem");
-        if(originPath instanceof XFilesRemotePathContent) {
-            if (!Objects.equals(((XFilesRemotePathContent)originPath).serverHost,
-                    ((XFilesRemotePathContent)linkPath).serverHost))
+        if(originPath instanceof XREPathContent) {
+            if (!Objects.equals(((XREPathContent)originPath).serverHost,
+                    ((XREPathContent)linkPath).serverHost))
                 throw new RuntimeException("Origin and link path must belong to the same remote filesystem");
         }
 
@@ -1031,7 +1031,7 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
                         (long)nodeProps.get("size")
                 );
             case XFILES_REMOTE:
-                XFilesRemotePathContent xrpc = (XFilesRemotePathContent) pathname;
+                XREPathContent xrpc = (XREPathContent) pathname;
                 RemoteManager rm = MainActivity.rootHelperRemoteClientManager.getClient(xrpc.serverHost,true);
                 if (rm == null) return null;
                 // TODO stats_resp
@@ -1105,7 +1105,7 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
                     totalSize);
         }
         else if(files.get(0).providerType==ProviderType.XFILES_REMOTE) {
-            XFilesRemotePathContent xrpc = (XFilesRemotePathContent) files.get(0);
+            XREPathContent xrpc = (XREPathContent) files.get(0);
             RemoteManager rm = MainActivity.rootHelperRemoteClientManager.getClient(xrpc.serverHost,true);
             if (rm == null) return null;
 
@@ -1180,7 +1180,7 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
                     totalSize);
         }
         else if(pathname.providerType==ProviderType.XFILES_REMOTE) {
-            XFilesRemotePathContent xrpc = (XFilesRemotePathContent) pathname;
+            XREPathContent xrpc = (XREPathContent) pathname;
             RemoteManager rm = MainActivity.rootHelperRemoteClientManager.getClient(xrpc.serverHost,true);
             if (rm == null) return null;
 
@@ -1290,7 +1290,7 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
     public byte[] hashFile(BasePathContent pathname,
                            HashRequestCodes hashAlgorithm,
                            BitSet dirHashOpts) throws IOException {
-        if (pathname instanceof XFilesRemotePathContent)
+        if (pathname instanceof XREPathContent)
             if (!ProgressIndicator.acquire(ForegroundServiceType.XRE_HASH)) return null;
 
         try {
@@ -1311,15 +1311,15 @@ public class RootHelperClientUsingPathContent implements FileOperationHelperUsin
             return null;
         }
         catch (IOException e) {
-            if (pathname instanceof XFilesRemotePathContent) {
+            if (pathname instanceof XREPathContent) {
                 rs.close();
-                MainActivity.rootHelperRemoteClientManager.longTermClients.remove(((XFilesRemotePathContent)pathname).serverHost);
+                MainActivity.rootHelperRemoteClientManager.longTermClients.remove(((XREPathContent)pathname).serverHost);
                 return null;
             }
             else throw e;
         }
         finally {
-            if (pathname instanceof XFilesRemotePathContent) {
+            if (pathname instanceof XREPathContent) {
                 ProgressIndicator.release();
             }
             else rs.close();

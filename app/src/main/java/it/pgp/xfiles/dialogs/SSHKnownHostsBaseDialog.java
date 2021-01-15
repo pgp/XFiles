@@ -11,7 +11,7 @@ import java.security.PublicKey;
 
 import it.pgp.xfiles.MainActivity;
 import it.pgp.xfiles.utils.pathcontent.BasePathContent;
-import it.pgp.xfiles.utils.pathcontent.RemotePathContent;
+import it.pgp.xfiles.utils.pathcontent.SFTPPathContent;
 
 public abstract class SSHKnownHostsBaseDialog extends Dialog {
 
@@ -27,14 +27,14 @@ public abstract class SSHKnownHostsBaseDialog extends Dialog {
         }
     }
 
-    public RemotePathContent pendingLsPath;
+    public SFTPPathContent pendingLsPath;
     public void resetPath() {
         pendingLsPath = null;
     }
 
     public SSHKnownHostsBaseDialog(MainActivity activity, BasePathContent pendingLsPath) {
         super(activity);
-        this.pendingLsPath = (RemotePathContent) pendingLsPath;
+        this.pendingLsPath = (SFTPPathContent) pendingLsPath;
 
         setOnDismissListener(d_-> {
             SSHKnownHostsBaseDialog d = (SSHKnownHostsBaseDialog)d_;

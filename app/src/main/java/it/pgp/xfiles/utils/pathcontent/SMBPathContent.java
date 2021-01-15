@@ -8,18 +8,18 @@ import it.pgp.xfiles.smbclient.SmbAuthData;
 import jcifs.CIFSContext;
 import jcifs.smb.SmbFile;
 
-public class SmbRemotePathContent extends BasePathContent {
+public class SMBPathContent extends BasePathContent {
 
     private static final ProviderType provType = ProviderType.SMB;
 
     public SmbAuthData smbAuthData; // user@domain:host:port, to display in address bar
 
-    public SmbRemotePathContent(SmbAuthData smbAuthData, String dir) {
+    public SMBPathContent(SmbAuthData smbAuthData, String dir) {
         super(provType, dir);
         this.smbAuthData = smbAuthData;
     }
 
-    public SmbRemotePathContent(SmbAuthData smbAuthData, FileOpsErrorCodes errorCode) {
+    public SMBPathContent(SmbAuthData smbAuthData, FileOpsErrorCodes errorCode) {
         super(provType, errorCode);
         this.smbAuthData = smbAuthData;
     }
@@ -46,18 +46,18 @@ public class SmbRemotePathContent extends BasePathContent {
     @Override
     public BasePathContent concat(String filename) {
         String sep = dir.equals("/")?"":"/";
-        return new SmbRemotePathContent(smbAuthData,dir+sep+filename);
+        return new SMBPathContent(smbAuthData,dir+sep+filename);
     }
 
     @Override
     public BasePathContent getParent() {
         if (dir == null || dir.equals("/") || dir.equals("")) return null;
         int idx = dir.lastIndexOf('/');
-        return new SmbRemotePathContent(smbAuthData, dir.substring(0,idx));
+        return new SMBPathContent(smbAuthData, dir.substring(0,idx));
     }
 
     @Override
     public BasePathContent getCopy() {
-        return new SmbRemotePathContent(smbAuthData,dir);
+        return new SMBPathContent(smbAuthData,dir);
     }
 }

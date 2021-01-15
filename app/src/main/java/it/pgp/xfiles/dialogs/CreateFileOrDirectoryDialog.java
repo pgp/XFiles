@@ -16,7 +16,7 @@ import it.pgp.xfiles.R;
 import it.pgp.xfiles.enums.FileMode;
 import it.pgp.xfiles.items.FileCreationAdvancedOptions;
 import it.pgp.xfiles.utils.pathcontent.BasePathContent;
-import it.pgp.xfiles.utils.pathcontent.RemotePathContent;
+import it.pgp.xfiles.utils.pathcontent.SFTPPathContent;
 
 public class CreateFileOrDirectoryDialog extends BaseDialog implements Runnable {
 
@@ -112,7 +112,7 @@ public class CreateFileOrDirectoryDialog extends BaseDialog implements Runnable 
                                     , FileCreationAdvancedOptions.CreationStrategy.values()[idx])
                     };
 
-            if (f instanceof RemotePathContent) {
+            if (f instanceof SFTPPathContent) {
                 MainActivity.sftpProvider.createFileOrDirectory(f,type);
             }
             else {
