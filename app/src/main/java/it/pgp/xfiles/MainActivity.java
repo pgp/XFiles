@@ -1268,13 +1268,13 @@ public class MainActivity extends EffectActivity {
                 switch(dwc.errorCode) {
                     case ILLEGAL_ARGUMENT:
                         showToastOnUI("Invalid object type for dir browsing");
-                        return;
+                        break;
                     case NULL_OR_WRONG_PASSWORD:
                         new AskPasswordDialogOnListing(
                                 MainActivity.this,
                                 (BasePathContent) dirOrDirection // tested, no classCastException on go back/ahead into an archive
                         ).show();
-                        return;
+                        break;
                     case HOST_KEY_INEXISTENT_ERROR:
                         new SSHNotInKnownHostsDialog(
                                 MainActivity.this,
@@ -1284,7 +1284,7 @@ public class MainActivity extends EffectActivity {
                                 new SFTPPathContent(
                                         ((SftpDirWithContent)dwc).authData,
                                         ((SftpDirWithContent)dwc).pendingLsPath)).show();
-                        return;
+                        break;
                     case HOST_KEY_CHANGED_ERROR:
                         new SSHAlreadyInKnownHostsDialog(
                                 MainActivity.this,
@@ -1295,14 +1295,13 @@ public class MainActivity extends EffectActivity {
                                 new SFTPPathContent(
                                         ((SftpDirWithContent)dwc).authData,
                                         ((SftpDirWithContent)dwc).pendingLsPath)).show();
-                        return;
+                        break;
                     default:
                         Toast.makeText(MainActivity.this, dwc.errorCode.getValue(), Toast.LENGTH_SHORT).show();
-                        return;
+                        break;
                 }
             }
-
-            browserPagerAdapter.showDirContent(dwc,position,targetFilenameToHighlight);
+            else browserPagerAdapter.showDirContent(dwc,position,targetFilenameToHighlight);
 
             if(onCompletion.length > 0) onCompletion[0].run();
         });
