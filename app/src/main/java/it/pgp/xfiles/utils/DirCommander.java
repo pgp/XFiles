@@ -15,9 +15,6 @@ import it.pgp.xfiles.utils.dircontent.LocalDirWithContent;
 import it.pgp.xfiles.utils.pathcontent.BasePathContent;
 import it.pgp.xfiles.utils.pathcontent.LocalPathContent;
 
-/**
- * Created by pgp on 13/05/2017 - adapted from DirCommanderCUsingBrowserItems
- */
 public class DirCommander {
     private Map<Integer,BasePathContent> recentDirs;
     private Map<Integer,Integer> previousListViewPositions; // position of list view when previous directory was listed

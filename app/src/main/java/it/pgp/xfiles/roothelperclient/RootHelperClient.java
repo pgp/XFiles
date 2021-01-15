@@ -324,7 +324,7 @@ public class RootHelperClient implements FileOperationHelper {
                     dirContent = assembleContentFromLsResps(rs.i);
                     break;
                 case RESPONSE_ERROR:
-                    // propagate errno within DirWithContentUsingBrowserItems object
+                    // propagate errno within DirWithContent object
                     byte[] errno_ = new byte[4];
                     rs.i.readFully(errno_);
                     int errno = (int) Misc.castBytesToUnsignedNumber(errno_,4);
