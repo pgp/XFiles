@@ -34,25 +34,18 @@ public class DirCommander {
         previousListViewPositions = tmp2;
     }
 
-    // FIXME duplicated logic with MainActivity's getFileOpsHelper
     private GenericDirWithContent validateDirAccess(BasePathContent dir) {
+        FileOperationHelper helper = MainActivity.mainActivity.getFileOpsHelper(dir.providerType);
         switch (dir.providerType) {
             case LOCAL:
             case XFILES_REMOTE:
-                // ensure to use the correct helper (local, standard or root)
-                // current helper setting is done on successful list return from each helper
-                return MainActivity.usingRootHelperForLocal?
-                        MainActivity.getRootHelperClient().listDirectory(dir):
-                        MainActivity.xFilesUtils.listDirectory(dir);
-            case LOCAL_WITHIN_ARCHIVE:
-//                return MainActivity.currentHelper.listArchive(dir);
-                return MainActivity.getRootHelperClient().listArchive(dir);
             case SFTP:
-                return MainActivity.sftpProvider.listDirectory(dir);
             case SMB:
-                return MainActivity.smbProvider.listDirectory(dir);
+                return helper.listDirectory(dir);
+            case LOCAL_WITHIN_ARCHIVE:
+                return helper.listArchive(dir);
             default: // URL_DOWNLOAD is not a goDir label
-                throw new RuntimeException("Invalid BasePathContent subclass type");
+                throw new RuntimeException("Invalid ProviderType");
         }
     }
 
