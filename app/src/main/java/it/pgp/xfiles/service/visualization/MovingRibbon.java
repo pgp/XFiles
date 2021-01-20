@@ -131,10 +131,4 @@ public class MovingRibbon extends ProgressIndicator implements View.OnTouchListe
             pbSpeed.setText(String.format("%.2f Mbps",speedMbps));
         }
     }
-
-    @Override
-    public void destroy() {
-        try{ wm.removeView(oView); } catch(Throwable ignored) {}
-        try{ wm.removeView(topLeftView); } catch(Throwable ignored) {}
-    }
 }
