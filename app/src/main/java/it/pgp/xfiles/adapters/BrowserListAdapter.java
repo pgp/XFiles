@@ -72,18 +72,19 @@ public class BrowserListAdapter extends BrowserAdapter {
         imageView.setImageBitmap(getBitmapByExtension(item));
 
         imageView.setOnClickListener(v-> {
-            if(!mainActivity.browserPagerAdapter.multiSelectModes[mainActivity.browserPager.getCurrentItem()])
-                mainActivity.showPopup(null,v,position,v.getId());
-            else {
+            boolean multiselect = mainActivity.browserPagerAdapter.multiSelectModes[mainActivity.browserPager.getCurrentItem()];
+            boolean inFind = BrowserListAdapter.this instanceof FindResultsAdapter;
+
+            if(multiselect && !inFind) {
                 // same logic of listViewLevelOICL
                 // FIXME no long click handling in multiselect mode
                 // checking condition in getView generates inconsistencies, unless one forces recycling views on multiselect mode change
                 mainActivity.getCurrentBrowserAdapter().toggleSelectOne(item);
             }
+            else if(!inFind)
+                mainActivity.showPopup(null,v,position,v.getId());
         });
 
         return convertView;
     }
-
-
 }
