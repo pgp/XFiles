@@ -28,7 +28,7 @@
 
         <Button
             android:id="@+id/ftpServerButton"
-            android:text="FTP Server"
+            android:text="@string/ftp_server"
             android:textSize="12sp"
             android:layout_weight="1"
             android:layout_width="0dp"
@@ -36,7 +36,7 @@
 
         <Button
             android:id="@+id/httpServerButton"
-            android:text="HTTP Server"
+            android:text="@string/http_server"
             android:textSize="12sp"
             android:layout_weight="1"
             android:layout_width="0dp"

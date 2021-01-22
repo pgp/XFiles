@@ -39,4 +39,6 @@
     <string name="alwaysCreateSubdirectory">Always create subdirectory</string>
     <string name="neverCreateSubdirectory">Never create subdirectory</string>
     <string name="smartCreateSubdirectory">Smart subdirectory creation</string>
+    <string name="ftp_server">FTP Server</string>
+    <string name="http_server">HTTP Server</string>
 </resources>

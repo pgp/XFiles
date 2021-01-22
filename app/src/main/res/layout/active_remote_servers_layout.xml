@@ -39,7 +39,7 @@
         <TextView
             android:id="@+id/active_servers_http_textview"
             android:textSize="16dp"
-            android:text="HTTP server"
+            android:text="@string/http_server"
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="match_parent" />
@@ -61,7 +61,7 @@
         <TextView
             android:id="@+id/active_servers_ftp_textview"
             android:textSize="16dp"
-            android:text="FTP server"
+            android:text="@string/ftp_server"
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="match_parent" />
