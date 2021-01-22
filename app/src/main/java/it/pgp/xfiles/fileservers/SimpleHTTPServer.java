@@ -11,24 +11,49 @@ import it.pgp.xfiles.MainActivity;
 import it.pgp.xfiles.R;
 
 public class SimpleHTTPServer extends SimpleFileServer {
-
-    private ServerSocket acceptorSocket;
-    private Thread acceptorThread;
-
     private static final int defaultPort = 8000;
+
+    private AcceptorThread acceptorThread;
 
     public SimpleHTTPServer() {
         serverButtonRes = R.id.httpServerButton;
         port = defaultPort;
     }
 
-    private void createServer() {
-        if (acceptorSocket != null) {
+    private class AcceptorThread extends Thread {
+        public final ServerSocket acceptorSocket;
+
+        AcceptorThread(int port) throws IOException {
+            acceptorSocket = new ServerSocket(port);
+        }
+
+        @Override
+        public void run() {
+            for(;;) {
+                try {
+                    Socket connection = acceptorSocket.accept();
+                    new HTTPSessionThread(connection,rootPath).start();
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                    SimpleHTTPServer.this.acceptorThread = null;
+                    MainActivity.showToastOnUIWithHandler("SimpleHTTPServer: "+(e instanceof SocketException?"acceptor closed":"accept error"));
+                    MainActivity.mainActivity.runOnUiThread(()->FileServer.HTTP.refresh_button_color(MainActivity.mainActivity,false));
+                    return;
+                }
+            }
+        }
+    }
+
+    @Override
+    public void startServer() {
+        if (acceptorThread != null) {
             Log.e(getClass().getName(),"Server object already exists, closing existing...");
             stopServer();
         }
         try {
-            acceptorSocket = new ServerSocket(port);
+            acceptorThread = new AcceptorThread(port);
+            acceptorThread.start();
         } catch (IOException e) {
             Log.e(getClass().getName(), "IOException - Could not start server: ", e);
             stopServer();
@@ -38,41 +63,20 @@ public class SimpleHTTPServer extends SimpleFileServer {
         MainActivity.mainActivity.runOnUiThread(()->FileServer.HTTP.refresh_button_color(MainActivity.mainActivity,true));
     }
 
-    private void acceptorLoop(ServerSocket socket) {
-        for(;;) {
-            try {
-                Socket connection = socket.accept();
-                new HTTPSessionThread(connection,rootPath).start();
-            }
-            catch (Exception e) {
-                e.printStackTrace();
-                acceptorSocket = null;
-                MainActivity.showToastOnUIWithHandler("SimpleHTTPServer: "+(e instanceof SocketException?"acceptor closed":"accept error"));
-                MainActivity.mainActivity.runOnUiThread(()->FileServer.HTTP.refresh_button_color(MainActivity.mainActivity,false));
-                return;
-            }
-        }
-    }
-
-    @Override
-    public void startServer() {
-        createServer();
-        acceptorThread = new Thread(() -> acceptorLoop(acceptorSocket));
-        acceptorThread.start();
-    }
-
     @Override
     public void stopServer() {
         try {
-            acceptorSocket.close();
+            acceptorThread.acceptorSocket.close();
         } catch (Exception ignored) {}
-        acceptorSocket = null;
     }
 
     @Override
     public boolean isAlive() {
-        return (acceptorThread != null
-                && !Thread.State.NEW.equals(acceptorThread.getState())
-                && !Thread.State.TERMINATED.equals(acceptorThread.getState()));
+        if(acceptorThread != null) {
+            Thread.State state = acceptorThread.getState();
+            return (!Thread.State.NEW.equals(state)
+                    && !Thread.State.TERMINATED.equals(state));
+        }
+        return false;
     }
 }

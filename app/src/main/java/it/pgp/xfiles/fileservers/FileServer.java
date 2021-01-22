@@ -46,8 +46,7 @@ public enum FileServer {
     }
 
     public void toggle() {
-        if (server.isAlive()) server.stopServer();
-        else server.startServer();
+        if (isAlive()) stop(); else start();
     }
 
     public void refresh_button_color(Activity activity, boolean... on_) {
