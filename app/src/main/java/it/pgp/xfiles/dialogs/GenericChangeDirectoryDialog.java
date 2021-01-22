@@ -33,7 +33,7 @@ import it.pgp.xfiles.smbclient.SmbAuthData;
 import it.pgp.xfiles.utils.FavoritesList;
 import it.pgp.xfiles.utils.GenericDBHelper;
 import it.pgp.xfiles.utils.Misc;
-import it.pgp.xfiles.utils.MulticastUtils;
+import it.pgp.xfiles.utils.NetworkUtils;
 import it.pgp.xfiles.utils.dircontent.GenericDirWithContent;
 import it.pgp.xfiles.utils.pathcontent.ArchivePathContent;
 import it.pgp.xfiles.utils.pathcontent.BasePathContent;
@@ -471,8 +471,8 @@ public class GenericChangeDirectoryDialog extends Dialog {
         ((RadioButton)pathContentTypeSelector.getChildAt(providerType.ordinal())).setChecked(true);
 
         if(providerType == ProviderType.XFILES_REMOTE)
-            MulticastUtils.startXreAnnounceListenerThread(MainActivity.mainActivity,xreDirectoryViewModel.xreAnnouncesAdapter);
-        else MulticastUtils.shutdownMulticastListening();
+            NetworkUtils.startXreAnnounceListenerThread(MainActivity.mainActivity,xreDirectoryViewModel.xreAnnouncesAdapter);
+        else NetworkUtils.shutdownMulticastListening();
     }
 
     public GenericChangeDirectoryDialog(MainActivity mainActivity, BasePathContent curDirPath) {
@@ -509,7 +509,7 @@ public class GenericChangeDirectoryDialog extends Dialog {
         setOnDismissListener(dialog->{
             wbl.unregisterListeners();
             MainActivity.cdd = null;
-            MulticastUtils.shutdownMulticastListening();
+            NetworkUtils.shutdownMulticastListening();
         });
     }
 

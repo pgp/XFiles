@@ -9,9 +9,9 @@ import android.content.Intent;
 import android.util.Log;
 import android.widget.RemoteViews;
 
-import it.pgp.xfiles.dialogs.RemoteRHServerManagementDialog;
 import it.pgp.xfiles.dialogs.XFilesRemoteSessionsManagementActivity;
 import it.pgp.xfiles.roothelperclient.RemoteServerManager;
+import it.pgp.xfiles.utils.NetworkUtils;
 
 public class XRE_RHSS_Widget extends AppWidgetProvider {
 
@@ -33,7 +33,7 @@ public class XRE_RHSS_Widget extends AppWidgetProvider {
         }
         else {
             remoteViews.setImageViewResource(R.id.rhss_toggle_rhss_button,R.drawable.xf_xre_server_up);
-            remoteViews.setTextViewText(R.id.rhssIPAddresses,RemoteRHServerManagementDialog.getInterfaceAddressesAsString());
+            remoteViews.setTextViewText(R.id.rhssIPAddresses, NetworkUtils.getInterfaceAddressesAsString());
         }
 
         for (int appWidgetId : ids) {

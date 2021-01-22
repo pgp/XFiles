@@ -12,14 +12,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import it.pgp.xfiles.EffectActivity;
 import it.pgp.xfiles.MainActivity;
 import it.pgp.xfiles.R;
@@ -27,6 +19,7 @@ import it.pgp.xfiles.fileservers.FileServer;
 import it.pgp.xfiles.roothelperclient.RHSSServerStatus;
 import it.pgp.xfiles.roothelperclient.RemoteServerManager;
 import it.pgp.xfiles.utils.Misc;
+import it.pgp.xfiles.utils.NetworkUtils;
 import it.pgp.xfiles.utils.pathcontent.BasePathContent;
 import it.pgp.xfiles.utils.pathcontent.LocalPathContent;
 import it.pgp.xfiles.utils.wifi.WifiButtonsLayout;
@@ -123,7 +116,7 @@ public class RemoteRHServerManagementDialog extends Dialog {
                     rhss_status_button.setImageResource(R.drawable.xf_xre_server_up);
                     togglePathsWidgets(false);
                     saveOrClearPaths(true);
-                    rhssIPAddresses.setText(getInterfaceAddressesAsString());
+                    rhssIPAddresses.setText(NetworkUtils.getInterfaceAddressesAsString());
                     break;
                 case 0:
                     Toast.makeText(activity, "Unable to start remote RH server", Toast.LENGTH_SHORT).show();
@@ -159,39 +152,6 @@ public class RemoteRHServerManagementDialog extends Dialog {
 
     private final Activity activity;
 
-    public static Map<String,List<String>> getInterfacesAddresses() {
-        Map<String,List<String>> addresses = new HashMap<>();
-        try {
-            for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
-                NetworkInterface intf = en.nextElement();
-                List<String> addressesOfInterface = new ArrayList<>();
-                for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements();) {
-                    InetAddress inetAddress = enumIpAddr.nextElement();
-                    if (!inetAddress.isLoopbackAddress())
-                        addressesOfInterface.add(inetAddress.getHostAddress());
-                }
-                addresses.put(intf.getName(),addressesOfInterface);
-            }
-        }
-        catch (Exception ignored) {}
-        return addresses;
-    }
-
-    public static String getInterfaceAddressesAsString() {
-        StringBuilder s = new StringBuilder();
-        Map<String,List<String>> addresses = getInterfacesAddresses();
-        for (Map.Entry<String,List<String>> t : addresses.entrySet()) {
-            StringBuilder inner = new StringBuilder();
-            for (String j : t.getValue())
-                if (!j.isEmpty()) inner.append(j).append(" ");
-            if (!inner.toString().isEmpty()) {
-                s.append(t.getKey()).append(": ").append(inner);
-                s.append("\n");
-            }
-        }
-        return s.toString();
-    }
-
     public static RemoteRHServerManagementDialog instance;
     public RemoteRHServerManagementDialog(@NonNull Activity activity) {
         super(activity,R.style.fs_dialog);
@@ -214,7 +174,7 @@ public class RemoteRHServerManagementDialog extends Dialog {
                 fileServer.setRootPath(((EditText)findViewById(R.id.ftpHttpRootPath)).getText().toString()); // not needed in case of server On->OFF
                 fileServer.toggle();
             });
-            fileServer.refresh_button_color(activity);
+            fileServer.refresh_button_color(activity, null);
         }
 
         WifiButtonsLayout wbl = new WifiButtonsLayout(activity);
@@ -251,7 +211,7 @@ public class RemoteRHServerManagementDialog extends Dialog {
         }
         else {
             rhss_status_button.setImageResource(R.drawable.xf_xre_server_up);
-            rhssIPAddresses.setText(getInterfaceAddressesAsString());
+            rhssIPAddresses.setText(NetworkUtils.getInterfaceAddressesAsString());
             retrievePathsIntoEditTexts();
             togglePathsWidgets(false);
         }

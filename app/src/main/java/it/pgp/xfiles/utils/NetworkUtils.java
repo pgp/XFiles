@@ -7,15 +7,21 @@ import android.util.Log;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-// import java.net.InetSocketAddress;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.zip.CRC32;
 
 import it.pgp.xfiles.MainActivity;
 import it.pgp.xfiles.adapters.XreAnnouncesAdapter;
 import it.pgp.xfiles.utils.pathcontent.XREPathContent;
 
-public class MulticastUtils {
+public class NetworkUtils {
 
     /**
      * Web source:
@@ -106,6 +112,39 @@ public class MulticastUtils {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public static Map<String, List<String>> getInterfacesAddresses() {
+        Map<String,List<String>> addresses = new HashMap<>();
+        try {
+            for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
+                NetworkInterface intf = en.nextElement();
+                List<String> addressesOfInterface = new ArrayList<>();
+                for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements();) {
+                    InetAddress inetAddress = enumIpAddr.nextElement();
+                    if (!inetAddress.isLoopbackAddress())
+                        addressesOfInterface.add(inetAddress.getHostAddress());
+                }
+                addresses.put(intf.getName(),addressesOfInterface);
+            }
+        }
+        catch (Exception ignored) {}
+        return addresses;
+    }
+
+    public static String getInterfaceAddressesAsString() {
+        StringBuilder s = new StringBuilder();
+        Map<String,List<String>> addresses = getInterfacesAddresses();
+        for (Map.Entry<String,List<String>> t : addresses.entrySet()) {
+            StringBuilder inner = new StringBuilder();
+            for (String j : t.getValue())
+                if (!j.isEmpty()) inner.append(j).append(" ");
+            if (!inner.toString().isEmpty()) {
+                s.append(t.getKey()).append(": ").append(inner);
+                s.append("\n");
+            }
+        }
+        return s.toString();
     }
 
     public static final String xreAnnounceLogTag = "XREANNOUNCE";

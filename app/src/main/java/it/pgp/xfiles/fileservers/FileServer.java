@@ -49,8 +49,8 @@ public enum FileServer {
         if (isAlive()) stop(); else start();
     }
 
-    public void refresh_button_color(Activity activity, boolean... on_) {
-        boolean on = on_.length>0?on_[0]:isAlive();
+    public void refresh_button_color(Activity activity, Boolean on) {
+        if(on == null) on = isAlive();
         if (server.serverButton != null)
             server.serverButton.setTextColor(activity.getResources().getColor(
                     on?R.color.green:R.color.red
