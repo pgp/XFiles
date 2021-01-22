@@ -1,6 +1,7 @@
 package it.pgp.xfiles.utils.popupwindow;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.util.DisplayMetrics;
@@ -8,6 +9,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
@@ -91,5 +93,10 @@ public class PopupWindowUtils {
                 displayMetrics.widthPixels/4);
 
         return popupWindow;
+    }
+
+    public static void hideSoftKeyBoard(View v) {
+        InputMethodManager imm = (InputMethodManager)v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
     }
 }

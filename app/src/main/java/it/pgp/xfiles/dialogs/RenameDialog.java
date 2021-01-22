@@ -20,6 +20,7 @@ import it.pgp.xfiles.R;
 import it.pgp.xfiles.adapters.BrowserAdapter;
 import it.pgp.xfiles.utils.Misc;
 import it.pgp.xfiles.utils.pathcontent.BasePathContent;
+import it.pgp.xfiles.utils.popupwindow.PopupWindowUtils;
 
 /**
  * Created by pgp on 26/10/16 (converted inner class to standalone one)
@@ -93,8 +94,7 @@ public class RenameDialog extends ImmersiveModeDialog {
                         (actionId == EditorInfo.IME_ACTION_DONE)) {
                     // Perform action on key press
                     toggleFastRename(mainActivity,pos,f,false);
-                    InputMethodManager imm = (InputMethodManager)v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+                    PopupWindowUtils.hideSoftKeyBoard(v);
                     return true;
                 }
                 return false;
@@ -116,11 +116,8 @@ public class RenameDialog extends ImmersiveModeDialog {
                     ba.notifyDataSetChanged();
                 }
 
-            View view = mainActivity.getCurrentFocus();
-            if (view != null) {
-                InputMethodManager imm = (InputMethodManager)mainActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-            }
+            View v = mainActivity.getCurrentFocus();
+            if (v != null) PopupWindowUtils.hideSoftKeyBoard(v);
 
             mainActivity.browserPagerAdapter.fastRenameModeViews[mainActivity.browserPager.getCurrentItem()] = null;
         }

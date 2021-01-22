@@ -46,6 +46,7 @@ import it.pgp.xfiles.utils.Pair;
 import it.pgp.xfiles.utils.dircontent.GenericDirWithContent;
 import it.pgp.xfiles.utils.pathcontent.BasePathContent;
 import it.pgp.xfiles.utils.pathcontent.LocalPathContent;
+import it.pgp.xfiles.utils.popupwindow.PopupWindowUtils;
 
 /**
  * Created by pgp on 03/11/16
@@ -191,10 +192,7 @@ public class BrowserPagerAdapter extends PagerAdapter {
         showDirContent(dirCommanders[position].refresh(),position,null);
 
         mainBrowserViews[position].setOnItemClickListener(mainActivity.listViewLevelOICL);
-        mainBrowserViews[position].setOnItemLongClickListener((parent, view, position1, id) -> {
-            mainActivity.showPopup(parent,view,position1,id);
-            return true;
-        });
+        setLongClickListener(position);
     }
 
     private void changeMainViews(BrowserViewMode browserViewMode, int position) {
@@ -221,10 +219,7 @@ public class BrowserPagerAdapter extends PagerAdapter {
 
         // mainBrowserViews[position].setAdapter(browserAdapters[position]); // already called in showDirContent
         mainBrowserViews[position].setOnItemClickListener(mainActivity.listViewLevelOICL);
-        mainBrowserViews[position].setOnItemLongClickListener((parent, view, position1, id) -> {
-            mainActivity.showPopup(parent,view,position1,id);
-            return true;
-        });
+        setLongClickListener(position);
     }
 
     @Override
@@ -254,6 +249,16 @@ public class BrowserPagerAdapter extends PagerAdapter {
         changeMainViews(browserViewModes[position], position);
     }
 
+    public void setLongClickListener(int position) {
+        mainBrowserViews[position].setOnItemLongClickListener((parent, view, position1, id) -> {
+            if(fastRenameModeViews[position]==null) {
+                mainActivity.showPopup(parent, view, position1, id);
+                return true;
+            }
+            else return false; // fast rename mode for the current browser page, allow clipboard context menu to popup
+        });
+    }
+
     public void recreateAdapterAndSelectMode(BrowserViewMode m, int position, GenericDirWithContent dirWithContent) {
         boolean[] lastcontselmode = (csCheckBoxes[position] != null)?csCheckBoxes[position].getAsBooleans():new boolean[]{false,false,false};
         browserAdapters[position] = m.newAdapter(mainActivity,dirWithContent.content);
@@ -266,6 +271,7 @@ public class BrowserPagerAdapter extends PagerAdapter {
                 if(v!=null) v.performClick();
             }
         }
+        PopupWindowUtils.hideSoftKeyBoard(mainBrowserViews[position]);
     }
 
     public void showDirContent(GenericDirWithContent dirWithContent,
