@@ -54,8 +54,7 @@ public class RemoteServerManager extends RemoteManager {
         for(int i=0;i<3;i++)
             Misc.sendStringWithLen(o,servedPaths[i]);
 
-        int resp = receiveBaseResponse();
-        if (resp != 0) {
+        if (Misc.receiveBaseResponse(i) != 0) {
             // Unable to start RH remote server
             return false;
         }

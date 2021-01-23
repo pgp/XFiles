@@ -51,8 +51,4 @@ public class RemoteManager extends StreamsPair {
         try {o.close();} catch (Exception ignored) {}
         Log.d(getClass().getName(),"Streams closed");
     }
-
-    int receiveBaseResponse() throws IOException {
-        return Misc.receiveBaseResponse(i);
-    }
 }

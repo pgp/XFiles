@@ -82,8 +82,7 @@ public class RemoteClientManager {
             byte[] port_ = Misc.castUnsignedNumberToBytes(XREPathContent.defaultRHRemoteServerPort,2);
             client.o.write(port_);
 
-            int resp = client.receiveBaseResponse();
-            if (resp != 0) {
+            if (Misc.receiveBaseResponse(client.i) != 0) {
                 client.close();
                 return null;
             }
