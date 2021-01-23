@@ -40,7 +40,7 @@ public class SimpleHTTPServer extends SimpleFileServer {
                     SimpleHTTPServer.this.acceptorThread = null;
                     MainActivity.showToastOnUIWithHandler("SimpleHTTPServer: "+(e instanceof SocketException?"acceptor closed":"accept error"));
                     MainActivity.mainActivity.runOnUiThread(()->FileServer.HTTP.server.refresh_button_color(MainActivity.mainActivity,false));
-                    notifyObservers(new Pair<>("HTTP", false));
+                    notifyObservers(new Pair<>(FileServer.HTTP.ordinal(), false));
                     return;
                 }
             }
@@ -63,7 +63,7 @@ public class SimpleHTTPServer extends SimpleFileServer {
         }
         MainActivity.showToastOnUIWithHandler("SimpleHTTPServer accepting connections on port " + port +", root path: "+rootPath);
         MainActivity.mainActivity.runOnUiThread(()->FileServer.HTTP.server.refresh_button_color(MainActivity.mainActivity,true));
-        notifyObservers(new Pair<>("HTTP", true));
+        notifyObservers(new Pair<>(FileServer.HTTP.ordinal(), true));
     }
 
     @Override

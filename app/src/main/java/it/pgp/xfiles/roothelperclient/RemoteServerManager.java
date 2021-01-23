@@ -12,6 +12,7 @@ import it.pgp.xfiles.R;
 import it.pgp.xfiles.XRE_RHSS_Widget;
 import it.pgp.xfiles.dialogs.RemoteRHServerManagementDialog;
 import it.pgp.xfiles.dialogs.XFilesRemoteSessionsManagementActivity;
+import it.pgp.xfiles.fileservers.FileServer;
 import it.pgp.xfiles.utils.Misc;
 import it.pgp.xfiles.utils.Pair;
 import it.pgp.xfiles.utils.popupwindow.PopupWindowUtils;
@@ -189,7 +190,9 @@ public class RemoteServerManager extends RemoteManager {
                     return;
                 }
 
-                rsmObservable.notifyObservers(new Pair<>("XRE", true));
+                // XRE is not an enum member of FileServer, although it should (too much logic to change in order to do this)
+                // this just assumes it to be in the last position in the RemoteRHServerManagementDialog.IfAddrsObserver state boolean array
+                rsmObservable.notifyObservers(new Pair<>(FileServer.values().length, true));
 
                 // update on-screen widgets
                 if (MainActivity.mainActivityContext != null) {
@@ -240,7 +243,7 @@ public class RemoteServerManager extends RemoteManager {
                 close();
                 rhssManagerRef.set(null);
 
-                rsmObservable.notifyObservers(new Pair<>("XRE", false));
+                rsmObservable.notifyObservers(new Pair<>(FileServer.values().length, false));
 
                 // also update local views of dialog to off, if dialog is active
                 RHSSServerStatus.destroyServer();

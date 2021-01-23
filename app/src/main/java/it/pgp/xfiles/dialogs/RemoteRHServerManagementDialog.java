@@ -27,6 +27,7 @@ import it.pgp.xfiles.utils.NetworkUtils;
 import it.pgp.xfiles.utils.Pair;
 import it.pgp.xfiles.utils.pathcontent.BasePathContent;
 import it.pgp.xfiles.utils.pathcontent.LocalPathContent;
+import it.pgp.xfiles.utils.pathcontent.XREPathContent;
 import it.pgp.xfiles.utils.wifi.WifiButtonsLayout;
 
 /**
@@ -55,7 +56,7 @@ public class RemoteRHServerManagementDialog extends Dialog {
     public class IfAddrsObserver implements Observer {
 
         private final TextView rhssIPAddresses;
-        private final boolean[] state = new boolean[3]; // FTP, HTTP, XRE
+        private final boolean[] state = new boolean[3]; // FTP, HTTP, XRE (first two are FileServer enum values)
 
         private boolean anyOn() {
             boolean res = false;
@@ -74,19 +75,8 @@ public class RemoteRHServerManagementDialog extends Dialog {
 
         @Override
         public void update(Observable o, Object arg) {
-            Pair<String, Boolean> on = (Pair) arg;
-            switch(on.i) {
-                case "FTP":
-                    state[0] = on.j;
-                    break;
-                case "HTTP":
-                    state[1] = on.j;
-                    break;
-                case "XRE":
-                    state[2] = on.j;
-                    break;
-            }
-
+            Pair<Integer, Boolean> on = (Pair) arg;
+            state[on.i] = on.j;
             activity.runOnUiThread(()->rhssIPAddresses.setText(anyOn()?NetworkUtils.getInterfaceAddressesAsString():""));
         }
     }
@@ -155,7 +145,7 @@ public class RemoteRHServerManagementDialog extends Dialog {
 
             switch (result) {
                 case 1:
-                    Toast.makeText(activity, "Remote RH server started", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(activity, "Remote RH server started on port "+ XREPathContent.defaultRHRemoteServerPort, Toast.LENGTH_SHORT).show();
                     rhss_status_button.setImageResource(R.drawable.xf_xre_server_up);
                     togglePathsWidgets(false);
                     saveOrClearPaths(true);

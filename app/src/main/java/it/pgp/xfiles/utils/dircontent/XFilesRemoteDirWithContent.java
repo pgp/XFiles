@@ -5,6 +5,7 @@ import java.util.List;
 import it.pgp.xfiles.BrowserItem;
 import it.pgp.xfiles.enums.FileOpsErrorCodes;
 import it.pgp.xfiles.enums.ProviderType;
+import it.pgp.xfiles.utils.pathcontent.XREPathContent;
 
 /**
  * Created by pgp on 20/09/17
@@ -12,7 +13,7 @@ import it.pgp.xfiles.enums.ProviderType;
 
 public class XFilesRemoteDirWithContent extends GenericDirWithContent {
 
-    public static final int defaultRHRemoteServerPort = 11111;
+    public static final int defaultRHRemoteServerPort = XREPathContent.defaultRHRemoteServerPort;
 
     public String serverHost;
     public int serverPort;
