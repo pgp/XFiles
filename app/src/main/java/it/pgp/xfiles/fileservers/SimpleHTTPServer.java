@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
+import java.util.HashSet;
+import java.util.Set;
 
 import it.pgp.xfiles.MainActivity;
 import it.pgp.xfiles.R;
@@ -15,6 +17,8 @@ public class SimpleHTTPServer extends SimpleFileServer {
     private static final int defaultPort = 8000;
 
     private AcceptorThread acceptorThread;
+
+    public final Set<Socket> clientConnections = new HashSet<>();
 
     public SimpleHTTPServer() {
         serverButtonRes = R.id.httpServerButton;
@@ -33,13 +37,17 @@ public class SimpleHTTPServer extends SimpleFileServer {
             for(;;) {
                 try {
                     Socket connection = acceptorSocket.accept();
-                    new HTTPSessionThread(connection,rootPath).start();
+                    synchronized(clientConnections) {
+                        clientConnections.add(connection);
+                    }
+                    new HTTPSessionThread(connection,rootPath, clientConnections).start();
                 }
                 catch (Exception e) {
                     e.printStackTrace();
                     SimpleHTTPServer.this.acceptorThread = null;
                     MainActivity.showToastOnUIWithHandler("SimpleHTTPServer: "+(e instanceof SocketException?"acceptor closed":"accept error"));
                     notifyObservers(new Pair<>(FileServer.HTTP.ordinal(), false));
+                    disconnectAllClients();
                     return;
                 }
             }
@@ -79,5 +87,13 @@ public class SimpleHTTPServer extends SimpleFileServer {
                     && !Thread.State.TERMINATED.equals(state));
         }
         return false;
+    }
+
+    private void disconnectAllClients() {
+        synchronized(clientConnections) {
+            for(Socket c : clientConnections)
+                try {c.close();} catch (Exception ignored) {}
+            clientConnections.clear();
+        }
     }
 }

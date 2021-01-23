@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import it.pgp.xfiles.BrowserItem;
 import it.pgp.xfiles.MainActivity;
@@ -29,6 +30,7 @@ import static org.apache.commons.lang3.StringEscapeUtils.escapeHtml4;
 
 public class HTTPSessionThread extends Thread {
 
+    private final Set<Socket> clientConnections;
     private final Socket connection;
     private final String wwwhome;
 
@@ -172,7 +174,8 @@ public class HTTPSessionThread extends Thread {
         log(connection, code + " " + title);
     }
 
-    public HTTPSessionThread(Socket connection, String wwwhome) {
+    public HTTPSessionThread(Socket connection, String wwwhome, Set<Socket> clientConnections) {
+        this.clientConnections = clientConnections; // just to remove itself from the set when this thread ends
         this.connection = connection;
         this.wwwhome = wwwhome;
     }
@@ -290,5 +293,8 @@ public class HTTPSessionThread extends Thread {
             Log.e(getClass().getName(),"Exception on close", e);
         }
         Log.i(getClass().getName(),"Client session ended");
+        synchronized(clientConnections) {
+            clientConnections.remove(connection);
+        }
     }
 }
