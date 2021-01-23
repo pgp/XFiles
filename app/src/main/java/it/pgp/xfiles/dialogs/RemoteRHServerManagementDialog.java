@@ -244,7 +244,6 @@ public class RemoteRHServerManagementDialog extends Dialog {
                 s.setRootPath(((EditText)findViewById(R.id.ftpHttpRootPath)).getText().toString()); // not needed in case of server On->OFF
                 s.toggle();
             });
-            s.refresh_button_color(activity, null);
         }
 
         WifiButtonsLayout wbl = new WifiButtonsLayout(activity);
