@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.Window;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -35,8 +36,6 @@ import it.pgp.xfiles.utils.wifi.WifiButtonsLayout;
  */
 
 public class RemoteRHServerManagementDialog extends Dialog {
-
-    private ImageButton rhss_status_button;
     private ImageButton rhss_show_xre_connections;
 
     private EditText xreHomePath;
@@ -56,6 +55,11 @@ public class RemoteRHServerManagementDialog extends Dialog {
     public class IfAddrsObserver implements Observer {
 
         private final TextView rhssIPAddresses;
+
+        private final Button ftpServerButton;
+        private final Button httpServerButton;
+        private final ImageButton rhss_status_button;
+
         private final boolean[] state = new boolean[3]; // FTP, HTTP, XRE (first two are FileServer enum values)
 
         private boolean anyOn() {
@@ -67,17 +71,46 @@ public class RemoteRHServerManagementDialog extends Dialog {
 
         public IfAddrsObserver() {
             rhssIPAddresses = findViewById(R.id.rhssIPAddresses);
+
+            ftpServerButton = findViewById(R.id.ftpServerButton);
+            httpServerButton = findViewById(R.id.httpServerButton);
+            rhss_status_button = findViewById(R.id.rhss_toggle_rhss_button);
+            rhss_status_button.setOnClickListener(RemoteRHServerManagementDialog.this::switch_rhss_status);
+
             state[0] = FileServer.FTP.server.isAlive();
             state[1] = FileServer.HTTP.server.isAlive();
             state[2] = RemoteServerManager.rhssManagerRef.get()!=null;
-            activity.runOnUiThread(()->rhssIPAddresses.setText(anyOn()?NetworkUtils.getInterfaceAddressesAsString():""));
+            updateViews(null);
+        }
+
+        private void updateViews(Pair<Integer, Boolean> on) {
+            activity.runOnUiThread(()->{
+                rhssIPAddresses.setText(anyOn()?NetworkUtils.getInterfaceAddressesAsString():"");
+
+                if(on==null) { // on dialog constructor, set all views
+                    ftpServerButton.setTextColor(activity.getResources().getColor(state[0]? R.color.green:R.color.red));
+                    httpServerButton.setTextColor(activity.getResources().getColor(state[1]? R.color.green:R.color.red));
+                    rhss_status_button.setImageResource(state[2]?R.drawable.xf_xre_server_up:R.drawable.xf_xre_server_down);
+                }
+                else switch(on.i) {
+                    case 0:
+                        ftpServerButton.setTextColor(activity.getResources().getColor(on.j? R.color.green:R.color.red));
+                        break;
+                    case 1:
+                        httpServerButton.setTextColor(activity.getResources().getColor(on.j? R.color.green:R.color.red));
+                        break;
+                    case 2:
+                        rhss_status_button.setImageResource(on.j?R.drawable.xf_xre_server_up:R.drawable.xf_xre_server_down);
+                        break;
+                }
+            });
         }
 
         @Override
         public void update(Observable o, Object arg) {
             Pair<Integer, Boolean> on = (Pair) arg;
             state[on.i] = on.j;
-            activity.runOnUiThread(()->rhssIPAddresses.setText(anyOn()?NetworkUtils.getInterfaceAddressesAsString():""));
+            updateViews(on);
         }
     }
 
@@ -146,7 +179,7 @@ public class RemoteRHServerManagementDialog extends Dialog {
             switch (result) {
                 case 1:
                     Toast.makeText(activity, "Remote RH server started on port "+ XREPathContent.defaultRHRemoteServerPort, Toast.LENGTH_SHORT).show();
-                    rhss_status_button.setImageResource(R.drawable.xf_xre_server_up);
+//                    rhss_status_button.setImageResource(R.drawable.xf_xre_server_up);
                     togglePathsWidgets(false);
                     saveOrClearPaths(true);
 //                    rhssIPAddresses.setText(NetworkUtils.getInterfaceAddressesAsString());
@@ -165,7 +198,7 @@ public class RemoteRHServerManagementDialog extends Dialog {
             switch (RemoteServerManager.rhss_action(RemoteServerManager.RHSS_ACTION.STOP)) {
                 case 1:
                     Toast.makeText(activity, "Remote RH server stopped", Toast.LENGTH_SHORT).show();
-                    rhss_status_button.setImageResource(R.drawable.xf_xre_server_down);
+//                    rhss_status_button.setImageResource(R.drawable.xf_xre_server_down);
                     togglePathsWidgets(true);
                     saveOrClearPaths(false);
 
@@ -201,7 +234,7 @@ public class RemoteRHServerManagementDialog extends Dialog {
         FileServer.HTTP.server.addObserver(ifAddrsObserver);
         RemoteServerManager.rsmObservable.addObserver(ifAddrsObserver);
 
-        rhss_status_button = findViewById(R.id.rhss_toggle_rhss_button);
+//        rhss_status_button = findViewById(R.id.rhss_toggle_rhss_button);
         rhss_show_xre_connections = findViewById(R.id.rhss_show_xre_connections);
 
         for (FileServer fileServer : FileServer.values()) {
@@ -243,17 +276,16 @@ public class RemoteRHServerManagementDialog extends Dialog {
 
         // check rhss manager thread status
         if (RemoteServerManager.rhssManagerRef.get() == null) {
-            rhss_status_button.setImageResource(R.drawable.xf_xre_server_down);
+//            rhss_status_button.setImageResource(R.drawable.xf_xre_server_down);
             togglePathsWidgets(true);
         }
         else {
-            rhss_status_button.setImageResource(R.drawable.xf_xre_server_up);
+//            rhss_status_button.setImageResource(R.drawable.xf_xre_server_up);
             // rhssIPAddresses.setText(NetworkUtils.getInterfaceAddressesAsString());
             retrievePathsIntoEditTexts();
             togglePathsWidgets(false);
         }
 
-        rhss_status_button.setOnClickListener(this::switch_rhss_status);
         rhss_show_xre_connections.setOnClickListener(((MainActivity) activity)::showXREConnections);
 
         wbl.registerListeners();
