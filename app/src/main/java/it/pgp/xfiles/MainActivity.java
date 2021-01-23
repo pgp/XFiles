@@ -1551,7 +1551,7 @@ public class MainActivity extends EffectActivity {
                         RemoteRHServerManagementDialog.instance.show();
                         // autostart HTTP/FTP server
                         FileServer fileServer = FileServer.fromMenuRes(itemId);
-                        if(fileServer.isAlive()) {
+                        if(fileServer.server.isAlive()) {
                             Toast.makeText(MainActivity.this, fileServer.name()+" server is already running, please stop it before sharing a new directory", Toast.LENGTH_LONG).show();
                             return true;
                         }
@@ -1667,8 +1667,8 @@ public class MainActivity extends EffectActivity {
 
             // check if there is any remote server active and, in case, show dialog
             if((RemoteServerManager.rhssManagerRef.get() != null) ||
-                    FileServer.FTP.isAlive() ||
-                    FileServer.HTTP.isAlive()) {
+                    FileServer.FTP.server.isAlive() ||
+                    FileServer.HTTP.server.isAlive()) {
                 new CloseActiveServersDialog(this).show();
             }
             else {

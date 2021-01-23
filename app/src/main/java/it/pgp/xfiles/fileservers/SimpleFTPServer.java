@@ -25,7 +25,7 @@ public class SimpleFTPServer extends SimpleFileServer {
         catch (Exception e) {e.printStackTrace();}
         server = null;
         MainActivity.showToastOnUIWithHandler("FTP server stopped");
-        MainActivity.mainActivity.runOnUiThread(()->FileServer.FTP.refresh_button_color(MainActivity.mainActivity,false));
+        MainActivity.mainActivity.runOnUiThread(()->FileServer.FTP.server.refresh_button_color(MainActivity.mainActivity,false));
     }
 
     @Override
@@ -48,7 +48,7 @@ public class SimpleFTPServer extends SimpleFileServer {
             server = serverFactory.createServer();
             server.start();
             MainActivity.showToastOnUIWithHandler("FTP server started on port "+port+", root path: "+rootPath);
-            MainActivity.mainActivity.runOnUiThread(()->FileServer.FTP.refresh_button_color(MainActivity.mainActivity,true));
+            MainActivity.mainActivity.runOnUiThread(()->FileServer.FTP.server.refresh_button_color(MainActivity.mainActivity,true));
         }
         catch (Exception e) {
             MainActivity.showToastOnUIWithHandler("Error in starting FTP server");

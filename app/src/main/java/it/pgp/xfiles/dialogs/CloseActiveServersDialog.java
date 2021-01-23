@@ -54,10 +54,10 @@ public class CloseActiveServersDialog extends Dialog {
             Bxre.setEnabled(false);
         }
         
-        if(FileServer.FTP.isAlive()) {
+        if(FileServer.FTP.server.isAlive()) {
             Tftp.setTextColor(green);
             Bftp.setOnClickListener(v-> {
-                FileServer.FTP.stop();
+                FileServer.FTP.server.stopServer();
                 Tftp.setTextColor(red);
                 Bftp.setEnabled(false);
             });
@@ -67,10 +67,10 @@ public class CloseActiveServersDialog extends Dialog {
             Bftp.setEnabled(false);
         }
 
-        if(FileServer.HTTP.isAlive()) {
+        if(FileServer.HTTP.server.isAlive()) {
             Thttp.setTextColor(green);
             Bhttp.setOnClickListener(v-> {
-                FileServer.HTTP.stop();
+                FileServer.HTTP.server.stopServer();
                 Thttp.setTextColor(red);
                 Bhttp.setEnabled(false);
             });

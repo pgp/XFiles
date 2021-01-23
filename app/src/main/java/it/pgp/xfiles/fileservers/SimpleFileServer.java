@@ -1,7 +1,9 @@
 package it.pgp.xfiles.fileservers;
 
+import android.app.Activity;
 import android.widget.Button;
 
+import it.pgp.xfiles.R;
 import it.pgp.xfiles.utils.Misc;
 
 public abstract class SimpleFileServer {
@@ -17,10 +19,6 @@ public abstract class SimpleFileServer {
 
     public abstract boolean isAlive();
 
-    public String getRootPath() {
-        return rootPath;
-    }
-
     public void setRootPath(String rootPath) {
         this.rootPath = rootPath;
     }
@@ -31,5 +29,17 @@ public abstract class SimpleFileServer {
 
     public void setPort(int port) {
         this.port = port;
+    }
+
+    public void toggle() {
+        if (isAlive()) stopServer(); else startServer();
+    }
+
+    public void refresh_button_color(Activity activity, Boolean on) {
+        if(on == null) on = isAlive();
+        if (serverButton != null)
+            serverButton.setTextColor(activity.getResources().getColor(
+                    on? R.color.green:R.color.red
+            ));
     }
 }

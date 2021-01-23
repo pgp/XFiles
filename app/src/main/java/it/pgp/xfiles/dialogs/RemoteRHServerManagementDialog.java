@@ -16,6 +16,7 @@ import it.pgp.xfiles.EffectActivity;
 import it.pgp.xfiles.MainActivity;
 import it.pgp.xfiles.R;
 import it.pgp.xfiles.fileservers.FileServer;
+import it.pgp.xfiles.fileservers.SimpleFileServer;
 import it.pgp.xfiles.roothelperclient.RHSSServerStatus;
 import it.pgp.xfiles.roothelperclient.RemoteServerManager;
 import it.pgp.xfiles.utils.Misc;
@@ -169,12 +170,13 @@ public class RemoteRHServerManagementDialog extends Dialog {
         rhss_show_xre_connections = findViewById(R.id.rhss_show_xre_connections);
 
         for (FileServer fileServer : FileServer.values()) {
-            fileServer.server.serverButton = findViewById(fileServer.server.serverButtonRes);
-            fileServer.server.serverButton.setOnClickListener(v->{
-                fileServer.setRootPath(((EditText)findViewById(R.id.ftpHttpRootPath)).getText().toString()); // not needed in case of server On->OFF
-                fileServer.toggle();
+            SimpleFileServer s = fileServer.server;
+            s.serverButton = findViewById(s.serverButtonRes);
+            s.serverButton.setOnClickListener(v->{
+                s.setRootPath(((EditText)findViewById(R.id.ftpHttpRootPath)).getText().toString()); // not needed in case of server On->OFF
+                s.toggle();
             });
-            fileServer.refresh_button_color(activity, null);
+            s.refresh_button_color(activity, null);
         }
 
         WifiButtonsLayout wbl = new WifiButtonsLayout(activity);
