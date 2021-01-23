@@ -3,10 +3,12 @@ package it.pgp.xfiles.fileservers;
 import android.app.Activity;
 import android.widget.Button;
 
+import java.util.Observable;
+
 import it.pgp.xfiles.R;
 import it.pgp.xfiles.utils.Misc;
 
-public abstract class SimpleFileServer {
+public abstract class SimpleFileServer extends Observable {
 
     public Button serverButton;
     public int serverButtonRes;
@@ -41,5 +43,10 @@ public abstract class SimpleFileServer {
             serverButton.setTextColor(activity.getResources().getColor(
                     on? R.color.green:R.color.red
             ));
+    }
+
+    @Override
+    public synchronized boolean hasChanged() {
+        return true;
     }
 }

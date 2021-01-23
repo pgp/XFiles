@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 
 import java.io.IOException;
+import java.util.Observable;
 import java.util.concurrent.atomic.AtomicReference;
 
 import it.pgp.xfiles.MainActivity;
@@ -12,6 +13,7 @@ import it.pgp.xfiles.XRE_RHSS_Widget;
 import it.pgp.xfiles.dialogs.RemoteRHServerManagementDialog;
 import it.pgp.xfiles.dialogs.XFilesRemoteSessionsManagementActivity;
 import it.pgp.xfiles.utils.Misc;
+import it.pgp.xfiles.utils.Pair;
 import it.pgp.xfiles.utils.popupwindow.PopupWindowUtils;
 
 /**
@@ -26,6 +28,16 @@ public class RemoteServerManager extends RemoteManager {
     public static final AtomicReference<RemoteServerManager> rhssManagerRef = new AtomicReference<>(null);
 
     private final byte rq_byte = ControlCodes.REMOTE_SERVER_MANAGEMENT.getValue();
+
+    public static class RSMObservable extends Observable { // TODO move rhssManagerRef into here
+
+        @Override
+        public synchronized boolean hasChanged() {
+            return true;
+        }
+    }
+
+    public static final RSMObservable rsmObservable = new RSMObservable();
 
     // constructor without auto start
     private RemoteServerManager() throws IOException {
@@ -177,6 +189,8 @@ public class RemoteServerManager extends RemoteManager {
                     return;
                 }
 
+                rsmObservable.notifyObservers(new Pair<>("XRE", true));
+
                 // update on-screen widgets
                 if (MainActivity.mainActivityContext != null) {
                     Log.d("XRE_RHSS","refreshing XRE widget (-> ON)");
@@ -225,6 +239,8 @@ public class RemoteServerManager extends RemoteManager {
                 // no need for finally, thread always exits with exception
                 close();
                 rhssManagerRef.set(null);
+
+                rsmObservable.notifyObservers(new Pair<>("XRE", false));
 
                 // also update local views of dialog to off, if dialog is active
                 RHSSServerStatus.destroyServer();

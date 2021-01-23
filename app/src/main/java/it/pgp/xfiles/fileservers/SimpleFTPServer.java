@@ -8,6 +8,8 @@ import org.apache.ftpserver.usermanager.impl.BaseUser;
 
 import it.pgp.xfiles.MainActivity;
 import it.pgp.xfiles.R;
+import it.pgp.xfiles.dialogs.RemoteRHServerManagementDialog;
+import it.pgp.xfiles.utils.Pair;
 
 public class SimpleFTPServer extends SimpleFileServer {
 
@@ -26,6 +28,7 @@ public class SimpleFTPServer extends SimpleFileServer {
         server = null;
         MainActivity.showToastOnUIWithHandler("FTP server stopped");
         MainActivity.mainActivity.runOnUiThread(()->FileServer.FTP.server.refresh_button_color(MainActivity.mainActivity,false));
+        notifyObservers(new Pair<>("FTP", false));
     }
 
     @Override
@@ -49,6 +52,7 @@ public class SimpleFTPServer extends SimpleFileServer {
             server.start();
             MainActivity.showToastOnUIWithHandler("FTP server started on port "+port+", root path: "+rootPath);
             MainActivity.mainActivity.runOnUiThread(()->FileServer.FTP.server.refresh_button_color(MainActivity.mainActivity,true));
+            notifyObservers(new Pair<>("FTP", true));
         }
         catch (Exception e) {
             MainActivity.showToastOnUIWithHandler("Error in starting FTP server");

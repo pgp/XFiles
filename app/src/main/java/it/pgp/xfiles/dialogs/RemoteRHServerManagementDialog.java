@@ -12,6 +12,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.Observable;
+import java.util.Observer;
+
 import it.pgp.xfiles.EffectActivity;
 import it.pgp.xfiles.MainActivity;
 import it.pgp.xfiles.R;
@@ -21,6 +24,7 @@ import it.pgp.xfiles.roothelperclient.RHSSServerStatus;
 import it.pgp.xfiles.roothelperclient.RemoteServerManager;
 import it.pgp.xfiles.utils.Misc;
 import it.pgp.xfiles.utils.NetworkUtils;
+import it.pgp.xfiles.utils.Pair;
 import it.pgp.xfiles.utils.pathcontent.BasePathContent;
 import it.pgp.xfiles.utils.pathcontent.LocalPathContent;
 import it.pgp.xfiles.utils.wifi.WifiButtonsLayout;
@@ -44,10 +48,48 @@ public class RemoteRHServerManagementDialog extends Dialog {
     private EditText ftpHttpRootPath;
 
     private CheckBox rhssSendXreAnnounceCheckbox;
-
-    private TextView rhssIPAddresses;
+    public final IfAddrsObserver ifAddrsObserver;
 
     private BasePathContent currentDir;
+
+    public class IfAddrsObserver implements Observer {
+
+        private final TextView rhssIPAddresses;
+        private final boolean[] state = new boolean[3]; // FTP, HTTP, XRE
+
+        private boolean anyOn() {
+            boolean res = false;
+            for(boolean x : state)
+                res |= x;
+            return res;
+        }
+
+        public IfAddrsObserver() {
+            rhssIPAddresses = findViewById(R.id.rhssIPAddresses);
+            state[0] = FileServer.FTP.server.isAlive();
+            state[1] = FileServer.HTTP.server.isAlive();
+            state[2] = RemoteServerManager.rhssManagerRef.get()!=null;
+            activity.runOnUiThread(()->rhssIPAddresses.setText(anyOn()?NetworkUtils.getInterfaceAddressesAsString():""));
+        }
+
+        @Override
+        public void update(Observable o, Object arg) {
+            Pair<String, Boolean> on = (Pair) arg;
+            switch(on.i) {
+                case "FTP":
+                    state[0] = on.j;
+                    break;
+                case "HTTP":
+                    state[1] = on.j;
+                    break;
+                case "XRE":
+                    state[2] = on.j;
+                    break;
+            }
+
+            activity.runOnUiThread(()->rhssIPAddresses.setText(anyOn()?NetworkUtils.getInterfaceAddressesAsString():""));
+        }
+    }
 
     private final View.OnClickListener setCurrentDirectoryListener = v -> {
         EditText targetEditText;
@@ -117,7 +159,7 @@ public class RemoteRHServerManagementDialog extends Dialog {
                     rhss_status_button.setImageResource(R.drawable.xf_xre_server_up);
                     togglePathsWidgets(false);
                     saveOrClearPaths(true);
-                    rhssIPAddresses.setText(NetworkUtils.getInterfaceAddressesAsString());
+//                    rhssIPAddresses.setText(NetworkUtils.getInterfaceAddressesAsString());
                     break;
                 case 0:
                     Toast.makeText(activity, "Unable to start remote RH server", Toast.LENGTH_SHORT).show();
@@ -137,7 +179,7 @@ public class RemoteRHServerManagementDialog extends Dialog {
                     togglePathsWidgets(true);
                     saveOrClearPaths(false);
 
-                    rhssIPAddresses.setText("");
+//                    rhssIPAddresses.setText("");
                     break;
                 case 0:
                     Toast.makeText(activity, "Unable to stop remote RH server", Toast.LENGTH_SHORT).show();
@@ -164,7 +206,10 @@ public class RemoteRHServerManagementDialog extends Dialog {
 
         currentDir = MainActivity.mainActivity.getCurrentDirCommander().getCurrentDirectoryPathname();
 
-        rhssIPAddresses = findViewById(R.id.rhssIPAddresses);
+        ifAddrsObserver = new IfAddrsObserver();
+        FileServer.FTP.server.addObserver(ifAddrsObserver);
+        FileServer.HTTP.server.addObserver(ifAddrsObserver);
+        RemoteServerManager.rsmObservable.addObserver(ifAddrsObserver);
 
         rhss_status_button = findViewById(R.id.rhss_toggle_rhss_button);
         rhss_show_xre_connections = findViewById(R.id.rhss_show_xre_connections);
@@ -213,7 +258,7 @@ public class RemoteRHServerManagementDialog extends Dialog {
         }
         else {
             rhss_status_button.setImageResource(R.drawable.xf_xre_server_up);
-            rhssIPAddresses.setText(NetworkUtils.getInterfaceAddressesAsString());
+            // rhssIPAddresses.setText(NetworkUtils.getInterfaceAddressesAsString());
             retrievePathsIntoEditTexts();
             togglePathsWidgets(false);
         }
@@ -224,6 +269,11 @@ public class RemoteRHServerManagementDialog extends Dialog {
         wbl.registerListeners();
         setOnDismissListener(dialog->{
             wbl.unregisterListeners();
+
+            FileServer.FTP.server.deleteObserver(ifAddrsObserver);
+            FileServer.HTTP.server.deleteObserver(ifAddrsObserver);
+            RemoteServerManager.rsmObservable.deleteObserver(ifAddrsObserver);
+
             instance = null;
             EffectActivity.currentlyOnFocus = MainActivity.mainActivity;
         });
