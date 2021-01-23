@@ -4,7 +4,6 @@ import java.util.Comparator;
 
 import it.pgp.xfiles.BrowserItem;
 import it.pgp.xfiles.SortingItem;
-import it.pgp.xfiles.exceptions.InvalidComparatorFieldException;
 
 /**
  * Created by pgp on 27/10/16
@@ -51,7 +50,7 @@ public class AdvancedComparator implements Comparator<BrowserItem> {
                     if (currentComparisonResult == 0) continue;
                     else return currentComparisonResult;
                 default:
-                    throw new InvalidComparatorFieldException();
+                    throw new RuntimeException("Guard block");
             }
         }
         return currentComparisonResult;
