@@ -10,7 +10,6 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -27,50 +26,30 @@ public final class DragNDropAdapter extends ArrayAdapter<SortingItem> {
         private CheckBox reversed;
     }
 
-    final int INVALID_ID = -1;
+    static final int INVALID_ID = -1;
     private final View.OnClickListener onClickListenerSel, onClickListenerRev;
 
     Map<SortingItem, Integer> mIdMap = new HashMap<>();
     private ViewHolder viewHolder;
 
-    private List<SortingItem> objects;
-    private Locale currentLocale;
-
+    private final List<SortingItem> objects;
+    private final Locale currentLocale;
 
     public DragNDropAdapter(Context context, int textViewResourceId, List<SortingItem> objects, View.OnClickListener onClickListenerSel, View.OnClickListener onClickListenerRev) {
         super(context, textViewResourceId, objects);
         this.onClickListenerSel = onClickListenerSel;
         this.onClickListenerRev = onClickListenerRev;
         this.objects = objects;
-        for (int i = 0; i < objects.size(); ++i) {
+        for (int i = 0; i < objects.size(); ++i)
             mIdMap.put(objects.get(i), i);
-        }
         currentLocale = context.getResources().getConfiguration().locale;
-    }
-
-    public Collection<SortingItem> getCurrentOrderingOfItems() {
-        return objects;
-    }
-
-    public int getCount() {
-        return objects.size();
-    }
-
-    public SortingItem getItem(int position) {
-        return objects.get(position);
-    }
-
-    public List<SortingItem> getItems() {
-        return objects;
     }
 
     public SortingItem[] getSelectedItems() {
         ArrayList<SortingItem> a = new ArrayList<>();
         for (SortingItem si : objects)
             if (si.isSelected()) a.add(si);
-        SortingItem[] aa = new SortingItem[a.size()];
-        a.toArray(aa);
-        return aa;
+        return a.toArray(new SortingItem[0]);
     }
 
     @Override
@@ -123,8 +102,7 @@ public final class DragNDropAdapter extends ArrayAdapter<SortingItem> {
     }
 
     @Override
-    public boolean hasStableIds()
-    {
+    public boolean hasStableIds() {
         return android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP;
     }
 
