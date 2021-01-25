@@ -6,6 +6,11 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import java.util.ArrayList;
 import java.util.Collections;
 
+/**
+ * Web source:
+ * https://medium.com/@gopalawasthi383/android-recyclerview-drag-and-drop-a3f227cdb641
+ */
+
 public class DragDropItemTouchHelperCallback extends ItemTouchHelper.Callback {
     int dragFrom = -1;
     int dragTo = -1;
@@ -46,10 +51,8 @@ public class DragDropItemTouchHelperCallback extends ItemTouchHelper.Callback {
     }
 
     private void reallyMoved(int dragFrom, int dragTo) {
-        if(dragFrom == 0 || dragTo == arrayList.size()){
-            return;
-        }
-        Collections.swap(arrayList, dragFrom, dragTo);
+        if(dragFrom == 0 || dragTo == arrayList.size()+1) return;
+        Collections.swap(arrayList, dragFrom-1, dragTo-1);
     }
 
     @Override
@@ -58,6 +61,8 @@ public class DragDropItemTouchHelperCallback extends ItemTouchHelper.Callback {
     //defines the enabled move directions in each state (idle, swiping, dragging).
     @Override
     public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
+        if(viewHolder.getItemViewType() == DragNDropAdapter.HEADERVIEW)
+            return makeMovementFlags(0,0);
         int dragflags = ItemTouchHelper.UP | ItemTouchHelper.DOWN;
         return makeMovementFlags(dragflags,0);
     }

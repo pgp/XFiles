@@ -37,4 +37,7 @@ public class SortingItem {
     public void toggleReversed() {
         reversed = !reversed;
     }
+
+    // DEBUG toString
+    // return comparatorField.name1()+": "+(selected?"V":"O")+", "+(reversed?"V":"O");
 }

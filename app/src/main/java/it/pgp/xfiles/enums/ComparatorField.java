@@ -72,4 +72,21 @@ public enum ComparatorField {
             return localizedLabels.get(Locale.ENGLISH).get(this);
         }
     }
+
+    // DEBUG
+//    public String name1() {
+//        switch(this) {
+//            case FILENAME:
+//                return "FILE";
+//            case DATE:
+//                return "DATE";
+//            case SIZE:
+//                return "SIZE";
+//            case TYPE:
+//                return "TYPE";
+//            case DIR:
+//                return "DIR1";
+//        }
+//        return null;
+//    }
 }

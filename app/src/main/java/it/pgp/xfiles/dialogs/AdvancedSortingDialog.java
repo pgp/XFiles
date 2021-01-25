@@ -43,13 +43,13 @@ public class AdvancedSortingDialog extends BaseDialog {
         dragNDropAdapter = new DragNDropAdapter(activity,content);
         listView.setLayoutManager(layoutManager);
         listView.setAdapter(dragNDropAdapter);
-        listView.setHasFixedSize(true);
 
         new ItemTouchHelper(new DragDropItemTouchHelperCallback(dragNDropAdapter,content)).attachToRecyclerView(listView);
 
         Button okButton = findViewById(R.id.advancedSortOKButton);
         okButton.setOnClickListener(v -> {
             advancedComparator = new AdvancedComparator(dragNDropAdapter.getSelectedItems());
+//            dragNDropAdapter.printContent(); // DEBUG
             browserAdapter.sort(advancedComparator);
             dismiss();
         });
