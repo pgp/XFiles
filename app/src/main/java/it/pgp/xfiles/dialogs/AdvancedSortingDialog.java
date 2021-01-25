@@ -1,19 +1,20 @@
 package it.pgp.xfiles.dialogs;
 
 import android.app.Activity;
-import android.view.View;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.ListView;
 
 import java.util.ArrayList;
-import it.pgp.xfiles.adapters.BrowserAdapter;
+
 import it.pgp.xfiles.R;
-import it.pgp.xfiles.comparators.AdvancedComparator;
-import it.pgp.xfiles.dragdroplist.DragNDropAdapter;
-import it.pgp.xfiles.dragdroplist.DynamicListView;
-import it.pgp.xfiles.enums.ComparatorField;
 import it.pgp.xfiles.SortingItem;
+import it.pgp.xfiles.adapters.BrowserAdapter;
+import it.pgp.xfiles.comparators.AdvancedComparator;
+import it.pgp.xfiles.dragdroplist.DragDropItemTouchHelperCallback;
+import it.pgp.xfiles.dragdroplist.DragNDropAdapter;
+import it.pgp.xfiles.enums.ComparatorField;
 
 /**
  * Created by pgp on 28/10/16
@@ -22,7 +23,7 @@ import it.pgp.xfiles.SortingItem;
 
 public class AdvancedSortingDialog extends BaseDialog {
     private DragNDropAdapter dragNDropAdapter;
-    private DynamicListView listView;
+    private RecyclerView listView;
 
     private AdvancedComparator advancedComparator;
 
@@ -32,30 +33,19 @@ public class AdvancedSortingDialog extends BaseDialog {
         setContentView(R.layout.advanced_sorting_dialog);
         setDialogIcon(R.drawable.xfiles_sort_special);
 
-        ArrayList<SortingItem> content = new ArrayList<>();
+        final ArrayList<SortingItem> content = new ArrayList<>();
         for (ComparatorField c : ComparatorField.values()) {
             content.add(new SortingItem(c,true,false)); // default: all attributes selected, no one reversed
         }
 
-        View.OnClickListener selListener = v -> {
-            View view = (View) v.getParent();
-            int index = listView.indexOfChild(view);
-            CheckBox checkBox = view.findViewById(R.id.sortingAttributeSelectedCheckbox);
-            dragNDropAdapter.updateSelItem(checkBox.isChecked(), index);
-        };
-
-        View.OnClickListener revListener = v -> {
-            View view = (View) v.getParent();
-            int index = listView.indexOfChild(view);
-            CheckBox checkBox = view.findViewById(R.id.sortingAttributeReversedCheckbox);
-            dragNDropAdapter.updateRevItem(checkBox.isChecked(), index);
-        };
-
-        dragNDropAdapter = new DragNDropAdapter(activity,R.layout.dragitem,content,selListener,revListener);
         listView = findViewById(R.id.sortingAttributesDragNDropListView);
-        listView.setItemList(content);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false);
+        dragNDropAdapter = new DragNDropAdapter(activity,content);
+        listView.setLayoutManager(layoutManager);
         listView.setAdapter(dragNDropAdapter);
-        listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+        listView.setHasFixedSize(true);
+
+        new ItemTouchHelper(new DragDropItemTouchHelperCallback(dragNDropAdapter,content)).attachToRecyclerView(listView);
 
         Button okButton = findViewById(R.id.advancedSortOKButton);
         okButton.setOnClickListener(v -> {

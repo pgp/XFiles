@@ -29,11 +29,11 @@
 
     </LinearLayout>
 
-    <it.pgp.xfiles.dragdroplist.DynamicListView
+    <android.support.v7.widget.RecyclerView
         android:id="@+id/sortingAttributesDragNDropListView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-    </it.pgp.xfiles.dragdroplist.DynamicListView>
+    </android.support.v7.widget.RecyclerView>
 
     <LinearLayout
         android:orientation="horizontal"
