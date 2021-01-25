@@ -1,6 +1,7 @@
 package it.pgp.xfiles.utils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -55,24 +56,11 @@ public class GenericMRU<T,U> {
         return -1;
     }
 
-//    private <C> void swap(C item1, C item2) {
-//        C tmp = item1;
-//        item1 = item2;
-//        item2 = tmp;
-//    }
-
-    private <C> void swap(List<C> container, int i1, int i2) {
-        if (i1 == i2) return;
-        C tmp = container.get(i1);
-        container.set(i1,container.get(i2));
-        container.set(i2,tmp);
-    }
-
     private void swapMruObjects(int i1, int i2) {
         if (i1 == i2) return;
-        swap(archivePaths,i1,i2);
-        swap(vMaps,i1,i2);
-        swap(modified,i1,i2);
+        Collections.swap(archivePaths,i1,i2);
+        Collections.swap(vMaps,i1,i2);
+        Collections.swap(modified,i1,i2);
     }
 
     /*

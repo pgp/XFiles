@@ -17,6 +17,7 @@
 package it.pgp.xfiles.dragdroplist;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -333,7 +334,7 @@ public class DynamicListView extends ListView {
                 return;
             }
 
-            swapElements(mItemList, originalItem, getPositionForView(switchView));
+            Collections.swap(mItemList, originalItem, getPositionForView(switchView));
 
             ((BaseAdapter) getAdapter()).notifyDataSetChanged();
 
@@ -369,12 +370,6 @@ public class DynamicListView extends ListView {
                 }
             });
         }
-    }
-
-    private void swapElements(ArrayList arrayList, int indexOne, int indexTwo) {
-        Object temp = arrayList.get(indexOne);
-        arrayList.set(indexOne, arrayList.get(indexTwo));
-        arrayList.set(indexTwo, temp);
     }
 
 
