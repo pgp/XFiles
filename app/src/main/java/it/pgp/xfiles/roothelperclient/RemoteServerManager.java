@@ -2,6 +2,7 @@ package it.pgp.xfiles.roothelperclient;
 
 import android.content.Context;
 import android.util.Log;
+import android.view.View;
 
 import java.io.IOException;
 import java.util.Observable;
@@ -150,23 +151,15 @@ public class RemoteServerManager extends RemoteManager {
 
         // show the visual hash of the shared TLS master secret
         if (MainActivity.mainActivity != null) {
-            MainActivity.mainActivity.runOnUiThread(()->
-//                    new HashViewDialog(MainActivity.mainActivity,sessionKey,true).show());
-            {
-                try {
-                    PopupWindowUtils.createAndShowHashViewPopupWindow(
-                            MainActivity.mainActivity,
-                            sessionKey,
-                            true,
-                            RemoteRHServerManagementDialog.instance.findViewById(R.id.remote_rh_server_management_dialog));
-                }
-                catch (NullPointerException e) {
-                    PopupWindowUtils.createAndShowHashViewPopupWindow(
-                            MainActivity.mainActivity,
-                            sessionKey,
-                            true,
-                            MainActivity.mainActivity.findViewById(R.id.activity_main));
-                }
+            MainActivity.mainActivity.runOnUiThread(()-> {
+                View anchor = (RemoteRHServerManagementDialog.instance!=null)?
+                        RemoteRHServerManagementDialog.instance.findViewById(R.id.remote_rh_server_management_dialog):
+                        MainActivity.mainActivity.findViewById(R.id.activity_main);
+                PopupWindowUtils.createAndShowHashViewPopupWindow(
+                        MainActivity.mainActivity,
+                        sessionKey,
+                        true,
+                        anchor);
             });
         }
     }
