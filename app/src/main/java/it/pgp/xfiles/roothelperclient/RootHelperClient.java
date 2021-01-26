@@ -1321,10 +1321,9 @@ public class RootHelperClient implements FileOperationHelper {
 
     public void killServer() throws IOException {
         Log.d("RHClient","killserver invoked!!!!!!!!!!!!!!!");
-        StreamsPair rs = getStreams();
-        byte end = ControlCodes.ACTION_EXIT.getValue();
-        rs.o.write(end);
-        rs.close();
+        try(StreamsPair rs = getStreams()) {
+            rs.o.write(ControlCodes.ACTION_EXIT.getValue());
+        }
     }
 
     // kills another RH process (executing some long-term task) via SIGINT,

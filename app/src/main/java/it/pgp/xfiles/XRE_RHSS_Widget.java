@@ -77,13 +77,9 @@ public class XRE_RHSS_Widget extends AppWidgetProvider {
                         Log.d("XRE_RHSS", "onDemand toggle result (->ON): "+result);
                     }
                     else {
-                        if (MainActivity.mainActivity == null)
-                            MainActivity.killRHWrapper();
-                        else {
-                            int result = RemoteServerManager.rhss_action(RemoteServerManager.RHSS_ACTION.STOP);
-                            Log.d("XRE_RHSS", "onDemand toggle result (->OFF): "+result);
-                        }
-
+                        if(MainActivity.mainActivity == null) MainActivity.killRHWrapper();
+                        int result = RemoteServerManager.rhss_action(RemoteServerManager.RHSS_ACTION.STOP);
+                        Log.d("XRE_RHSS", "onDemand toggle result (->OFF): "+result);
                     }
                     // RHSSUpdateThread will do the direct widget update once started/stopped
                     return;
