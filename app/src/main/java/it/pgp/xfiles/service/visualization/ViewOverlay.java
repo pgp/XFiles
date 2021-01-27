@@ -24,7 +24,7 @@ public class ViewOverlay extends ProgressIndicator implements View.OnTouchListen
         topLeftView = new View(context);
         h.post(()->{
             gestureDetector = new GestureDetector(context, PopupWindowUtils.singleTapConfirm);
-            addViewToOverlay(oView, ViewType.CONTAINER_WRAP_HEIGHT.getParams());
+            addViewToOverlay(oView, ViewType.CONTAINER_WRAP.getParams());
             addViewToOverlay(topLeftView, ViewType.ANCHOR.getParams());
         });
     }

@@ -12,7 +12,7 @@ public enum ViewType {
 
     CONTAINER,
     ANCHOR,
-    CONTAINER_WRAP_HEIGHT;
+    CONTAINER_WRAP;
 
     public static final int OVERLAY_WINDOW_TYPE = (Build.VERSION.SDK_INT < 26)?
             WindowManager.LayoutParams.TYPE_SYSTEM_ALERT:
@@ -34,22 +34,22 @@ public enum ViewType {
 
         m.put(CONTAINER,params);
 
-        WindowManager.LayoutParams paramsA = new WindowManager.LayoutParams(
+        params = new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 OVERLAY_WINDOW_TYPE,
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL,
                 PixelFormat.TRANSLUCENT);
-        paramsA.gravity = Gravity.START | Gravity.TOP;
-        paramsA.x = 0;
-        paramsA.y = 0;
-        paramsA.width = 0;
-        paramsA.height = 0;
+        params.gravity = Gravity.START | Gravity.TOP;
+        params.x = 0;
+        params.y = 0;
+        params.width = 0;
+        params.height = 0;
 
-        m.put(ANCHOR,paramsA);
+        m.put(ANCHOR,params);
 
-        WindowManager.LayoutParams paramsB = new WindowManager.LayoutParams(
-                WindowManager.LayoutParams.MATCH_PARENT,
+        params = new WindowManager.LayoutParams(
+                WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 OVERLAY_WINDOW_TYPE,
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL,
@@ -58,9 +58,7 @@ public enum ViewType {
         params.x = 0;
         params.y = 0;
 
-        m.put(CONTAINER_WRAP_HEIGHT,paramsB);
-
-
+        m.put(CONTAINER_WRAP,params);
     }
 
     public WindowManager.LayoutParams getParams() {
