@@ -144,7 +144,7 @@ public class RemoteServerManager extends RemoteManager {
     }
     ////////////////////////////////////
 
-    private void onClientConnect(String clientIPandPort, byte[] sessionKey) {
+    private void onClientConnect(String clientIPandPort, byte[] sessionKey, Context context) {
         RHSSServerStatus.StoCSessions.put(clientIPandPort,sessionKey);
         if (XFilesRemoteSessionsManagementActivity.StoCAdapter != null)
             XFilesRemoteSessionsManagementActivity.StoCAdapter.syncFromActivity();
@@ -155,13 +155,15 @@ public class RemoteServerManager extends RemoteManager {
                 View anchor = (RemoteRHServerManagementDialog.instance!=null)?
                         RemoteRHServerManagementDialog.instance.findViewById(R.id.remote_rh_server_management_dialog):
                         MainActivity.mainActivity.findViewById(R.id.activity_main);
-                PopupWindowUtils.createAndShowHashViewPopupWindow(
+                PopupWindowUtils.createAndShowHashViewCommon(
                         MainActivity.mainActivity,
                         sessionKey,
                         true,
                         anchor);
             });
         }
+        else
+            PopupWindowUtils.createAndShowHashViewCommon(context, sessionKey, true, null);
     }
 
     private void onClientDisconnect(String clientIPandPort) {
@@ -215,7 +217,7 @@ public class RemoteServerManager extends RemoteManager {
                         // receive hex SHA256 hash of TLS session shared secret
                         byte[] sessionKey = new byte[32];
                         i.readFully(sessionKey);
-                        onClientConnect(clientIP,sessionKey);
+                        onClientConnect(clientIP,sessionKey,rhssLocalContext);
                         message += "\nShared secret hash: "+Misc.toHexString(sessionKey);
                     }
                     else {

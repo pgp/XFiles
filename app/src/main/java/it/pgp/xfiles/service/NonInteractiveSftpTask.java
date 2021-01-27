@@ -51,7 +51,7 @@ public class NonInteractiveSftpTask extends BaseBackgroundTask {
     @Override
     public boolean init(BaseBackgroundService service) {
         if (!super.init(service)) return false;
-        mr = new XProgress(service, wm);
+        mr = new XProgress(service);
         return true;
     }
 

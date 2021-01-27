@@ -39,7 +39,7 @@ public class HTTPDownloadTask extends RootHelperClientTask {
     @Override
     public boolean init(BaseBackgroundService service) {
         if (!super.init(service)) return false;
-        mr = new MovingRibbon(service, wm);
+        mr = new MovingRibbon(service);
         ((MovingRibbon)mr).pb.setIndeterminate(true); // keep into account the case where server doesn't publish content size
         return true;
     }

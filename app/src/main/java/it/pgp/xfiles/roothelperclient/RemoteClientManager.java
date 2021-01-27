@@ -96,7 +96,7 @@ public class RemoteClientManager {
             if (MainActivity.mainActivity != null) {
                 MainActivity.mainActivity.runOnUiThread(()->
 //                        new HashViewDialog(MainActivity.mainActivity,client.tlsSessionHash,true).show());
-                PopupWindowUtils.createAndShowHashViewPopupWindow(
+                PopupWindowUtils.createAndShowHashViewCommon(
                         MainActivity.mainActivity,
                         client.tlsSessionHash,
                         true,

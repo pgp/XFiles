@@ -83,7 +83,7 @@ public class NonInteractiveXFilesRemoteTransferTask extends RootHelperClientTask
     @Override
     public boolean init(BaseBackgroundService service) {
         if (!super.init(service)) return false;
-        mr = new MovingRibbonTwoBars(service, wm);
+        mr = new MovingRibbonTwoBars(service);
         return true;
     }
 

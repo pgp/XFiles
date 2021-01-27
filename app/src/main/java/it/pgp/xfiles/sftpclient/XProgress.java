@@ -1,7 +1,6 @@
 package it.pgp.xfiles.sftpclient;
 
-import android.app.Service;
-import android.view.WindowManager;
+import android.content.Context;
 
 import java.io.IOException;
 
@@ -23,8 +22,8 @@ public class XProgress extends MovingRibbonTwoBars {
 
     protected static final long SIZE_THRESHOLD = 1000000;
 
-    public XProgress(Service service, WindowManager wm) {
-        super(service, wm);
+    public XProgress(Context context) {
+        super(context);
     }
 
     public void clear() {

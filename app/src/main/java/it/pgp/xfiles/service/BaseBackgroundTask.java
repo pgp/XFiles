@@ -5,11 +5,10 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-import android.view.WindowManager;
 
 import java.io.Serializable;
-import java.util.Deque;
 import java.util.ArrayDeque;
+import java.util.Deque;
 
 import it.pgp.xfiles.enums.FileOpsErrorCodes;
 import it.pgp.xfiles.enums.ForegroundServiceType;
@@ -22,7 +21,6 @@ public abstract class BaseBackgroundTask extends AsyncTask<Object,Pair<Long,Long
 	protected NotificationCompat.Builder builder;
     // for notifying progress on foreground service progress bar
     protected NotificationManager nm;
-    protected WindowManager wm;
 
     public ProgressIndicator mr;
 
@@ -49,7 +47,6 @@ public abstract class BaseBackgroundTask extends AsyncTask<Object,Pair<Long,Long
         this.service = service;
         builder = service.getForegroundNotificationBuilder();
         nm = (NotificationManager) service.getSystemService(Context.NOTIFICATION_SERVICE);
-        wm = (WindowManager) service.getSystemService(Context.WINDOW_SERVICE);
         // initialized in subclasses (MovingRibbon for Compress and extract tasks, MovingRibbonTwoBars for copy/move tasks
 //        mr = new MovingRibbon(service,windowManager);
 

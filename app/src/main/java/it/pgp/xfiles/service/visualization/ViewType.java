@@ -11,7 +11,8 @@ import java.util.Map;
 public enum ViewType {
 
     CONTAINER,
-    ANCHOR;
+    ANCHOR,
+    CONTAINER_WRAP_HEIGHT;
 
     public static final int OVERLAY_WINDOW_TYPE = (Build.VERSION.SDK_INT < 26)?
             WindowManager.LayoutParams.TYPE_SYSTEM_ALERT:
@@ -46,6 +47,20 @@ public enum ViewType {
         paramsA.height = 0;
 
         m.put(ANCHOR,paramsA);
+
+        WindowManager.LayoutParams paramsB = new WindowManager.LayoutParams(
+                WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.WRAP_CONTENT,
+                OVERLAY_WINDOW_TYPE,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL,
+                PixelFormat.TRANSLUCENT);
+        params.gravity = Gravity.START | Gravity.TOP;
+        params.x = 0;
+        params.y = 0;
+
+        m.put(CONTAINER_WRAP_HEIGHT,paramsB);
+
+
     }
 
     public WindowManager.LayoutParams getParams() {

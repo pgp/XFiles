@@ -6,11 +6,11 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.PopupWindow;
 
-import java.util.concurrent.atomic.AtomicBoolean;
+import it.pgp.xfiles.service.visualization.AutoDismissControl;
 
 public class MovablePopupWindowWithAutoClose extends PopupWindow {
 
-    private GestureDetector gestureDetector;
+    private final GestureDetector gestureDetector;
 
     int orgX, orgY;
     int offsetX, offsetY;
@@ -18,7 +18,7 @@ public class MovablePopupWindowWithAutoClose extends PopupWindow {
     private void makeMovable(View view) {
         view.setOnTouchListener((v,event) -> {
             if (gestureDetector.onTouchEvent(event)) {
-                disableDismissTimeout();
+                adc.disableDismissTimeout();
                 return true;
             }
             else {
@@ -38,28 +38,11 @@ public class MovablePopupWindowWithAutoClose extends PopupWindow {
         });
     }
 
-
-
     public MovablePopupWindowWithAutoClose(View contentView, int width, int height, Context context) {
         super(contentView, width, height);
-        gestureDetector = new GestureDetector(context, new SingleTapConfirm());
+        gestureDetector = new GestureDetector(context, PopupWindowUtils.singleTapConfirm);
         makeMovable(contentView);
     }
 
-    // migrated from HashViewDialog
-    public void disableDismissTimeout() {
-        currentDismissChoice.set(false);
-    }
-    private final AtomicBoolean currentDismissChoice = new AtomicBoolean(true);
-    public void dynamicDismiss() {
-        if (currentDismissChoice.get()) dismiss();
-    }
-
-
-    private static class SingleTapConfirm extends GestureDetector.SimpleOnGestureListener {
-        @Override
-        public boolean onSingleTapUp(MotionEvent event) {
-            return true;
-        }
-    }
+    public final AutoDismissControl adc = new AutoDismissControl(this::dismiss);
 }

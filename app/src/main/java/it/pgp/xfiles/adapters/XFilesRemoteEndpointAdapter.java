@@ -114,7 +114,7 @@ public class XFilesRemoteEndpointAdapter extends BaseAdapter {
 
                 // also show visual hash dialog
                 // new HashViewDialog(context,sessionHash,false).show();
-                PopupWindowUtils.createAndShowHashViewPopupWindow(context,sessionHash,false,endpointInfo);
+                PopupWindowUtils.createAndShowHashViewCommon(context,sessionHash,false,endpointInfo);
             });
 
 //            ImageButton clientDisconnect = view.findViewById(R.id.rhss_server_session_client_disconnect);
