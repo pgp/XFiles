@@ -850,11 +850,8 @@ public class RootHelperClient implements FileOperationHelper {
                     }
                     last_progress = progress;
                     Pair<Long, Long> inner =  new Pair<>(progress, total);
-                    if(multiExtract) {
-//                        int outer = (int)Math.round((i*100.0 + inner)/nArchives);
-//                        task.publishProgressWrapper(outer,inner);
-                        task.publishProgressWrapper(inner); // TODO workaround incompatible with new progress model, show only inner for now
-                    }
+                    if(multiExtract)
+                        task.publishProgressWrapper(new Pair<>((long)i,(long)nArchives),inner);
                     else task.publishProgressWrapper(inner);
                 }
 

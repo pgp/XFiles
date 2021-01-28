@@ -59,7 +59,12 @@ public class ExtractTask extends RootHelperClientTask {
     @Override
     public boolean init(BaseBackgroundService service) {
         if (!super.init(service)) return false;
-        mr = srcArchives.size()==1 ? new MovingRibbon(service) : new MovingRibbonTwoBars(service);
+        if(srcArchives.size()==1)
+            mr = new MovingRibbon(service);
+        else {
+            mr = new MovingRibbonTwoBars(service);
+            ((MovingRibbonTwoBars) mr).recursive = true;
+        }
         return true;
     }
     @Override

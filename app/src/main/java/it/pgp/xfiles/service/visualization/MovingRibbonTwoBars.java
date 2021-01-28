@@ -54,8 +54,17 @@ public class MovingRibbonTwoBars extends ProgressIndicator {
 
     @Override
     public void setProgress(Pair<Long,Long>... values) {
-        pbOuter.setProgress((int) Math.round(values[0].i * 100.0 / values[0].j));
+        Pair<Long, Long> O = values[0];
+        Pair<Long, Long> I = values[1];
+        if(recursive)
+            // in recursive mode, outer progress fraction sent by producer doesn't keep into account inner fraction,
+            // so the latter is added to the first before converting to percentage
+            // recursive mode is currently used only by multi archive extract/test
+            pbOuter.setProgress((int) Math.round(100.0*((1.0*O.i / O.j) + (1.0*I.i/(I.j*O.j)))));
+        else
+            pbOuter.setProgress((int) Math.round(O.i * 100.0 / O.j));
         pbInner.setProgress((int) Math.round(values[1].i * 100.0 / values[1].j));
+
         if(lastOuterProgress == null) {
             lastProgressTime = System.currentTimeMillis();
             lastOuterProgress = values[0];
@@ -74,4 +83,6 @@ public class MovingRibbonTwoBars extends ProgressIndicator {
             pbSpeed.setText(String.format("%.2f Mbps",speedMbps));
         }
     }
+
+    public boolean recursive = false;
 }
