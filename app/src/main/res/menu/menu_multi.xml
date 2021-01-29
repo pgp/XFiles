@@ -25,6 +25,10 @@
         android:icon="@drawable/xf_recycle_bin"
         android:title="Delete" />
 
+    <item android:id="@+id/itemsRename"
+        android:icon="@android:drawable/ic_menu_edit"
+        android:title="Bulk Rename" />
+
     <item android:id="@+id/itemsChecksum"
         android:icon="@drawable/xfiles_root_off"
         android:title="Checksum" />

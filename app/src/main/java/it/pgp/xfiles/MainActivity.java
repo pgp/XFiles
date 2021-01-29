@@ -72,6 +72,7 @@ import it.pgp.xfiles.adapters.BrowserPagerAdapter;
 import it.pgp.xfiles.adapters.OperationalPagerAdapter;
 import it.pgp.xfiles.dialogs.AboutDialog;
 import it.pgp.xfiles.dialogs.AdvancedSortingDialog;
+import it.pgp.xfiles.dialogs.BulkRenameDialog;
 import it.pgp.xfiles.dialogs.ChecksumActivity;
 import it.pgp.xfiles.dialogs.CloseActiveServersDialog;
 import it.pgp.xfiles.dialogs.CreateFileOrDirectoryDialog;
@@ -1180,6 +1181,18 @@ public class MainActivity extends EffectActivity {
         showDeleteDialog(selection);
     }
 
+    void renameSelection() {
+        List<BrowserItem> selection = getCurrentBrowserAdapter().getSelectedItems();
+        if (selection.size()==0) {
+            Toast.makeText(this,"No items selected for rename",Toast.LENGTH_SHORT).show();
+            return;
+        }
+        ArrayList<String> a = new ArrayList<>();
+        for(BrowserItem item: selection)
+            a.add(item.filename);
+        new BulkRenameDialog(this, getCurrentDirCommander().getCurrentDirectoryPathname(),a).show();
+    }
+
     void compressSelection() {
         if (getCurrentBrowserAdapter().getSelectedCount() == 0) {
             Toast.makeText(this,"No items selected for compression",Toast.LENGTH_SHORT).show();
@@ -1398,6 +1411,9 @@ public class MainActivity extends EffectActivity {
                     return true;
                 case R.id.itemsDelete:
                     deleteSelection();
+                    return true;
+                case R.id.itemsRename:
+                    renameSelection();
                     return true;
                 case R.id.itemsShare:
                     shareItems(false);
