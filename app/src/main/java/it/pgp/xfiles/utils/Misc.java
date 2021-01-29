@@ -1,5 +1,10 @@
 package it.pgp.xfiles.utils;
 
+import android.animation.ArgbEvaluator;
+import android.animation.ObjectAnimator;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Environment;
 import android.util.Log;
 import android.view.View;
@@ -16,7 +21,11 @@ import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import it.pgp.xfiles.roothelperclient.ResponseCodes;
 
@@ -348,4 +357,33 @@ public class Misc {
         return sb.toString();
     }
 
+    // discriminant for item duplication is type T's hashCode implementation
+    public static <T> Map<T, Set<Integer>> createOccurrencesMap(Iterable<T> input) {
+        Map<T,Set<Integer>> m = new HashMap<>();
+        int i=0;
+        for(T t : input) {
+            Set<Integer> li = m.get(t);
+            if(li==null) {
+                li = new HashSet<>();
+                li.add(i);
+                m.put(t,li);
+            }
+            else li.add(i);
+            i++;
+        }
+        return m;
+    }
+
+    // web source:
+    // https://ssaurel.medium.com/create-a-blink-effect-on-android-3c76b5e0e36b
+    public static void highlightListViewItem(int pos, AbsListView absListView) {
+        final View view = getViewByPosition(pos, absListView);
+        final Drawable oldBg = view.getBackground();
+        int oldBgColor = (oldBg instanceof ColorDrawable) ? ((ColorDrawable) oldBg).getColor() : Color.TRANSPARENT;
+        ObjectAnimator anim = ObjectAnimator.ofInt(view,"backgroundColor", oldBgColor, Color.GREEN, oldBgColor);
+        anim.setDuration(2000);
+        anim.setEvaluator(new ArgbEvaluator());
+        anim.setRepeatCount(0);
+        anim.start();
+    }
 }

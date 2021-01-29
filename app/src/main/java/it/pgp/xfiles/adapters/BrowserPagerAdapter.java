@@ -1,12 +1,7 @@
 package it.pgp.xfiles.adapters;
 
-import android.animation.ArgbEvaluator;
-import android.animation.ObjectAnimator;
 import android.app.AlertDialog;
 import android.content.Context;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.view.PagerAdapter;
@@ -305,31 +300,6 @@ public class BrowserPagerAdapter extends PagerAdapter {
         swipeRefreshLayouts[position].setRefreshing(false);
     }
 
-    public View getViewByPosition(int pos, AbsListView listView) {
-        final int firstListItemPosition = listView.getFirstVisiblePosition();
-        final int lastListItemPosition = firstListItemPosition + listView.getChildCount() - 1;
-
-        if (pos < firstListItemPosition || pos > lastListItemPosition) {
-            return listView.getAdapter().getView(pos, null, listView);
-        } else {
-            final int childIndex = pos - firstListItemPosition;
-            return listView.getChildAt(childIndex);
-        }
-    }
-
-    // web source:
-    // https://ssaurel.medium.com/create-a-blink-effect-on-android-3c76b5e0e36b
-    public void highlightListViewItem(int pos, int viewPagerPos) {
-        final View view = getViewByPosition(pos, mainBrowserViews[viewPagerPos]);
-        final Drawable oldBg = view.getBackground();
-        int oldBgColor = (oldBg instanceof ColorDrawable) ? ((ColorDrawable) oldBg).getColor() : Color.TRANSPARENT;
-        ObjectAnimator anim = ObjectAnimator.ofInt(view,"backgroundColor", oldBgColor, Color.GREEN, oldBgColor);
-        anim.setDuration(2000);
-        anim.setEvaluator(new ArgbEvaluator());
-        anim.setRepeatCount(0);
-        anim.start();
-    }
-
     public void showSortedDirContent(GenericDirWithContent dirWithContent, Pair<ComparatorField,Boolean> whichAttribute_reverse, int position) {
         Collections.sort(dirWithContent.content,
                 new AdvancedComparator(new SortingItem(whichAttribute_reverse.i, true, whichAttribute_reverse.j)));
@@ -450,6 +420,6 @@ public class BrowserPagerAdapter extends PagerAdapter {
     // use a method here, instead of inserting intermediate class between AbsListView and (ListView and GridView)
     public void setSelectionOnAbsListView(AbsListView absListView, int targetPos, int viewPagerPos) {
         absListView.setSelection(targetPos);
-        mainActivity.handler.postDelayed(()-> highlightListViewItem(targetPos, viewPagerPos),250);
+        mainActivity.handler.postDelayed(()-> Misc.highlightListViewItem(targetPos, mainBrowserViews[viewPagerPos]),250);
     }
 }

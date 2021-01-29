@@ -1190,7 +1190,7 @@ public class MainActivity extends EffectActivity {
         ArrayList<String> a = new ArrayList<>();
         for(BrowserItem item: selection)
             a.add(item.filename);
-        new BulkRenameDialog(this, getCurrentDirCommander().getCurrentDirectoryPathname(),a).show();
+        BulkRenameDialog.createAndShow(this, getCurrentDirCommander().getCurrentDirectoryPathname(),a);
     }
 
     void compressSelection() {
