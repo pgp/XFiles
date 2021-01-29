@@ -66,12 +66,14 @@
         android:layout_height="wrap_content" >
 
         <ListView
+            android:fastScrollEnabled="true"
             android:id="@+id/inputRenameLv"
             android:layout_weight="1"
             android:layout_width="match_parent"
             android:layout_height="0dp" />
 
         <ListView
+            android:fastScrollEnabled="true"
             android:id="@+id/outputRenameLv"
             android:layout_weight="1"
             android:layout_width="match_parent"
@@ -85,6 +87,13 @@
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+
+        <ProgressBar
+            style="?android:attr/progressBarStyleHorizontal"
+            android:id="@+id/renameProgressBar"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
         <Button
             android:text="Preview"

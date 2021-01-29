@@ -2,6 +2,7 @@ package it.pgp.xfiles.dialogs;
 
 import android.app.Dialog;
 import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.View;
@@ -12,6 +13,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
@@ -44,11 +46,13 @@ public class BulkRenameDialog extends Dialog {
 
     private final EditText inputPattern, outputPattern;
     private final Button preview, ok;
+    private final ProgressBar pb;
     private final RadioGroup renameRadioGroup;
 
     private AdapterView.OnItemClickListener getListener(int lvPos) {
         return (parent, view, position, id) -> {
-            lvs[1-lvPos].smoothScrollToPosition(position);
+            // TODO use smoothScrollToPosition only if there are few items (e.g. less than 100)
+            lvs[1-lvPos].setSelection(position);
             new Handler().postDelayed(()-> Misc.highlightListViewItem(position, lvs[1-lvPos]),250);
         };
     }
@@ -116,6 +120,7 @@ public class BulkRenameDialog extends Dialog {
         renameRadioGroup = findViewById(R.id.renameRadioGroup);
         preview = findViewById(R.id.renamePreviewButton);
         ok = findViewById(R.id.renameOkButton);
+        pb = findViewById(R.id.renameProgressBar);
 
         inputAdapter = new ArrayAdapter<>(activity, android.R.layout.simple_list_item_1, inputFilenames);
         lvs[0] = findViewById(R.id.inputRenameLv);
@@ -144,18 +149,25 @@ public class BulkRenameDialog extends Dialog {
                 Toast.makeText(activity, "Duplicates are present in output list, please set a different rename transformation", Toast.LENGTH_SHORT).show();
                 return;
             }
-            ok.setText("Renaming...");
-            ok.setEnabled(false);
+            ok.setVisibility(View.GONE);
+            preview.setVisibility(View.GONE);
+            pb.setVisibility(View.VISIBLE);
+            pb.setIndeterminate(false);
+            pb.setMax(inputFilenames.size());
             setCancelable(false);
-            // TODO replace layout containing Preview and Ok buttons with a progress bar and update it during bulk rename
-            //  and at the end, don't dismiss the dialog, instead restore previous buttons
+            // TODO at the end, don't dismiss the dialog, instead remove progress bar and restore previous buttons
             new Thread(()->{
+                Handler h = new Handler(Looper.getMainLooper());
                 int itemsToRename = 0;
                 List<BasePathContent> failedPaths = new ArrayList<>();
                 for(int i=0;i<inputFilenames.size();i++) {
+                    int k=i;
                     String i1 = inputFilenames.get(i);
                     String i2 = outputFilenames.get(i).filename;
-                    if(i1.equals(i2)) continue;
+                    if(i1.equals(i2)) {
+                        h.post(()->pb.setProgress(k));
+                        continue;
+                    }
                     BasePathContent p1 = baseDir.concat(i1);
                     BasePathContent p2 = baseDir.concat(i2);
                     try {
@@ -166,6 +178,7 @@ public class BulkRenameDialog extends Dialog {
                         e.printStackTrace();
                         failedPaths.add(p1);
                     }
+                    h.post(()->pb.setProgress(k));
                 }
                 int renamedItems = itemsToRename;
                 activity.runOnUiThread(()->{
