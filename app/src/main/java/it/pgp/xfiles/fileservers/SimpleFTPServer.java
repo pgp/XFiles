@@ -8,13 +8,12 @@ import org.apache.ftpserver.usermanager.impl.BaseUser;
 
 import it.pgp.xfiles.MainActivity;
 import it.pgp.xfiles.R;
-import it.pgp.xfiles.dialogs.RemoteRHServerManagementDialog;
 import it.pgp.xfiles.utils.Pair;
 
 public class SimpleFTPServer extends SimpleFileServer {
 
     private FtpServer server;
-    private static int defaultPort = 2121;
+    public static final int defaultPort = 2121;
 
     SimpleFTPServer() {
         port = defaultPort;

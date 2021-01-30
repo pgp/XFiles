@@ -188,8 +188,7 @@ public class CompressActivity extends EffectActivity implements FileSaveFragment
         setTitle("Compress");
         setActivityIcon(R.drawable.xfiles_archive);
         setContentView(R.layout.compress_layout);
-        MainActivity.mainActivityContext = getApplicationContext();
-        MainActivity.refreshToastHandler(MainActivity.mainActivityContext);
+        MainActivity.refreshAppContext(getApplicationContext());
         MainActivity.getRootHelperClient();
 
         Intent intent = getIntent();
@@ -355,7 +354,7 @@ public class CompressActivity extends EffectActivity implements FileSaveFragment
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (MainActivity.mainActivity == null) MainActivity.mainActivityContext = null;
+        if (MainActivity.mainActivity == null) MainActivity.context = null;
 
         if(!standaloneMode)
             if (MainActivity.mainActivity == null && ProgressIndicator.busy.get() == null)

@@ -59,12 +59,10 @@ public class XRE_RHSS_Widget extends AppWidgetProvider {
         String a = intent.getAction();
         Log.d("XRE_RHSS","onReceive action: "+intent.getAction());
         if (a == null) return;
-        if (MainActivity.mainActivityContext == null) {
-            MainActivity.mainActivityContext = context; // hack, to let RHSSUpdateThread be able to refresh widgets without an alive activity
-            MainActivity.refreshToastHandler(context);
-        }
+        if (MainActivity.context == null)
+            MainActivity.refreshAppContext(context); // hack, to let RHSSUpdateThread be able to refresh widgets without an alive activity
         try {
-            switch (a) {
+            switch(a) {
                 case standard:
                     Log.d("XRE_RHSS","standard");
                     break;

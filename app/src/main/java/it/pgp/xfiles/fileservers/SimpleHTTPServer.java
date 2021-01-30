@@ -14,7 +14,7 @@ import it.pgp.xfiles.R;
 import it.pgp.xfiles.utils.Pair;
 
 public class SimpleHTTPServer extends SimpleFileServer {
-    private static final int defaultPort = 8000;
+    public static final int defaultPort = 8000;
 
     private AcceptorThread acceptorThread;
 

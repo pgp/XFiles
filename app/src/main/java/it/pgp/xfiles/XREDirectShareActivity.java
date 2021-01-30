@@ -91,8 +91,7 @@ public class XREDirectShareActivity extends EffectActivity {
         super.onCreate(savedInstanceState);
         instance = this;
         setActivityIcon(R.drawable.xf_xre_server_up);
-        MainActivity.mainActivityContext = getApplicationContext();
-        MainActivity.refreshToastHandler(MainActivity.mainActivityContext);
+        MainActivity.refreshAppContext(getApplicationContext());
         final RootHelperClient rh = MainActivity.getRootHelperClient();
 
         // CHECK SHARE INTENT
@@ -205,6 +204,6 @@ public class XREDirectShareActivity extends EffectActivity {
     protected void onDestroy() {
         super.onDestroy();
         instance = null;
-        if (MainActivity.mainActivity == null) MainActivity.mainActivityContext = null;
+        if (MainActivity.mainActivity == null) MainActivity.context = null;
     }
 }

@@ -120,7 +120,7 @@ public class RootHandler {
     }
 
     public static Process runRootHelper(SocketNames socketName) throws IOException {
-        return runRootHelper(MainActivity.mainActivityContext,isRooted(),socketName);
+        return runRootHelper(MainActivity.context,isRooted(),socketName);
     }
 
     /**
@@ -130,7 +130,7 @@ public class RootHandler {
      * If everything is ok, the RHClient instance is returned, otherwise null.
      */
     public static RootHelperClient startAndGetRH(Context... context) {
-        Context c = context.length > 0 ? context[0]:MainActivity.mainActivityContext;
+        Context c = context.length > 0 ? context[0]:MainActivity.context;
 
         SocketNames socketName = SocketNames.theroothelper;
         RootHelperClient rh = null;

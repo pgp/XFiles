@@ -2,7 +2,6 @@ package it.pgp.xfiles.dialogs;
 
 import android.app.Dialog;
 import android.os.Handler;
-import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.View;
@@ -31,7 +30,6 @@ import it.pgp.xfiles.utils.Misc;
 import it.pgp.xfiles.utils.pathcontent.BasePathContent;
 
 public class BulkRenameDialog extends Dialog {
-    private final BasePathContent baseDir;
     private final FileOperationHelper helper;
 
     private final List<String> inputFilenames;
@@ -107,7 +105,6 @@ public class BulkRenameDialog extends Dialog {
 
     private BulkRenameDialog(MainActivity activity, BasePathContent baseDir, List<String> inputFilenames) {
         super(activity, R.style.fs_dialog);
-        this.baseDir = baseDir;
         this.inputFilenames = inputFilenames;
         for(String s : inputFilenames)
             outputFilenames.add(new BulkRenameItem(s));
@@ -156,8 +153,7 @@ public class BulkRenameDialog extends Dialog {
             pb.setMax(inputFilenames.size());
             setCancelable(false);
             // TODO at the end, don't dismiss the dialog, instead remove progress bar and restore previous buttons
-            new Thread(()->{
-                Handler h = new Handler(Looper.getMainLooper());
+            new Thread(()-> {
                 int itemsToRename = 0;
                 List<BasePathContent> failedPaths = new ArrayList<>();
                 for(int i=0;i<inputFilenames.size();i++) {
@@ -165,7 +161,7 @@ public class BulkRenameDialog extends Dialog {
                     String i1 = inputFilenames.get(i);
                     String i2 = outputFilenames.get(i).filename;
                     if(i1.equals(i2)) {
-                        h.post(()->pb.setProgress(k));
+                        MainActivity.handler.post(()->pb.setProgress(k));
                         continue;
                     }
                     BasePathContent p1 = baseDir.concat(i1);
@@ -178,7 +174,7 @@ public class BulkRenameDialog extends Dialog {
                         e.printStackTrace();
                         failedPaths.add(p1);
                     }
-                    h.post(()->pb.setProgress(k));
+                    MainActivity.handler.post(()->pb.setProgress(k));
                 }
                 int renamedItems = itemsToRename;
                 activity.runOnUiThread(()->{

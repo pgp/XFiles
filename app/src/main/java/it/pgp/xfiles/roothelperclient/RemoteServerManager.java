@@ -190,15 +190,15 @@ public class RemoteServerManager extends RemoteManager {
                 rsmObservable.notifyObservers(new Pair<>(FileServer.values().length, true));
 
                 // update on-screen widgets
-                if (MainActivity.mainActivityContext != null) {
+                if (MainActivity.context != null) {
                     Log.d("XRE_RHSS","refreshing XRE widget (-> ON)");
-                    XRE_RHSS_Widget.updateAllDirect(MainActivity.mainActivityContext);
+                    XRE_RHSS_Widget.updateAllDirect(MainActivity.context);
                 }
                 else {
-                    Log.e("XRE_RHSS","unable to refresh XRE widget, mainActivityContext is null, exiting...");
+                    Log.e("XRE_RHSS","unable to refresh XRE widget, handlerContext is null, exiting...");
                     throw new Exception();
                 }
-                rhssLocalContext = MainActivity.mainActivityContext; // onDestroy resets mainActivityContext reference before this thread can use it for updating widget to OFF
+                rhssLocalContext = MainActivity.context; // onDestroy resets handlerContext reference before this thread can use it for updating widget to OFF
 
                 for(;;) { // always exits on IOException, when the other socket endpoint is closed
                     // receive started/ended session flag

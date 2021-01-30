@@ -1,12 +1,11 @@
 package it.pgp.xfiles.service.visualization;
 
 import android.content.Context;
-import android.os.Handler;
-import android.os.Looper;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 
+import it.pgp.xfiles.MainActivity;
 import it.pgp.xfiles.utils.Pair;
 import it.pgp.xfiles.utils.popupwindow.PopupWindowUtils;
 
@@ -18,11 +17,10 @@ public class ViewOverlay extends ProgressIndicator implements View.OnTouchListen
     public ViewOverlay(Context context,
                        View builtView) {
         super(context);
-        Handler h = new Handler(Looper.getMainLooper());
         builtView.setOnTouchListener(this);
         this.oView = builtView;
         topLeftView = new View(context);
-        h.post(()->{
+        MainActivity.handler.post(()->{
             gestureDetector = new GestureDetector(context, PopupWindowUtils.singleTapConfirm);
             addViewToOverlay(oView, ViewType.CONTAINER_WRAP.getParams());
             addViewToOverlay(topLeftView, ViewType.ANCHOR.getParams());

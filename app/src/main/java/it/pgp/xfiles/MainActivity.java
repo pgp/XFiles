@@ -17,7 +17,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.os.Message;
 import android.os.StrictMode;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
@@ -99,7 +98,6 @@ import it.pgp.xfiles.enums.ForegroundServiceType;
 import it.pgp.xfiles.enums.Permissions;
 import it.pgp.xfiles.enums.ProviderType;
 import it.pgp.xfiles.fileservers.FileServer;
-import it.pgp.xfiles.roothelperclient.FirstRunAssetsExtract;
 import it.pgp.xfiles.roothelperclient.RemoteClientManager;
 import it.pgp.xfiles.roothelperclient.RemoteServerManager;
 import it.pgp.xfiles.roothelperclient.RootHandler;
@@ -139,12 +137,11 @@ public class MainActivity extends EffectActivity {
     }
     /************** end JNI part **************/
 
-    public ActivityManager activityManager;
-
-    public static Context mainActivityContext;
     public static MainActivity mainActivity;
+    public static Context context;
+    public static final Handler handler = new Handler(Looper.getMainLooper());
 
-    public final Handler handler = new Handler();
+    public ActivityManager activityManager;
 
     public BrowserViewPager browserPager;
 
@@ -237,26 +234,12 @@ public class MainActivity extends EffectActivity {
         else Log.e(MainActivity.class.getName(), "showToastOnUI failed, no active activity, msg is: "+msg);
     }
 
-    public static final int toastHandlerTag = 123571141;
-    public static Handler toastHandler;
-    public static void refreshToastHandler(Context context) {
-        if (toastHandler == null) toastHandler = new Handler(Looper.getMainLooper()) {
-            @Override
-            public void handleMessage(Message msg) {
-                super.handleMessage(msg);
-                if (msg.what == toastHandlerTag) {
-                    Log.d("handleMessage", "Received toastmessage");
-                    Toast.makeText(context,""+msg.obj,Toast.LENGTH_SHORT).show();
-                }
-            }
-        };
+    public static void refreshAppContext(Context context) {
+        MainActivity.context = context;
     }
 
     public static void showToastOnUIWithHandler(String s) {
-        Message m = new Message();
-        m.obj = s;
-        m.what = toastHandlerTag;
-        toastHandler.sendMessage(m);
+        handler.post(()-> Toast.makeText(context, s, Toast.LENGTH_SHORT).show());
     }
 
     public ProgressBar progressCircleForGoDirOps;
@@ -530,7 +513,7 @@ public class MainActivity extends EffectActivity {
     public boolean checkDangerousPermissions() {
         EnumSet<Permissions> nonGrantedPerms = EnumSet.noneOf(Permissions.class);
         for (Permissions p : Permissions.values()) {
-            if (ActivityCompat.checkSelfPermission(mainActivityContext,p.value()) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.checkSelfPermission(context,p.value()) != PackageManager.PERMISSION_GRANTED) {
                 nonGrantedPerms.add(p);
             }
         }
@@ -613,8 +596,7 @@ public class MainActivity extends EffectActivity {
 
     public SharedPreferences sharedPrefs;
     private void firstRunCheck() {
-        sharedPrefs = getSharedPreferences(
-                mainActivityContext.getPackageName(), Context.MODE_PRIVATE);
+        sharedPrefs = getSharedPreferences(context.getPackageName(), Context.MODE_PRIVATE);
         boolean copied = sharedPrefs.getBoolean("FR",false);
         SharedPreferences.Editor editor = null;
         if (!copied) {
@@ -677,9 +659,8 @@ public class MainActivity extends EffectActivity {
         activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
         setContentView(R.layout.activity_main_with_pager);
 
-        mainActivityContext = getApplicationContext();
+        refreshAppContext(getApplicationContext());
         mainActivity = this;
-        refreshToastHandler(mainActivityContext);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (isFirstRun()) {
@@ -698,7 +679,7 @@ public class MainActivity extends EffectActivity {
 
         xFilesUtils = new XFilesUtils();
 
-        smbProvider = new SmbProvider(mainActivityContext,this);
+        smbProvider = new SmbProvider(context,this);
         sftpProvider = new SFTPProvider(this);
 
 
@@ -1654,9 +1635,8 @@ public class MainActivity extends EffectActivity {
         }
 
         usingRootHelperForLocal = false;
-        mainActivityContext = null;
+//        context = null; // FIXME may cause NPE? better to leave it non-null and check null-check usages
         mainActivity = null;
-        toastHandler = null;
     }
 
     boolean doubleBackToExitPressedOnce = false;

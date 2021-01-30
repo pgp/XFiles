@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.wifi.WifiManager;
 import android.os.Build;
-import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
@@ -29,7 +28,6 @@ public class WifiButtonsLayout extends LinearLayout {
     private final WifiApManager ap;
     private final WifiManager wifiManager;
     private final IntentFilter filter;
-    private final Handler handler;
 
     private volatile boolean latestApState;
 
@@ -48,7 +46,6 @@ public class WifiButtonsLayout extends LinearLayout {
         super(context);
         activity = context;
 
-        handler = new Handler();
         filter = new IntentFilter(){{
             addAction(ConnectionChangeReceiver.CONN_ACTION);
             addAction(ConnectionChangeReceiver.WIFI_ACTION);
@@ -183,7 +180,7 @@ public class WifiButtonsLayout extends LinearLayout {
                 return;
             }
 
-            handler.postDelayed(new CountDownAPCheck(context,count-1,expectedState),1000);
+            MainActivity.handler.postDelayed(new CountDownAPCheck(context,count-1,expectedState),1000);
         }
     }
 }

@@ -1,11 +1,9 @@
 package it.pgp.xfiles.fileservers;
 
-import android.app.Activity;
 import android.widget.Button;
 
 import java.util.Observable;
 
-import it.pgp.xfiles.R;
 import it.pgp.xfiles.utils.Misc;
 
 public abstract class SimpleFileServer extends Observable {
@@ -35,14 +33,6 @@ public abstract class SimpleFileServer extends Observable {
 
     public void toggle() {
         if (isAlive()) stopServer(); else startServer();
-    }
-
-    public void refresh_button_color(Activity activity, Boolean on) {
-        if(on == null) on = isAlive();
-        if (serverButton != null)
-            serverButton.setTextColor(activity.getResources().getColor(
-                    on? R.color.green:R.color.red
-            ));
     }
 
     @Override
