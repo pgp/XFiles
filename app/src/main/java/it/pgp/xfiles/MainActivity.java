@@ -618,7 +618,7 @@ public class MainActivity extends EffectActivity {
         boolean copied = sharedPrefs.getBoolean("FR",false);
         SharedPreferences.Editor editor = null;
         if (!copied) {
-            FirstRunAssetsExtract.copyInstallNamesToRuntimeNames(mainActivityContext);
+//            FirstRunAssetsExtract.copyInstallNamesToRuntimeNames(mainActivityContext);
             editor = sharedPrefs.edit();
             editor.putBoolean("FR",true);
             editor.putBoolean("SOFTKEYS",hasSoftKeys());

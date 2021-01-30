@@ -106,11 +106,13 @@ public class RootHandler {
 //        Log.d(RootHandler.class.getName(), "***BEGIN Parent process output:***\n" + output.toString() + "\n***END Parent process output***\nExit value: " + exitValue);
     }
 
+    public static final String rootHelperInstallName = "libr.so";
+
     public static Process runRootHelper(Context context, boolean runAsSu, SocketNames socketName) throws IOException {
 //        File workingDir = context.getFilesDir(); // old, taken from app private dir (files)
         File workingDir = new File(context.getApplicationInfo().nativeLibraryDir);
 
-        File rootHelperExecutable = new File(workingDir,FirstRunAssetsExtract.rootHelperInstallName);
+        File rootHelperExecutable = new File(workingDir,rootHelperInstallName);
         if (socketName == null)
             return executeCommandSimple(rootHelperExecutable.getAbsolutePath(),workingDir,runAsSu,Binder.getCallingUid()+"");
         else
