@@ -886,13 +886,10 @@ public class RootHelperClient implements FileOperationHelper {
 
     @Override
     public void createLink(BasePathContent originPath, BasePathContent linkPath, boolean isHardLink) throws IOException {
-        if(originPath.providerType != linkPath.providerType) throw new RuntimeException("Target and link paths must belong to the same filesystem");
-        if(originPath instanceof XREPathContent) {
-            if (!Objects.equals(((XREPathContent)originPath).serverHost,
-                    ((XREPathContent)linkPath).serverHost))
-                throw new RuntimeException("Origin and link path must belong to the same remote filesystem");
-        }
-
+        if((originPath.providerType != linkPath.providerType) ||
+                ((originPath instanceof XREPathContent) &&
+                        (!Objects.equals(((XREPathContent)originPath).serverHost,((XREPathContent)linkPath).serverHost))))
+            throw new RuntimeException("Target and link paths must belong to the same filesystem");
         StreamsPair rs = getStreams(originPath,true);
         link_rq rq = new link_rq(originPath.dir,linkPath.dir,isHardLink);
         rq.write(rs.o);
@@ -1052,9 +1049,9 @@ public class RootHelperClient implements FileOperationHelper {
         switch(files.get(0).providerType) {
             case LOCAL:
                 StreamsPair rs = getStreams();
-                multiStats_rq rq = new multiStats_rq(new ArrayList<String>() {{
-                    for (BasePathContent bpc : files) add(bpc.dir);
-                }});
+                List<String> tmp = new ArrayList<>();
+                for (BasePathContent bpc : files) tmp.add(bpc.dir);
+                multiStats_rq rq = new multiStats_rq(tmp);
                 rq.write(rs.o);
 
                 int errno = receiveBaseResponse(rs.i);
@@ -1104,9 +1101,9 @@ public class RootHelperClient implements FileOperationHelper {
                 RemoteManager rm = MainActivity.rootHelperRemoteClientManager.getClient(xrpc.serverHost, true);
                 if (rm == null) return null;
 
-                rq = new multiStats_rq(new ArrayList<String>() {{
-                    for (BasePathContent bpc : files) add(bpc.dir);
-                }});
+                tmp = new ArrayList<>();
+                for (BasePathContent bpc : files) tmp.add(bpc.dir);
+                rq = new multiStats_rq(tmp);
                 rq.write(rm.o);
 
                 errno = receiveBaseResponse(rm.i);

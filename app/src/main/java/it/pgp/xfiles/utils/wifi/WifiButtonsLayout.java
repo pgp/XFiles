@@ -46,10 +46,9 @@ public class WifiButtonsLayout extends LinearLayout {
         super(context);
         activity = context;
 
-        filter = new IntentFilter(){{
-            addAction(ConnectionChangeReceiver.CONN_ACTION);
-            addAction(ConnectionChangeReceiver.WIFI_ACTION);
-        }};
+        filter = new IntentFilter();
+        filter.addAction(ConnectionChangeReceiver.CONN_ACTION);
+        filter.addAction(ConnectionChangeReceiver.WIFI_ACTION);
         wifiReceiver = new ConnectionChangeReceiver();
 //        ap = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)?
 //                new OreoWifiAPManager(context,this):

@@ -7,8 +7,6 @@ import android.widget.RadioButton;
 import android.widget.Toast;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import it.pgp.xfiles.MainActivity;
 import it.pgp.xfiles.R;
@@ -55,25 +53,17 @@ public class CreateLinkDialog extends BaseDialog {
             return;
         }
 
-        // dirty hack to workaround final variable requirements in lambdas and catch-finally data flow dependency
-        // Collection.singletonList or Arrays.asList cannot be used here, in that they create immutables
-        List<String> nameToLocate = new ArrayList<String>(){{add(linkPath.getName());}};
-
         try {
             mainActivity.getFileOpsHelper(originPath.providerType).createLink(originPath,linkPath,isHardLink.isChecked());
             Toast.makeText(mainActivity, "Link created", Toast.LENGTH_SHORT).show();
+            mainActivity.browserPagerAdapter.showDirContent(
+                    mainActivity.getCurrentDirCommander().refresh(),
+                    mainActivity.browserPager.getCurrentItem(), linkPath.getName());
         }
         catch (IOException e) {
             e.printStackTrace();
-            nameToLocate.clear();
-            MainActivity.showToastOnUI("Link creation error, reason: "+e.getMessage());
+            Toast.makeText(mainActivity, "Link creation error, reason: "+e.getMessage(), Toast.LENGTH_SHORT).show();
         }
-        finally {
-            mainActivity.browserPagerAdapter.showDirContent(
-                    mainActivity.getCurrentDirCommander().refresh(),
-                    mainActivity.browserPager.getCurrentItem(),
-                    nameToLocate.isEmpty()?null:nameToLocate.get(0));
-            dismiss();
-        }
+        dismiss();
     }
 }

@@ -1,6 +1,7 @@
 package it.pgp.xfiles.utils;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -13,13 +14,9 @@ public class FavoritesList<T> {
         this.paths = new TreeSet<>(Arrays.asList(paths));
     }
 
-    public FavoritesList(T a, Iterable<String> paths) {
+    public FavoritesList(T a, Collection<String> paths) {
         this.a = a;
-
-        if(paths instanceof TreeSet)
-            this.paths = (Set<String>)paths;
-        else if(paths instanceof Set)
-            this.paths = new TreeSet<>((Set<String>) paths);
-        else this.paths = new TreeSet<String>(){{for(String a : paths) add(a);}};
+        if(paths instanceof TreeSet) this.paths = (Set<String>)paths;
+        else this.paths = new TreeSet<>(paths);
     }
 }

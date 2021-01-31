@@ -82,9 +82,9 @@ public class HashAlgorithmsAdapter extends ArrayAdapter<HashRequestCodes> {
     }
 
     public Set<HashRequestCodes> getSelectedItems() {
-        return new LinkedHashSet<HashRequestCodes>(){{
-            for (HashRequestCodes h: HashRequestCodes.values())
-                if (h.isChecked()) add(h);
-        }};
+        Set<HashRequestCodes> items = new LinkedHashSet<>();
+        for (HashRequestCodes h: HashRequestCodes.values())
+            if(h.isChecked()) items.add(h);
+        return items;
     }
 }
