@@ -4,6 +4,7 @@ import android.content.Context;
 import android.widget.ArrayAdapter;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -29,10 +30,10 @@ public class XreAnnouncesAdapter extends ArrayAdapter<Pair<String,String>> {
     // not for announced hosts, but for already connected ones
     public static XreAnnouncesAdapter fromAlreadyOpenedConnections(Context context) {
         List<Pair<String,String>> items = new ArrayList<>();
-        for(String serverHost : MainActivity.rootHelperRemoteClientManager.fastClients.keySet())
-            items.add(new Pair<>(serverHost, ""));
-        for(String serverHost : MainActivity.rootHelperRemoteClientManager.longTermClients.keySet())
-            items.add(new Pair<>(serverHost, ""));
+        Set<String> hosts = new HashSet<>(MainActivity.rootHelperRemoteClientManager.fastClients.keySet());
+        hosts.addAll(MainActivity.rootHelperRemoteClientManager.longTermClients.keySet());
+        for(String h : hosts)
+            items.add(new Pair<>(h,""));
         return new XreAnnouncesAdapter(context, items);
     }
 
