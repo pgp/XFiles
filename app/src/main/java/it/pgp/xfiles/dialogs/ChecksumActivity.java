@@ -59,7 +59,7 @@ public class ChecksumActivity extends EffectActivity implements FileSaveFragment
 
     private HashAlgorithmsAdapter adapter;
     private TableLayout standardResultsLayout;
-    private Button computeChecksumsButton, exportChecksumsCSVButton, exportChecksumsJSONButton;
+    private Button computeChecksumsButton;
 
     private ClipboardManager clipboard;
 
@@ -72,6 +72,8 @@ public class ChecksumActivity extends EffectActivity implements FileSaveFragment
 
     private List<List<HashTextView>> hashMatrix = new ArrayList<>();
     private Set<HashRequestCodes> selectedHashAlgorithms; // selected from the last run (not necessarily completed)
+
+    public String chosenExportExt = "";
 
     public void showLegend(View unused) {
         Dialog hashLegendDialog = new Dialog(this){
@@ -133,8 +135,6 @@ public class ChecksumActivity extends EffectActivity implements FileSaveFragment
         hashSelectorView.setAdapter(adapter);
 
         computeChecksumsButton = findViewById(R.id.computeChecksumsButton);
-        exportChecksumsCSVButton = findViewById(R.id.exportChecksumsCSVButton);
-        exportChecksumsJSONButton = findViewById(R.id.exportChecksumsJSONButton);
 
         // check SHA-256 by default
         Misc.getViewByPosition(HashRequestCodes.sha256.ordinal(),hashSelectorView).findViewById(R.id.checksum_checkbox).performClick();
@@ -204,11 +204,11 @@ public class ChecksumActivity extends EffectActivity implements FileSaveFragment
 
     @Override
     public void onConfirmSave(String absolutePath, String fileName) {
-        if (onCanSave(absolutePath,fileName)) {
-            // export CSV only for now
-            if(fileName.endsWith("csv"))
-                exportToCSV(absolutePath,fileName);
-            else exportToJSON(absolutePath,fileName);
+        String fileNameWithExt = fileName + "." + chosenExportExt;
+        if (onCanSave(absolutePath,fileNameWithExt)) {
+            if(chosenExportExt.equals("csv"))
+                exportToCSV(absolutePath,fileNameWithExt);
+            else exportToJSON(absolutePath,fileNameWithExt);
         }
     }
 
@@ -373,11 +373,11 @@ public class ChecksumActivity extends EffectActivity implements FileSaveFragment
 
         String fragTag = getResources().getString(R.string.tag_fragment_FileSave);
 
-        String ext = v.getId()==R.id.exportChecksumsCSVButton?"csv":"json";
+        chosenExportExt = v.getId()==R.id.exportChecksumsCSVButton?"csv":"json";
 
         // Get an instance supplying a default extension, captions and
         // icon appropriate to the calling application/activity.
-        FileSaveFragment fsf = FileSaveFragment.newInstance(ext,
+        FileSaveFragment fsf = FileSaveFragment.newInstance(chosenExportExt,
                 android.R.string.ok,
                 android.R.string.cancel,
                 R.string.app_name,
@@ -387,8 +387,8 @@ public class ChecksumActivity extends EffectActivity implements FileSaveFragment
         fsf.show(getFragmentManager(), fragTag);
     }
 
-    public void exportToCSV(String absolutePath, String fileName) {
-        File csvFile = new File(absolutePath +"/"+fileName+".csv");
+    public void exportToCSV(String absolutePath, String fileNameWithExt) {
+        File csvFile = new File(absolutePath +"/"+fileNameWithExt);
         try(OutputStream o = new BufferedOutputStream(new FileOutputStream(csvFile))) {
             // create header
             Misc.csvWriteRow(o,new ArrayList(){{
@@ -411,7 +411,7 @@ public class ChecksumActivity extends EffectActivity implements FileSaveFragment
         }
     }
 
-    public void exportToJSON(String absolutePath, String fileName) {
+    public void exportToJSON(String absolutePath, String fileNameWithExt) {
         List l = new ArrayList();
         for(List<HashTextView> lhtv : hashMatrix) {
             Map m = new HashMap();
@@ -425,7 +425,7 @@ public class ChecksumActivity extends EffectActivity implements FileSaveFragment
         }
         ObjectMapper mapper = new ObjectMapper();
         try {
-            mapper.writeValue(new File(absolutePath+"/"+fileName+".json"),l);
+            mapper.writeValue(new File(absolutePath+"/"+fileNameWithExt),l);
             MainActivity.showToast("Checksums export complete");
         }
         catch (IOException e) {
