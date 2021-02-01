@@ -141,38 +141,39 @@ public class UpdateCheckDialog extends Dialog {
         updateMessage = findViewById(R.id.updateCheckMessage);
         updateMessage.setText("Checking for updates...");
         new Thread(()->{
+            String errMsg;
+            Exception ee;
             try {
                 byte[] x = MainActivity.getRootHelperClient().downloadHttpsUrlInMemory("api.github.com/repos/pgp/XFiles/releases/latest",443);
                 Log.d(UpdateCheckDialog.class.getName(),new String(x));
                 releases = Collections.singletonList(new ObjectMapper().readValue(x, Map.class));
                 compareReleases(activity);
                 activity.runOnUiThread(()-> downloadButton.setEnabled(true));
+                return;
             }
             catch(JsonParseDuringCompareException e) {
-                e.printStackTrace();
-                MainActivity.showToast("Json parse error during release sorting");
-                dismiss();
+                ee = e;
+                errMsg = "Json parse error during release sorting";
             }
             catch(JsonParseException | JsonMappingException e) {
-                e.printStackTrace();
-                MainActivity.showToast("Json parse error after downloading releases file");
-                dismiss();
+                ee = e;
+                errMsg = "Json parse error after downloading releases file";
             }
             catch (IOException e) {
-                e.printStackTrace();
-                MainActivity.showToast("Prefetch error, check connection");
-                dismiss();
+                ee = e;
+                errMsg = "Prefetch error, check connection";
             }
             catch (ParseException e) {
-                e.printStackTrace();
-                MainActivity.showToast("Date parse error");
-                dismiss();
+                ee = e;
+                errMsg = "Date parse error";
             }
             catch (Exception e) {
-                e.printStackTrace();
-                MainActivity.showToast("Generic error during update check");
-                dismiss();
+                ee = e;
+                errMsg = "Generic error during update check";
             }
+            ee.printStackTrace();
+            MainActivity.showToast(errMsg);
+            dismiss();
         }).start();
     }
 
