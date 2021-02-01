@@ -102,7 +102,7 @@ public class CompressTask extends RootHelperClientTask {
 
                         new Thread(()->{
                             try {Thread.sleep(1000);} catch (InterruptedException ignored) {}
-                            MainActivity.showToastOnUI("Compress completed");
+                            MainActivity.showToast("Compress completed");
                         }).start();
                     }
                     // activity closed while service active and not in standalone mode, nothing to refresh

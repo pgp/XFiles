@@ -29,7 +29,7 @@ public class NetworkUtils {
      */
     public static synchronized void startXreAnnounceListenerThread(Activity activity, XreAnnouncesAdapter xreAnnouncesAdapter) {
         if(xreAnnounceReceiveSocket != null || xreAnnounceMulticastLock != null) {
-            MainActivity.showToastOnUI("Announce receiver thread already running, updates could be not visible if the adapter has been recreated meanwhile", activity);
+            MainActivity.showToast("Announce receiver thread already running, updates could be not visible if the adapter has been recreated meanwhile");
             return;
         }
 

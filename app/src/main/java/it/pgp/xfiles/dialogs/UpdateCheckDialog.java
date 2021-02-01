@@ -150,27 +150,27 @@ public class UpdateCheckDialog extends Dialog {
             }
             catch(JsonParseDuringCompareException e) {
                 e.printStackTrace();
-                MainActivity.showToastOnUI("Json parse error during release sorting",activity);
+                MainActivity.showToast("Json parse error during release sorting");
                 dismiss();
             }
             catch(JsonParseException | JsonMappingException e) {
                 e.printStackTrace();
-                MainActivity.showToastOnUI("Json parse error after downloading releases file", activity);
+                MainActivity.showToast("Json parse error after downloading releases file");
                 dismiss();
             }
             catch (IOException e) {
                 e.printStackTrace();
-                MainActivity.showToastOnUI("Prefetch error, check connection", activity);
+                MainActivity.showToast("Prefetch error, check connection");
                 dismiss();
             }
             catch (ParseException e) {
                 e.printStackTrace();
-                MainActivity.showToastOnUI("Date parse error", activity);
+                MainActivity.showToast("Date parse error");
                 dismiss();
             }
             catch (Exception e) {
                 e.printStackTrace();
-                MainActivity.showToastOnUI("Generic error during update check", activity);
+                MainActivity.showToast("Generic error during update check");
                 dismiss();
             }
         }).start();
@@ -223,7 +223,7 @@ public class UpdateCheckDialog extends Dialog {
                 MainActivity.getRootHelperClient().deleteFilesOrDirectories(Collections.singletonList(srcArchive));
             }
             catch (IOException|NullPointerException e) {
-                MainActivity.showToastOnUI("Unable to delete zipped apk file", activity);
+                MainActivity.showToast("Unable to delete zipped apk file");
             }
 
             // show dialog asking if installation should be done now

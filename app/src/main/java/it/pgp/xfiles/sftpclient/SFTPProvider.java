@@ -564,7 +564,7 @@ public class SFTPProvider implements FileOperationHelper {
             // first attempt: launch external commands (du, python, dir) to count remote files
             long totalRemoteSize = xsshClient.countTotalSizeInItems(files.getSFTPProgressHelperIterableFilenamesOnly(),files.parentDir.dir);
             if (totalRemoteSize <= 0) {
-                MainActivity.showToastOnUIWithHandler("All external commands for remote size count failed, external progress won't be available");
+                MainActivity.showToast("All external commands for remote size count failed, external progress won't be available");
                 xp.totalFiles = Long.MAX_VALUE;
             }
             else {

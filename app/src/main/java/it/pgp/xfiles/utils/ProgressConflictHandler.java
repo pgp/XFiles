@@ -272,7 +272,7 @@ public class ProgressConflictHandler {
         if (globalRet != 0) {
             String errOrWarn = "There were errors during "+mode.name().toLowerCase()+", please check output files/dirs";
             if (mode == CopyMoveMode.MOVE) errOrWarn += "\nPlease be aware that conflict resolution and cross-device transfers are not implemented yet for "+mode.name()+" mode";
-            MainActivity.showToastOnUIWithHandler(errOrWarn);
+            MainActivity.showToast(errOrWarn);
         }
 
     }

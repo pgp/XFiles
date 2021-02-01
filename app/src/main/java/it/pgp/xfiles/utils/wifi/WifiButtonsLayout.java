@@ -88,7 +88,7 @@ public class WifiButtonsLayout extends LinearLayout {
         toggleButtons(false);
         if(!wifiManager.setWifiEnabled(!wifiManager.isWifiEnabled())) {
             toggleButtons(true);
-            MainActivity.showToastOnUIWithHandler("Unable to switch WiFi state, is airplane mode active?");
+            MainActivity.showToast("Unable to switch WiFi state, is airplane mode active?");
         }
     }
 
@@ -111,7 +111,7 @@ public class WifiButtonsLayout extends LinearLayout {
         else {
             toggleButtons(false);
             if (!ap.configApState(expectedStateAfterSwitch)) {
-                MainActivity.showToastOnUIWithHandler(
+                MainActivity.showToast(
                         "Could not change WiFi AP status directly from app," +
                                 "ensure you have granted system settings permissions");
                 startWifiAPSystemActivity();

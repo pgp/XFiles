@@ -293,7 +293,7 @@ public class ChecksumActivity extends EffectActivity implements FileSaveFragment
                     FileOperationHelper helper = MainActivity.mainActivity.getFileOpsHelper(file.providerType);
                     for (HashRequestCodes s : selectedHashAlgorithms) {
                         if (checksumInterrupted) {
-                            MainActivity.showToastOnUI("Checksum task interrupted");
+                            MainActivity.showToast("Checksum task interrupted");
                             return null;
                         }
                         TableRow tr = new TableRow(ChecksumActivity.this);
@@ -323,7 +323,7 @@ public class ChecksumActivity extends EffectActivity implements FileSaveFragment
 
                     for (HashRequestCodes s : selectedHashAlgorithms) {
                         if (checksumInterrupted) {
-                            MainActivity.showToastOnUI("Checksum task interrupted");
+                            MainActivity.showToast("Checksum task interrupted");
                             return null;
                         }
 
@@ -346,7 +346,7 @@ public class ChecksumActivity extends EffectActivity implements FileSaveFragment
             }
             catch (Exception e) {
                 e.printStackTrace();
-                MainActivity.showToastOnUI("Error during checksum computation");
+                MainActivity.showToast("Error during checksum computation");
             }
             return null;
         }
@@ -404,10 +404,10 @@ public class ChecksumActivity extends EffectActivity implements FileSaveFragment
                 }});
             }
 
-            MainActivity.showToastOnUI("Checksums export complete");
+            MainActivity.showToast("Checksums export complete");
         } catch (IOException e) {
             e.printStackTrace();
-            MainActivity.showToastOnUI("Error exporting checksums to CSV");
+            MainActivity.showToast("Error exporting checksums to CSV");
         }
     }
 
@@ -426,11 +426,11 @@ public class ChecksumActivity extends EffectActivity implements FileSaveFragment
         ObjectMapper mapper = new ObjectMapper();
         try {
             mapper.writeValue(new File(absolutePath+"/"+fileName+".json"),l);
-            MainActivity.showToastOnUI("Checksums export complete");
+            MainActivity.showToast("Checksums export complete");
         }
         catch (IOException e) {
             e.printStackTrace();
-            MainActivity.showToastOnUI("Error exporting checksums to JSON");
+            MainActivity.showToast("Error exporting checksums to JSON");
         }
     }
 }

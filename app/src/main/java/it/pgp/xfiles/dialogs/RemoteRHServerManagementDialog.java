@@ -127,7 +127,7 @@ public class RemoteRHServerManagementDialog extends Dialog {
                 targetEditText = xreExposedPath;
                 break;
             default:
-                MainActivity.showToastOnUI("Invalid resource id in setCurrentDirectoryListener");
+                MainActivity.showToast("Invalid resource id in setCurrentDirectoryListener");
                 return;
         }
 

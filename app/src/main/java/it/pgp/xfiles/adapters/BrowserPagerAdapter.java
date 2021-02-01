@@ -284,7 +284,7 @@ public class BrowserPagerAdapter extends PagerAdapter {
             if (targetFilenameToHighlight instanceof String) { // reposition listview with FindActivity locate
                 int locatedPos = browserAdapters[position].findPositionByFilename((String)targetFilenameToHighlight);
                 if (locatedPos < 0)
-                    MainActivity.showToastOnUI("Unable to find file position in browser adapter");
+                    MainActivity.showToast("Unable to find file position in browser adapter");
                 else {
                     setSelectionOnAbsListView(mainBrowserViews[position],locatedPos,position);
                 }

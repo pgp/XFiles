@@ -48,7 +48,7 @@ public abstract class ProgressIndicator implements View.OnTouchListener {
         try {wm.addView(view, params);}
         catch (Exception e) {
             e.printStackTrace();
-            MainActivity.showToastOnUIWithHandler("Unable to draw progress bar as system overlay, ensure you have granted overlay permissions");
+            MainActivity.showToast("Unable to draw progress bar as system overlay, ensure you have granted overlay permissions");
         }
     }
 

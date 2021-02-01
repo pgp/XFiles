@@ -191,10 +191,10 @@ public class MainActivity extends EffectActivity {
         if (rootHelperClient == null) {
             rootHelperClient = RootHandler.startAndGetRH(context);
             if (rootHelperClient != null)
-                showToastOnUIWithHandler(RootHandler.isRootAvailableAndGranted?
+                showToast(RootHandler.isRootAvailableAndGranted?
                         "Started roothelper in root mode":
                         "Root privileges not available, started roothelper in normal mode");
-            else showToastOnUIWithHandler("Unable to start roothelper");
+            else showToast("Unable to start roothelper");
         }
         return rootHelperClient;
     }
@@ -227,18 +227,11 @@ public class MainActivity extends EffectActivity {
         return browserPagerAdapter.mainBrowserViews[browserPager.getCurrentItem()];
     }
 
-    public static void showToastOnUI(String msg, Activity... activity) {
-        final Activity a = (activity.length > 0)?activity[0]:mainActivity;
-        if (a != null)
-            a.runOnUiThread(()-> Toast.makeText(a, msg, Toast.LENGTH_SHORT).show());
-        else Log.e(MainActivity.class.getName(), "showToastOnUI failed, no active activity, msg is: "+msg);
-    }
-
     public static void refreshAppContext(Context context) {
         MainActivity.context = context;
     }
 
-    public static void showToastOnUIWithHandler(String s) {
+    public static void showToast(String s) {
         handler.post(()-> Toast.makeText(context, s, Toast.LENGTH_SHORT).show());
     }
 
@@ -361,7 +354,7 @@ public class MainActivity extends EffectActivity {
                 }
                 catch (IOException e) {
                     e.printStackTrace();
-                    showToastOnUI("Unable to delete some items");
+                    showToast("Unable to delete some items");
                 }
                 alertDialog.dismiss();
             }).start();
@@ -1261,7 +1254,7 @@ public class MainActivity extends EffectActivity {
             if(dwc.errorCode != null && dwc.errorCode != FileOpsErrorCodes.OK) {
                 switch(dwc.errorCode) {
                     case ILLEGAL_ARGUMENT:
-                        showToastOnUI("Invalid object type for dir browsing");
+                        showToast("Invalid object type for dir browsing");
                         break;
                     case NULL_OR_WRONG_PASSWORD:
                         new AskPasswordDialogOnListing(

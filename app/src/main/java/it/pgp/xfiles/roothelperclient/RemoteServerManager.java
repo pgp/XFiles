@@ -181,7 +181,7 @@ public class RemoteServerManager extends RemoteManager {
             try {
                 // strong cas, a thread is guaranteed to win
                 if (!rhssManagerRef.compareAndSet(null,RemoteServerManager.this)) {
-                    MainActivity.showToastOnUIWithHandler("Another rhss thread is already receiving updates");
+                    MainActivity.showToast("Another rhss thread is already receiving updates");
                     return;
                 }
 
@@ -228,7 +228,7 @@ public class RemoteServerManager extends RemoteManager {
                     final String msg = message;
 
                     // to be replaced with onClientUpdate
-                    MainActivity.showToastOnUIWithHandler(msg);
+                    MainActivity.showToast(msg);
                 }
             }
             catch (Throwable t) {

@@ -162,7 +162,7 @@ public class RootHandler {
                         isRootAvailableAndGranted = asRoot;
                         String rootModeStoragePath = getInternalStoragePathInRootMode(rh,c);
                         if(rootModeStoragePath != null) Misc.internalStorageDir = new File(rootModeStoragePath);
-                        else MainActivity.showToastOnUIWithHandler("Unable to get a common internal storage path for both normal and root mode, RH integration may not work properly");
+                        else MainActivity.showToast("Unable to get a common internal storage path for both normal and root mode, RH integration may not work properly");
                     }
 
                     if (pid <= 0) Log.e(RootHandler.class.getName(),"Failed to get roothelper pid: "+pid);

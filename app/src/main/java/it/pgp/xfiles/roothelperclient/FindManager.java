@@ -131,7 +131,7 @@ public class FindManager implements AutoCloseable {
             try {
                 // strong cas, a thread is guaranteed to win
                 if (!findManagerThreadRef.compareAndSet(null,this)) {
-                    MainActivity.showToastOnUI("Another find thread is already receiving updates");
+                    MainActivity.showToast("Another find thread is already receiving updates");
                     return;
                 }
 
@@ -147,7 +147,7 @@ public class FindManager implements AutoCloseable {
                     if (item == null) break;
                     if (!onSearchItemFound(item)) break; // exit immediately if adapter has been destroyed (actually, that should not happen)
                 }
-                MainActivity.showToastOnUI("Search completed");
+                MainActivity.showToast("Search completed");
             }
             catch (Throwable t) {
                 t.printStackTrace();

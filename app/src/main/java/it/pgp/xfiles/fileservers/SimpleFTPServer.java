@@ -25,7 +25,7 @@ public class SimpleFTPServer extends SimpleFileServer {
         try { server.stop(); }
         catch (Exception e) {e.printStackTrace();}
         server = null;
-        MainActivity.showToastOnUIWithHandler("FTP server stopped");
+        MainActivity.showToast("FTP server stopped");
         notifyObservers(new Pair<>(FileServer.FTP.ordinal(), false));
     }
 
@@ -48,11 +48,11 @@ public class SimpleFTPServer extends SimpleFileServer {
             serverFactory.getUserManager().save(user);
             server = serverFactory.createServer();
             server.start();
-            MainActivity.showToastOnUIWithHandler("FTP server started on port "+port+", root path: "+rootPath);
+            MainActivity.showToast("FTP server started on port "+port+", root path: "+rootPath);
             notifyObservers(new Pair<>(FileServer.FTP.ordinal(), true));
         }
         catch (Exception e) {
-            MainActivity.showToastOnUIWithHandler("Error in starting FTP server");
+            MainActivity.showToast("Error in starting FTP server");
             e.printStackTrace();
             stopServer();
         }

@@ -66,6 +66,15 @@ public class CreateFileOrDirectoryDialog extends BaseDialog implements Runnable 
         ok = findViewById(R.id.fileDirCreate_OkButton);
 
         ok.setOnClickListener(v -> {
+            final String filename_ = filename.getText().toString();
+            if (filename_.contains("/")) {
+                MainActivity.showToast("Full path creation implemented but not enabled yet");
+                return;
+            }
+            if (filename_.isEmpty()) {
+                MainActivity.showToast("Empty filename provided");
+                return;
+            }
             toggleButtons(true);
             new Thread(this).start();
         });
@@ -80,17 +89,6 @@ public class CreateFileOrDirectoryDialog extends BaseDialog implements Runnable 
     @Override
     public void run() {
         final String filename_ = filename.getText().toString();
-        if (filename_.contains("/")) {
-            MainActivity.showToastOnUI("Full path creation implemented but not enabled yet");
-            toggleButtons(false);
-            return;
-        }
-        if (filename_.isEmpty()) {
-            MainActivity.showToastOnUI("Empty filename provided");
-            toggleButtons(false);
-            return;
-        }
-
         BasePathContent f = mainActivity.getCurrentDirCommander().getCurrentDirectoryPathname().concat(filename_);
 
         // dirty hack to workaround final variable requirements in lambdas and catch-finally data flow dependency
@@ -118,11 +116,11 @@ public class CreateFileOrDirectoryDialog extends BaseDialog implements Runnable 
             else {
                 MainActivity.getRootHelperClient().createFileOrDirectory(f,type,opts);
             }
-            MainActivity.showToastOnUI(type.name().toLowerCase()+" created");
+            MainActivity.showToast(type.name().toLowerCase()+" created");
         }
         catch (IOException e) {
             e.printStackTrace();
-            MainActivity.showToastOnUI("File creation error, reason: "+e.getMessage());
+            MainActivity.showToast("File creation error, reason: "+e.getMessage());
             nameToLocate.clear();
         }
         finally {
