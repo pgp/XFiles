@@ -2,9 +2,16 @@ package it.pgp.xfiles.fileservers;
 
 import android.util.Log;
 
-import org.apache.commons.lang3.CharUtils;
-
-import java.io.*;
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
 import java.net.Socket;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -18,10 +25,9 @@ import it.pgp.xfiles.BrowserItem;
 import it.pgp.xfiles.MainActivity;
 import it.pgp.xfiles.io.RobustLocalFileInputStream;
 import it.pgp.xfiles.items.SingleStatsItem;
+import it.pgp.xfiles.utils.Misc;
 import it.pgp.xfiles.utils.dircontent.GenericDirWithContent;
 import it.pgp.xfiles.utils.pathcontent.LocalPathContent;
-
-import static org.apache.commons.lang3.StringEscapeUtils.escapeHtml4;
 
 /**
  * Adapted from:
@@ -34,41 +40,15 @@ public class HTTPSessionThread extends Thread {
     private final Socket connection;
     private final String wwwhome;
 
-    /**
-     * Takes UTF-8 strings and encodes non-ASCII as
-     * ampersand-octothorpe-digits-semicolon
-     * HTML-encoded characters
-     *
-     * @param string
-     * @return HTML-encoded String
-     */
-    private static String htmlEncode2(final String string) {
-        final StringBuilder stringBuffer = new StringBuilder();
-        for (int i = 0; i < string.length(); i++) {
-            char character = string.charAt(i);
-            if (CharUtils.isAscii(character)) {
-                // Encode common HTML equivalent characters
-                stringBuffer.append(
-                        escapeHtml4(Character.toString(character)));
-            } else {
-                // Why isn't this done in escapeHtml4()?
-                stringBuffer.append(
-                        String.format("&#x%x;",
-                                Character.codePointAt(string, i)));
-            }
-        }
-        return stringBuffer.toString();
-    }
-
-    private static String getHeader(String path) throws UnsupportedEncodingException {
+    private static String getHeader(String path) {
         return "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">\n"+
                 "<html>\n" +
                 "<head>\n" +
                 "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\n" +
-                "<title>Directory listing for "+escapeHtml4(path)+"</title>\n" +
+                "<title>Directory listing for "+Misc.escapeHtml(path)+"</title>\n" +
                 "</head>\n" +
                 "<body>\n" +
-                "<h1>Directory listing for "+escapeHtml4(path)+"</h1>\n" +
+                "<h1>Directory listing for "+Misc.escapeHtml(path)+"</h1>\n" +
                 "<hr>\n" +
                 "<ul>\n";
     }
@@ -90,9 +70,9 @@ public class HTTPSessionThread extends Thread {
             for (File f: dircontent) {
                 String dirTermination = f.isDirectory()?"/":"";
                 sb.append("<li><a href=\"");
-                sb.append(URLEncoder.encode(f.getName(), "UTF-8")).append(dirTermination);
+                sb.append(URLEncoder.encode(f.getName(), "UTF-8").replace("+","%20")).append(dirTermination);
                 sb.append("\">");
-                sb.append(htmlEncode2(f.getName())).append(dirTermination);
+                sb.append(Misc.escapeHtml(f.getName())).append(dirTermination);
                 sb.append("</a></li>\n");
             }
 
@@ -110,9 +90,9 @@ public class HTTPSessionThread extends Thread {
             for (BrowserItem f: gdwc.content) {
                 String dirTermination = (f.isDirectory?"/":"");
                 sb.append("<li><a href=\"");
-                sb.append(URLEncoder.encode(f.getFilename(), "UTF-8")).append(dirTermination);
+                sb.append(URLEncoder.encode(f.getFilename(), "UTF-8").replace("+","%20")).append(dirTermination);
                 sb.append("\">");
-                sb.append(htmlEncode2(f.getFilename())).append(dirTermination);
+                sb.append(Misc.escapeHtml(f.getFilename())).append(dirTermination);
                 sb.append("</a></li>\n");
             }
 

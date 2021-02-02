@@ -386,4 +386,25 @@ public class Misc {
         anim.setRepeatCount(0);
         anim.start();
     }
+
+    public static String escapeHtml(String s) {
+        byte[] bb = s.getBytes(StandardCharsets.UTF_8);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try {
+            for(byte b : bb) {
+                char c = (char)b;
+                switch(c) {
+                    case '&':  baos.write("&amp;".getBytes(StandardCharsets.UTF_8)); break;
+                    case '\"': baos.write("&quot;".getBytes(StandardCharsets.UTF_8)); break;
+                    case '\'': baos.write("&apos;".getBytes(StandardCharsets.UTF_8)); break;
+                    case '<':  baos.write("&lt;".getBytes(StandardCharsets.UTF_8)); break;
+                    case '>':  baos.write("&gt;".getBytes(StandardCharsets.UTF_8)); break;
+                    default:   baos.write(b); break;
+                }
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return new String(baos.toByteArray(),StandardCharsets.UTF_8);
+    }
 }
