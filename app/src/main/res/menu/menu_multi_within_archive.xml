@@ -5,6 +5,10 @@
         android:icon="@drawable/xfiles_extract"
         android:title="Extract" />
 
+    <item android:id="@+id/itemsCopy"
+        android:icon="@drawable/xf_copy"
+        android:title="Copy" />
+
     <item android:id="@+id/itemsTest"
         android:icon="@drawable/xfiles_test"
         android:title="Test" />
