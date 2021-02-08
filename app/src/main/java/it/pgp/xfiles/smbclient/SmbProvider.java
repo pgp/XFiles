@@ -351,7 +351,7 @@ public class SmbProvider implements FileOperationHelper {
     }
 
     @Override
-    public List<FileOpsErrorCodes> extractFromArchive(List<BasePathContent> srcArchives, BasePathContent destDirectory, @Nullable String password, @Nullable List<String> filenames, boolean smartDirectoryCreation) throws IOException {
+    public List<FileOpsErrorCodes> extractFromArchive(List<BasePathContent> srcArchives, BasePathContent destDirectory, @Nullable String password, @Nullable Iterable<String> filenames, boolean smartDirectoryCreation) throws IOException {
         return null;
     }
 

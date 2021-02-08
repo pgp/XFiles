@@ -27,7 +27,7 @@ public class ExtractTask extends RootHelperClientTask {
     private List<BasePathContent> srcArchives; // subDir taken from here
     private BasePathContent destDirectory;
     private String password;
-    private List<String> filenames;
+    private Iterable<String> filenames;
     private boolean smartDirectoryCreation;
 
     private static final FileOpsErrorCodes defaultErrorResult = FileOpsErrorCodes.TRANSFER_ERROR;

@@ -692,7 +692,7 @@ public class RootHelperClient implements FileOperationHelper {
     public List<FileOpsErrorCodes> extractFromArchive(List<BasePathContent> srcArchives,
                                                 BasePathContent destDirectory,
                                                 @Nullable String password,
-                                                @Nullable List<String> filenames,
+                                                @Nullable Iterable<String> filenames,
                                                 boolean smartDirectoryCreation) throws IOException {
 
         if (destDirectory != null && destDirectory.providerType != ProviderType.LOCAL) {
@@ -721,7 +721,7 @@ public class RootHelperClient implements FileOperationHelper {
         List<Integer> entries = new ArrayList<>();
 
         // srcArchive is ArchivePathContent
-        if (filenames == null || filenames.size()==0) {
+        if (filenames == null || !filenames.iterator().hasNext()) {
             if (srcArchive.dir == null || srcArchive.dir.equals("") || srcArchive.dir.equals("/")) {
                 // no selection in root dir of archive, extract/test all
                 return extract(srcArchives, // actually srcArchive as only item in the list

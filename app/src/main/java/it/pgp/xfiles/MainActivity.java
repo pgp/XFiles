@@ -104,11 +104,13 @@ import it.pgp.xfiles.roothelperclient.RootHandler;
 import it.pgp.xfiles.roothelperclient.RootHelperClient;
 import it.pgp.xfiles.service.BaseBackgroundService;
 import it.pgp.xfiles.service.CopyMoveService;
+import it.pgp.xfiles.service.ExtractService;
 import it.pgp.xfiles.service.NonInteractiveSftpService;
 import it.pgp.xfiles.service.NonInteractiveSmbService;
 import it.pgp.xfiles.service.NonInteractiveXFilesRemoteTransferService;
 import it.pgp.xfiles.service.TestService;
 import it.pgp.xfiles.service.params.CopyMoveParams;
+import it.pgp.xfiles.service.params.ExtractParams;
 import it.pgp.xfiles.service.params.TestParams;
 import it.pgp.xfiles.service.visualization.ProgressIndicator;
 import it.pgp.xfiles.sftpclient.InteractiveHostKeyVerifier;
@@ -1133,6 +1135,24 @@ public class MainActivity extends EffectActivity {
             startIntent.putExtra("params",new CopyMoveParams(copyMoveList,destPath));
             startService(startIntent);
             //*/*/*/*/*/*/*/*/
+        }
+        else if (copyMoveList.parentDir.providerType == ProviderType.LOCAL_WITHIN_ARCHIVE &&
+                destPath.providerType == ProviderType.LOCAL) {
+            if(copyMoveList.copyOrMove==CopyMoveMode.MOVE)
+                Toast.makeText(MainActivity.this,
+                        "Warning: extracting files from archive in response to cut/paste command", Toast.LENGTH_SHORT).show();
+            Intent startIntent = new Intent(MainActivity.this, ExtractService.class);
+            startIntent.setAction(BaseBackgroundService.START_ACTION);
+            startIntent.putExtra(
+                    "params",
+                    new ExtractParams(
+                            Collections.singletonList(copyMoveList.parentDir),
+                            destPath,
+                            null,
+                            copyMoveList.asNameOnlyStrings(),
+                            false
+                    ));
+            startService(startIntent);
         }
         else {
             Toast.makeText(mainActivity, "Unknown data provider pair", Toast.LENGTH_LONG).show();

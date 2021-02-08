@@ -348,7 +348,7 @@ public class XFilesUtils implements FileOperationHelper {
     }
 
     @Override
-    public List<FileOpsErrorCodes> extractFromArchive(List<BasePathContent> srcArchives, BasePathContent destDirectory, @Nullable String password, @Nullable List<String> filenames, boolean smartDirectoryCreation) throws IOException {
+    public List<FileOpsErrorCodes> extractFromArchive(List<BasePathContent> srcArchives, BasePathContent destDirectory, @Nullable String password, @Nullable Iterable<String> filenames, boolean smartDirectoryCreation) throws IOException {
         RootHelperClient rh = MainActivity.getRootHelperClient();
         if(rh == null) return Collections.singletonList(FileOpsErrorCodes.ROOTHELPER_INIT_ERROR);
         return rh.extractFromArchive(srcArchives,destDirectory,password,filenames,smartDirectoryCreation);

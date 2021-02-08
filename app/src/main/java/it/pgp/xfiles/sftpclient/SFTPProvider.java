@@ -858,7 +858,7 @@ public class SFTPProvider implements FileOperationHelper {
     public List<FileOpsErrorCodes> extractFromArchive(List<BasePathContent> srcArchives,
                                                 BasePathContent destDirectory,
                                                 @Nullable String password,
-                                                @Nullable List<String> filenames,
+                                                @Nullable Iterable<String> filenames,
                                                 boolean smartDirectoryCreation) throws IOException {
         return Collections.singletonList(FileOpsErrorCodes.NOT_IMPLEMENTED);
     }

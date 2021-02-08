@@ -104,4 +104,19 @@ public class CopyMoveListPathContent implements Serializable,Iterable<String> {
             }
         };
     }
+
+    public Iterable<String> asNameOnlyStrings() {
+        return () -> new Iterator<String>() {
+            final Iterator<BrowserItem> i = files.iterator();
+            @Override
+            public boolean hasNext() {
+                return i.hasNext();
+            }
+
+            @Override
+            public String next() {
+                return i.next().filename;
+            }
+        };
+    }
 }
