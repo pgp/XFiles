@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
+import it.pgp.xfiles.EffectActivity;
 import it.pgp.xfiles.enums.FileOpsErrorCodes;
 import it.pgp.xfiles.enums.ForegroundServiceType;
 import it.pgp.xfiles.enums.ServiceStatus;
@@ -128,6 +129,8 @@ public abstract class BaseBackgroundTask extends AsyncTask<Object,Pair<Long,Long
                 nextAutoTasks.clear();
             }
         }
+
+        EffectActivity.serviceParams = null;
     }
 
     @Override

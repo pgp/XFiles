@@ -3,7 +3,6 @@ package it.pgp.xfiles.service.params;
 import android.support.annotation.Nullable;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 import it.pgp.xfiles.utils.pathcontent.BasePathContent;
@@ -18,7 +17,7 @@ public class ExtractParams implements Serializable {
     public List<BasePathContent> srcArchives; // subDir taken from here
     public BasePathContent destDirectory;
     public String password;
-    public List<String> filenames;
+    public Iterable<String> filenames;
     public boolean smartDirectoryCreation;
 
     public ExtractParams(List<BasePathContent> srcArchives,
@@ -29,10 +28,7 @@ public class ExtractParams implements Serializable {
         this.srcArchives = srcArchives;
         this.destDirectory = destDirectory;
         this.password = password;
-        this.filenames = new ArrayList<>();
-        // FIXME remove this shit, do not pass Params via Intent at all (avoid parcelization-related crap)
-        for(String k : filenames)
-            this.filenames.add(k);
+        this.filenames = filenames;
         this.smartDirectoryCreation = smartDirectoryCreation;
     }
 

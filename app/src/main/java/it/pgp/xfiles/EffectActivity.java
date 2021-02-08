@@ -2,8 +2,12 @@ package it.pgp.xfiles;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
+
+import java.io.Serializable;
 
 public abstract class EffectActivity extends Activity {
 
@@ -34,5 +38,15 @@ public abstract class EffectActivity extends Activity {
     protected void onPause() {
         super.onPause();
         overridePendingTransition(R.anim.fade_in,R.anim.fade_out);
+    }
+
+    public static Serializable serviceParams;
+
+    // useful for removing usage of parcelization (which prevents using lazy iterables as params)
+    @Override
+    public ComponentName startService(Intent service) {
+        serviceParams = service.getSerializableExtra("params");
+        service.putExtra("params",(Serializable)null);
+        return super.startService(service);
     }
 }

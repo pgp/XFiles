@@ -7,7 +7,6 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -18,6 +17,7 @@ import android.widget.Toast;
 
 import java.io.Serializable;
 
+import it.pgp.xfiles.EffectActivity;
 import it.pgp.xfiles.MainActivity;
 import it.pgp.xfiles.R;
 import it.pgp.xfiles.enums.ForegroundServiceType;
@@ -194,7 +194,7 @@ public abstract class BaseBackgroundService extends Service {
                 return START_NOT_STICKY;
             }
 
-            params = intent.getSerializableExtra("params");
+            params = EffectActivity.serviceParams;
             if (params == null) {
                 throw new RuntimeException("Null params not allowed in start action");
             }
