@@ -1,12 +1,8 @@
 package it.pgp.xfiles.roothelperclient;
 
-import android.net.LocalSocket;
-import android.net.LocalSocketAddress;
 import android.util.Log;
 
-import java.io.DataInputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.concurrent.atomic.AtomicReference;
 
 import it.pgp.xfiles.BrowserItem;
@@ -15,7 +11,6 @@ import it.pgp.xfiles.MainActivity;
 import it.pgp.xfiles.adapters.FindResultsAdapter;
 import it.pgp.xfiles.roothelperclient.reqs.find_rq;
 import it.pgp.xfiles.roothelperclient.resps.find_resp;
-import it.pgp.xfiles.service.SocketNames;
 import it.pgp.xfiles.utils.ArchiveVMap;
 import it.pgp.xfiles.utils.Misc;
 import it.pgp.xfiles.utils.pathcontent.ArchivePathContent;
@@ -25,37 +20,13 @@ import it.pgp.xfiles.utils.pathcontent.ArchivePathContent;
  * Updater class for find tasks, to be embedded into AsyncTask/Service if needed
  */
 
-public class FindManager implements AutoCloseable {
-    private static final SocketNames defaultaddress = SocketNames.theroothelper;
+public class FindManager extends RemoteManager {
 
-    // common access instances
     public static final AtomicReference<Thread> findManagerThreadRef = new AtomicReference<>(null);
 
-    // streams connected to local socket
-    protected DataInputStream i;
-    protected OutputStream o;
-
-    // BEGIN common code with RemoteManager
     private FindManager() throws IOException {
-        LocalSocket clientSocket = new LocalSocket();
-        LocalSocketAddress socketAddress = new LocalSocketAddress(
-                defaultaddress.name(),
-                LocalSocketAddress.Namespace.ABSTRACT);
-        clientSocket.connect(socketAddress);
-        Log.d(getClass().getName(),"Connected");
-
-        o = clientSocket.getOutputStream();
-        i = new DataInputStream(clientSocket.getInputStream());
-        Log.d(getClass().getName(),"Streams acquired");
+        super();
     }
-
-    @Override
-    public void close() {
-        try {i.close();} catch (Exception ignored) {}
-        try {o.close();} catch (Exception ignored) {}
-        Log.d(getClass().getName(),"Streams closed");
-    }
-    // END common code with RemoteManager
 
     private boolean start_find(find_rq find_rq) throws IOException {
         // start RH find thread

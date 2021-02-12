@@ -34,7 +34,7 @@ public class RemoteManager extends StreamsPair {
 
         o = clientSocket.getOutputStream();
         i = new DataInputStream(clientSocket.getInputStream());
-        Log.d(this.getClass().getName(),"Streams acquired");
+        Log.d(getClass().getName(),"Streams acquired");
     }
 
     @Override
@@ -43,8 +43,10 @@ public class RemoteManager extends StreamsPair {
         // Web source:
         // https://stackoverflow.com/questions/10984175/android-localsocket-wont-close-when-in-blocked-read
 
-        try {ls.shutdownInput();} catch (Exception ignored) {}
-        try {ls.shutdownOutput();} catch (Exception ignored) {}
+        if(ls != null) {
+            try {ls.shutdownInput();} catch (Exception ignored) {}
+            try {ls.shutdownOutput();} catch (Exception ignored) {}
+        }
 
         try {i.close();} catch (Exception ignored) {}
         try {o.close();} catch (Exception ignored) {}
