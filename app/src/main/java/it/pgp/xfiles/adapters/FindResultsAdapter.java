@@ -20,7 +20,8 @@ public class FindResultsAdapter extends BrowserListAdapter { // uses FindBrowser
 
     public static FindResultsAdapter instance;
 
-    public find_rq request; // the request which started this search - non-null, the whole adapter instance would be null otherwise
+    // TODO unused, remove
+//    public find_rq request; // the request which started this search - non-null, the whole adapter instance would be null otherwise
 
     private FindResultsAdapter(@NonNull MainActivity mainActivity) {
 //        super(context,android.R.layout.simple_list_item_1);
@@ -41,6 +42,6 @@ public class FindResultsAdapter extends BrowserListAdapter { // uses FindBrowser
     // USE app context, NOT activity context
     public static void createAdapter(@NonNull find_rq request) {
         reset();
-        instance.request = request;
+//        instance.request = request;
     }
 }

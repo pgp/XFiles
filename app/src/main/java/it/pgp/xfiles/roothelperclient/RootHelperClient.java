@@ -361,7 +361,7 @@ public class RootHelperClient implements FileOperationHelper {
     }
 
     // because there are points when a new RootHelper instance is created locally
-    private static final GenericMRU<String,ArchiveVMap> archiveMRU = new GenericMRU<>(10); // up to 10 entries
+    public static final GenericMRU<String,ArchiveVMap> archiveMRU = new GenericMRU<>(10); // up to 10 entries
 
     // password may be null
     @Override

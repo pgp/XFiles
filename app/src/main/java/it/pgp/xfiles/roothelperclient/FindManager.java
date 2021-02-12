@@ -16,7 +16,9 @@ import it.pgp.xfiles.adapters.FindResultsAdapter;
 import it.pgp.xfiles.roothelperclient.reqs.find_rq;
 import it.pgp.xfiles.roothelperclient.resps.find_resp;
 import it.pgp.xfiles.service.SocketNames;
+import it.pgp.xfiles.utils.ArchiveVMap;
 import it.pgp.xfiles.utils.Misc;
+import it.pgp.xfiles.utils.pathcontent.ArchivePathContent;
 
 /**
  * Created by pgp on 22/01/18
@@ -106,7 +108,7 @@ public class FindManager implements AutoCloseable {
     ////////////////////////////////////
 
     // callback (stub)
-    private boolean onSearchItemFound(find_resp item) {
+    private static boolean onSearchItemFound(find_resp item) {
         try {
             // TODO when content search will be available, should replace BrowserItem with a subclass including content results
             FindActivity.instance.runOnUiThread(() ->
@@ -144,8 +146,8 @@ public class FindManager implements AutoCloseable {
 
                     // receive search results
                     find_resp item = find_resp.readNext(i);
-                    if (item == null) break;
-                    if (!onSearchItemFound(item)) break; // exit immediately if adapter has been destroyed (actually, that should not happen)
+                    if(item == null) break;
+                    if(!onSearchItemFound(item)) break; // exit immediately if adapter has been destroyed (actually, that should not happen)
                 }
                 MainActivity.showToast("Search completed");
             }
@@ -159,6 +161,72 @@ public class FindManager implements AutoCloseable {
             findManagerThreadRef.set(null); // unset reference only if compareAndSet was successful
             FindActivity.instance.runOnUiThread(()->FindActivity.instance.toggleSearchButtons(false));
             Log.d(getClass().getName(),"Really exiting find update thread now!");
+        }
+    }
+
+    public static class FindInArchiveThread extends Thread {
+        private final ArchiveVMap m;
+        private final String namePattern;
+        private final boolean recursiveSearch;
+        private final boolean caseInsensitive;
+
+        public FindInArchiveThread(ArchivePathContent path, String namePattern, boolean recursiveSearch, boolean caseInsensitive) {
+            this.m = RootHelperClient.archiveMRU.getByPath(path.archivePath,null);
+            if(this.m==null) throw new RuntimeException("archive mru item should be present at this point");
+            this.namePattern = namePattern;
+            this.recursiveSearch = recursiveSearch; // if false, just retrieve the subtree map at the given path key, and loop over map keys
+            this.caseInsensitive = caseInsensitive;
+        }
+
+        public boolean matchFilename(String filename) {
+            // TODO here it would be simple to match using regex and globbing, adapt logic from bulk rename
+            return (!caseInsensitive && filename.contains(namePattern)) ||
+                    (caseInsensitive && filename.toUpperCase().contains(namePattern.toUpperCase()));
+        }
+
+        @Override
+        public void run() {
+            // @@@@@ duplicated code from FindUpdatesThread
+            // strong cas, a thread is guaranteed to win
+            if (!findManagerThreadRef.compareAndSet(null,this)) {
+                MainActivity.showToast("Another find thread is already receiving updates");
+                return;
+            }
+
+            FindActivity.instance.runOnUiThread(()->FindActivity.instance.toggleSearchButtons(true));
+
+            // create new adapter
+            FindResultsAdapter.createAdapter(null);
+            // @@@@@ duplicated code from FindUpdatesThread
+
+            m.findInArchive(this::matchFilename,recursiveSearch?"":null);
+//                for(Map.Entry x : m.getSubTreeIterable(inArchivePath)) {
+//                    String k = (String) x.getKey(); // filename
+//                    // check if k satisfies search criteria, if so, get nodeProps and update FindResultsAdapter
+//                    if(matchFilename(k))
+//                        // TODO in order to locate item, have to create a new VMap iterable providing full paths within archive
+//                        if (!onSearchItemFoundInArchive(k,
+//                                (Map<String,Object>)((Map<String,Object>)x.getValue()).get(ArchiveVMap.sentinelKeyForNodeProperties)))
+//                            break; // exit immediately if adapter has been destroyed (actually, that should not happen)
+//                }
+//            else {
+//                Map<String,?> sm = (Map) m.get(inArchivePath);
+//                for(Map.Entry<String, ?> x : sm.entrySet()) {
+//                    String k = (String) x.getKey(); // filename
+//                    // check if k satisfies search criteria, if so, get nodeProps and update FindResultsAdapter
+//                    if(matchFilename(k))
+//                        if (!onSearchItemFoundInArchive(k,
+//                                (Map<String,Object>)((Map<String,Object>)x.getValue()).get(ArchiveVMap.sentinelKeyForNodeProperties)))
+//                            break; // exit immediately if adapter has been destroyed (actually, that should not happen)
+//                }
+//            }
+
+            // @@@@@ duplicated code from FindUpdatesThread
+            MainActivity.showToast("Search completed");
+            findManagerThreadRef.set(null); // unset reference only if compareAndSet was successful
+            FindActivity.instance.runOnUiThread(()->FindActivity.instance.toggleSearchButtons(false));
+            Log.d(getClass().getName(),"Really exiting find update thread now!");
+            // @@@@@ duplicated code from FindUpdatesThread
         }
     }
 }

@@ -1,11 +1,15 @@
 package it.pgp.xfiles.utils;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import it.pgp.xfiles.utils.iterators.VMapAbstractIterable;
 import it.pgp.xfiles.utils.iterators.VMapChildParentIterable;
 import it.pgp.xfiles.utils.iterators.VMapFullTreeIterable;
 import it.pgp.xfiles.utils.iterators.VMapSubTreeIterable;
-
-import java.util.*;
 
 /**
  * Created by pgp on 30/03/17
@@ -79,6 +83,7 @@ public class VMap {
     public Object get(Object[] keys) throws ValueAsKeyException {
         if (h==null) h = new HashMap<>();
         Map<Object,Object> currentLevelMap = h;
+        if(keys.length == 0) return currentLevelMap;
         for (int i=0;i<keys.length-1;i++) {
             if (currentLevelMap.get(keys[i]) == null) {
                 return null;

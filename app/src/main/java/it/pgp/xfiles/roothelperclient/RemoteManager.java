@@ -8,7 +8,6 @@ import java.io.DataInputStream;
 import java.io.IOException;
 
 import it.pgp.xfiles.service.SocketNames;
-import it.pgp.xfiles.utils.Misc;
 import it.pgp.xfiles.utils.StreamsPair;
 
 /**

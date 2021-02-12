@@ -94,10 +94,15 @@ public class GenericMRU<T,U> {
         int foundIdx = findIndex(archivePath);
 
         if (foundIdx >= 0) { // some entry exists
-            if (modified.get(foundIdx).equals(modifiedDate)) {
-                // OK, no file modification, bring on top and return the vMap
+            if(modifiedDate == null) { // used in find within archive
+                // we are not interested in checking whether the archive has been modified meanwhile,
+                // we just look for an existing (by construction) mru entry
+                return vMaps.get(foundIdx);
+            }
+            else if(modified.get(foundIdx).equals(modifiedDate)) {
+                // OK, no file modification, bring on top...
                 swapMruObjects(foundIdx,currentIndex);
-                // then return the current vMap
+                // ...then return the current vMap
                 return vMaps.get(currentIndex);
             }
             else { // don't bring on top anything, delete that cache entry
