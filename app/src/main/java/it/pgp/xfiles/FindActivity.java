@@ -66,7 +66,7 @@ public class FindActivity extends EffectActivity implements FileSelectFragment.C
     public boolean onContextItemSelected(MenuItem item) {
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         BrowserItem b = FindResultsAdapter.instance.getItem(info.position);
-        BasePathContent bpc = MainActivity.mainActivity.getCurrentDirCommander().getCurrentDirectoryPathname().getCopy();
+        BasePathContent bpc = FindResultsAdapter.instance.basePath.getCopy();
         if(bpc instanceof LocalPathContent)
             bpc = new LocalPathContent(b.getFilename());
         else if(bpc instanceof ArchivePathContent) {

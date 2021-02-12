@@ -3,6 +3,7 @@ package it.pgp.xfiles.roothelperclient;
 import android.util.Log;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.atomic.AtomicReference;
 
 import it.pgp.xfiles.BrowserItem;
@@ -14,6 +15,7 @@ import it.pgp.xfiles.roothelperclient.resps.find_resp;
 import it.pgp.xfiles.utils.ArchiveVMap;
 import it.pgp.xfiles.utils.Misc;
 import it.pgp.xfiles.utils.pathcontent.ArchivePathContent;
+import it.pgp.xfiles.utils.pathcontent.LocalPathContent;
 
 /**
  * Created by pgp on 22/01/18
@@ -111,7 +113,7 @@ public class FindManager extends RemoteManager {
                 FindActivity.instance.runOnUiThread(()->FindActivity.instance.toggleSearchButtons(true));
 
                 // create new adapter
-                FindResultsAdapter.createAdapter(rq);
+                FindResultsAdapter.createAdapter(new LocalPathContent(new String(rq.basepath, StandardCharsets.UTF_8)));
 
                 for(;;) { // exits on IOException when the other socket endpoint is closed (search interrupted), or when receives end of list (not strictly needed, roothelper find thread could also close the connection after sending last item found)
 
@@ -136,13 +138,15 @@ public class FindManager extends RemoteManager {
     }
 
     public static class FindInArchiveThread extends Thread {
+        private final ArchivePathContent basePath;
         private final ArchiveVMap m;
         private final String namePattern;
         private final boolean recursiveSearch;
         private final boolean caseInsensitive;
 
-        public FindInArchiveThread(ArchivePathContent path, String namePattern, boolean recursiveSearch, boolean caseInsensitive) {
-            this.m = RootHelperClient.archiveMRU.getByPath(path.archivePath,null);
+        public FindInArchiveThread(ArchivePathContent basePath, String namePattern, boolean recursiveSearch, boolean caseInsensitive) {
+            this.basePath = basePath;
+            this.m = RootHelperClient.archiveMRU.getByPath(basePath.archivePath,null);
             if(this.m==null) throw new RuntimeException("archive mru item should be present at this point");
             this.namePattern = namePattern;
             this.recursiveSearch = recursiveSearch; // if false, just retrieve the subtree map at the given path key, and loop over map keys
@@ -167,30 +171,10 @@ public class FindManager extends RemoteManager {
             FindActivity.instance.runOnUiThread(()->FindActivity.instance.toggleSearchButtons(true));
 
             // create new adapter
-            FindResultsAdapter.createAdapter(null);
+            FindResultsAdapter.createAdapter(basePath);
             // @@@@@ duplicated code from FindUpdatesThread
 
             m.findInArchive(this::matchFilename,recursiveSearch?"":null);
-//                for(Map.Entry x : m.getSubTreeIterable(inArchivePath)) {
-//                    String k = (String) x.getKey(); // filename
-//                    // check if k satisfies search criteria, if so, get nodeProps and update FindResultsAdapter
-//                    if(matchFilename(k))
-//                        // TODO in order to locate item, have to create a new VMap iterable providing full paths within archive
-//                        if (!onSearchItemFoundInArchive(k,
-//                                (Map<String,Object>)((Map<String,Object>)x.getValue()).get(ArchiveVMap.sentinelKeyForNodeProperties)))
-//                            break; // exit immediately if adapter has been destroyed (actually, that should not happen)
-//                }
-//            else {
-//                Map<String,?> sm = (Map) m.get(inArchivePath);
-//                for(Map.Entry<String, ?> x : sm.entrySet()) {
-//                    String k = (String) x.getKey(); // filename
-//                    // check if k satisfies search criteria, if so, get nodeProps and update FindResultsAdapter
-//                    if(matchFilename(k))
-//                        if (!onSearchItemFoundInArchive(k,
-//                                (Map<String,Object>)((Map<String,Object>)x.getValue()).get(ArchiveVMap.sentinelKeyForNodeProperties)))
-//                            break; // exit immediately if adapter has been destroyed (actually, that should not happen)
-//                }
-//            }
 
             // @@@@@ duplicated code from FindUpdatesThread
             MainActivity.showToast("Search completed");

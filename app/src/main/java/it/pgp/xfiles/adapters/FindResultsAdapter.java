@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 import it.pgp.xfiles.FindActivity;
 import it.pgp.xfiles.MainActivity;
-import it.pgp.xfiles.roothelperclient.reqs.find_rq;
+import it.pgp.xfiles.utils.pathcontent.BasePathContent;
 
 /**
  * Construction rationale behind asynchronous adapter (keeping state and surviving across activities-listviews instances, while preserving real-time notify requirements):
@@ -20,8 +20,7 @@ public class FindResultsAdapter extends BrowserListAdapter { // uses FindBrowser
 
     public static FindResultsAdapter instance;
 
-    // TODO unused, remove
-//    public find_rq request; // the request which started this search - non-null, the whole adapter instance would be null otherwise
+    public BasePathContent basePath; // base path from which search was started
 
     private FindResultsAdapter(@NonNull MainActivity mainActivity) {
 //        super(context,android.R.layout.simple_list_item_1);
@@ -39,9 +38,8 @@ public class FindResultsAdapter extends BrowserListAdapter { // uses FindBrowser
         FindActivity.instance.runOnUiThread(()->FindResultsAdapter.instance.clear());
     }
 
-    // USE app context, NOT activity context
-    public static void createAdapter(@NonNull find_rq request) {
+    public static void createAdapter(@NonNull BasePathContent basePath) {
         reset();
-//        instance.request = request;
+        instance.basePath = basePath;
     }
 }

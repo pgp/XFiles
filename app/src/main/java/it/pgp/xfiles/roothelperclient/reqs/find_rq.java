@@ -11,7 +11,7 @@ import it.pgp.xfiles.utils.Misc;
 
 public class find_rq extends BaseRHRequest {
 
-    private byte [] basepath; // where to search into
+    public byte [] basepath; // where to search into
     @Nullable private byte[] contentPattern;
     @Nullable private byte[] filenamePattern;
     private SearchBits searchBits;
