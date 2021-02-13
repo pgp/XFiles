@@ -28,13 +28,6 @@ public class DragNDropAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         currentLocale = context.getResources().getConfiguration().locale;
     }
 
-    // DEBUG
-//    public void printContent() {
-//        for(SortingItem i : arrayList)
-//            Log.d("@@@@@", ""+i);
-//        Log.d("@@@@@", "-----");
-//    }
-
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {

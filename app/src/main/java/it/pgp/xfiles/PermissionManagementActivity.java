@@ -125,25 +125,6 @@ public class PermissionManagementActivity extends Activity {
                 PermReqCodes.STORAGE_READ.ordinal());
     }
 
-//    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-//    public void requestExternalSDWritePermissions(View unused) {
-//        startActivityForResult(new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE), PermReqCodes.EXTERNAL_SD.ordinal());
-//    }
-
-//    public void testExternalSDWritePermissions(View unused) {
-//        SharedPreferences sp = getSharedPreferences(getPackageName(),MODE_PRIVATE);
-//        String savedTreeUri = sp.getString("EXTSDFILE",null);
-//        if(savedTreeUri != null) {
-//            Uri treeUri = Uri.parse(savedTreeUri);
-//            DocumentFile pickedDir = DocumentFile.fromTreeUri(this, treeUri);
-//            pickedDir.createDirectory("1abcdef");
-//            Toast.makeText(this, "@@@dir created@@@", Toast.LENGTH_SHORT).show();
-//        }
-//        else {
-//            Toast.makeText(this, "No prior ext sdcard perm grant", Toast.LENGTH_SHORT).show();
-//        }
-//    }
-
     @RequiresApi(api = Build.VERSION_CODES.M)
     public void openSystemSettingsPermissionsManagement(View unused) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)

@@ -433,7 +433,7 @@ public class MainActivity extends EffectActivity {
         int itemId = item.getItemId();
         switch(itemId) {
 
-            // @@@ MOVED in showPopup @@@
+            // check showPopup for additional items moved from here
 
             // sorting
             // TODO need to add directory priority switch some way (used priority on as default)
