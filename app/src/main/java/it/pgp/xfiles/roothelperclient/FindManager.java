@@ -1,20 +1,12 @@
 package it.pgp.xfiles.roothelperclient;
 
-import android.util.Log;
-
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.atomic.AtomicReference;
 
-import it.pgp.xfiles.BrowserItem;
-import it.pgp.xfiles.FindActivity;
 import it.pgp.xfiles.MainActivity;
-import it.pgp.xfiles.adapters.FindResultsAdapter;
 import it.pgp.xfiles.roothelperclient.reqs.find_rq;
-import it.pgp.xfiles.roothelperclient.resps.find_resp;
-import it.pgp.xfiles.utils.ArchiveVMap;
 import it.pgp.xfiles.utils.Misc;
-import it.pgp.xfiles.utils.pathcontent.ArchivePathContent;
 import it.pgp.xfiles.utils.pathcontent.LocalPathContent;
 
 /**
@@ -41,7 +33,7 @@ public class FindManager extends RemoteManager {
         }
         // ok, RH find thread started
         // now, start rhss update thread
-        new FindUpdatesThread(find_rq).start();
+        new FindUpdatesThread(this, new LocalPathContent(new String(find_rq.basepath, StandardCharsets.UTF_8))).start();
         return true;
     }
 
@@ -78,110 +70,4 @@ public class FindManager extends RemoteManager {
         }
     }
 
-    ////////////////////////////////////
-
-    // callback (stub)
-    private static boolean onSearchItemFound(find_resp item) {
-        try {
-            // TODO when content search will be available, should replace BrowserItem with a subclass including content results
-            FindActivity.instance.runOnUiThread(() ->
-                    FindResultsAdapter.instance.add(
-                            new BrowserItem(item.fileItem)));
-            return true;
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    private class FindUpdatesThread extends Thread {
-        private final find_rq rq;
-        FindUpdatesThread(find_rq rq) {
-            this.rq = rq;
-        }
-
-        @Override
-        public void run() {
-            try {
-                // strong cas, a thread is guaranteed to win
-                if (!findManagerThreadRef.compareAndSet(null,this)) {
-                    MainActivity.showToast("Another find thread is already receiving updates");
-                    return;
-                }
-
-                FindActivity.instance.runOnUiThread(()->FindActivity.instance.toggleSearchButtons(true));
-
-                // create new adapter
-                FindResultsAdapter.createAdapter(new LocalPathContent(new String(rq.basepath, StandardCharsets.UTF_8)));
-
-                for(;;) { // exits on IOException when the other socket endpoint is closed (search interrupted), or when receives end of list (not strictly needed, roothelper find thread could also close the connection after sending last item found)
-
-                    // receive search results
-                    find_resp item = find_resp.readNext(i);
-                    if(item == null) break;
-                    if(!onSearchItemFound(item)) break; // exit immediately if adapter has been destroyed (actually, that should not happen)
-                }
-                MainActivity.showToast("Search completed");
-            }
-            catch (Throwable t) {
-                t.printStackTrace();
-                Log.d(getClass().getName(),"Local socket closed by rhss server or other exception, exiting...");
-            }
-            finally {
-                close();
-            }
-            findManagerThreadRef.set(null); // unset reference only if compareAndSet was successful
-            FindActivity.instance.runOnUiThread(()->FindActivity.instance.toggleSearchButtons(false));
-            Log.d(getClass().getName(),"Really exiting find update thread now!");
-        }
-    }
-
-    public static class FindInArchiveThread extends Thread {
-        private final ArchivePathContent basePath;
-        private final ArchiveVMap m;
-        private final String namePattern;
-        private final boolean recursiveSearch;
-        private final boolean caseInsensitive;
-
-        public FindInArchiveThread(ArchivePathContent basePath, String namePattern, boolean recursiveSearch, boolean caseInsensitive) {
-            this.basePath = basePath;
-            this.m = RootHelperClient.archiveMRU.getByPath(basePath.archivePath,null);
-            if(this.m==null) throw new RuntimeException("archive mru item should be present at this point");
-            this.namePattern = namePattern;
-            this.recursiveSearch = recursiveSearch; // if false, just retrieve the subtree map at the given path key, and loop over map keys
-            this.caseInsensitive = caseInsensitive;
-        }
-
-        public boolean matchFilename(String filename) {
-            // TODO here it would be simple to match using regex and globbing, adapt logic from bulk rename
-            return (!caseInsensitive && filename.contains(namePattern)) ||
-                    (caseInsensitive && filename.toUpperCase().contains(namePattern.toUpperCase()));
-        }
-
-        @Override
-        public void run() {
-            // @@@@@ duplicated code from FindUpdatesThread
-            // strong cas, a thread is guaranteed to win
-            if (!findManagerThreadRef.compareAndSet(null,this)) {
-                MainActivity.showToast("Another find thread is already receiving updates");
-                return;
-            }
-
-            FindActivity.instance.runOnUiThread(()->FindActivity.instance.toggleSearchButtons(true));
-
-            // create new adapter
-            FindResultsAdapter.createAdapter(basePath);
-            // @@@@@ duplicated code from FindUpdatesThread
-
-            m.findInArchive(this::matchFilename,recursiveSearch?"":null);
-
-            // @@@@@ duplicated code from FindUpdatesThread
-            MainActivity.showToast("Search completed");
-            findManagerThreadRef.set(null); // unset reference only if compareAndSet was successful
-            FindActivity.instance.runOnUiThread(()->FindActivity.instance.toggleSearchButtons(false));
-            Log.d(getClass().getName(),"Really exiting find update thread now!");
-            // @@@@@ duplicated code from FindUpdatesThread
-        }
-    }
 }

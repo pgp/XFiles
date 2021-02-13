@@ -20,6 +20,7 @@ import java.util.Collections;
 import it.pgp.xfiles.adapters.FindResultsAdapter;
 import it.pgp.xfiles.dialogs.PropertiesDialog;
 import it.pgp.xfiles.enums.FileMode;
+import it.pgp.xfiles.roothelperclient.FindInArchiveThread;
 import it.pgp.xfiles.roothelperclient.FindManager;
 import it.pgp.xfiles.roothelperclient.reqs.find_rq;
 import it.pgp.xfiles.utils.FileSelectFragment;
@@ -127,7 +128,7 @@ public class FindActivity extends EffectActivity implements FileSelectFragment.C
     }
 
     void startSearchTaskArchive() {
-        new FindManager.FindInArchiveThread(
+        new FindInArchiveThread(
                 (ArchivePathContent) basePath,
                 namePattern.getText().toString(),
                 !searchOnlyCurrentFolder.isChecked(),
@@ -143,7 +144,7 @@ public class FindActivity extends EffectActivity implements FileSelectFragment.C
                 , Toast.LENGTH_SHORT).show();
     }
 
-    // called by UpdaterThread
+    // called by find threads
     public synchronized void toggleSearchButtons(boolean searchIsActive) {
         startSearch.setEnabled(!searchIsActive);
         stopSearch.setEnabled(searchIsActive);
