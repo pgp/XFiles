@@ -998,8 +998,8 @@ public class MainActivity extends EffectActivity {
         startActivity(unattended?sharingIntent:Intent.createChooser(sharingIntent, "Share files using"));
     }
 
-    public void paste() {
-        final BasePathContent destPath = getCurrentDirCommander().getCurrentDirectoryPathname();
+    public void paste(BasePathContent bpc) {
+        final BasePathContent destPath = bpc==null?getCurrentDirCommander().getCurrentDirectoryPathname():bpc;
 
         if (copyMoveList==null || copyMoveList.files.size()==0) {
             Toast.makeText(this,"No items to be pasted",Toast.LENGTH_SHORT).show();
@@ -1326,10 +1326,10 @@ public class MainActivity extends EffectActivity {
             inflater.inflate(R.menu.menu_new, menu);
         }
         else if (getCurrentBrowserAdapter().getSelectedCount() == 0) { // long-click on single file, without active selection
+            BrowserItem b = getCurrentBrowserAdapter().getItem(position1);
             switch(getCurrentDirCommander().getCurrentDirectoryPathname().providerType) {
                 case LOCAL:
                     inflater.inflate(R.menu.menu_single, menu);
-                    BrowserItem b = getCurrentBrowserAdapter().getItem(position1);
                     if(b.isDirectory) inflater.inflate(R.menu.menu_single_local_folder,menu);
                     break;
                 case LOCAL_WITHIN_ARCHIVE:
@@ -1341,6 +1341,7 @@ public class MainActivity extends EffectActivity {
                 case SMB:
                     // allowed operations: copy, move, delete, rename, properties
                     inflater.inflate(R.menu.menu_single_remote, menu);
+                    if(b.isDirectory) inflater.inflate(R.menu.menu_single_remote_folder,menu);
                     break;
             }
         }
@@ -1450,6 +1451,10 @@ public class MainActivity extends EffectActivity {
                     b = getCurrentBrowserAdapter().getItem(position1);
                     copyMoveList = new CopyMoveListPathContent(b, CopyMoveMode.MOVE, path);
                     Toast.makeText(MainActivity.this, "Move item " + b.filename, Toast.LENGTH_LONG).show();
+                    return true;
+                case R.id.itemPasteIntoFolder:
+                    b = getCurrentBrowserAdapter().getItem(position1);
+                    paste(path.concat(b.filename));
                     return true;
                 case R.id.itemCreateLink:
                     b = getCurrentBrowserAdapter().getItem(position1);
@@ -1763,7 +1768,7 @@ public class MainActivity extends EffectActivity {
             case R.id.upOneLevelButton:
                 upOneLevel();break;
             case R.id.pasteButton:
-                paste();break;
+                paste(null);break;
 
             case R.id.goBackButton:
                 goDir_async(Boolean.TRUE,null);break;
