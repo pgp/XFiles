@@ -40,7 +40,15 @@ public class AdvancedComparator implements Comparator<BrowserItem> {
                     if (currentComparisonResult == 0) continue;
                     else return currentComparisonResult;
                 case TYPE:
-                    currentComparisonResult = o1.getFileExt().compareTo(o2.getFileExt());
+                    boolean d1 = o1.isDirectory;
+                    boolean d2 = o2.isDirectory;
+
+                    // use directory/file comparison logic if both items have no extension
+                    // (this in order to prevent mixing folders and files without extension)
+                    if(d1 && !d2) currentComparisonResult = -1;
+                    else if(!d1 && d2) currentComparisonResult = 1;
+                    else /*if((!d1 && !d2) || (d1 && d2))*/ // both files or both directories
+                        currentComparisonResult = o1.getFileExt().compareTo(o2.getFileExt());
                     if (a.isReversed()) currentComparisonResult*=-1;
                     if (currentComparisonResult == 0) continue;
                     else return currentComparisonResult;
