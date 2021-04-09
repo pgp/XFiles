@@ -2,7 +2,6 @@ package it.pgp.xfiles.utils.popupwindow;
 
 import android.app.Activity;
 import android.content.Context;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.util.DisplayMetrics;
 import android.view.GestureDetector;
@@ -18,6 +17,7 @@ import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import it.pgp.xfiles.MainActivity;
 import it.pgp.xfiles.R;
 import it.pgp.xfiles.service.visualization.ViewOverlay;
 import it.pgp.xfiles.utils.HashView;
@@ -88,7 +88,7 @@ public class PopupWindowUtils {
 
             if (autocloseAfterTimeout) {
                 htv.setVisibility(View.GONE);
-                new Handler().postDelayed(popupWindow.adc::dynamicDismiss, 5000);
+                MainActivity.handler.postDelayed(popupWindow.adc::dynamicDismiss, 5000);
             }
             else {
                 tv.setVisibility(View.GONE);
