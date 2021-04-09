@@ -881,7 +881,13 @@ public class RootHelperClient implements FileOperationHelper {
         req.write(rs.o);
         Log.d("roothelperclient","Create request sent");
         errno = receiveBaseResponse(rs.i);
-        if (errno != 0) throw new IOException(fileOrDirectory.name().toLowerCase()+" creation error");
+        String errMsg;
+        if(errno == 0) return;
+        else if (errno==17)
+            errMsg= "A file or directory with the same name already exists";
+        else
+            errMsg= fileOrDirectory.name().toLowerCase()+" creation error, errno is: "+errno;
+        throw new IOException(errMsg);
     }
 
     @Override
