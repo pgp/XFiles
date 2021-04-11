@@ -44,6 +44,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
+    <Button
+        android:text="Check for updates"
+        android:textSize="16dp"
+        android:gravity="center"
+        android:id="@+id/updateCheckButton"
+        android:background="@null"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
     <!--PADDING-->
     <TextView
         android:text=""
