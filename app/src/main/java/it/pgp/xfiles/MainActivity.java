@@ -1580,7 +1580,7 @@ public class MainActivity extends EffectActivity {
                     if(browserPagerAdapter.browserViewModes[browserPager.getCurrentItem()]==BrowserViewMode.LIST)
                         CreateFileOrDirectoryDialog.toggleFastCreateMode(MainActivity.this, fileMode, true);
                     else
-                        new CreateFileOrDirectoryDialog(MainActivity.this,fileMode).show();
+                        new CreateFileOrDirectoryDialog(MainActivity.this,fileMode,false).show();
                     return true;
                 default:
                     return true;

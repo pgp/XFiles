@@ -41,7 +41,7 @@ public class CreateFileOrDirectoryDialog extends BaseDialog implements Runnable 
     final MainActivity mainActivity;
     final FileMode type;
 
-    public CreateFileOrDirectoryDialog(final MainActivity mainActivity, final FileMode type) {
+    public CreateFileOrDirectoryDialog(final MainActivity mainActivity, final FileMode type, boolean showAdvancedOptions) {
         super(mainActivity);
         this.mainActivity = mainActivity;
         this.type = type;
@@ -86,6 +86,8 @@ public class CreateFileOrDirectoryDialog extends BaseDialog implements Runnable 
             toggleButtons(true);
             new Thread(this).start();
         });
+
+        if(type==FileMode.FILE && showAdvancedOptions) advancedOptionsCheckbox.performClick();
     }
 
     private void toggleButtons(boolean start) {
@@ -193,8 +195,16 @@ public class CreateFileOrDirectoryDialog extends BaseDialog implements Runnable 
                 }
                 return false;
             });
-            ((ImageView)ba.fastCreateModeHeaderView.findViewById(R.id.fileTypeImage)).setImageBitmap(
-                    type==FileMode.FILE?BrowserAdapter.fileIV:BrowserAdapter.dirIV);
+            ImageView iv = ba.fastCreateModeHeaderView.findViewById(R.id.fileTypeImage);
+            if(type==FileMode.FILE) {
+                iv.setImageResource(android.R.drawable.ic_dialog_info);
+                iv.setOnClickListener(v -> {
+                    resetCreateMode(ba, listView);
+                    new CreateFileOrDirectoryDialog(mainActivity, type, true).show();
+                });
+            }
+            else iv.setImageBitmap(BrowserAdapter.dirIV);
+
             listView.addHeaderView(ba.fastCreateModeHeaderView);
             listView.setSelection(0);
             et.requestFocus();
