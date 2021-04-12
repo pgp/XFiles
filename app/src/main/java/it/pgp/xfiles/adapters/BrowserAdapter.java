@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.ArrayAdapter;
 
 import java.util.ArrayList;
@@ -59,6 +60,8 @@ public abstract class BrowserAdapter extends ArrayAdapter<BrowserItem> {
 
         return target;
     }
+
+    public View fastCreateModeHeaderView = null;
 
     protected final MainActivity mainActivity;
     protected LayoutInflater inflater;

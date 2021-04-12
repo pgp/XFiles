@@ -225,7 +225,7 @@ public class FindActivity extends EffectActivity implements FileSelectFragment.C
         currentStatus = currentStatus.next();
         dropdownButton.bringToFront();
         dropdownButton.setImageResource(currentStatus.getDrawable());
-        PopupWindowUtils.hideSoftKeyBoard(dropdownButton);
+        PopupWindowUtils.toggleSoftKeyBoard(dropdownButton, false);
     }
 
     @Override

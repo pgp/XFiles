@@ -30,6 +30,7 @@ import it.pgp.xfiles.adapters.continuousselection.ContSelHandlingLayout;
 import it.pgp.xfiles.adapters.continuousselection.ContSelListener;
 import it.pgp.xfiles.comparators.AdvancedComparator;
 import it.pgp.xfiles.comparators.FilenameComparator;
+import it.pgp.xfiles.dialogs.CreateFileOrDirectoryDialog;
 import it.pgp.xfiles.enums.BrowserViewMode;
 import it.pgp.xfiles.enums.ComparatorField;
 import it.pgp.xfiles.enums.FileOpsErrorCodes;
@@ -62,7 +63,7 @@ public class BrowserPagerAdapter extends PagerAdapter {
     public final DirCommander[] dirCommanders = new DirCommander[ADAPTER_SIZE];
     public final AbsListView[] mainBrowserViews = new AbsListView[ADAPTER_SIZE]; // to be assigned as ListView or GridView (same adapter as support)
     public final BrowserAdapter[] browserAdapters = new BrowserAdapter[ADAPTER_SIZE];
-    private final BrowserViewMode[] browserViewModes = new BrowserViewMode[]{BrowserViewMode.LIST,BrowserViewMode.LIST};
+    public final BrowserViewMode[] browserViewModes = new BrowserViewMode[]{BrowserViewMode.LIST,BrowserViewMode.LIST};
     public final TextView[] currentDirectoryTextViews = new TextView[ADAPTER_SIZE];
     public final RelativeLayout[] mainBrowserViewLayouts = new RelativeLayout[ADAPTER_SIZE]; // target container for inflating different browser views (list, grid)
     public final RelativeLayout[] mainBrowserViewLayoutParents = new RelativeLayout[ADAPTER_SIZE];
@@ -256,6 +257,7 @@ public class BrowserPagerAdapter extends PagerAdapter {
 
     public void recreateAdapterAndSelectMode(BrowserViewMode m, int position, GenericDirWithContent dirWithContent) {
         boolean[] lastcontselmode = (csCheckBoxes[position] != null)?csCheckBoxes[position].getAsBooleans():new boolean[]{false,false,false};
+        CreateFileOrDirectoryDialog.resetCreateMode(browserAdapters[position], mainBrowserViews[position]);
         browserAdapters[position] = m.newAdapter(mainActivity,dirWithContent.content);
         fastRenameModeViews[position] = null;
         setMultiSelectModeLayout(multiSelectModes[position],position);
@@ -266,7 +268,7 @@ public class BrowserPagerAdapter extends PagerAdapter {
                 if(v!=null) v.performClick();
             }
         }
-        PopupWindowUtils.hideSoftKeyBoard(mainBrowserViews[position]);
+        PopupWindowUtils.toggleSoftKeyBoard(mainBrowserViews[position],false);
     }
 
     public void showDirContent(GenericDirWithContent dirWithContent,

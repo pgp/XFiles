@@ -92,7 +92,6 @@ public class RenameDialog extends ImmersiveModeDialog {
                         (actionId == EditorInfo.IME_ACTION_DONE)) {
                     // Perform action on key press
                     toggleFastRename(mainActivity,pos,f,false);
-                    PopupWindowUtils.hideSoftKeyBoard(v);
                     return true;
                 }
                 return false;
@@ -115,7 +114,7 @@ public class RenameDialog extends ImmersiveModeDialog {
                 }
 
             View v = mainActivity.getCurrentFocus();
-            if (v != null) PopupWindowUtils.hideSoftKeyBoard(v);
+            if (v != null) PopupWindowUtils.toggleSoftKeyBoard(v, false);
 
             mainActivity.browserPagerAdapter.fastRenameModeViews[mainActivity.browserPager.getCurrentItem()] = null;
         }

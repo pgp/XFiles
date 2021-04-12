@@ -123,8 +123,13 @@ public class PopupWindowUtils {
         }
     }
 
-    public static void hideSoftKeyBoard(View v) {
+    public static void toggleSoftKeyBoard(View v, boolean showOrHide) {
         InputMethodManager imm = (InputMethodManager)v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+        if(showOrHide) { // show
+            imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+        }
+        else { // hide
+            imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+        }
     }
 }

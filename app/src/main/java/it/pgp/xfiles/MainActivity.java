@@ -84,12 +84,12 @@ import it.pgp.xfiles.dialogs.RemoteRHServerManagementDialog;
 import it.pgp.xfiles.dialogs.RenameDialog;
 import it.pgp.xfiles.dialogs.SSHAlreadyInKnownHostsDialog;
 import it.pgp.xfiles.dialogs.SSHNotInKnownHostsDialog;
-import it.pgp.xfiles.dialogs.UpdateCheckDialog;
 import it.pgp.xfiles.dialogs.XFilesRemoteSessionsManagementActivity;
 import it.pgp.xfiles.dialogs.compress.AskPasswordDialogOnListing;
 import it.pgp.xfiles.dialogs.compress.CompressActivity;
 import it.pgp.xfiles.dialogs.compress.ExtractActivity;
 import it.pgp.xfiles.enums.ArchiveType;
+import it.pgp.xfiles.enums.BrowserViewMode;
 import it.pgp.xfiles.enums.ComparatorField;
 import it.pgp.xfiles.enums.CopyMoveMode;
 import it.pgp.xfiles.enums.FileMode;
@@ -1574,11 +1574,13 @@ public class MainActivity extends EffectActivity {
                     b = getCurrentBrowserAdapter().getItem(position1);
                     getStats(b);
                     return true;
-
                 case R.id.createNewFile:
                 case R.id.createNewDirectory:
-                    new CreateFileOrDirectoryDialog(MainActivity.this,
-                            ((itemId==R.id.createNewFile)?FileMode.FILE:FileMode.DIRECTORY)).show();
+                    FileMode fileMode = itemId == R.id.createNewFile ? FileMode.FILE : FileMode.DIRECTORY;
+                    if(browserPagerAdapter.browserViewModes[browserPager.getCurrentItem()]==BrowserViewMode.LIST)
+                        CreateFileOrDirectoryDialog.toggleFastCreateMode(MainActivity.this, fileMode, true);
+                    else
+                        new CreateFileOrDirectoryDialog(MainActivity.this,fileMode).show();
                     return true;
                 default:
                     return true;
@@ -1663,6 +1665,13 @@ public class MainActivity extends EffectActivity {
 
         if(browserPagerAdapter.fastRenameModeViews[pos] != null) {
             RenameDialog.resetRenameMode(pos,browserPagerAdapter.fastRenameModeViews);
+            return;
+        }
+
+        if(browserPagerAdapter.browserAdapters[pos].fastCreateModeHeaderView != null) {
+            CreateFileOrDirectoryDialog.resetCreateMode(
+                    browserPagerAdapter.browserAdapters[pos],
+                    browserPagerAdapter.mainBrowserViews[pos]);
             return;
         }
 
