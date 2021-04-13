@@ -41,7 +41,7 @@ public class CreateFileOrDirectoryDialog extends BaseDialog implements Runnable 
     final MainActivity mainActivity;
     final FileMode type;
 
-    public CreateFileOrDirectoryDialog(final MainActivity mainActivity, final FileMode type, boolean showAdvancedOptions) {
+    public CreateFileOrDirectoryDialog(final MainActivity mainActivity, final FileMode type, boolean showAdvancedOptions, String currentState) {
         super(mainActivity);
         this.mainActivity = mainActivity;
         this.type = type;
@@ -71,6 +71,7 @@ public class CreateFileOrDirectoryDialog extends BaseDialog implements Runnable 
         }
 
         filename = findViewById(R.id.fileDirCreate_filename);
+        filename.setText(currentState);
         ok = findViewById(R.id.fileDirCreate_OkButton);
 
         ok.setOnClickListener(v -> {
@@ -199,8 +200,9 @@ public class CreateFileOrDirectoryDialog extends BaseDialog implements Runnable 
             if(type==FileMode.FILE) {
                 iv.setImageResource(android.R.drawable.ic_dialog_info);
                 iv.setOnClickListener(v -> {
+                    String content = et.getText().toString();
                     resetCreateMode(ba, listView);
-                    new CreateFileOrDirectoryDialog(mainActivity, type, true).show();
+                    new CreateFileOrDirectoryDialog(mainActivity, type, true, content).show();
                 });
             }
             else iv.setImageBitmap(BrowserAdapter.dirIV);
