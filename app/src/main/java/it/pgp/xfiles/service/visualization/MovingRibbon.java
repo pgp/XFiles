@@ -35,7 +35,7 @@ public class MovingRibbon extends ProgressIndicator {
 
         pb.setMax(100);
         pb.setIndeterminate(false);
-        pb.setBackgroundColor(0x8800ff00);
+        pb.setBackgroundColor(0x6c00ff00);
 
         oView.setOnTouchListener(this);
 

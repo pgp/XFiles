@@ -12,4 +12,9 @@
     <style name="AppTheme.MediaGalleryToolbar" parent="android:Theme.Holo">
     </style>
 
+    <style name="ProgressBarStyle" parent="@android:style/Widget.Holo.ProgressBar.Horizontal">
+        <item name="colorAccent">#3FCCFF</item>
+        <item name="backgroundTint">#3FCCFF</item>
+    </style>
+
 </resources>
