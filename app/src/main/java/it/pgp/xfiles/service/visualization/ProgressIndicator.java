@@ -52,6 +52,15 @@ public abstract class ProgressIndicator implements View.OnTouchListener {
         }
     }
 
+    public static final int BASE_RIBBON_DP = 37;
+
+    public WindowManager.LayoutParams getDpHeightAdjustedParams(int dp, ViewType v) {
+        WindowManager.LayoutParams params = v.getParams();
+        float pixels = dp * context.getResources().getDisplayMetrics().density;
+        params.height = (int) pixels;
+        return params;
+    }
+
     private float offsetX;
     private float offsetY;
     private int originalXPos;

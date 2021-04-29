@@ -39,7 +39,7 @@ public class MovingRibbon extends ProgressIndicator {
 
         oView.setOnTouchListener(this);
 
-        addViewToOverlay(oView, ViewType.CONTAINER.getParams());
+        addViewToOverlay(oView, getDpHeightAdjustedParams(BASE_RIBBON_DP*2, ViewType.CONTAINER));
 
         topLeftView = new View(context);
         addViewToOverlay(topLeftView, ViewType.ANCHOR.getParams());
