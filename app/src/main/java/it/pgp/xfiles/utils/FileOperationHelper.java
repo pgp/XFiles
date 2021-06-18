@@ -23,6 +23,9 @@ import it.pgp.xfiles.utils.pathcontent.BasePathContent;
  */
 
 public interface FileOperationHelper {
+    // constants
+    String ALREADY_EXIST = "A file or directory with the same name already exists";
+
     // TODO change return value of every method to boolean or int and remove IOException
     void createFileOrDirectory(BasePathContent filePath, FileMode fileOrDirectory, FileCreationAdvancedOptions... fileOptions) throws IOException;
     void createLink(BasePathContent originPath, BasePathContent linkPath, boolean isHardLink) throws IOException;

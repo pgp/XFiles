@@ -883,10 +883,10 @@ public class RootHelperClient implements FileOperationHelper {
         errno = receiveBaseResponse(rs.i);
         String errMsg;
         if(errno == 0) return;
-        else if (errno==17)
-            errMsg= "A file or directory with the same name already exists";
+        else if(errno == 17)
+            errMsg = ALREADY_EXIST;
         else
-            errMsg= fileOrDirectory.name().toLowerCase()+" creation error, errno is: "+errno;
+            errMsg = fileOrDirectory.name().toLowerCase()+" creation error, errno is: "+errno;
         throw new IOException(errMsg);
     }
 

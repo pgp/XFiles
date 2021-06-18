@@ -153,7 +153,7 @@ public class CreateFileOrDirectoryDialog extends BaseDialog implements Runnable 
         }
         catch (IOException e) {
             e.printStackTrace();
-            MainActivity.showToast("Error creating "+type.name().toLowerCase());
+            MainActivity.showToast("Error creating "+type.name().toLowerCase()+": "+e.getMessage());
             return false;
         }
     }
