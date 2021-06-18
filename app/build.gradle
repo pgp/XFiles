@@ -41,6 +41,10 @@ android {
         maven { url "https://jitpack.io" }
     }
 
+    lintOptions {
+        abortOnError false
+    }
+
     task rhTask {
         println("Cloning and building XFilesRootHelper native library for Android")
         def lp = System.getenv("LOWPERF") // used only for Travis CI, used to discriminate against explicit PATH import as well
