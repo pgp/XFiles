@@ -220,6 +220,7 @@ public class CreateFileOrDirectoryDialog extends BaseDialog implements Runnable 
 
                 listView.removeHeaderView(ba.fastCreateModeHeaderView);
                 ba.fastCreateModeHeaderView = null;
+                et.clearFocus(); // fixes "parameter must be a descendant of this view" on legacy Android versions
 
                 if(doCreate(mainActivity, ff, type))
                     mainActivity.runOnUiThread(()-> mainActivity.browserPagerAdapter.showDirContent(
