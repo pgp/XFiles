@@ -709,6 +709,9 @@ public class MainActivity extends EffectActivity {
             return true;
         });
 
+        makeImageButtonsStateful(findViewById(R.id.pathViewLayout),
+                new SelectImageButtonListener(this, R.color.imagebuttonselect));
+
         registerForContextMenu(sortButton);
         registerForContextMenu(credsFavsButton);
         credsFavsButton.setOnClickListener(this::openContextMenu);
