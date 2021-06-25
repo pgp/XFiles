@@ -13,13 +13,8 @@ public class FileCreationAdvancedOptions {
     CreationStrategy strategy;
     long size;
 
-    public FileCreationAdvancedOptions(long size) {
-        this.strategy = CreationStrategy.FALLOCATE;
-        this.size = size;
-    }
-
     public FileCreationAdvancedOptions(long size, CreationStrategy strategy) {
-        this.strategy = strategy;
+        this.strategy = size == 0 ? CreationStrategy.ZEROS : strategy; // fallocate returns errno 22 (invalid argument) if called with zero size
         this.size = size;
     }
 

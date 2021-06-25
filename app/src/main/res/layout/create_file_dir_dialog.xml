@@ -53,6 +53,7 @@
             <EditText
                 android:id="@+id/fileDirCreate_fileSize"
                 android:inputType="number"
+                android:text="0"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent" />
 
@@ -70,6 +71,7 @@
             android:layout_height="wrap_content" >
 
             <RadioButton
+                android:checked="true"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="zeros" />
