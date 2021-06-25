@@ -201,6 +201,7 @@ public class CreateFileOrDirectoryDialog extends BaseDialog implements Runnable 
                 iv.setImageResource(android.R.drawable.ic_dialog_info);
                 iv.setOnClickListener(v -> {
                     String content = et.getText().toString();
+                    et.clearFocus();
                     resetCreateMode(ba, listView);
                     new CreateFileOrDirectoryDialog(mainActivity, type, true, content).show();
                 });

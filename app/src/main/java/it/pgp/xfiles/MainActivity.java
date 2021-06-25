@@ -1578,12 +1578,14 @@ public class MainActivity extends EffectActivity {
                     getStats(b);
                     return true;
                 case R.id.createNewFile:
+                case R.id.createNewFileAdvanced:
                 case R.id.createNewDirectory:
-                    FileMode fileMode = itemId == R.id.createNewFile ? FileMode.FILE : FileMode.DIRECTORY;
-                    if(browserPagerAdapter.browserViewModes[browserPager.getCurrentItem()]==BrowserViewMode.LIST)
-                        CreateFileOrDirectoryDialog.toggleFastCreateMode(MainActivity.this, fileMode, true);
+                    FileMode fileMode = itemId == R.id.createNewDirectory ? FileMode.DIRECTORY : FileMode.FILE;
+                    if(browserPagerAdapter.browserViewModes[browserPager.getCurrentItem()]==BrowserViewMode.GRID ||
+                            itemId == R.id.createNewFileAdvanced)
+                        new CreateFileOrDirectoryDialog(MainActivity.this,fileMode,itemId == R.id.createNewFileAdvanced,"").show();
                     else
-                        new CreateFileOrDirectoryDialog(MainActivity.this,fileMode,false,"").show();
+                        CreateFileOrDirectoryDialog.toggleFastCreateMode(MainActivity.this, fileMode, true);
                     return true;
                 default:
                     return true;
