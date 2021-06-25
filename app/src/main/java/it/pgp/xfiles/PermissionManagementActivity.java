@@ -3,7 +3,6 @@ package it.pgp.xfiles;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -147,10 +146,6 @@ public class PermissionManagementActivity extends Activity {
     }
 
     public void completePermissions(View unused) {
-        SharedPreferences.Editor editor = getSharedPreferences(getPackageName(), MODE_PRIVATE).edit();
-        editor.putBoolean("1stRun", false);
-        editor.apply();
-
         Intent i = new Intent(this,MainActivity.class);
         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(i);
@@ -159,7 +154,7 @@ public class PermissionManagementActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setTitle("First run configuration");
+        setTitle("Permission management");
         setContentView(R.layout.activity_permission_management);
     }
 }

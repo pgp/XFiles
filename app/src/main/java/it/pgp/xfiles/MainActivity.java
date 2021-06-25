@@ -630,11 +630,6 @@ public class MainActivity extends EffectActivity {
         finish();
     }
 
-    boolean isFirstRun() {
-        SharedPreferences sp = getSharedPreferences(getPackageName(),MODE_PRIVATE);
-        return sp.getBoolean("1stRun",true);
-    }
-
     boolean hasPermanentMenuKey;
 
     public double getDisplayDiagonalSizeInches() {
@@ -665,11 +660,6 @@ public class MainActivity extends EffectActivity {
         mainActivity = this;
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (isFirstRun()) {
-                startPermissionManagementActivity();
-                return;
-            }
-
             // ensure at least storage permissions are granted, it's useless to proceed otherwise
             if (!checkDangerousPermissions()) {
                 Toast.makeText(this, "Storage permissions not granted, please enable them",
