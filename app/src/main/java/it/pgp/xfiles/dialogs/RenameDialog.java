@@ -97,6 +97,9 @@ public class RenameDialog extends ImmersiveModeDialog {
                 return false;
             });
             mainActivity.browserPagerAdapter.fastRenameModeViews[mainActivity.browserPager.getCurrentItem()] = a;
+            et.setSelection(et.getText().length());
+            et.requestFocus();
+            PopupWindowUtils.toggleSoftKeyBoard(et, true);
         }
         else { // OFF
             View a = mainActivity.browserPagerAdapter.fastRenameModeViews[mainActivity.browserPager.getCurrentItem()];
