@@ -1,65 +1,27 @@
 package it.pgp.xfiles.adapters;
 
-import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EdgeEffect;
-
-import java.lang.reflect.Field;
 
 import it.pgp.xfiles.MainActivity;
+import it.pgp.xfiles.R;
+import it.pgp.xfiles.utils.SelectImageButtonListener;
 
 public class OperationalPagerAdapter extends PagerAdapter {
 
     private final MainActivity context;
     private final int[] operationalLayouts;
-
-    public static void setEdgeGlowColor(ViewPager viewPager, int color) {
-        try {
-            Class<?> clazz = ViewPager.class;
-            for (String name : new String[] {
-                    "mLeftEdge", "mRightEdge"
-            }) {
-                Field field = clazz.getDeclaredField(name);
-                field.setAccessible(true);
-                Object edge = field.get(viewPager); // android.support.v4.widget.EdgeEffectCompat
-                Field fEdgeEffect = edge.getClass().getDeclaredField("mEdgeEffect");
-                fEdgeEffect.setAccessible(true);
-                setEdgeEffectColor((EdgeEffect) fEdgeEffect.get(edge), color);
-            }
-        } catch (Exception ignored) {
-        }
-    }
-
-    public static void setEdgeEffectColor(EdgeEffect edgeEffect, int color) {
-        try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                edgeEffect.setColor(color);
-                return;
-            }
-            Field edgeField = EdgeEffect.class.getDeclaredField("mEdge");
-            Field glowField = EdgeEffect.class.getDeclaredField("mGlow");
-            edgeField.setAccessible(true);
-            glowField.setAccessible(true);
-            Drawable mEdge = (Drawable) edgeField.get(edgeEffect);
-            Drawable mGlow = (Drawable) glowField.get(edgeEffect);
-            mEdge.setColorFilter(color, PorterDuff.Mode.SRC_IN);
-            mGlow.setColorFilter(color, PorterDuff.Mode.SRC_IN);
-            mEdge.setCallback(null); // free up any references
-            mGlow.setCallback(null); // free up any references
-        } catch (Exception ignored) {
-        }
-    }
+    private final SelectImageButtonListener l;
 
     public OperationalPagerAdapter(MainActivity mainActivity, int[] operationalLayouts) {
         this.context = mainActivity;
         this.operationalLayouts = operationalLayouts;
+        this.l = new SelectImageButtonListener(context, R.color.imagebuttonselect);
     }
 
     @NonNull
@@ -68,6 +30,17 @@ public class OperationalPagerAdapter extends PagerAdapter {
         ViewPager viewPager = (ViewPager) container;
         ViewGroup layout = (ViewGroup) LayoutInflater.from(context).inflate(operationalLayouts[position], viewPager,false);
         viewPager.addView(layout);
+        viewPager.setOnTouchListener((v, event) -> {
+            if(event.getAction() == MotionEvent.ACTION_UP) {
+                // the children listener might not catch the ACTION_UP event due to a too rapid swipe, so restore the involved ImageButton state from here
+                if(l.startV != null) {
+                    l.startV.getDrawable().clearColorFilter();
+                    l.startV.invalidate();
+                }
+            }
+            return false;
+        });
+        MainActivity.makeImageButtonsStateful(layout, l);
         return layout;
     }
 

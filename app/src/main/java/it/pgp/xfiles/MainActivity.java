@@ -35,6 +35,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.webkit.MimeTypeMap;
 import android.widget.AbsListView;
@@ -121,6 +122,7 @@ import it.pgp.xfiles.smbclient.SmbVaultActivity;
 import it.pgp.xfiles.utils.ContentProviderUtils;
 import it.pgp.xfiles.utils.DirCommander;
 import it.pgp.xfiles.utils.FileOperationHelper;
+import it.pgp.xfiles.utils.SelectImageButtonListener;
 import it.pgp.xfiles.utils.XFilesUtils;
 import it.pgp.xfiles.utils.dircontent.GenericDirWithContent;
 import it.pgp.xfiles.utils.dircontent.SftpDirWithContent;
@@ -164,6 +166,14 @@ public class MainActivity extends EffectActivity {
             | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
 
     public int defaultUIVisibility;
+
+    public static void makeImageButtonsStateful(ViewGroup layout, SelectImageButtonListener l) {
+        for (int i = 0; i < layout.getChildCount(); i++) {
+            View vv = layout.getChildAt(i);
+            if (vv instanceof ImageButton)
+                vv.setOnTouchListener(l);
+        }
+    }
 
     // File Operations Helpers
     public static SmbProvider smbProvider;
@@ -1735,9 +1745,13 @@ public class MainActivity extends EffectActivity {
         if(targetLayout == l1) { // more than one layout, needs ViewPager
             vp.setAdapter(new OperationalPagerAdapter(this, targetLayout));
             operationButtonsLayout.addView(vp);
+            // MainActivity.makeImageButtonsStateful called in instantiateItem, calling it here would produce an NPE
         }
         else {
-            layoutInflater.inflate(targetLayout[0],operationButtonsLayout);
+            ViewGroup layout = (ViewGroup) layoutInflater.inflate(targetLayout[0], operationButtonsLayout, false);
+            operationButtonsLayout.addView(layout);
+            MainActivity.makeImageButtonsStateful(layout,
+                    new SelectImageButtonListener(context, R.color.imagebuttonselect));
         }
     }
 
