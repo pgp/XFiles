@@ -1,20 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:vaultActivity="it.pgp.xfiles.MainActivity">
-    <!--android:background="@drawable/root_background"-->
+    android:orientation="vertical">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_weight="11"
         android:layout_height="0dp">
 
-        <!--<android.support.v4.view.ViewPager-->
         <it.pgp.xfiles.BrowserViewPager
             android:id="@+id/browserpager"
             android:layout_width="match_parent"
