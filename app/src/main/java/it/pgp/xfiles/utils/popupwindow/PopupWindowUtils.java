@@ -27,6 +27,8 @@ import static android.content.Context.LAYOUT_INFLATER_SERVICE;
 
 public class PopupWindowUtils {
 
+    public static final int AUTOCLOSE_DELAY_MS = 5000;
+
     public static final GestureDetector.SimpleOnGestureListener singleTapConfirm = new GestureDetector.SimpleOnGestureListener(){
         @Override
         public boolean onSingleTapUp(MotionEvent e) {
@@ -88,7 +90,7 @@ public class PopupWindowUtils {
 
             if (autocloseAfterTimeout) {
                 htv.setVisibility(View.GONE);
-                MainActivity.handler.postDelayed(popupWindow.dismissRef, 5000);
+                MainActivity.handler.postDelayed(popupWindow.dismissRef, AUTOCLOSE_DELAY_MS);
             }
             else {
                 tv.setVisibility(View.GONE);
@@ -107,7 +109,7 @@ public class PopupWindowUtils {
 
             if (autocloseAfterTimeout) {
                 htv.setVisibility(View.GONE);
-                MainActivity.handler.postDelayed(vo.destroyRef,5000);
+                MainActivity.handler.postDelayed(vo.destroyRef, AUTOCLOSE_DELAY_MS);
             }
             else {
                 tv.setVisibility(View.GONE);
