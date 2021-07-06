@@ -88,7 +88,7 @@ public class PopupWindowUtils {
 
             if (autocloseAfterTimeout) {
                 htv.setVisibility(View.GONE);
-                MainActivity.handler.postDelayed(popupWindow.adc::dynamicDismiss, 5000);
+                MainActivity.handler.postDelayed(popupWindow.dismissRef, 5000);
             }
             else {
                 tv.setVisibility(View.GONE);
@@ -107,14 +107,7 @@ public class PopupWindowUtils {
 
             if (autocloseAfterTimeout) {
                 htv.setVisibility(View.GONE);
-                new Thread(()->{
-                    try {
-                        Thread.sleep(5000);
-                        vo.adc.dynamicDismiss();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }).start();
+                MainActivity.handler.postDelayed(vo.destroyRef,5000);
             }
             else {
                 tv.setVisibility(View.GONE);

@@ -27,12 +27,10 @@ public class ViewOverlay extends ProgressIndicator implements View.OnTouchListen
         });
     }
 
-    public final AutoDismissControl adc = new AutoDismissControl(this::destroy);
-
     @Override
     public boolean onTouch(View v, MotionEvent event) {
         if (gestureDetector.onTouchEvent(event)) {
-            adc.disableDismissTimeout();
+            MainActivity.handler.removeCallbacks(destroyRef);
             return true;
         }
 

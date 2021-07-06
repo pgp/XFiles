@@ -2,7 +2,6 @@ package it.pgp.xfiles.utils;
 
 import android.content.Context;
 import android.graphics.PorterDuff;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageButton;
@@ -22,13 +21,11 @@ public class SelectImageButtonListener implements View.OnTouchListener {
         if(v instanceof ImageButton) {
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
-                    Log.e("ZZZZZZZZZ","down");
                     startV = (ImageButton) v;
                     startV.getDrawable().setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
                     v.invalidate();
                     break;
                 case MotionEvent.ACTION_UP:
-                    Log.e("ZZZZZZZZZ","up");
                     if (startV != null) {
                         // interceptor view has changed due to a too rapid gesture, clear state on the old view in that case
                         startV.getDrawable().clearColorFilter();

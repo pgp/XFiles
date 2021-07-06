@@ -34,6 +34,7 @@ public abstract class ProgressIndicator implements View.OnTouchListener {
         try{ wm.removeView(topLeftView); } catch(Throwable ignored) {}
     }
 
+    public final Runnable destroyRef = this::destroy;
     protected final Context context;
     protected final WindowManager wm;
     protected View oView;

@@ -6,19 +6,19 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.PopupWindow;
 
-import it.pgp.xfiles.service.visualization.AutoDismissControl;
+import it.pgp.xfiles.MainActivity;
 
 public class MovablePopupWindowWithAutoClose extends PopupWindow {
 
     private final GestureDetector gestureDetector;
-
+    public final Runnable dismissRef = this::dismiss;
     int orgX, orgY;
     int offsetX, offsetY;
 
     private void makeMovable(View view) {
         view.setOnTouchListener((v,event) -> {
             if (gestureDetector.onTouchEvent(event)) {
-                adc.disableDismissTimeout();
+                MainActivity.handler.removeCallbacks(dismissRef);
                 return true;
             }
             else {
@@ -43,6 +43,4 @@ public class MovablePopupWindowWithAutoClose extends PopupWindow {
         gestureDetector = new GestureDetector(context, PopupWindowUtils.singleTapConfirm);
         makeMovable(contentView);
     }
-
-    public final AutoDismissControl adc = new AutoDismissControl(this::dismiss);
 }
