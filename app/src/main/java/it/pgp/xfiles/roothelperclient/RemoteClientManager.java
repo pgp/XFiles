@@ -93,15 +93,12 @@ public class RemoteClientManager {
             Log.d(this.getClass().getName(),"Client TLS session shared secret hash: "+Misc.toHexString(client.tlsSessionHash));
 
             // show the visual hash of the shared TLS master secret
-            if (MainActivity.mainActivity != null) {
-                MainActivity.mainActivity.runOnUiThread(()->
-//                        new HashViewDialog(MainActivity.mainActivity,client.tlsSessionHash,true).show());
-                PopupWindowUtils.createAndShowHashViewCommon(
-                        MainActivity.mainActivity,
-                        client.tlsSessionHash,
-                        true,
-                        MainActivity.mainActivity.findViewById(R.id.activity_main)));
-            }
+            MainActivity.handler.post(()-> PopupWindowUtils.createAndShowHashViewCommon(
+                    MainActivity.context,
+                    client.tlsSessionHash,
+                    true,
+                    MainActivity.mainActivity != null ?
+                            MainActivity.mainActivity.findViewById(R.id.activity_main) : null));
 
             return client;
         }
