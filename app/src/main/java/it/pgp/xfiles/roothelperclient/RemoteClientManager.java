@@ -94,7 +94,7 @@ public class RemoteClientManager {
 
             // show the visual hash of the shared TLS master secret
             MainActivity.handler.post(()-> PopupWindowUtils.createAndShowHashViewCommon(
-                    MainActivity.context,
+                    MainActivity.mainActivity != null ? MainActivity.mainActivity : MainActivity.context,
                     client.tlsSessionHash,
                     true,
                     MainActivity.mainActivity != null ?
