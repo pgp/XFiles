@@ -18,6 +18,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -277,9 +278,12 @@ public class GenericChangeDirectoryDialog extends Dialog {
             case LOCAL:
             case LOCAL_WITHIN_ARCHIVE:
                 // autocomplete stuff
-                ArrayList<String> lItems = new ArrayList<>();
-                lItems.add(""); // empty item for no selection
-                lItems.add(Misc.internalStorageDir.getAbsolutePath()); // empty item for no selection
+                ArrayList<String> lItems = new ArrayList<>(Arrays.asList(
+                        "", // empty item for no selection
+                        Misc.internalStorageDir.getAbsolutePath(),
+                        mainActivity.getFilesDir().getAbsolutePath(), // xfiles app private dir
+                        "/data/app",
+                        "/data/local/tmp"));
                 lItems.addAll(dbh.getAllRowsOfLocalFavoritesTable().values());
                 ArrayAdapter<String> lAdapter = new ArrayAdapter<>(
                         mainActivity,
