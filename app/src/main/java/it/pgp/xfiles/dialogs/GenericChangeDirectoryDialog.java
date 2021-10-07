@@ -194,14 +194,13 @@ public class GenericChangeDirectoryDialog extends Dialog {
         }
         else if (idx == 5) {
             // start download service
-            DownloadParams params = new DownloadParams(
-                    httpUrlToDownload.getText().toString(),
-                    httpDestPath.getText().toString(),
-                    httpTargetFilename.getText().toString());
-
             Intent startIntent = new Intent(mainActivity,HTTPDownloadService.class);
             startIntent.setAction(BaseBackgroundService.START_ACTION);
-            startIntent.putExtra("params",params);
+            startIntent.putExtra("params",
+                    new DownloadParams(
+                            httpUrlToDownload.getText().toString(),
+                            httpDestPath.getText().toString(),
+                            httpTargetFilename.getText().toString()));
             mainActivity.startService(startIntent);
             dismiss();
         }
