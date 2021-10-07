@@ -1,6 +1,9 @@
 package it.pgp.xfiles.utils;
 
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -29,6 +32,7 @@ import it.pgp.xfiles.service.BaseBackgroundTask;
 import it.pgp.xfiles.utils.dircontent.GenericDirWithContent;
 import it.pgp.xfiles.utils.dircontent.LocalDirWithContent;
 import it.pgp.xfiles.utils.pathcontent.BasePathContent;
+import it.pgp.xfiles.utils.pathcontent.LocalPathContent;
 import it.pgp.xfiles.utils.pathcontent.XREPathContent;
 
 /**
@@ -305,20 +309,54 @@ public class XFilesUtils implements FileOperationHelper {
 //        return digest;
     }
 
+    public static final LocalPathContent dataApp = new LocalPathContent("/data/app");
+    public static final String dataAppSlash = "/data/app/";
+
+    private static String folderNameFromApkPath(String apkPath) {
+        String afterPrefix = apkPath.substring(dataAppSlash.length());
+        String[] paths = afterPrefix.split("/");
+        if(paths.length >= 1) afterPrefix = paths[0];
+        return afterPrefix;
+    }
+
+    // web source:
+    // https://stackoverflow.com/questions/2695746/how-to-get-a-list-of-installed-android-applications-and-pick-one-to-run
+    public static GenericDirWithContent listDataAppWithoutRoot() {
+        Log.d("roothelper", "Listing /data/app via PackageManager");
+        try {
+            List<ApplicationInfo> packages = MainActivity.context.getPackageManager().getInstalledApplications(PackageManager.GET_META_DATA);
+
+            List<BrowserItem> dirContent = new ArrayList<>();
+            for(ApplicationInfo packageInfo : packages) {
+                String apkPath = packageInfo.sourceDir;
+                if(packageInfo.sourceDir.startsWith(dataAppSlash))
+                    dirContent.add(new BrowserItem(folderNameFromApkPath(apkPath), 0, new Date(0), true, false));
+//                Log.e("XF_APPDATA", "Installed package :" + packageInfo.packageName + "\tSource dir : " + packageInfo.sourceDir);
+            }
+            return new LocalDirWithContent(dataApp.dir, dirContent);
+        }
+        catch(Exception e) {
+            e.printStackTrace();
+            return new LocalDirWithContent(FileOpsErrorCodes.COMMANDER_CANNOT_ACCESS);
+        }
+    }
+
     @Override
     public GenericDirWithContent listDirectory(BasePathContent directory) {
-        if (directory instanceof XREPathContent) {
+        if(directory instanceof XREPathContent) {
             try {refreshRHClient();}
             catch(IOException e) {return new GenericDirWithContent(FileOpsErrorCodes.ROOTHELPER_INIT_ERROR);}
             return rhc.listDirectory(directory);
         }
         File[] content = new File(directory.dir).listFiles();
-        if (content == null) return new LocalDirWithContent(FileOpsErrorCodes.COMMANDER_CANNOT_ACCESS); // TODO specialize error code (enum to be created) in callers from dir commander
+        if(content == null) {
+            if(directory.equals(dataApp)) return listDataAppWithoutRoot();
+            return new LocalDirWithContent(FileOpsErrorCodes.COMMANDER_CANNOT_ACCESS); // TODO specialize error code (enum to be created) in callers from dir commander
+        }
         ArrayList<BrowserItem> l = new ArrayList<>();
-        for (File f : content) {
+        for(File f : content) {
             l.add(new BrowserItem(f.getName(),f.length(),new Date(f.lastModified()),f.isDirectory(), Native.isSymLink(f.getAbsolutePath())>0)); // getCanonicalPath not enough to fully determine symlink attribute (files in symlinked folders), and Files.isSymbolicLink is available only with minAPI >= 26
         }
-
         return new LocalDirWithContent(directory.dir, l);
     }
 

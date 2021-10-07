@@ -60,14 +60,14 @@ import it.pgp.xfiles.roothelperclient.reqs.multi_extract_rq;
 import it.pgp.xfiles.roothelperclient.reqs.openssh_ed25519_keygen_rq;
 import it.pgp.xfiles.roothelperclient.reqs.openssl_rsa_pem_keygen_rq;
 import it.pgp.xfiles.roothelperclient.reqs.setDates_rq;
+import it.pgp.xfiles.roothelperclient.reqs.setOwnership_rq;
 import it.pgp.xfiles.roothelperclient.reqs.setPermission_rq;
 import it.pgp.xfiles.roothelperclient.reqs.singleStats_rq;
 import it.pgp.xfiles.roothelperclient.resps.exists_resp;
 import it.pgp.xfiles.roothelperclient.resps.folderStats_resp;
 import it.pgp.xfiles.roothelperclient.resps.ls_resp;
-import it.pgp.xfiles.roothelperclient.resps.ssh_keygen_resp;
 import it.pgp.xfiles.roothelperclient.resps.singleStats_resp;
-import it.pgp.xfiles.roothelperclient.reqs.setOwnership_rq;
+import it.pgp.xfiles.roothelperclient.resps.ssh_keygen_resp;
 import it.pgp.xfiles.service.BaseBackgroundTask;
 import it.pgp.xfiles.service.SocketNames;
 import it.pgp.xfiles.service.visualization.ProgressIndicator;
@@ -79,6 +79,7 @@ import it.pgp.xfiles.utils.Misc;
 import it.pgp.xfiles.utils.Pair;
 import it.pgp.xfiles.utils.ProgressConflictHandler;
 import it.pgp.xfiles.utils.StreamsPair;
+import it.pgp.xfiles.utils.XFilesUtils;
 import it.pgp.xfiles.utils.dircontent.ArchiveSubDirWithContent;
 import it.pgp.xfiles.utils.dircontent.GenericDirWithContent;
 import it.pgp.xfiles.utils.dircontent.LocalDirWithContent;
@@ -329,6 +330,8 @@ public class RootHelperClient implements FileOperationHelper {
                     rs.i.readFully(errno_);
                     int errno = (int) Misc.castBytesToUnsignedNumber(errno_,4);
                     Log.e("roothelper","Error returned from roothelper server: "+errno);
+                    if(dirPath.equals(XFilesUtils.dataApp))
+                        return XFilesUtils.listDataAppWithoutRoot();
                     return new LocalDirWithContent(FileOpsErrorCodes.COMMANDER_CANNOT_ACCESS); // TODO errno constants in enum
                 default:
                     throw new RuntimeException("Unexpected response code from roothelper server: "+(int)responseByte);
