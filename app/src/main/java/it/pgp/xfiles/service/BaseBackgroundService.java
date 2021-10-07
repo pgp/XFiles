@@ -115,13 +115,12 @@ public abstract class BaseBackgroundService extends Service {
 
 
     protected static NotificationChannel notificationChannel;
-	protected void createNotificationChannelForService() {
+    protected void createNotificationChannelForService() {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             if (notificationChannel == null) {
-                notificationChannel = new NotificationChannel(getPackageName(),"nch", NotificationManager.IMPORTANCE_LOW);
+                notificationChannel = new NotificationChannel(getPackageName(), "nch", NotificationManager.IMPORTANCE_LOW);
                 notificationChannel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
-                NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-                manager.createNotificationChannel(notificationChannel);
+                notificationManager.createNotificationChannel(notificationChannel);
             }
         }
     }
@@ -144,7 +143,8 @@ public abstract class BaseBackgroundService extends Service {
 	public void startAndShowNotificationBar() {
         switch (currentAction) {
             case START_ACTION:
-                if (!onStartAction()) {
+                task = getTask();
+                if (!task.init(this)) {
                     Toast.makeText(getApplicationContext(), "Cannot start service, overlay is busy", Toast.LENGTH_SHORT).show();
                     stopSelf();
                     return;
@@ -171,16 +171,10 @@ public abstract class BaseBackgroundService extends Service {
         Notification notification = getForegroundNotificationBuilder().build();
         createNotificationChannelForService();
         startForeground(getForegroundServiceNotificationId(),notification);
+        task.execute((Void[])null);
     }
 
     protected abstract BaseBackgroundTask getTask();
-
-    public boolean onStartAction() {
-        task = getTask();
-        if (!task.init(this)) return false;
-        task.execute((Void[])null);
-        return true;
-    }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
