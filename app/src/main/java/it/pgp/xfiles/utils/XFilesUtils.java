@@ -312,7 +312,7 @@ public class XFilesUtils implements FileOperationHelper {
     public static final LocalPathContent dataApp = new LocalPathContent("/data/app");
     public static final String dataAppSlash = "/data/app/";
 
-    private static String folderNameFromApkPath(String apkPath) {
+    private static String firstAvailableName(String apkPath) {
         String afterPrefix = apkPath.substring(dataAppSlash.length());
         String[] paths = afterPrefix.split("/");
         if(paths.length >= 1) afterPrefix = paths[0];
@@ -329,8 +329,11 @@ public class XFilesUtils implements FileOperationHelper {
             List<BrowserItem> dirContent = new ArrayList<>();
             for(ApplicationInfo packageInfo : packages) {
                 String apkPath = packageInfo.sourceDir;
-                if(packageInfo.sourceDir.startsWith(dataAppSlash))
-                    dirContent.add(new BrowserItem(folderNameFromApkPath(apkPath), 0, new Date(0), true, false));
+                if(packageInfo.sourceDir.startsWith(dataAppSlash)) {
+                    String fn = firstAvailableName(apkPath);
+                    File f = new File(dataAppSlash, fn);
+                    dirContent.add(new BrowserItem(fn, f.length(), new Date(f.lastModified()), f.isDirectory(), Native.isSymLink(f.getAbsolutePath())>0));
+                }
 //                Log.e("XF_APPDATA", "Installed package :" + packageInfo.packageName + "\tSource dir : " + packageInfo.sourceDir);
             }
             return new LocalDirWithContent(dataApp.dir, dirContent);
