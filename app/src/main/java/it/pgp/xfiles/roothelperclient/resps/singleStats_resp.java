@@ -8,13 +8,13 @@ import it.pgp.xfiles.utils.Misc;
 public class singleStats_resp {
 
     private int group_len;
-    public byte [] group;
+    public byte[] group;
     private int owner_len;
-    public byte [] owner;
+    public byte[] owner;
     public long creationTime;
     public long lastAccessTime;
     public long modificationTime;
-    public byte [] permissions;
+    public byte[] permissions;
     public long size;
 
     public singleStats_resp(DataInputStream inputStream) throws IOException {

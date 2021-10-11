@@ -1,13 +1,11 @@
 package it.pgp.xfiles.roothelperclient;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.concurrent.atomic.AtomicReference;
 
 import it.pgp.xfiles.MainActivity;
 import it.pgp.xfiles.roothelperclient.reqs.find_rq;
 import it.pgp.xfiles.utils.Misc;
-import it.pgp.xfiles.utils.pathcontent.LocalPathContent;
 
 /**
  * Created by pgp on 22/01/18
@@ -33,7 +31,7 @@ public class FindManager extends RemoteManager {
         }
         // ok, RH find thread started
         // now, start rhss update thread
-        new FindUpdatesThread(this, new LocalPathContent(new String(find_rq.basepath, StandardCharsets.UTF_8))).start();
+        new FindUpdatesThread(this).start();
         return true;
     }
 

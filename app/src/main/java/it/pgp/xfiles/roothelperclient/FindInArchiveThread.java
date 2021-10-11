@@ -15,7 +15,7 @@ public class FindInArchiveThread extends FindUpdatesThread {
     }
 
     public FindInArchiveThread(ArchivePathContent basePath, String namePattern, boolean recursiveSearch, boolean caseInsensitive) {
-        super(null, basePath);
+        super(null);
         this.m = RootHelperClient.archiveMRU.getByPath(basePath.archivePath,null);
         if(this.m==null) throw new RuntimeException("archive mru item should be present at this point");
         this.namePattern = namePattern;

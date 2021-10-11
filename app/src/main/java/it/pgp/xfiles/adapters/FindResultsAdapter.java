@@ -37,9 +37,4 @@ public class FindResultsAdapter extends BrowserListAdapter { // uses FindBrowser
         createIfNotExisting();
         FindActivity.instance.runOnUiThread(()->FindResultsAdapter.instance.clear());
     }
-
-    public static void createAdapter(@NonNull BasePathContent basePath) {
-        reset();
-        instance.basePath = basePath;
-    }
 }

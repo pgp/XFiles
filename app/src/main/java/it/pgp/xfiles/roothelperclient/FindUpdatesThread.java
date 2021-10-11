@@ -7,20 +7,17 @@ import it.pgp.xfiles.FindActivity;
 import it.pgp.xfiles.MainActivity;
 import it.pgp.xfiles.adapters.FindResultsAdapter;
 import it.pgp.xfiles.roothelperclient.resps.find_resp;
-import it.pgp.xfiles.utils.pathcontent.BasePathContent;
 
 import static it.pgp.xfiles.roothelperclient.FindManager.findManagerThreadRef;
 
 public class FindUpdatesThread extends Thread {
-    protected final BasePathContent bpc;
     protected final AutoCloseable ac;
 
     protected String getErrMsg() {
         return "Local socket closed by rhss server or other exception, exiting...";
     }
 
-    FindUpdatesThread(AutoCloseable ac, BasePathContent bpc) {
-        this.bpc = bpc;
+    FindUpdatesThread(AutoCloseable ac) {
         this.ac = ac;
     }
 
@@ -56,7 +53,7 @@ public class FindUpdatesThread extends Thread {
 
         try {
             FindActivity.instance.runOnUiThread(()->FindActivity.instance.toggleSearchButtons(true));
-            FindResultsAdapter.createAdapter(bpc);
+            FindResultsAdapter.reset();
             doFind();
             MainActivity.showToast("Search completed");
         }

@@ -4,6 +4,7 @@ import android.support.annotation.Nullable;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.List;
 
 import it.pgp.xfiles.io.FlushingBufferedOutputStream;
 import it.pgp.xfiles.roothelperclient.ControlCodes;
@@ -11,7 +12,7 @@ import it.pgp.xfiles.utils.Misc;
 
 public class find_rq extends BaseRHRequest {
 
-    public byte [] basepath; // where to search into
+    public List<byte[]> basepaths; // where to search into
     @Nullable private byte[] contentPattern;
     @Nullable private byte[] filenamePattern;
     private SearchBits searchBits;
@@ -92,13 +93,13 @@ public class find_rq extends BaseRHRequest {
     }
 
     public find_rq(
-            byte[] basepath,
+            List<byte[]> basepaths,
             @Nullable byte[] filenamePattern,
             @Nullable byte[] contentPattern,
             FlagBits flagBits,
             SearchBits searchBits) {
         super(ControlCodes.ACTION_FIND);
-        this.basepath = basepath;
+        this.basepaths = basepaths;
         this.filenamePattern = filenamePattern==null?new byte[0]:filenamePattern;
         this.contentPattern = contentPattern==null?new byte[0]:contentPattern;
         this.searchBits = searchBits;
@@ -126,8 +127,11 @@ public class find_rq extends BaseRHRequest {
 
             nbf.write(searchBits.getSearchBits());
 
-            nbf.write(Misc.castUnsignedNumberToBytes(basepath.length,2));
-            nbf.write(basepath);
+            for(byte[] basepath : basepaths) {
+                nbf.write(Misc.castUnsignedNumberToBytes(basepath.length,2));
+                nbf.write(basepath);
+            }
+            nbf.write(new byte[2]); // eol
 
             nbf.write(Misc.castUnsignedNumberToBytes(filenamePattern.length,2));
             if (filenamePattern.length!=0) nbf.write(filenamePattern);

@@ -100,7 +100,7 @@ public class FindActivity extends EffectActivity implements FileSelectFragment.C
 
     void startSearchTaskLocal() {
         findRq = new find_rq(
-                basePathTextView.getText().toString().getBytes(),
+                Collections.singletonList(basePathTextView.getText().toString().getBytes()),
                 namePattern.getText().toString().getBytes(),
                 contentPattern.getText().toString().getBytes(),
                 new find_rq.FlagBits(searchOnlyCurrentFolder.isChecked()), // only search in subfolders supported currently
