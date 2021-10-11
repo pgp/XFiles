@@ -12,7 +12,6 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.Collections;
@@ -23,6 +22,7 @@ import it.pgp.xfiles.enums.FileMode;
 import it.pgp.xfiles.roothelperclient.FindInArchiveThread;
 import it.pgp.xfiles.roothelperclient.FindManager;
 import it.pgp.xfiles.roothelperclient.reqs.find_rq;
+import it.pgp.xfiles.utils.ArrayTextView;
 import it.pgp.xfiles.utils.FileSelectFragment;
 import it.pgp.xfiles.utils.Misc;
 import it.pgp.xfiles.utils.pathcontent.ArchivePathContent;
@@ -42,7 +42,7 @@ public class FindActivity extends EffectActivity implements FileSelectFragment.C
     Button startSearch,stopSearch,clearResults;
 
     BasePathContent basePath;
-    TextView basePathTextView;
+    ArrayTextView basePathTextView;
     ImageView pathTypeImageView;
 
     Button findPathChooseButton;
@@ -100,7 +100,7 @@ public class FindActivity extends EffectActivity implements FileSelectFragment.C
 
     void startSearchTaskLocal() {
         findRq = new find_rq(
-                Collections.singletonList(basePathTextView.getText().toString().getBytes()),
+                Collections.singletonList(basePathTextView.texts.get(0).getBytes()),
                 namePattern.getText().toString().getBytes(),
                 contentPattern.getText().toString().getBytes(),
                 new find_rq.FlagBits(searchOnlyCurrentFolder.isChecked()), // only search in subfolders supported currently
@@ -202,17 +202,17 @@ public class FindActivity extends EffectActivity implements FileSelectFragment.C
         switch(bpc.providerType) {
             case LOCAL:
                 basePath = bpc;
-                basePathTextView.setText(bpc.dir);
+                basePathTextView.addText(bpc.dir);
                 pathTypeImageView.setImageResource(R.drawable.xf_dir_blu);
                 break;
             case LOCAL_WITHIN_ARCHIVE:
                 basePath = bpc;
-                basePathTextView.setText(((ArchivePathContent)bpc).archivePath);
+                basePathTextView.addText(((ArchivePathContent)bpc).archivePath);
                 pathTypeImageView.setImageResource(R.drawable.xfiles_archive);
                 break;
             default:
                 basePath = new LocalPathContent(Misc.internalStorageDir.getPath());
-                basePathTextView.setText(basePath.dir);
+                basePathTextView.addText(basePath.dir);
                 pathTypeImageView.setImageResource(R.drawable.xf_dir_blu);
                 break;
         }
@@ -230,7 +230,8 @@ public class FindActivity extends EffectActivity implements FileSelectFragment.C
 
     @Override
     public void onConfirmSelect(String absolutePath, String fileName) {
-        basePathTextView.setText(absolutePath);
+        basePathTextView.clear();
+        basePathTextView.addText(absolutePath);
         pathTypeImageView.setImageResource(R.drawable.xf_dir_blu);
     }
 
@@ -250,7 +251,7 @@ public class FindActivity extends EffectActivity implements FileSelectFragment.C
                 R.drawable.xfiles_new_app_icon,
                 R.drawable.xf_dir_blu,
                 R.drawable.xfiles_file_icon,
-                basePathTextView.getText().toString());
+                basePathTextView.texts.get(0));
 
         fsf.show(getFragmentManager(), fragTag);
     }
