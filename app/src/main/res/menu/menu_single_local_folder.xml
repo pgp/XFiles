@@ -5,6 +5,10 @@
         android:icon="@drawable/xfiles_paste"
         android:title="Paste into folder" />
 
+    <item android:id="@+id/itemFind"
+        android:icon="@drawable/xfiles_find"
+        android:title="Find in folder" />
+
     <item android:id="@+id/itemShareOverHTTP"
         android:icon="@drawable/xf_share"
         android:title="Share over HTTP" />

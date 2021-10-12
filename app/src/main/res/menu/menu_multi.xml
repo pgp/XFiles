@@ -29,6 +29,10 @@
         android:icon="@android:drawable/ic_menu_edit"
         android:title="Bulk Rename" />
 
+    <item android:id="@+id/itemsFind"
+        android:icon="@drawable/xfiles_find"
+        android:title="Find in items" />
+
     <item android:id="@+id/itemsChecksum"
         android:icon="@drawable/xfiles_root_off"
         android:title="Checksum" />

@@ -122,6 +122,7 @@ import it.pgp.xfiles.smbclient.SmbVaultActivity;
 import it.pgp.xfiles.utils.ContentProviderUtils;
 import it.pgp.xfiles.utils.DirCommander;
 import it.pgp.xfiles.utils.FileOperationHelper;
+import it.pgp.xfiles.utils.Misc;
 import it.pgp.xfiles.utils.SelectImageButtonListener;
 import it.pgp.xfiles.utils.XFilesUtils;
 import it.pgp.xfiles.utils.dircontent.GenericDirWithContent;
@@ -704,8 +705,7 @@ public class MainActivity extends EffectActivity {
         quickFindButton.setOnClickListener(v -> browserPagerAdapter.switchQuickFindMode(browserPager.getCurrentItem()));
 
         quickFindButton.setOnLongClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this,FindActivity.class);
-            startActivity(intent);
+            findInFolders(getCurrentDirCommander().getCurrentDirectoryPathname(), true);
             return true;
         });
 
@@ -996,6 +996,40 @@ public class MainActivity extends EffectActivity {
         sharingIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         sharingIntent.putExtra("unattended",unattended);
         startActivity(unattended?sharingIntent:Intent.createChooser(sharingIntent, "Share files using"));
+    }
+
+    // with singleSelection = true, basePath is the only folder in which to perform search
+    // otherwise, basePath is the parent dir, and we have to retrieve current selection (and concat the folder names to basePath)
+    public void findInFolders(BasePathContent basePath, boolean singleSelection) {
+        ArrayList<BasePathContent> localFolders = new ArrayList<>();
+        if(singleSelection) {
+            switch(basePath.providerType) {
+                case LOCAL:
+                case LOCAL_WITHIN_ARCHIVE:
+                    localFolders.add(basePath);
+                    break;
+                default:
+                    localFolders.add(new LocalPathContent(Misc.internalStorageDir.getPath()));
+                    break;
+            }
+        }
+        else {
+            List<BrowserItem> selection = getCurrentBrowserAdapter().getSelectedItems();
+            if(selection.size() == 0) {
+                Toast.makeText(this, "No selected folders to search in", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            for(BrowserItem item: selection) {
+                if(!(item.isDirectory)) {
+                    Toast.makeText(this, "Selection to search in contains files", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                localFolders.add(basePath.concat(item.filename));
+            }
+        }
+        Intent intent = new Intent(MainActivity.this, FindActivity.class);
+        intent.putExtra("paths", localFolders);
+        startActivity(intent);
     }
 
     public void paste(BasePathContent bpc) {
@@ -1410,6 +1444,9 @@ public class MainActivity extends EffectActivity {
                 case R.id.itemsRename:
                     renameSelection();
                     return true;
+                case R.id.itemsFind:
+                    findInFolders(path, false);
+                    return true;
                 case R.id.itemsShare:
                     shareItems(false);
                     return true;
@@ -1455,6 +1492,10 @@ public class MainActivity extends EffectActivity {
                 case R.id.itemPasteIntoFolder:
                     b = getCurrentBrowserAdapter().getItem(position1);
                     paste(path.concat(b.filename));
+                    return true;
+                case R.id.itemFind:
+                    b = getCurrentBrowserAdapter().getItem(position1);
+                    findInFolders(path.concat(b.filename), true);
                     return true;
                 case R.id.itemCreateLink:
                     b = getCurrentBrowserAdapter().getItem(position1);

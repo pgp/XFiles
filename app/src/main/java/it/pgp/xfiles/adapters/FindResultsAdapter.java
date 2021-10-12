@@ -3,6 +3,7 @@ package it.pgp.xfiles.adapters;
 import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import it.pgp.xfiles.FindActivity;
 import it.pgp.xfiles.MainActivity;
@@ -20,7 +21,7 @@ public class FindResultsAdapter extends BrowserListAdapter { // uses FindBrowser
 
     public static FindResultsAdapter instance;
 
-    public BasePathContent basePath; // base path from which search was started
+    public List<BasePathContent> basePaths; // base path from which search was started
 
     private FindResultsAdapter(@NonNull MainActivity mainActivity) {
 //        super(context,android.R.layout.simple_list_item_1);
@@ -33,8 +34,10 @@ public class FindResultsAdapter extends BrowserListAdapter { // uses FindBrowser
         }
     }
 
-    public static synchronized void reset() {
+    public static synchronized void reset(List<BasePathContent> basePaths) {
         createIfNotExisting();
+        if(basePaths != null)
+            instance.basePaths = basePaths;
         FindActivity.instance.runOnUiThread(()->FindResultsAdapter.instance.clear());
     }
 }

@@ -53,7 +53,7 @@ public class FindUpdatesThread extends Thread {
 
         try {
             FindActivity.instance.runOnUiThread(()->FindActivity.instance.toggleSearchButtons(true));
-            FindResultsAdapter.reset();
+            FindResultsAdapter.reset(null);
             doFind();
             MainActivity.showToast("Search completed");
         }

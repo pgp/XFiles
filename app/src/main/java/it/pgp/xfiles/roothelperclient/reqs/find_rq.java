@@ -12,7 +12,7 @@ import it.pgp.xfiles.utils.Misc;
 
 public class find_rq extends BaseRHRequest {
 
-    public List<byte[]> basepaths; // where to search into
+    public List<String> basepaths; // where to search into
     @Nullable private byte[] contentPattern;
     @Nullable private byte[] filenamePattern;
     private SearchBits searchBits;
@@ -93,7 +93,7 @@ public class find_rq extends BaseRHRequest {
     }
 
     public find_rq(
-            List<byte[]> basepaths,
+            List<String> basepaths,
             @Nullable byte[] filenamePattern,
             @Nullable byte[] contentPattern,
             FlagBits flagBits,
@@ -127,9 +127,10 @@ public class find_rq extends BaseRHRequest {
 
             nbf.write(searchBits.getSearchBits());
 
-            for(byte[] basepath : basepaths) {
-                nbf.write(Misc.castUnsignedNumberToBytes(basepath.length,2));
-                nbf.write(basepath);
+            for(String basepath : basepaths) {
+                byte[] bp = basepath.getBytes();
+                nbf.write(Misc.castUnsignedNumberToBytes(bp.length,2));
+                nbf.write(bp);
             }
             nbf.write(new byte[2]); // eol
 
