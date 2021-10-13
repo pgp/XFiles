@@ -222,8 +222,7 @@ public class FindActivity extends EffectActivity implements FileSelectFragment.C
 
     @Override
     public void onConfirmSelect(String absolutePath, String fileName) {
-        basePathTextView.clear();
-        basePathTextView.getTexts().add(new LocalPathContent(absolutePath));
+        basePathTextView.setText(new LocalPathContent(absolutePath));
         pathTypeImageView.setImageResource(R.drawable.xf_dir_blu);
     }
 
@@ -234,6 +233,8 @@ public class FindActivity extends EffectActivity implements FileSelectFragment.C
     public void openDestinationFolderSelector(View unused) {
         String fragTag = getResources().getString(R.string.tag_fragment_FileSelect);
 
+        BasePathContent bpc = basePathTextView.getTexts().get(0);
+
         // Set up a selector for directory selection.
         FileSelectFragment fsf = FileSelectFragment.newInstance(
                 FileSelectFragment.Mode.DirectorySelector,
@@ -243,7 +244,7 @@ public class FindActivity extends EffectActivity implements FileSelectFragment.C
                 R.drawable.xfiles_new_app_icon,
                 R.drawable.xf_dir_blu,
                 R.drawable.xfiles_file_icon,
-                basePathTextView.getTexts().get(0).dir);
+                bpc instanceof ArchivePathContent ? bpc.getParent().dir : bpc.dir);
 
         fsf.show(getFragmentManager(), fragTag);
     }

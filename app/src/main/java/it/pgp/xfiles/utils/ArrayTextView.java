@@ -7,13 +7,12 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-import it.pgp.xfiles.utils.pathcontent.ArchivePathContent;
 import it.pgp.xfiles.utils.pathcontent.BasePathContent;
 import it.pgp.xfiles.utils.pathcontent.LocalPathContent;
 
 public class ArrayTextView extends TextView {
 
-    List<BasePathContent> texts = new ArrayList<>();
+    final List<BasePathContent> texts = new ArrayList<>();
 
     public ArrayTextView(Context context) {
         super(context);
@@ -27,23 +26,22 @@ public class ArrayTextView extends TextView {
         super(context, attrs, defStyle);
     }
 
-    public void clear() {
-        texts.clear();
-        super.setText("");
-    }
-
     public List<BasePathContent> getTexts() {
         return texts;
     }
 
-    public void setTexts(List<BasePathContent> texts) {
-        this.texts = texts;
+    public void setTexts(List<BasePathContent> bpcs) {
+        texts.clear();
+        texts.addAll(bpcs);
         StringBuilder sb = new StringBuilder();
-        for(BasePathContent bpc : texts) sb.append(bpc instanceof ArchivePathContent ?
-                ((ArchivePathContent) bpc).archivePath :
-                bpc.dir
-                ).append("\n");
+        for(BasePathContent bpc : bpcs) sb.append(bpc.toString()).append("\n");
         super.setText(sb.toString());
+    }
+
+    public void setText(BasePathContent bpc) {
+        texts.clear();
+        texts.add(bpc);
+        super.setText(bpc.toString());
     }
 
     public List<String> getMultipleLocalPathsAsStrings() {
