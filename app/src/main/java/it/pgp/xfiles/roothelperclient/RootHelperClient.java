@@ -572,7 +572,7 @@ public class RootHelperClient implements FileOperationHelper {
             if (fileSize < 0) throw new IOException("Unable to fstat "+filename);
             total += fileSize;
         }
-        rs.o.write(new byte[]{0,0}); // EOL indication
+        rs.o.write(Misc.EOL);
 
         Misc.sendStringWithLen(rs.o, destArchive.dir); // destArchive
 

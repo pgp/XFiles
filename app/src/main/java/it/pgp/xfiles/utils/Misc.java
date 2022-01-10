@@ -37,6 +37,7 @@ import it.pgp.xfiles.roothelperclient.ResponseCodes;
 public class Misc {
     public static final char[] hexArray = "0123456789ABCDEF".toCharArray();
     public static File internalStorageDir = Environment.getExternalStorageDirectory();
+    public static final byte[] EOL = new byte[2]; // end-of-list indication in RH protocol
 
     public static String toHexString(byte[] bytes) {
         char[] hexChars = new char[bytes.length * 2];

@@ -227,7 +227,7 @@ public class RemoteClientManager {
                     while(tmp!=EOF_ind);
                     totalSizeSoFar += currentFileSize;
                 }
-                client.o.write(new byte[2]); // EOL
+                client.o.write(Misc.EOL);
 
             }
             catch (Exception e) {

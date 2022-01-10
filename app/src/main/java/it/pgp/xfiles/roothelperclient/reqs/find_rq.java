@@ -132,7 +132,7 @@ public class find_rq extends BaseRHRequest {
                 nbf.write(Misc.castUnsignedNumberToBytes(bp.length,2));
                 nbf.write(bp);
             }
-            nbf.write(new byte[2]); // eol
+            nbf.write(Misc.EOL);
 
             nbf.write(Misc.castUnsignedNumberToBytes(filenamePattern.length,2));
             if (filenamePattern.length!=0) nbf.write(filenamePattern);

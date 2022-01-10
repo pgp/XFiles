@@ -49,7 +49,7 @@ public class multi_extract_rq extends BaseRHRequest {
                 nbf.write(Misc.castUnsignedNumberToBytes(b.length,2));
                 nbf.write(b);
             }
-            nbf.write(Misc.castUnsignedNumberToBytes(0,2)); // eol
+            nbf.write(Misc.EOL);
 
             b = fy.getBytes(UTF8);
             nbf.write(Misc.castUnsignedNumberToBytes(b.length,2));
