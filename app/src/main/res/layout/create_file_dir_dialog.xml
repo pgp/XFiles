@@ -68,10 +68,11 @@
             android:id="@+id/fileDirCreate_fileCreationStrategy"
             android:orientation="horizontal"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" >
+            android:layout_height="wrap_content"
+            android:checkedButton="@id/fileCreationStrategy_zeros" >
 
             <RadioButton
-                android:checked="true"
+                android:id="@+id/fileCreationStrategy_zeros"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="zeros" />
