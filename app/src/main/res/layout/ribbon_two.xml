@@ -17,12 +17,26 @@
         android:layout_width="match_parent"
         android:layout_height="0dp" />
 
-    <TextView
+    <LinearLayout
         android:background="@color/colorPrimary"
-        android:textColor="@color/green"
-        android:id="@+id/pbSpeed"
         android:layout_weight="1"
         android:layout_width="match_parent"
-        android:layout_height="0dp" />
+        android:layout_height="0dp">
+
+        <TextView
+            android:textColor="@color/green"
+            android:id="@+id/pbSpeed"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent" />
+
+        <TextView
+            android:textColor="@color/white"
+            android:id="@+id/pbDataAmount"
+            android:gravity="end"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent" />
+    </LinearLayout>
 
 </LinearLayout>

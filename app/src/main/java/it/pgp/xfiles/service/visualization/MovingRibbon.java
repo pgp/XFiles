@@ -20,6 +20,7 @@ public class MovingRibbon extends ProgressIndicator {
 
     public ProgressBar pb;
     public TextView pbSpeed;
+    public TextView pbDataAmount;
 
     public long lastProgressTime;
     public Pair<Long,Long> lastProgress;
@@ -31,6 +32,7 @@ public class MovingRibbon extends ProgressIndicator {
 
         pb = oView.findViewById(R.id.pbInner);
         pbSpeed = oView.findViewById(R.id.pbSpeed);
+        pbDataAmount = oView.findViewById(R.id.pbDataAmount);
         lastProgressTime = System.currentTimeMillis();
 
         pb.setMax(100);
@@ -63,7 +65,9 @@ public class MovingRibbon extends ProgressIndicator {
             ds = lastProgress.i - ds;
 
             double speedMbps = ds/(dt*1000.0);
+            // TODO can we have a single TextView, and a single String.format aligning speed at the start and data amount at line end?
             pbSpeed.setText(String.format("%.2f Mbps",speedMbps));
+            pbDataAmount.setText(String.format("%.2f Mb",lastProgress.i/1000000.0));
         }
     }
 }

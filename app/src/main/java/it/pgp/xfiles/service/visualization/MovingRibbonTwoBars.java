@@ -21,9 +21,12 @@ public class MovingRibbonTwoBars extends ProgressIndicator {
     public ProgressBar pbOuter;
     public ProgressBar pbInner; // outer progress: current number of files, inner: current size
     public TextView pbSpeed;
+    public TextView pbDataAmount;
 
     public long lastProgressTime = 0;
     public Pair<Long,Long> lastOuterProgress;
+
+    public boolean recursive = false;
 
     public MovingRibbonTwoBars(Context context) {
         super(context);
@@ -34,6 +37,7 @@ public class MovingRibbonTwoBars extends ProgressIndicator {
         pbOuter = oView.findViewById(R.id.pbOuter);
         pbInner = oView.findViewById(R.id.pbInner);
         pbSpeed = oView.findViewById(R.id.pbSpeed);
+        pbDataAmount = oView.findViewById(R.id.pbDataAmount);
         lastProgressTime = System.currentTimeMillis();
 
         pbOuter.setMax(100);
@@ -81,8 +85,8 @@ public class MovingRibbonTwoBars extends ProgressIndicator {
 
             double speedMbps = ds/(dt*1000.0);
             pbSpeed.setText(String.format("%.2f Mbps",speedMbps));
+            // TODO show smooth progress also for recursive mode (read above)
+            pbDataAmount.setText(String.format("%.2f Mb",lastOuterProgress.i/1000000.0));
         }
     }
-
-    public boolean recursive = false;
 }
