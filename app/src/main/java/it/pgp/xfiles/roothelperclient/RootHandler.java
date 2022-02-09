@@ -61,7 +61,7 @@ public class RootHandler {
         return found;
     }
 
-    private static Process executeCommandSimple(String command, File workingDir, boolean runAsSuperUser, String... args) throws IOException {
+    public static Process executeCommandSimple(String command, File workingDir, boolean runAsSuperUser, String... args) throws IOException {
         String s = "";
         s += command;
         if (args != null) for (String arg : args) s += " " + arg;

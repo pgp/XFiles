@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import it.pgp.xfiles.MainActivity;
 import it.pgp.xfiles.R;
+import it.pgp.xfiles.roothelperclient.RootHandler;
 
 public class WifiButtonsLayout extends LinearLayout {
 
@@ -86,9 +87,28 @@ public class WifiButtonsLayout extends LinearLayout {
 
     private void switchWifi(View unused) {
         toggleButtons(false);
-        if(!wifiManager.setWifiEnabled(!wifiManager.isWifiEnabled())) {
-            toggleButtons(true);
-            MainActivity.showToast("Unable to switch WiFi state, is airplane mode active?");
+        boolean stateToSet = !wifiManager.isWifiEnabled();
+        if(!wifiManager.setWifiEnabled(stateToSet)) {
+            // if unprivileged API-based WiFi switching doesn't work (e.g. due to airplane mode being active),
+            // try using root if available
+            MainActivity.getRootHelperClient();
+            if(RootHandler.isRootAvailableAndGranted) {
+                String cmd = "svc wifi "+(stateToSet?"enable":"disable");
+                try {
+                    Process p = RootHandler.executeCommandSimple(cmd,null, true);
+                    p.waitFor();
+                    MainActivity.showToast("WiFi state switched using root");
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                    toggleButtons(true);
+                    MainActivity.showToast("Unable to switch WiFi state using root");
+                }
+            }
+            else {
+                toggleButtons(true);
+                MainActivity.showToast("Unable to switch WiFi state, is airplane mode active?");
+            }
         }
     }
 
