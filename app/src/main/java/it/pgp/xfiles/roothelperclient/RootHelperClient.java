@@ -244,10 +244,6 @@ public class RootHelperClient implements FileOperationHelper {
     /***************************************************************************
      ***************************************************************************/
 
-    public int receiveBaseResponse(DataInputStream i) throws IOException {
-        return Misc.receiveBaseResponse(i);
-    }
-
     // only with RESPONSE_OK
     public static List<BrowserItem> assembleContentFromLsResps(DataInputStream clientInStream) throws IOException {
         List<BrowserItem> dirContent = new ArrayList<>();
@@ -414,7 +410,7 @@ public class RootHelperClient implements FileOperationHelper {
                 listArchive_rq.write(rs.o);
 
                 // receive response
-                int errno = receiveBaseResponse(rs.i);
+                int errno = Misc.receiveBaseResponse(rs.i);
                 if (errno==0) archiveMap = fillArchiveVMap(rs.i);
                 else if (errno == 0x101010) return new GenericDirWithContent(FileOpsErrorCodes.NULL_OR_WRONG_PASSWORD);
                 else return new GenericDirWithContent(FileOpsErrorCodes.COMMANDER_CANNOT_ACCESS);
@@ -487,7 +483,7 @@ public class RootHelperClient implements FileOperationHelper {
         }
 
         // receive 1-byte final OK or error response
-        ret = receiveBaseResponse(rs.i);
+        ret = Misc.receiveBaseResponse(rs.i);
         if (ret != 0) {
             Log.e("setCompleted ","Received error code after complete: "+ret);
         }
@@ -532,7 +528,7 @@ public class RootHelperClient implements FileOperationHelper {
         }
 
         // receive 1-byte final OK or error response
-        ret = receiveBaseResponse(rs.i);
+        ret = Misc.receiveBaseResponse(rs.i);
         if (ret != 0) {
             Log.e("setCompleted ","Received error code after complete: "+ret);
         }
@@ -584,7 +580,7 @@ public class RootHelperClient implements FileOperationHelper {
             rs.o.write(password_);
 
         // OK response means archive init has been successful, and actual compression starts now, so start receiving progress
-        int ret = receiveBaseResponse(rs.i);
+        int ret = Misc.receiveBaseResponse(rs.i);
         if (ret != 0) {
             rs.close();
             Log.e("setCompleted ","Received error code before progress start: "+ret);
@@ -671,7 +667,7 @@ public class RootHelperClient implements FileOperationHelper {
         rq.write(rs.o);
 
         // OK response means archive init has been successful, and actual compression starts now, so start receiving progress
-        int ret = receiveBaseResponse(rs.i);
+        int ret = Misc.receiveBaseResponse(rs.i);
         if (ret != 0) {
             rs.close();
             Log.e("setCompleted ","Received error code: "+ret);
@@ -757,7 +753,7 @@ public class RootHelperClient implements FileOperationHelper {
             if (file.providerType!=ProviderType.LOCAL) return -1;
             setDates_rq rq = new setDates_rq(file.dir,accessDate,modificationDate);
             rq.write(rs.o);
-            return receiveBaseResponse(rs.i);
+            return Misc.receiveBaseResponse(rs.i);
         }
         catch (Exception e) {
             return -1;
@@ -770,7 +766,7 @@ public class RootHelperClient implements FileOperationHelper {
             if (file.providerType!=ProviderType.LOCAL) return -1;
             setPermission_rq rq = new setPermission_rq(file.dir,permMask);
             rq.write(rs.o);
-            return receiveBaseResponse(rs.i);
+            return Misc.receiveBaseResponse(rs.i);
         }
         catch (Exception e) {
             return -1;
@@ -783,7 +779,7 @@ public class RootHelperClient implements FileOperationHelper {
             if (file.providerType!=ProviderType.LOCAL) return -1;
             setOwnership_rq rq = new setOwnership_rq(file.dir,ownerId,groupId);
             rq.write(rs.o);
-            return receiveBaseResponse(rs.i);
+            return Misc.receiveBaseResponse(rs.i);
         }
         catch (Exception e) {
             return -1;
@@ -831,7 +827,7 @@ public class RootHelperClient implements FileOperationHelper {
         boolean multiExtract = nArchives > 1;
         for(int i=0;i<nArchives;i++) {
             FileOpsErrorCodes ret;
-            int errno = receiveBaseResponse(rs.i);
+            int errno = Misc.receiveBaseResponse(rs.i);
             if (errno == 0x101010) ret = FileOpsErrorCodes.NULL_OR_WRONG_PASSWORD; // null or wrong password for encrypted filenames archive
             else if (errno == 0x03) ret = FileOpsErrorCodes.CRC_FAILED; // probably, wrong password for plain filenames archive
             else if (errno == 0) { // start receiving progress here
@@ -859,7 +855,7 @@ public class RootHelperClient implements FileOperationHelper {
                 }
 
                 // receive 1-byte final OK or error response
-                errno = receiveBaseResponse(rs.i);
+                errno = Misc.receiveBaseResponse(rs.i);
                 if (errno == 0) ret = null;
                 else if (errno == 0x101010) ret = FileOpsErrorCodes.NULL_OR_WRONG_PASSWORD; // null or wrong password for encrypted filenames archive
                 else if (errno == 0x03) ret = FileOpsErrorCodes.CRC_FAILED; // probably, wrong password for plain filenames archive
@@ -883,7 +879,7 @@ public class RootHelperClient implements FileOperationHelper {
         StreamsPair rs = getStreams(path,true);
         req.write(rs.o);
         Log.d("roothelperclient","Create request sent");
-        errno = receiveBaseResponse(rs.i);
+        errno = Misc.receiveBaseResponse(rs.i);
         String errMsg;
         if(errno == 0) return;
         else if(errno == 17)
@@ -902,7 +898,7 @@ public class RootHelperClient implements FileOperationHelper {
         StreamsPair rs = getStreams(originPath,true);
         link_rq rq = new link_rq(originPath.dir,linkPath.dir,isHardLink);
         rq.write(rs.o);
-        int errno = receiveBaseResponse(rs.i);
+        int errno = Misc.receiveBaseResponse(rs.i);
         if (errno != 0) throw new IOException("link creation error, errno is "+errno);
     }
 
@@ -997,7 +993,7 @@ public class RootHelperClient implements FileOperationHelper {
         rs.i.read(b); // EOFs
 
         boolean ret = false;
-        if (receiveBaseResponse(rs.i) == 0) ret = true;
+        if (Misc.receiveBaseResponse(rs.i) == 0) ret = true;
 
         rs.close();
         return ret;
@@ -1012,7 +1008,7 @@ public class RootHelperClient implements FileOperationHelper {
                 singleStats_rq rq = new singleStats_rq(pathname.dir,FileMode.FILE);
                 rq.write(rs.o);
 
-                if (receiveBaseResponse(rs.i) != 0) return null;
+                if (Misc.receiveBaseResponse(rs.i) != 0) return null;
 
                 // receive and return response
                 singleStats_resp resp = new singleStats_resp(rs.i);
@@ -1041,7 +1037,7 @@ public class RootHelperClient implements FileOperationHelper {
                 rq = new singleStats_rq(pathname.dir,FileMode.FILE);
                 rq.write(rm.o);
 
-                if (receiveBaseResponse(rm.i) != 0) return null;
+                if (Misc.receiveBaseResponse(rm.i) != 0) return null;
 
                 // receive and return response
                 resp = new singleStats_resp(rm.i);
@@ -1063,7 +1059,7 @@ public class RootHelperClient implements FileOperationHelper {
                 multiStats_rq rq = new multiStats_rq(tmp);
                 rq.write(rs.o);
 
-                int errno = receiveBaseResponse(rs.i);
+                int errno = Misc.receiveBaseResponse(rs.i);
                 if (errno != 0) {
                     Log.e("roothelperclient", "statFiles: Some files could not be stat, error code: " + errno);
                 }
@@ -1115,7 +1111,7 @@ public class RootHelperClient implements FileOperationHelper {
                 rq = new multiStats_rq(tmp);
                 rq.write(rm.o);
 
-                errno = receiveBaseResponse(rm.i);
+                errno = Misc.receiveBaseResponse(rm.i);
                 if (errno != 0) {
                     Log.e("roothelperclient", "Some files could not be stat, error code: " + errno);
                 }
@@ -1136,7 +1132,7 @@ public class RootHelperClient implements FileOperationHelper {
                 singleStats_rq rq = new singleStats_rq(pathname.dir, FileMode.DIRECTORY);
                 rq.write(rs.o);
 
-                int errno = receiveBaseResponse(rs.i);
+                int errno = Misc.receiveBaseResponse(rs.i);
                 if (errno != 0)
                     Log.e("roothelperclient", "Some files could not be stat, error code: " + errno);
 
@@ -1183,7 +1179,7 @@ public class RootHelperClient implements FileOperationHelper {
                 rq = new singleStats_rq(pathname.dir, FileMode.DIRECTORY);
                 rq.write(rm.o);
 
-                errno = receiveBaseResponse(rm.i);
+                errno = Misc.receiveBaseResponse(rm.i);
                 if (errno != 0)
                     Log.e("roothelperclient", "Some files could not be stat, error code: " + errno);
 
@@ -1297,7 +1293,7 @@ public class RootHelperClient implements FileOperationHelper {
             );
             rq.write(rs.o);
 
-            int resp = receiveBaseResponse(rs.i);
+            int resp = Misc.receiveBaseResponse(rs.i);
             if (resp == 0) {
                 byte[] digest = new byte[hashAlgorithm.getLength()];
                 rs.i.readFully(digest);
@@ -1346,7 +1342,7 @@ public class RootHelperClient implements FileOperationHelper {
             rs.o.write(ControlCodes.ACTION_KILL.getValue());
             rs.o.write(Misc.castUnsignedNumberToBytes(pid,4)); // PID
             rs.o.write(Misc.castUnsignedNumberToBytes(2,4)); // SIGNUM (SIGINT = 2)
-            return receiveBaseResponse(rs.i);
+            return Misc.receiveBaseResponse(rs.i);
         }
         catch (IOException e) {
             e.printStackTrace();
@@ -1496,7 +1492,7 @@ public class RootHelperClient implements FileOperationHelper {
         fileio_rq rq = new fileio_rq(destPath, FileIOMode.WRITETOFILE);
         rq.write(rs.o);
 
-        int ret = receiveBaseResponse(rs.i);
+        int ret = Misc.receiveBaseResponse(rs.i);
         if (ret != 0) throw new IOException("File creation error");
 
         byte[] data = new byte[4096];
@@ -1530,7 +1526,7 @@ public class RootHelperClient implements FileOperationHelper {
             }
 
             rq.write(rs.o);
-            if(receiveBaseResponse(rs.i) != 0) return null;
+            if(Misc.receiveBaseResponse(rs.i) != 0) return null;
             return new ssh_keygen_resp(rs.i);
         }
         catch (IOException e) {
@@ -1558,7 +1554,7 @@ public class RootHelperClient implements FileOperationHelper {
             fileio_rq rq = new fileio_rq(srcPath, FileIOMode.READFROMFILE);
             rq.write(rs.o);
 
-            int ret = receiveBaseResponse(rs.i);
+            int ret = Misc.receiveBaseResponse(rs.i);
             if (ret != 0) {
                 rs.close();
                 throw new IOException("File read error");
@@ -1592,7 +1588,7 @@ public class RootHelperClient implements FileOperationHelper {
             fileio_rq rq = new fileio_rq(destPath, FileIOMode.WRITETOFILE);
             rq.write(rs.o);
 
-            int ret = receiveBaseResponse(rs.i);
+            int ret = Misc.receiveBaseResponse(rs.i);
             if (ret != 0) {
                 rs.close();
                 throw new IOException("File creation error");
