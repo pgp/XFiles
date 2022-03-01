@@ -106,11 +106,13 @@ import it.pgp.xfiles.roothelperclient.RootHelperClient;
 import it.pgp.xfiles.service.BaseBackgroundService;
 import it.pgp.xfiles.service.CopyMoveService;
 import it.pgp.xfiles.service.ExtractService;
+import it.pgp.xfiles.service.HTTPx0atUploadService;
 import it.pgp.xfiles.service.NonInteractiveSftpService;
 import it.pgp.xfiles.service.NonInteractiveSmbService;
 import it.pgp.xfiles.service.NonInteractiveXFilesRemoteTransferService;
 import it.pgp.xfiles.service.TestService;
 import it.pgp.xfiles.service.params.CopyMoveParams;
+import it.pgp.xfiles.service.params.DownloadParams;
 import it.pgp.xfiles.service.params.ExtractParams;
 import it.pgp.xfiles.service.params.TestParams;
 import it.pgp.xfiles.service.visualization.ProgressIndicator;
@@ -1564,6 +1566,18 @@ public class MainActivity extends EffectActivity {
                     sharingIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                     sharingIntent.putExtra("unattended",unattended);
                     startActivity(unattended?sharingIntent:Intent.createChooser(sharingIntent, "Share file using"));
+                    return true;
+                case R.id.itemShareX0at:
+                    b = getCurrentBrowserAdapter().getItem(position1);
+                    if(b.isDirectory) {
+                        Toast.makeText(MainActivity.this, "Selected file is a directory", Toast.LENGTH_SHORT).show();
+                        return true;
+                    }
+                    String srcPath = (path.concat(b.filename)).dir;
+                    Intent relDownloadIntent = new Intent(MainActivity.this, HTTPx0atUploadService.class);
+                    relDownloadIntent.setAction(BaseBackgroundService.START_ACTION);
+                    relDownloadIntent.putExtra("params",new DownloadParams(null, srcPath, null));
+                    startService(relDownloadIntent);
                     return true;
                 case R.id.itemShowInGallery:
                     // TODO consider also the case when image viewer is invoked by third party app - use MainActivity.mainActivity

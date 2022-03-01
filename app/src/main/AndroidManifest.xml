@@ -277,6 +277,10 @@
             android:name=".service.HTTPDownloadService"
             android:enabled="true"
             android:exported="true" />
+        <service
+            android:name=".service.HTTPx0atUploadService"
+            android:enabled="true"
+            android:exported="true" />
 
         <receiver android:name=".XRE_RHSS_Widget">
             <intent-filter>

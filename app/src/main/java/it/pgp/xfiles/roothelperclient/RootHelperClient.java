@@ -1445,6 +1445,50 @@ public class RootHelperClient implements FileOperationHelper {
         return baos.toByteArray();
     }
 
+    // Using RH's internal HTTPS client
+    public String uploadx0atHttpsUrl(String srcPath) throws IOException {
+        try {
+            rs = getStreams();
+            try (FlushingBufferedOutputStream nbf = new FlushingBufferedOutputStream(rs.o)) { // send a single packet instead of multiple ones
+                nbf.write(ControlCodes.ACTION_CLOUD_SERVICES.getValue());
+                nbf.write(new byte[]{0x12, 0x00}); // x0.at selector string
+                Misc.sendStringWithLen(nbf,srcPath);
+            }
+
+            if(Misc.receiveBaseResponse(rs.i) != 0) throw new IOException("x0.at connection error");
+            byte[] tlsSessionHash = new byte[32];
+            rs.i.readFully(tlsSessionHash);
+            Log.d("RHHttpsClient","Client TLS session shared secret hash: "+Misc.toHexString(tlsSessionHash));
+
+            long size = Misc.receiveTotalOrProgress(rs.i);
+            Log.d("RHHttpsClient","Received upload size is: "+size);
+
+            for(;;) {
+                long progress = Misc.receiveTotalOrProgress(rs.i);
+                if (progress == EOF_ind) break;
+                task.publishProgressWrapper(new Pair<>(progress, size));
+            }
+            Log.d("RHHttpsClient","Upload completed");
+
+            /////////////////////////////////////////////////////////////////
+            // Receive dummy data over local socket (common protocol part)
+            byte dummy = rs.i.readByte();
+            if(dummy != 0x11) throw new RuntimeException("Expected 0x11");
+            Misc.receiveStringWithLen(rs.i); // unused string, but must be received
+            /////////////////////////////////////////////////////////////////
+
+            // response body (a.k.a. download link) size
+            size = Misc.receiveTotalOrProgress(rs.i);
+            if(size > 4096) throw new RuntimeException("Too large content size for generated link: "+size);
+            byte[] b = new byte[(int)size];
+            rs.i.readFully(b);
+            return new String(b, StandardCharsets.UTF_8);
+        }
+        finally {
+            rs.close();
+        }
+    }
+
     public void downloadUrl(InputStream input, String destPath, long fileLength) throws IOException {
         StreamsPair rs = getStreams();
 

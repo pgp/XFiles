@@ -42,6 +42,8 @@ public enum ControlCodes {
 
     ACTION_HTTPS_URL_DOWNLOAD((byte)0x18),
 
+    ACTION_CLOUD_SERVICES((byte)0x19),
+
 //    ACTION_CANCEL((byte)0x1E),
     ACTION_EXIT((byte)0x1F);
 
