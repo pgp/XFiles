@@ -251,7 +251,8 @@ public class UpdateCheckDialog extends Dialog {
         relDownloadIntent.putExtra("params",new DownloadParams(
                 latestVersionDownloadUrl,
                 Misc.internalStorageDir.getAbsolutePath(),
-                zipname));
+                zipname,
+                true));
         activity.startService(relDownloadIntent);
         dismiss();
     }

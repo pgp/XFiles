@@ -1583,7 +1583,7 @@ public class MainActivity extends EffectActivity {
                         String domain = w==Dialog.BUTTON_POSITIVE ? "x0.at" : "0x0.st";
                         Intent uploadIntent = new Intent(MainActivity.this, HTTPUploadService.class);
                         uploadIntent.setAction(BaseBackgroundService.START_ACTION);
-                        uploadIntent.putExtra("params",new DownloadParams(domain, srcPath, null));
+                        uploadIntent.putExtra("params",new DownloadParams(domain, srcPath, null, true));
                         startService(uploadIntent);
                     };
                     bld.setPositiveButton("Upload to x0.at", l);

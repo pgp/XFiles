@@ -10,6 +10,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
@@ -101,6 +102,7 @@ public class GenericChangeDirectoryDialog extends Dialog {
     EditText httpUrlToDownload;
     EditText httpDestPath; // if empty, take currently shown path in browser view
     EditText httpTargetFilename;
+    CheckBox httpForceHttps; // -> httpsOnly
 
     private final AtomicBoolean currentDirAutofillOverride = new AtomicBoolean(true);
 
@@ -201,7 +203,9 @@ public class GenericChangeDirectoryDialog extends Dialog {
                     new DownloadParams(
                             httpUrlToDownload.getText().toString(),
                             httpDestPath.getText().toString(),
-                            httpTargetFilename.getText().toString()));
+                            httpTargetFilename.getText().toString(),
+                            httpForceHttps.isChecked()
+                            ));
             mainActivity.startService(startIntent);
             dismiss();
         }
@@ -267,6 +271,8 @@ public class GenericChangeDirectoryDialog extends Dialog {
                 httpDestPath = findViewById(R.id.httpDestDirEditText);
                 httpTargetFilename = findViewById(R.id.httpTargetFilenameEditText);
                 httpUrlToDownload.setText("https://");
+                httpForceHttps = findViewById(R.id.httpForceHttpsCheckbox);
+                httpForceHttps.setChecked(true);
                 break;
             default:
                 throw new RuntimeException("Unknown subtype layout");

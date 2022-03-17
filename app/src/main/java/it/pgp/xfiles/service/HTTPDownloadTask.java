@@ -131,7 +131,7 @@ public class HTTPDownloadTask extends RootHelperClientTask {
             }
             targetFileNameOnly[0] = params.filename==null?"":params.filename;
             try {
-                rh.downloadHttpsUrl(params.url,443,params.destPath,targetFileNameOnly); // here pass String array, content will be replaced with guessed or same input filename
+                rh.downloadHttpsUrl(params.url,443,params.destPath,targetFileNameOnly, params.httpsOnly); // here pass String array, content will be replaced with guessed or same input filename
             }
             catch (IOException e) {
                 e.printStackTrace();

@@ -1351,11 +1351,13 @@ public class RootHelperClient implements FileOperationHelper {
     }
 
     // Using RH's internal HTTPS client
-    public void downloadHttpsUrl(String url, int port, String destPath, String[] targetFilename) throws IOException {
+    public void downloadHttpsUrl(String url, int port, String destPath, String[] targetFilename, boolean httpsOnly) throws IOException {
         try {
             rs = getStreams();
             try (FlushingBufferedOutputStream nbf = new FlushingBufferedOutputStream(rs.o)) { // send a single packet instead of multiple ones
-                nbf.write(ControlCodes.ACTION_HTTPS_URL_DOWNLOAD.getValue());
+                byte req = ControlCodes.ACTION_HTTPS_URL_DOWNLOAD.getValue();
+                req ^= ((httpsOnly ? 3 : 1) << 5); // flags: 011 vs 001 (most significant bit unused, httpsOnly variable, download to file true)
+                nbf.write(req);
                 Misc.sendStringWithLen(nbf,url);
                 nbf.write(Misc.castUnsignedNumberToBytes(port,2));
                 Misc.sendStringWithLen(nbf,destPath);
@@ -1401,7 +1403,7 @@ public class RootHelperClient implements FileOperationHelper {
         try(StreamsPair rs = getStreams()) {
             try (FlushingBufferedOutputStream nbf = new FlushingBufferedOutputStream(rs.o)) { // send a single packet instead of multiple ones
                 byte req = ControlCodes.ACTION_HTTPS_URL_DOWNLOAD.getValue();
-                req ^= (7 << 5); // flags: 111
+                req ^= (2 << 5); // flags: 010 -> most significant flag bit: unused; https only: true; download to file: false (i.e. download to memory)
                 nbf.write(req);
                 Misc.sendStringWithLen(nbf,url);
                 nbf.write(Misc.castUnsignedNumberToBytes(port,2));
