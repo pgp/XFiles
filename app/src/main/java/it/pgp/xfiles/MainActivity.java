@@ -3,8 +3,10 @@ package it.pgp.xfiles;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -106,7 +108,7 @@ import it.pgp.xfiles.roothelperclient.RootHelperClient;
 import it.pgp.xfiles.service.BaseBackgroundService;
 import it.pgp.xfiles.service.CopyMoveService;
 import it.pgp.xfiles.service.ExtractService;
-import it.pgp.xfiles.service.HTTPx0atUploadService;
+import it.pgp.xfiles.service.HTTPUploadService;
 import it.pgp.xfiles.service.NonInteractiveSftpService;
 import it.pgp.xfiles.service.NonInteractiveSmbService;
 import it.pgp.xfiles.service.NonInteractiveXFilesRemoteTransferService;
@@ -1574,10 +1576,20 @@ public class MainActivity extends EffectActivity {
                         return true;
                     }
                     String srcPath = (path.concat(b.filename)).dir;
-                    Intent relDownloadIntent = new Intent(MainActivity.this, HTTPx0atUploadService.class);
-                    relDownloadIntent.setAction(BaseBackgroundService.START_ACTION);
-                    relDownloadIntent.putExtra("params",new DownloadParams(null, srcPath, null));
-                    startService(relDownloadIntent);
+                    // build alert dialog, three options: x0.at, 0x0.st, dismiss
+                    AlertDialog.Builder bld = new AlertDialog.Builder(MainActivity.this);
+                    bld.setMessage("You are about to upload this file:\n"+b.filename+"\nto a public internet service");
+                    DialogInterface.OnClickListener l = (d,w) -> {
+                        String domain = w==Dialog.BUTTON_POSITIVE ? "x0.at" : "0x0.st";
+                        Intent uploadIntent = new Intent(MainActivity.this, HTTPUploadService.class);
+                        uploadIntent.setAction(BaseBackgroundService.START_ACTION);
+                        uploadIntent.putExtra("params",new DownloadParams(domain, srcPath, null));
+                        startService(uploadIntent);
+                    };
+                    bld.setPositiveButton("Upload to x0.at", l);
+                    bld.setNegativeButton("Upload to 0x0.st", l);
+                    bld.setNeutralButton("Cancel", null);
+                    bld.create().show();
                     return true;
                 case R.id.itemShowInGallery:
                     // TODO consider also the case when image viewer is invoked by third party app - use MainActivity.mainActivity

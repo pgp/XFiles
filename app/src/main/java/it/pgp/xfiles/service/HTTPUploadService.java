@@ -3,9 +3,9 @@ package it.pgp.xfiles.service;
 import it.pgp.xfiles.R;
 import it.pgp.xfiles.enums.ForegroundServiceType;
 
-public class HTTPx0atUploadService extends BaseBackgroundService {
+public class HTTPUploadService extends BaseBackgroundService {
 
-    private static final int FOREGROUND_SERVICE_NOTIFICATION_ID = 0xF01;
+    private static final int FOREGROUND_SERVICE_NOTIFICATION_ID = 0xF02;
 
     @Override
     public int getServiceIconRes() {
@@ -32,6 +32,6 @@ public class HTTPx0atUploadService extends BaseBackgroundService {
 
     @Override
     protected BaseBackgroundTask getTask() {
-        return new HTTPx0atUploadTask(params);
+        return new HTTPUploadTask(params);
     }
 }

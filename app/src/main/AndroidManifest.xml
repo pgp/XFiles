@@ -278,7 +278,7 @@
             android:enabled="true"
             android:exported="true" />
         <service
-            android:name=".service.HTTPx0atUploadService"
+            android:name=".service.HTTPUploadService"
             android:enabled="true"
             android:exported="true" />
 

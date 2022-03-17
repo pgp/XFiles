@@ -14,14 +14,14 @@ import it.pgp.xfiles.service.visualization.MovingRibbon;
 import it.pgp.xfiles.service.visualization.ViewType;
 import it.pgp.xfiles.utils.Pair;
 
-public class HTTPx0atUploadTask extends RootHelperClientTask {
+public class HTTPUploadTask extends RootHelperClientTask {
 
     DownloadParams params; // actually upload params, only destPath used as full path (destPath is actually a source path)
     String generatedLink;
     Exception lastException;
     public static final String prefix = "Upload ";
 
-    HTTPx0atUploadTask(Serializable params) {
+    HTTPUploadTask(Serializable params) {
         super(params);
         this.params = (DownloadParams) params;
     }
@@ -44,7 +44,7 @@ public class HTTPx0atUploadTask extends RootHelperClientTask {
         rh.initProgressSupport(this);
 
         try {
-            generatedLink = rh.uploadx0atHttpsUrl(params.destPath).trim();
+            generatedLink = rh.uploadHttpsUrl(params.url,params.destPath).trim();
         }
         catch (IOException e) {
             e.printStackTrace();

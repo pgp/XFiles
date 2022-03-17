@@ -1442,12 +1442,13 @@ public class RootHelperClient implements FileOperationHelper {
     }
 
     // Using RH's internal HTTPS client
-    public String uploadx0atHttpsUrl(String srcPath) throws IOException {
+    public String uploadHttpsUrl(String domain, String srcPath) throws IOException {
         try {
             rs = getStreams();
             try (FlushingBufferedOutputStream nbf = new FlushingBufferedOutputStream(rs.o)) { // send a single packet instead of multiple ones
                 nbf.write(ControlCodes.ACTION_CLOUD_SERVICES.getValue());
-                nbf.write(new byte[]{0x12, 0x00}); // x0.at selector string
+                nbf.write(new byte[]{0x12, 0x00}); // HTTP upload selector string
+                Misc.sendStringWithLen(nbf,domain); // upload domain: x0.at or 0x0.st
                 Misc.sendStringWithLen(nbf,srcPath);
             }
 

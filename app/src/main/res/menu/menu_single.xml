@@ -51,7 +51,7 @@
 
     <item android:id="@+id/itemShareX0at"
         android:icon="@drawable/xf_share"
-        android:title="Upload to x0.at" />
+        android:title="HTTP upload" />
 
     <item android:id="@+id/itemShowInGallery"
         android:icon="@drawable/xfiles_image"
