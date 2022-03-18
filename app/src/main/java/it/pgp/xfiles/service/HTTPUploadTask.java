@@ -1,6 +1,10 @@
 package it.pgp.xfiles.service;
 
 import android.app.AlertDialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
+import android.content.Intent;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -60,9 +64,24 @@ public class HTTPUploadTask extends RootHelperClientTask {
         super.onPostExecute(o);
 
         if (result == null) {
+            String label = "Download link";
             Toast.makeText(service, prefix+"completed", Toast.LENGTH_SHORT).show();
             AlertDialog.Builder bld = new AlertDialog.Builder(MainActivity.mainActivity);
-            bld.setTitle("Download link:\n"+generatedLink);
+            bld.setTitle(label+":\n"+generatedLink);
+            bld.setNegativeButton("Copy to clipboard", (d,w) -> {
+                ClipboardManager clipboard = (ClipboardManager) service.getSystemService(Context.CLIPBOARD_SERVICE);
+                clipboard.setPrimaryClip(ClipData.newPlainText(label,generatedLink));
+                Toast.makeText(service, "Link copied to clipboard", Toast.LENGTH_SHORT).show();
+            });
+            bld.setPositiveButton("Share", (d,w) -> {
+                Intent intent = new Intent(Intent.ACTION_SEND);
+                intent.setType("text/plain");
+                intent.putExtra(Intent.EXTRA_SUBJECT, label);
+                intent.putExtra(Intent.EXTRA_TEXT, generatedLink);
+                Intent wi = Intent.createChooser(intent,"Share link using");
+                wi.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                service.startActivity(wi);
+            });
             bld.setNeutralButton(android.R.string.ok, null);
             AlertDialog alertDialog = bld.create();
             alertDialog.getWindow().setType(ViewType.OVERLAY_WINDOW_TYPE);

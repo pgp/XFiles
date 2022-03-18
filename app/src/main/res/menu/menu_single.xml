@@ -49,7 +49,7 @@
         android:icon="@drawable/xf_share"
         android:title="XRE Share (unattended)" />
 
-    <item android:id="@+id/itemShareX0at"
+    <item android:id="@+id/itemHttpUpload"
         android:icon="@drawable/xf_share"
         android:title="HTTP upload" />
 

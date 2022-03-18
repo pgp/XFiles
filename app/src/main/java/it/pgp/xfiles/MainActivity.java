@@ -1569,7 +1569,7 @@ public class MainActivity extends EffectActivity {
                     sharingIntent.putExtra("unattended",unattended);
                     startActivity(unattended?sharingIntent:Intent.createChooser(sharingIntent, "Share file using"));
                     return true;
-                case R.id.itemShareX0at:
+                case R.id.itemHttpUpload:
                     b = getCurrentBrowserAdapter().getItem(position1);
                     if(b.isDirectory) {
                         Toast.makeText(MainActivity.this, "Selected file is a directory", Toast.LENGTH_SHORT).show();
@@ -1586,9 +1586,10 @@ public class MainActivity extends EffectActivity {
                         uploadIntent.putExtra("params",new DownloadParams(domain, srcPath, null, true));
                         startService(uploadIntent);
                     };
-                    bld.setPositiveButton("Upload to x0.at", l);
-                    bld.setNegativeButton("Upload to 0x0.st", l);
-                    bld.setNeutralButton("Cancel", null);
+                    String up = "Upload to ";
+                    bld.setNegativeButton(up+"0x0.st", l);
+                    bld.setPositiveButton(up+"x0.at", l);
+                    bld.setNeutralButton(android.R.string.cancel, null);
                     bld.create().show();
                     return true;
                 case R.id.itemShowInGallery:
