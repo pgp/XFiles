@@ -1351,7 +1351,7 @@ public class RootHelperClient implements FileOperationHelper {
     }
 
     // Using RH's internal HTTPS client
-    public void downloadHttpsUrl(String url, int port, String destPath, String[] targetFilename, boolean httpsOnly) throws IOException {
+    public void downloadHttpsUrl(String url, String destPath, String[] targetFilename, boolean httpsOnly) throws IOException {
         try {
             rs = getStreams();
             try (FlushingBufferedOutputStream nbf = new FlushingBufferedOutputStream(rs.o)) { // send a single packet instead of multiple ones
@@ -1359,7 +1359,6 @@ public class RootHelperClient implements FileOperationHelper {
                 req ^= ((httpsOnly ? 3 : 1) << 5); // flags: 011 vs 001 (most significant bit unused, httpsOnly variable, download to file true)
                 nbf.write(req);
                 Misc.sendStringWithLen(nbf,url);
-                nbf.write(Misc.castUnsignedNumberToBytes(port,2));
                 Misc.sendStringWithLen(nbf,destPath);
                 Misc.sendStringWithLen(nbf,targetFilename[0]);
             }
@@ -1367,7 +1366,7 @@ public class RootHelperClient implements FileOperationHelper {
             for(;;) {
                 byte resp = rs.i.readByte();
                 if (resp != ResponseCodes.RESPONSE_OK.getValue()) {
-                    if (resp == ((byte)0x11)) { // RESPONSE_HTTPS_END_OF_REDIRECTS
+                    if (resp == ResponseCodes.RESPONSE_REDIRECT.getValue()) {
                         Log.d("RHHttpsClient","End of redirects");
                         break;
                     }
@@ -1398,7 +1397,7 @@ public class RootHelperClient implements FileOperationHelper {
         }
     }
 
-    public byte[] downloadHttpsUrlInMemory(String url, int port) throws IOException {
+    public byte[] downloadHttpsUrlInMemory(String url) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try(StreamsPair rs = getStreams()) {
             try (FlushingBufferedOutputStream nbf = new FlushingBufferedOutputStream(rs.o)) { // send a single packet instead of multiple ones
@@ -1406,7 +1405,6 @@ public class RootHelperClient implements FileOperationHelper {
                 req ^= (2 << 5); // flags: 010 -> most significant flag bit: unused; https only: true; download to file: false (i.e. download to memory)
                 nbf.write(req);
                 Misc.sendStringWithLen(nbf,url);
-                nbf.write(Misc.castUnsignedNumberToBytes(port,2));
                 Misc.sendStringWithLen(nbf,""); // empty dest path
                 Misc.sendStringWithLen(nbf,""); // empty dest filename
             }
@@ -1414,7 +1412,7 @@ public class RootHelperClient implements FileOperationHelper {
             for(;;) {
                 byte resp = rs.i.readByte();
                 if (resp != ResponseCodes.RESPONSE_OK.getValue()) {
-                    if (resp == ((byte)0x11)) { // RESPONSE_HTTPS_END_OF_REDIRECTS
+                    if (resp == ResponseCodes.RESPONSE_REDIRECT.getValue()) { // RESPONSE_HTTPS_END_OF_REDIRECTS
                         Log.d("RHHttpsClient","End of redirects");
                         break;
                     }
@@ -1485,32 +1483,6 @@ public class RootHelperClient implements FileOperationHelper {
         }
         finally {
             rs.close();
-        }
-    }
-
-    public void downloadUrl(InputStream input, String destPath, long fileLength) throws IOException {
-        StreamsPair rs = getStreams();
-
-        // open target filepath
-        fileio_rq rq = new fileio_rq(destPath, FileIOMode.WRITETOFILE);
-        rq.write(rs.o);
-
-        int ret = Misc.receiveBaseResponse(rs.i);
-        if (ret != 0) throw new IOException("File creation error");
-
-        byte[] data = new byte[4096];
-        long total = 0;
-        long latest = 0;
-        int count;
-        while ((count = input.read(data)) != -1) {
-            total += count;
-            if (fileLength > 0) {
-                if (total - latest > 100000) {
-                    latest = total;
-                    task.publishProgressWrapper(new Pair<>(total, fileLength));
-                }
-            }
-            rs.o.write(data,0,count);
         }
     }
 

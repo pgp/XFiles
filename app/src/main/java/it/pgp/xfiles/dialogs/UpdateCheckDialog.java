@@ -144,7 +144,7 @@ public class UpdateCheckDialog extends Dialog {
             String errMsg;
             Exception ee;
             try {
-                byte[] x = MainActivity.getRootHelperClient().downloadHttpsUrlInMemory("api.github.com/repos/pgp/XFiles/releases/latest",443);
+                byte[] x = MainActivity.getRootHelperClient().downloadHttpsUrlInMemory("api.github.com/repos/pgp/XFiles/releases/latest");
                 Log.d(UpdateCheckDialog.class.getName(),new String(x));
                 releases = Collections.singletonList(new ObjectMapper().readValue(x, Map.class));
                 compareReleases(activity);

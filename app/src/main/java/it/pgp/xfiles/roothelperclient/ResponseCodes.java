@@ -8,7 +8,7 @@ public enum ResponseCodes {
     // responses (full byte)
     RESPONSE_OK((byte)0x00),
     RESPONSE_ERROR((byte)0xFF),
-    RESPONSE_REDIRECT((byte)0x11);
+    RESPONSE_REDIRECT((byte)0x11); // actually, end of redirects
 
     final byte value;
     static final Map<Byte, ResponseCodes> codeMap = new HashMap<Byte, ResponseCodes>(){{
