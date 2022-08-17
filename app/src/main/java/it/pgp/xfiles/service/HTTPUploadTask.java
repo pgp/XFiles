@@ -5,6 +5,9 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Typeface;
+import android.util.TypedValue;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -67,7 +70,11 @@ public class HTTPUploadTask extends RootHelperClientTask {
             String label = "Download link";
             Toast.makeText(service, prefix+"completed", Toast.LENGTH_SHORT).show();
             AlertDialog.Builder bld = new AlertDialog.Builder(MainActivity.mainActivity);
-            bld.setTitle(label+":\n"+generatedLink);
+            TextView title = new TextView(MainActivity.mainActivity);
+            title.setText(label+":\n"+generatedLink);
+            title.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
+            title.setTypeface(Typeface.MONOSPACE);
+            bld.setCustomTitle(title);
             bld.setNegativeButton("Copy to clipboard", (d,w) -> {
                 ClipboardManager clipboard = (ClipboardManager) service.getSystemService(Context.CLIPBOARD_SERVICE);
                 clipboard.setPrimaryClip(ClipData.newPlainText(label,generatedLink));
@@ -84,6 +91,9 @@ public class HTTPUploadTask extends RootHelperClientTask {
             });
             bld.setNeutralButton(android.R.string.ok, null);
             AlertDialog alertDialog = bld.create();
+            // prevent dismiss on unintentional touches once the download link has been generated
+            alertDialog.setCancelable(false);
+            alertDialog.setCanceledOnTouchOutside(false);
             alertDialog.getWindow().setType(ViewType.OVERLAY_WINDOW_TYPE);
             alertDialog.show();
         }
