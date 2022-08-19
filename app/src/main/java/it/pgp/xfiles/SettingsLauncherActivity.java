@@ -2,6 +2,7 @@ package it.pgp.xfiles;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -28,7 +29,7 @@ public class SettingsLauncherActivity extends Activity {
         if (requestCode == overlay_rq_code) {
             if (Settings.canDrawOverlays(this)) {
                 // ok, ask for next signature permission
-                startActivityForResult(new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS),write_settings_rq_code);
+                startActivityForResult(new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS, Uri.parse("package:" + getPackageName())),write_settings_rq_code);
             }
             else {
                 Toast.makeText(this, "Alert permissions must be granted, exiting...", Toast.LENGTH_SHORT).show();

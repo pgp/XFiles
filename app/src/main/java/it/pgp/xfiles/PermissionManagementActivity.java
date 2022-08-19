@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -127,20 +128,20 @@ public class PermissionManagementActivity extends Activity {
     @RequiresApi(api = Build.VERSION_CODES.M)
     public void openSystemSettingsPermissionsManagement(View unused) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
-            startActivityForResult(new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS),PermReqCodes.SYSTEM_SETTINGS.ordinal());
+            startActivityForResult(new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS, Uri.parse("package:" + getPackageName())), PermReqCodes.SYSTEM_SETTINGS.ordinal());
         else
             Toast.makeText(this, "Hotspot toggle feature is not available on Android >= Oreo, so this permission is not needed", Toast.LENGTH_LONG).show();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     public void openOverlayPermissionsManagement(View unused) {
-        startActivityForResult(new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION),PermReqCodes.OVERLAYS.ordinal());
+        startActivityForResult(new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getPackageName())), PermReqCodes.OVERLAYS.ordinal());
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void openInstallUnknownAppsPermissionsManagement(View unused) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-            startActivityForResult(new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES),PermReqCodes.INSTALL_UNKNOWN_APPS.ordinal());
+            startActivityForResult(new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES, Uri.parse("package:" + getPackageName())), PermReqCodes.INSTALL_UNKNOWN_APPS.ordinal());
         else
             Toast.makeText(this, "Request not needed on Android < Oreo", Toast.LENGTH_LONG).show();
     }
