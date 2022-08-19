@@ -94,7 +94,6 @@ public class HTTPUploadTask extends RootHelperClientTask {
             // prevent dismiss on unintentional touches once the download link has been generated
             alertDialog.setCancelable(false);
             alertDialog.setCanceledOnTouchOutside(false);
-            alertDialog.getWindow().setType(ViewType.OVERLAY_WINDOW_TYPE);
             alertDialog.show();
         }
         else {
