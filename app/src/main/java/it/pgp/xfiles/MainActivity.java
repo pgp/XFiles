@@ -17,6 +17,7 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.StrictMode;
@@ -664,14 +665,15 @@ public class MainActivity extends EffectActivity {
         refreshAppContext(getApplicationContext());
         mainActivity = this;
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            // ensure at least storage permissions are granted, it's useless to proceed otherwise
-            if (!checkDangerousPermissions()) {
-                Toast.makeText(this, "Storage permissions not granted, please enable them",
-                        Toast.LENGTH_SHORT).show();
-                startPermissionManagementActivity();
-                return;
-            }
+        // ensure at least storage permissions are granted, it's useless to proceed otherwise
+        if((Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && !Environment.isExternalStorageManager()) ||
+                (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
+                 Build.VERSION.SDK_INT < Build.VERSION_CODES.R &&
+                 !checkDangerousPermissions())) {
+            Toast.makeText(this, "Storage permissions not granted, please enable them",
+                    Toast.LENGTH_SHORT).show();
+            startPermissionManagementActivity();
+            return;
         }
 
         xFilesUtils = new XFilesUtils();
