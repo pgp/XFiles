@@ -24,7 +24,7 @@ public class NonInteractiveSftpService extends BaseBackgroundService {
     }
 
     @Override
-    public final ForegroundServiceType getForegroundServiceType() {
+    public final ForegroundServiceType getFgServiceType() {
         return ForegroundServiceType.SFTP_TRANSFER;
     }
 

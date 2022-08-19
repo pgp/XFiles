@@ -56,7 +56,7 @@ public abstract class BaseBackgroundTask extends AsyncTask<Object,Pair<Long,Long
         // progress interface lock to be done in subclasses
 //        return ProgressIndicator.busy.compareAndSet(false,true); // compareAndSet true -> ok
 
-        ForegroundServiceType f = service.getForegroundServiceType();
+        ForegroundServiceType f = service.getFgServiceType();
         return f != null && ProgressIndicator.acquire(f);
     }
 	

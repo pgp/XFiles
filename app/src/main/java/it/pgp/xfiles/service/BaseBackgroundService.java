@@ -55,7 +55,7 @@ public abstract class BaseBackgroundService extends Service {
 
     public abstract int getForegroundServiceNotificationId();
 
-    public abstract ForegroundServiceType getForegroundServiceType();
+    public abstract ForegroundServiceType getFgServiceType();
 	
 	@Override
     public IBinder onBind(Intent intent) {

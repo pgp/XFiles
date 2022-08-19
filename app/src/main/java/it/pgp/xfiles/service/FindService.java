@@ -30,7 +30,7 @@ public class FindService extends BaseBackgroundService {
     }
 
     @Override
-    public final ForegroundServiceType getForegroundServiceType() {
+    public final ForegroundServiceType getFgServiceType() {
         return ForegroundServiceType.FIND;
     }
 

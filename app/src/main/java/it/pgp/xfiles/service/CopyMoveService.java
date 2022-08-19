@@ -21,7 +21,7 @@ public class CopyMoveService extends BaseBackgroundService {
     }
 
     @Override
-    public final ForegroundServiceType getForegroundServiceType() {
+    public final ForegroundServiceType getFgServiceType() {
         return ForegroundServiceType.FILE_TRANSFER;
     }
 

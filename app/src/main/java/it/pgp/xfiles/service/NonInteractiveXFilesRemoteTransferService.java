@@ -24,7 +24,7 @@ public class NonInteractiveXFilesRemoteTransferService extends BaseBackgroundSer
     }
 
     @Override
-    public final ForegroundServiceType getForegroundServiceType() {
+    public final ForegroundServiceType getFgServiceType() {
         return ForegroundServiceType.XRE_TRANSFER;
     }
 

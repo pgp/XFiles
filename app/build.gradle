@@ -1,15 +1,15 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 30
     ndkVersion '21.3.6528147'
     defaultConfig {
         applicationId "it.pgp.xfiles"
         minSdkVersion 19
-        targetSdkVersion 28
+        targetSdkVersion 30
         multiDexEnabled true
-        versionCode 192220817
-        versionName "1.9.2"
+        versionCode 193220819
+        versionName "1.9.3"
         externalNativeBuild {
             cmake {
                 cppFlags "-std=c++11 -pthread -frtti -fexceptions"

@@ -17,7 +17,7 @@ public class NonInteractiveSmbService extends BaseBackgroundService {
     }
 
     @Override
-    public final ForegroundServiceType getForegroundServiceType() {
+    public final ForegroundServiceType getFgServiceType() {
         return ForegroundServiceType.SMB_TRANSFER;
     }
 

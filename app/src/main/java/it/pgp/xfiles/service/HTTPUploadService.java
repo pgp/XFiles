@@ -18,7 +18,7 @@ public class HTTPUploadService extends BaseBackgroundService {
     }
 
     @Override
-    public final ForegroundServiceType getForegroundServiceType() {
+    public final ForegroundServiceType getFgServiceType() {
         return ForegroundServiceType.URL_DOWNLOAD;
     }
 
