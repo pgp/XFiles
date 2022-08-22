@@ -408,4 +408,14 @@ public class Misc {
         }
         return new String(baos.toByteArray(),StandardCharsets.UTF_8);
     }
+
+    public static boolean isWithinViewBounds(int xPoint, int yPoint, View v) {
+        int[] l = new int[2];
+        v.getLocationOnScreen(l);
+        int x = l[0];
+        int y = l[1];
+        int w = v.getWidth();
+        int h = v.getHeight();
+        return xPoint >= x && xPoint <= x + w && yPoint >= y && yPoint <= y + h;
+    }
 }

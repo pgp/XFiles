@@ -37,6 +37,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -72,6 +73,7 @@ import java.util.concurrent.Future;
 
 import it.pgp.xfiles.adapters.BrowserAdapter;
 import it.pgp.xfiles.adapters.BrowserPagerAdapter;
+import it.pgp.xfiles.adapters.QuickPathsAdapter;
 import it.pgp.xfiles.adapters.OperationalPagerAdapter;
 import it.pgp.xfiles.dialogs.AboutDialog;
 import it.pgp.xfiles.dialogs.AdvancedSortingDialog;
@@ -254,6 +256,7 @@ public class MainActivity extends EffectActivity {
     }
 
     public ProgressBar progressCircleForGoDirOps;
+    public ImageButton showNavLayoutBtn;
     public ImageButton fileOperationHelperSwitcher;
 
     ImageButton quickFindButton,
@@ -261,6 +264,9 @@ public class MainActivity extends EffectActivity {
             sortButton,
             credsFavsButton,
             chooseBrowserViewButton;
+
+    LinearLayout navLayout;
+    ListView navListView;
 
     public AdapterView.OnItemClickListener listViewLevelOICL = new AdapterView.OnItemClickListener() {
         @Override
@@ -409,6 +415,30 @@ public class MainActivity extends EffectActivity {
 
     public void showStartRHRemoteServerDialog(View unused) {
         new RemoteRHServerManagementDialog(MainActivity.this).show();
+    }
+
+    public void showNavLayout(View unused) {
+        QuickPathsAdapter a = QuickPathsAdapter.create(this);
+        navListView.setAdapter(a);
+        navListView.setOnItemClickListener((parent,view,position,id)->{
+            goDir_async(new LocalPathContent(a.getItem(position)),null);
+            navLayout.setVisibility(View.GONE);
+        });
+        navLayout.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        if(navLayout.getVisibility() == View.VISIBLE) {
+            if(Misc.isWithinViewBounds((int)ev.getRawX(), (int)ev.getRawY(), navLayout)) {
+                return super.dispatchTouchEvent(ev);
+            }
+            else {
+                navLayout.setVisibility(View.GONE);
+                return true;
+            }
+        }
+        return super.dispatchTouchEvent(ev);
     }
 
     private boolean wasShortClick = false;
@@ -690,6 +720,9 @@ public class MainActivity extends EffectActivity {
         firstRunCheck();
 
         progressCircleForGoDirOps = findViewById(R.id.progressCircleForGoDirOps);
+        showNavLayoutBtn = findViewById(R.id.showNavLayoutBtn);
+        navLayout = findViewById(R.id.nav_layout);
+        navListView = findViewById(R.id.nav_listview);
         fileOperationHelperSwitcher = findViewById(R.id.toggleRootHelperButton);
 
         // conditional inflating
@@ -1244,11 +1277,10 @@ public class MainActivity extends EffectActivity {
         startActivity(new Intent(MainActivity.this,ChecksumActivity.class));
     }
 
-    private final int[] goDirOpsStatuses = new int[]{View.VISIBLE,View.GONE};
-
     // false when starting, true after end
     public void toggleGoDirOpsIndeterminateProgress(boolean status) {
-        progressCircleForGoDirOps.setVisibility(status?goDirOpsStatuses[1]:goDirOpsStatuses[0]);
+        progressCircleForGoDirOps.setVisibility(status?View.GONE:View.VISIBLE);
+        showNavLayoutBtn.setVisibility(status?View.VISIBLE:View.GONE);
     }
 
     void upOneLevel() {
@@ -1737,6 +1769,11 @@ public class MainActivity extends EffectActivity {
         // TODO maybe should handle mode exit differently (not both at once)
         // TODO decide if it is needed to restore original adapter content on quick find mode exit
         int pos = browserPager.getCurrentItem();
+
+        if(navLayout.getVisibility() == View.VISIBLE) {
+            navLayout.setVisibility(View.GONE);
+            return;
+        }
 
         if(browserPagerAdapter.fastRenameModeViews[pos] != null) {
             RenameDialog.resetRenameMode(pos,browserPagerAdapter.fastRenameModeViews);
