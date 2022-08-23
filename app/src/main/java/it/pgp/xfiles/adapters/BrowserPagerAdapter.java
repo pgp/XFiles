@@ -300,6 +300,7 @@ public class BrowserPagerAdapter extends PagerAdapter {
             mainBrowserViews[position].setSelection(dirWithContent.listViewPosition);
         }
         swipeRefreshLayouts[position].setRefreshing(false);
+        mainActivity.navLayout.setVisibility(View.GONE); // close quick paths menu if open, once a showDirContent is complete
     }
 
     public void showSortedDirContent(GenericDirWithContent dirWithContent, Pair<ComparatorField,Boolean> whichAttribute_reverse, int position) {

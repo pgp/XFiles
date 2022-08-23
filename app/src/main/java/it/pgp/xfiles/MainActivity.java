@@ -265,7 +265,7 @@ public class MainActivity extends EffectActivity {
             credsFavsButton,
             chooseBrowserViewButton;
 
-    LinearLayout navLayout;
+    public LinearLayout navLayout;
     ListView navListView;
 
     public AdapterView.OnItemClickListener listViewLevelOICL = new AdapterView.OnItemClickListener() {
@@ -422,7 +422,6 @@ public class MainActivity extends EffectActivity {
         navListView.setAdapter(a);
         navListView.setOnItemClickListener((parent,view,position,id)->{
             goDir_async(new LocalPathContent(a.getItem(position)),null);
-            navLayout.setVisibility(View.GONE);
         });
         navLayout.setVisibility(View.VISIBLE);
     }
