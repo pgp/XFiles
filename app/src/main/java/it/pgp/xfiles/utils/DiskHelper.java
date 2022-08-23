@@ -7,6 +7,10 @@ import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Set;
 
+import it.pgp.xfiles.MainActivity;
+import it.pgp.xfiles.enums.ProviderType;
+import it.pgp.xfiles.utils.pathcontent.LocalPathContent;
+
 // Web source:
 // https://stackoverflow.com/questions/34375437/get-path-to-the-external-sdcard-in-android
 
@@ -35,7 +39,7 @@ public class DiskHelper {
                     statFs.restat(path);
                     break;
                 case MODE_EXTERNAL_SD:
-                    for(String str : getExternalMounts()) {
+                    for(String str : getExternalMounts(null)) {
                         path = str;
                         statFs = new StatFs(str);
                         statFs.restat(str);
@@ -66,7 +70,7 @@ public class DiskHelper {
         return total - free;
     }
 
-    public static Set<String> getExternalMounts() {
+    public static Set<String> getExternalMounts(MainActivity activity) {
         Set<String> out = new HashSet<>();
         String reg = "(?i).*vold.*(vfat|ntfs|exfat|sdfat|fat32|ext3|ext4).*(rw,|ro,).*";
         StringBuilder sb = new StringBuilder();
@@ -91,7 +95,21 @@ public class DiskHelper {
                     if(part.startsWith("/") && !part.toLowerCase().contains("vold")) out.add(part);
             }
         }
-        return out;
+
+        if(activity == null) return out;
+        Set<String> out1 = new HashSet<>();
+        // probe mount points found so far
+        FileOperationHelper helper = activity.getFileOpsHelper(ProviderType.LOCAL);
+        for(String mnt : out) {
+            LocalPathContent lmnt = new LocalPathContent(mnt);
+            if(!helper.isDir(lmnt)) {
+                // try building fallback paths if they are not accessible
+                String mnt1 = "/storage/" + lmnt.getName();
+                if(!out1.contains(mnt1) && helper.isDir(new LocalPathContent(mnt1))) out1.add(mnt1);
+            }
+            else out1.add(mnt); // found mount point is readable without root
+        }
+        return out1;
     }
 
     private static final long MEGABYTE = 1048576;
