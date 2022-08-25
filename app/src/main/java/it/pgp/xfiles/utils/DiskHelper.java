@@ -9,6 +9,8 @@ import java.util.Set;
 
 import it.pgp.xfiles.MainActivity;
 import it.pgp.xfiles.enums.ProviderType;
+import it.pgp.xfiles.roothelperclient.RootHandler;
+import it.pgp.xfiles.roothelperclient.RootHelperClient;
 import it.pgp.xfiles.utils.pathcontent.LocalPathContent;
 
 // Web source:
@@ -71,11 +73,16 @@ public class DiskHelper {
     }
 
     public static Set<String> getExternalMounts(MainActivity activity) {
+        FileOperationHelper helper = activity.getFileOpsHelper(ProviderType.LOCAL);
         Set<String> out = new HashSet<>();
         String reg = "(?i).*vold.*(vfat|ntfs|exfat|sdfat|fat32|ext3|ext4).*(rw,|ro,).*";
         StringBuilder sb = new StringBuilder();
         try {
-            Process process = new ProcessBuilder().command("mount").redirectErrorStream(true).start();
+            // root available, granted and enabled -> su -c mount
+            // root not available, not granted or not enabled -> mount
+            String[] command = (RootHandler.isRootAvailableAndGranted && helper instanceof RootHelperClient) ?
+                    new String[]{"su","-c","mount"} : new String[]{"mount"};
+            Process process = new ProcessBuilder().command(command).redirectErrorStream(true).start();
             process.waitFor();
             InputStream is = process.getInputStream();
             byte[] buffer = new byte[1024];
@@ -99,7 +106,6 @@ public class DiskHelper {
         if(activity == null) return out;
         Set<String> out1 = new HashSet<>();
         // probe mount points found so far
-        FileOperationHelper helper = activity.getFileOpsHelper(ProviderType.LOCAL);
         for(String mnt : out) {
             LocalPathContent lmnt = new LocalPathContent(mnt);
             if(!helper.isDir(lmnt)) {
