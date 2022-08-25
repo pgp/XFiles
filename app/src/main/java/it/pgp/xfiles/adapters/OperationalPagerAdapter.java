@@ -14,21 +14,21 @@ import it.pgp.xfiles.utils.SelectImageButtonListener;
 
 public class OperationalPagerAdapter extends PagerAdapter {
 
-    private final MainActivity context;
+    private final MainActivity mainActivity;
     private final int[] operationalLayouts;
     private final SelectImageButtonListener l;
 
     public OperationalPagerAdapter(MainActivity mainActivity, int[] operationalLayouts) {
-        this.context = mainActivity;
+        this.mainActivity = mainActivity;
         this.operationalLayouts = operationalLayouts;
-        this.l = new SelectImageButtonListener(context, R.color.imagebuttonselect);
+        this.l = new SelectImageButtonListener(this.mainActivity, R.color.imagebuttonselect);
     }
 
     @NonNull
     @Override
     public Object instantiateItem(@NonNull ViewGroup container, int position) {
         ViewPager viewPager = (ViewPager) container;
-        ViewGroup layout = (ViewGroup) LayoutInflater.from(context).inflate(operationalLayouts[position], viewPager,false);
+        ViewGroup layout = (ViewGroup) LayoutInflater.from(mainActivity).inflate(operationalLayouts[position], viewPager,false);
         viewPager.addView(layout);
         viewPager.setOnTouchListener((v, event) -> {
             if(event.getAction() == MotionEvent.ACTION_UP) {
@@ -40,7 +40,7 @@ public class OperationalPagerAdapter extends PagerAdapter {
             }
             return false;
         });
-        MainActivity.makeImageButtonsStateful(layout, l);
+        mainActivity.makeImageButtonsStateful(layout, l);
         return layout;
     }
 

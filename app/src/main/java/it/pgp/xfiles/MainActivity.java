@@ -130,6 +130,7 @@ import it.pgp.xfiles.utils.ContentProviderUtils;
 import it.pgp.xfiles.utils.DirCommander;
 import it.pgp.xfiles.utils.FileOperationHelper;
 import it.pgp.xfiles.utils.Misc;
+import it.pgp.xfiles.utils.Pair;
 import it.pgp.xfiles.utils.SelectImageButtonListener;
 import it.pgp.xfiles.utils.XFilesUtils;
 import it.pgp.xfiles.utils.dircontent.GenericDirWithContent;
@@ -175,11 +176,20 @@ public class MainActivity extends EffectActivity {
 
     public int defaultUIVisibility;
 
-    public static void makeImageButtonsStateful(ViewGroup layout, SelectImageButtonListener l) {
+    public void makeImageButtonsStateful(ViewGroup layout, SelectImageButtonListener l) {
         for (int i = 0; i < layout.getChildCount(); i++) {
             View vv = layout.getChildAt(i);
             if (vv instanceof ImageButton)
                 vv.setOnTouchListener(l);
+            int id = vv.getId();
+            if(id == R.id.goBackButton || id == R.id.goAheadButton)
+                vv.setOnLongClickListener(v -> {
+                    StringBuilder sb = new StringBuilder();
+                    List<Pair<Integer, BasePathContent>> xx = getCurrentDirCommander().splitPositions(id == R.id.goAheadButton);
+                    for(Object o : xx) sb.append(o.toString()).append('\n');
+                    Toast.makeText(mainActivity, sb.toString(), Toast.LENGTH_SHORT).show();
+                    return true;
+                });
         }
     }
 
@@ -1851,7 +1861,7 @@ public class MainActivity extends EffectActivity {
         else {
             ViewGroup layout = (ViewGroup) layoutInflater.inflate(targetLayout[0], operationButtonsLayout, false);
             operationButtonsLayout.addView(layout);
-            MainActivity.makeImageButtonsStateful(layout,
+            makeImageButtonsStateful(layout,
                     new SelectImageButtonListener(context, R.color.imagebuttonselect));
         }
     }

@@ -3,7 +3,10 @@ package it.pgp.xfiles.utils;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import it.pgp.xfiles.MainActivity;
@@ -19,6 +22,21 @@ public class DirCommander {
     private Map<Integer,BasePathContent> recentDirs;
     private Map<Integer,Integer> previousListViewPositions; // position of list view when previous directory was listed
     private int currentIndex;
+
+    // before: false, after: true
+    public List<Pair<Integer, BasePathContent>> splitPositions(boolean beforeOrAfterCurrentIndex) {
+        int target = beforeOrAfterCurrentIndex ? 1 : -1;
+        List<Pair<Integer, BasePathContent>> ret = new ArrayList<>();
+        for(Map.Entry<Integer,BasePathContent> entry : recentDirs.entrySet()) {
+            Integer i = entry.getKey();
+            if(i != null && Integer.compare(i,currentIndex) == target) ret.add(new Pair<>(i,entry.getValue()));
+        }
+        Comparator<Pair<Integer,BasePathContent>> c = beforeOrAfterCurrentIndex ?
+                (o1, o2) -> o2.i.compareTo(o1.i) :
+                (o1, o2) -> o1.i.compareTo(o2.i);
+        Collections.sort(ret,c); // sort the built list by first field (map key, integer)
+        return ret;
+    }
 
     // for cleanup of old commander entries when a series of goBack commands is followed by a goDir
     private void truncateListMaps(int maxIndex) {
