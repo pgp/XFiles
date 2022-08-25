@@ -208,6 +208,10 @@ public class DirCommander {
         if (cwd.errorCode != null)
             return cwd;
 
+        // if most recent path now is equal to the one we are trying to set, avoid duplicating it
+        if(dir.equals(recentDirs.get(currentIndex)))
+            return cwd;
+
         if (recentDirs.size()>currentIndex+1) {
             // resize array list, set new element (currentIndex remains unchanged)
             truncateListMaps(currentIndex);
