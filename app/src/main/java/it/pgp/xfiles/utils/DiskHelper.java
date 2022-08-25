@@ -24,6 +24,8 @@ public class DiskHelper {
         MODE_EXTERNAL_SD
     }
 
+    public static final String[] commonInternalStoragePaths = {"/storage/emulated/0", "/sdcard"};
+
     private StatFs statFs;
     public String path;
 
@@ -114,6 +116,21 @@ public class DiskHelper {
                 if(!out1.contains(mnt1) && helper.isDir(new LocalPathContent(mnt1))) out1.add(mnt1);
             }
             else out1.add(mnt); // found mount point is readable without root
+        }
+
+        /*
+        check common pathnames for internal storage
+        motivation: on some devices (e.g. some Huawei phones, getExternalStorageDirectory() returns the external memory card, instead of the phone memory
+        - indeed, given the API method name, THIS ONE should be the correct behaviour, but on the overwhelming majority of Android devices,
+        that method returns the internal mass storage path instead - so in order to have also a bookmark for internal memory, we check commonly used
+        path names as well
+        */
+        for(String mnt : commonInternalStoragePaths) {
+            LocalPathContent lmnt = new LocalPathContent(mnt);
+            if(helper.isDir(lmnt)) {
+                out1.add(mnt);
+                break; // assume all the commonly used names represent the same partition, even if more than one is available
+            }
         }
         return out1;
     }
