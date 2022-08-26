@@ -75,6 +75,7 @@ import it.pgp.xfiles.adapters.BrowserAdapter;
 import it.pgp.xfiles.adapters.BrowserPagerAdapter;
 import it.pgp.xfiles.adapters.QuickPathsAdapter;
 import it.pgp.xfiles.adapters.OperationalPagerAdapter;
+import it.pgp.xfiles.adapters.RecentPositionsAdapter;
 import it.pgp.xfiles.dialogs.AboutDialog;
 import it.pgp.xfiles.dialogs.AdvancedSortingDialog;
 import it.pgp.xfiles.dialogs.BulkRenameDialog;
@@ -184,10 +185,7 @@ public class MainActivity extends EffectActivity {
             int id = vv.getId();
             if(id == R.id.goBackButton || id == R.id.goAheadButton)
                 vv.setOnLongClickListener(v -> {
-                    StringBuilder sb = new StringBuilder();
-                    List<Pair<Integer, BasePathContent>> xx = getCurrentDirCommander().splitPositions(id == R.id.goAheadButton);
-                    for(Object o : xx) sb.append(o.toString()).append('\n');
-                    Toast.makeText(mainActivity, sb.toString(), Toast.LENGTH_SHORT).show();
+                    RecentPositionsAdapter.showPopup(this,id == R.id.goAheadButton, showNavLayoutBtn);
                     return true;
                 });
         }
