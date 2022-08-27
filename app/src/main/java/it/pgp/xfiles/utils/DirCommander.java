@@ -21,7 +21,7 @@ import it.pgp.xfiles.utils.pathcontent.LocalPathContent;
 public class DirCommander {
     private Map<Integer,BasePathContent> recentDirs;
     private Map<Integer,Integer> previousListViewPositions; // position of list view when previous directory was listed
-    private int currentIndex;
+    public int currentIndex;
 
     // before: false, after: true
     public List<Pair<Integer, BasePathContent>> splitPositions(boolean beforeOrAfterCurrentIndex) {

@@ -14,6 +14,7 @@ import java.util.List;
 
 import it.pgp.xfiles.MainActivity;
 import it.pgp.xfiles.R;
+import it.pgp.xfiles.utils.DirCommander;
 import it.pgp.xfiles.utils.Pair;
 import it.pgp.xfiles.utils.pathcontent.BasePathContent;
 
@@ -34,7 +35,8 @@ public class RecentPositionsAdapter extends ArrayAdapter<Pair<Integer,BasePathCo
     }
 
     public static void showPopup(MainActivity activity, boolean beforeOrAfterCurrentIndex, View anchor) {
-        List<Pair<Integer, BasePathContent>> objects = activity.getCurrentDirCommander().splitPositions(beforeOrAfterCurrentIndex);
+        DirCommander dirCommander = activity.getCurrentDirCommander();
+        List<Pair<Integer, BasePathContent>> objects = dirCommander.splitPositions(beforeOrAfterCurrentIndex);
         if(objects.isEmpty()) {
             Toast.makeText(activity, "No items in commander for the specified direction", Toast.LENGTH_SHORT).show();
             return;
@@ -47,7 +49,7 @@ public class RecentPositionsAdapter extends ArrayAdapter<Pair<Integer,BasePathCo
         popupView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
         PopupWindow window = new PopupWindow(popupView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         dircommander_positions.setOnItemClickListener((parent, view, position, id) -> {
-            activity.goDir_async(a.getItem(position).j,null);
+            activity.goDir_async(a.getItem(position).i - dirCommander.currentIndex,null);
             window.dismiss();
         });
         window.setFocusable(true); // in order to dismiss when clicked outside
