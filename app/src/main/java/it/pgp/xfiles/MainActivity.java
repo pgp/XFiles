@@ -131,7 +131,6 @@ import it.pgp.xfiles.utils.ContentProviderUtils;
 import it.pgp.xfiles.utils.DirCommander;
 import it.pgp.xfiles.utils.FileOperationHelper;
 import it.pgp.xfiles.utils.Misc;
-import it.pgp.xfiles.utils.Pair;
 import it.pgp.xfiles.utils.SelectImageButtonListener;
 import it.pgp.xfiles.utils.XFilesUtils;
 import it.pgp.xfiles.utils.dircontent.GenericDirWithContent;
@@ -1309,15 +1308,15 @@ public class MainActivity extends EffectActivity {
     /**
      * @param targetFilenameToHighlight Target filename to be highlighted and centered in the listview (in case of Locate command from {@link FindActivity})
      */
-    public FileOpsErrorCodes goDir(Object dirOrDirection, int targetViewPagerPosition, @Nullable String targetFilenameToHighlight, Runnable... onCompletion) {
-        GenericDirWithContent gdwc = goDir_inner(dirOrDirection);
-        completeGoDir(gdwc,dirOrDirection,targetViewPagerPosition,targetFilenameToHighlight,onCompletion);
+    public FileOpsErrorCodes goDir(Object dirOrOffset, int targetViewPagerPosition, @Nullable String targetFilenameToHighlight, Runnable... onCompletion) {
+        GenericDirWithContent gdwc = goDir_inner(dirOrOffset);
+        completeGoDir(gdwc,dirOrOffset,targetViewPagerPosition,targetFilenameToHighlight,onCompletion);
         return gdwc.errorCode;
     }
 
-    public void goDir_async(Object dirOrDirection, @Nullable String targetFilenameToHighlight) {
+    public void goDir_async(Object dirOrOffset, @Nullable String targetFilenameToHighlight) {
         Future<FileOpsErrorCodes> ff = browserPagerAdapter.goDirExecutors[browserPager.getCurrentItem()].submit(() -> goDir(
-                dirOrDirection,
+                dirOrOffset,
                 browserPager.getCurrentItem(),
                 targetFilenameToHighlight,
                 () -> toggleGoDirOpsIndeterminateProgress(true)));
@@ -1329,18 +1328,17 @@ public class MainActivity extends EffectActivity {
     }
 
     /**
-     * @param dirOrDirection Target path to be loaded, or direction as boolean (back or ahead)
+     * @param dirOrOffset Target path to be loaded, or direction as boolean (back or ahead)
      */
-    public GenericDirWithContent goDir_inner(Object dirOrDirection) {
+    public GenericDirWithContent goDir_inner(Object dirOrOffset) {
         GenericDirWithContent dwc;
         int prevPos = getCurrentMainBrowserView().getFirstVisiblePosition();
-        if (dirOrDirection instanceof Integer) {
-            int offset = (Integer)dirOrDirection;
-            if (offset < 0) dwc = getCurrentDirCommander().goBackNPlaces(offset, prevPos);
-            else dwc = getCurrentDirCommander().goAheadNPlaces(offset, prevPos);
+        if (dirOrOffset instanceof Integer) {
+            int offset = (Integer)dirOrOffset;
+            dwc = getCurrentDirCommander().shiftNPlaces(offset, prevPos);
         }
-        else if (dirOrDirection instanceof BasePathContent) {
-            dwc = getCurrentDirCommander().setDir((BasePathContent) dirOrDirection, prevPos);
+        else if (dirOrOffset instanceof BasePathContent) {
+            dwc = getCurrentDirCommander().setDir((BasePathContent) dirOrOffset, prevPos);
         }
         else return new GenericDirWithContent(FileOpsErrorCodes.ILLEGAL_ARGUMENT);
 
@@ -1348,7 +1346,7 @@ public class MainActivity extends EffectActivity {
     }
 
     // this part can be submitted to UI
-    public void completeGoDir(GenericDirWithContent dwc, Object dirOrDirection, int position, @Nullable String targetFilenameToHighlight, Runnable... onCompletion) {
+    public void completeGoDir(GenericDirWithContent dwc, Object dirOrOffset, int position, @Nullable String targetFilenameToHighlight, Runnable... onCompletion) {
         runOnUiThread(()->{
             if(dwc.errorCode != null && dwc.errorCode != FileOpsErrorCodes.OK) {
                 switch(dwc.errorCode) {
@@ -1358,7 +1356,7 @@ public class MainActivity extends EffectActivity {
                     case NULL_OR_WRONG_PASSWORD:
                         new AskPasswordDialogOnListing(
                                 MainActivity.this,
-                                (BasePathContent) dirOrDirection // tested, no classCastException on go back/ahead into an archive
+                                (BasePathContent) dirOrOffset // tested, no classCastException on go back/ahead into an archive
                         ).show();
                         break;
                     case HOST_KEY_INEXISTENT_ERROR:

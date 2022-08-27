@@ -8,6 +8,7 @@ public enum FileOpsErrorCodes {
     OK("OK"),
     COMMANDER_CANNOT_GO_BACK("Cannot go back"),
     COMMANDER_CANNOT_GO_AHEAD("Cannot go ahead"),
+    COMMANDER_CANNOT_SHIFT("Cannot go back or ahead"),
     COMMANDER_CANNOT_REFRESH("Cannot refresh"),
     COMMANDER_CANNOT_ACCESS("Cannot access"), // generic
     NOT_IMPLEMENTED("Not implemented"),

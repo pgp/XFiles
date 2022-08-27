@@ -134,32 +134,6 @@ public class DirCommander {
         return cwd;
     }
 
-    public GenericDirWithContent goBackNPlaces(int offset, int previousPosition) {
-        GenericDirWithContent cwd;
-        // asks for previous dir in command; commander object updates its state and returns previous dir
-        if (recentDirs == null || recentDirs.size()==0) // guard block
-            throw new RuntimeException("Commander not initialized correctly");
-
-        if (currentIndex==0) // no previous dir (assume you cannot delete the folder you're in), also do not set previous positions
-           return validateDirAccess(recentDirs.get(0));
-
-        int targetIndex = currentIndex + offset;
-        BasePathContent bpc = recentDirs.get(targetIndex);
-        if(bpc == null)
-            return new GenericDirWithContent(FileOpsErrorCodes.ILLEGAL_ARGUMENT);
-
-        cwd = validateDirAccess(bpc);
-        if (cwd == null || cwd.errorCode != null)
-            return new GenericDirWithContent(FileOpsErrorCodes.COMMANDER_CANNOT_GO_BACK);
-        cwd.listViewPosition = previousListViewPositions.get(targetIndex);
-
-        // set current position
-        previousListViewPositions.put(currentIndex,previousPosition);
-
-        currentIndex = targetIndex;
-        return cwd;
-    }
-
     public GenericDirWithContent refreshFailFast() {
         // refresh can only be done at the beginning of the list view (scroll down gesture)
         GenericDirWithContent cwd = validateDirAccess(recentDirs.get(currentIndex));
@@ -243,8 +217,12 @@ public class DirCommander {
         return cwd;
     }
 
-    public GenericDirWithContent goAheadNPlaces(int offset, int previousPosition) {
-        if (recentDirs.size()==currentIndex+1) // cannot go ahead, already last item of commander
+    // offset < 0 -> go back, > 0 -> go ahead
+    public GenericDirWithContent shiftNPlaces(int offset, int previousPosition) {
+        // cannot go back, no previous dir (assume you cannot delete the folder you're in)
+        // OR cannot go ahead, already last item of commander
+        // in such cases, refresh current dir and also do not set previous positions
+        if ((offset < 0 && currentIndex==0) || (offset > 0 && recentDirs.size()==currentIndex+1))
             return validateDirAccess(recentDirs.get(currentIndex));
 
         int targetIndex = currentIndex + offset;
@@ -253,11 +231,11 @@ public class DirCommander {
             return new GenericDirWithContent(FileOpsErrorCodes.ILLEGAL_ARGUMENT);
 
         GenericDirWithContent cwd = validateDirAccess(bpc);
-        if(cwd == null || cwd.errorCode != null) // cannot go ahead (dir not found, IO error)
-            return new GenericDirWithContent(FileOpsErrorCodes.COMMANDER_CANNOT_GO_AHEAD);
-        cwd.listViewPosition = previousListViewPositions.get(targetIndex); // may be null
+        if (cwd == null || cwd.errorCode != null)
+            return new GenericDirWithContent(FileOpsErrorCodes.COMMANDER_CANNOT_SHIFT);
+        cwd.listViewPosition = previousListViewPositions.get(targetIndex); // may be null when moving ahead
 
-        // set current positions
+        // set current position
         previousListViewPositions.put(currentIndex,previousPosition);
 
         currentIndex = targetIndex;
