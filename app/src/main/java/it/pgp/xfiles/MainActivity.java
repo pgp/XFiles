@@ -1334,10 +1334,10 @@ public class MainActivity extends EffectActivity {
     public GenericDirWithContent goDir_inner(Object dirOrDirection) {
         GenericDirWithContent dwc;
         int prevPos = getCurrentMainBrowserView().getFirstVisiblePosition();
-        if (dirOrDirection instanceof Boolean) {
-            Boolean b = (Boolean)dirOrDirection;
-            if (b) dwc = getCurrentDirCommander().goBack(prevPos);
-            else dwc = getCurrentDirCommander().goAhead(prevPos);
+        if (dirOrDirection instanceof Integer) {
+            int offset = (Integer)dirOrDirection;
+            if (offset < 0) dwc = getCurrentDirCommander().goBackNPlaces(offset, prevPos);
+            else dwc = getCurrentDirCommander().goAheadNPlaces(offset, prevPos);
         }
         else if (dirOrDirection instanceof BasePathContent) {
             dwc = getCurrentDirCommander().setDir((BasePathContent) dirOrDirection, prevPos);
@@ -1900,9 +1900,9 @@ public class MainActivity extends EffectActivity {
                 paste(null);break;
 
             case R.id.goBackButton:
-                goDir_async(Boolean.TRUE,null);break;
+                goDir_async(-1,null);break;
             case R.id.goAheadButton:
-                goDir_async(Boolean.FALSE,null);break;
+                goDir_async(1,null);break;
 
             case R.id.newFileButton: // context menu with both file and dir options
                 showPopup(null,v,0,v.getId());
