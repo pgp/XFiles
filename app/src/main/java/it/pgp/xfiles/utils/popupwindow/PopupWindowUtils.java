@@ -23,8 +23,6 @@ import it.pgp.xfiles.service.visualization.ViewOverlay;
 import it.pgp.xfiles.utils.HashView;
 import it.pgp.xfiles.utils.Misc;
 
-import static android.content.Context.LAYOUT_INFLATER_SERVICE;
-
 public class PopupWindowUtils {
 
     public static final int AUTOCLOSE_DELAY_MS = 5000;
@@ -53,7 +51,7 @@ public class PopupWindowUtils {
                 displayMetrics.widthPixels/2,
                 9), null};
 
-        LayoutInflater layoutInflater = (LayoutInflater)((context instanceof Activity)?((Activity)context).getBaseContext():context).getSystemService(LAYOUT_INFLATER_SERVICE);
+        LayoutInflater layoutInflater = (LayoutInflater)((context instanceof Activity)?((Activity)context).getBaseContext():context).getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View popupView = layoutInflater.inflate(R.layout.hashview_popup_window, null);
 
         LinearLayout container = popupView.findViewById(R.id.hvLayout);

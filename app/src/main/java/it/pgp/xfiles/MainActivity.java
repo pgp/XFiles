@@ -184,7 +184,7 @@ public class MainActivity extends EffectActivity {
             int id = vv.getId();
             if(id == R.id.goBackButton || id == R.id.goAheadButton)
                 vv.setOnLongClickListener(v -> {
-                    RecentPositionsAdapter.showPopup(this,id == R.id.goAheadButton, showNavLayoutBtn);
+                    RecentPositionsAdapter.showPopup(this,id == R.id.goAheadButton, v);
                     return true;
                 });
         }

@@ -9,8 +9,6 @@ import android.widget.TextView;
 import it.pgp.xfiles.R;
 import it.pgp.xfiles.utils.Pair;
 
-import static android.content.Context.LAYOUT_INFLATER_SERVICE;
-
 /**
  * Created by pgp on 10/07/17
  * Overlay with two progress bars (for showing file number and size progress)
@@ -31,7 +29,7 @@ public class MovingRibbonTwoBars extends ProgressIndicator {
     public MovingRibbonTwoBars(Context context) {
         super(context);
 
-        LayoutInflater inflater = (LayoutInflater) context.getSystemService(LAYOUT_INFLATER_SERVICE);
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         oView = inflater.inflate(R.layout.ribbon_two, null);
 
         pbOuter = oView.findViewById(R.id.pbOuter);

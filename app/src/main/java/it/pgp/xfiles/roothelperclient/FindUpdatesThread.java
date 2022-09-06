@@ -8,8 +8,6 @@ import it.pgp.xfiles.MainActivity;
 import it.pgp.xfiles.adapters.FindResultsAdapter;
 import it.pgp.xfiles.roothelperclient.resps.find_resp;
 
-import static it.pgp.xfiles.roothelperclient.FindManager.findManagerThreadRef;
-
 public class FindUpdatesThread extends Thread {
     protected final AutoCloseable ac;
 
@@ -45,7 +43,7 @@ public class FindUpdatesThread extends Thread {
     @Override
     public void run() {
         // strong cas, a thread is guaranteed to win
-        if (!findManagerThreadRef.compareAndSet(null,this)) {
+        if (!FindManager.findManagerThreadRef.compareAndSet(null,this)) {
             MainActivity.showToast("Another find thread is already receiving updates");
             return;
         }
@@ -62,7 +60,7 @@ public class FindUpdatesThread extends Thread {
         }
 
         try {ac.close();} catch(Exception ignored) {}
-        findManagerThreadRef.set(null); // unset reference only if compareAndSet was successful
+        FindManager.findManagerThreadRef.set(null); // unset reference only if compareAndSet was successful
         FindActivity.instance.runOnUiThread(()->FindActivity.instance.toggleSearchButtons(false));
         Log.d(getClass().getName(),"Really exiting find thread now!");
     }

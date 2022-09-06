@@ -14,8 +14,6 @@ import android.widget.TextView;
 import it.pgp.xfiles.R;
 import it.pgp.xfiles.utils.Pair;
 
-import static android.content.Context.LAYOUT_INFLATER_SERVICE;
-
 public class MovingRibbon extends ProgressIndicator {
 
     public ProgressBar pb;
@@ -27,7 +25,7 @@ public class MovingRibbon extends ProgressIndicator {
 
     public MovingRibbon(final Context context) {
         super(context);
-        LayoutInflater inflater = (LayoutInflater) context.getSystemService(LAYOUT_INFLATER_SERVICE);
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         oView = inflater.inflate(R.layout.ribbon_one, null);
 
         pb = oView.findViewById(R.id.pbInner);

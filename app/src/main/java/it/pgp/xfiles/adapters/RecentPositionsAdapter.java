@@ -1,6 +1,7 @@
 package it.pgp.xfiles.adapters;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,8 +18,6 @@ import it.pgp.xfiles.R;
 import it.pgp.xfiles.utils.DirCommander;
 import it.pgp.xfiles.utils.Pair;
 import it.pgp.xfiles.utils.pathcontent.BasePathContent;
-
-import static android.content.Context.LAYOUT_INFLATER_SERVICE;
 
 public class RecentPositionsAdapter extends ArrayAdapter<Pair<Integer,BasePathContent>> {
 
@@ -42,7 +41,7 @@ public class RecentPositionsAdapter extends ArrayAdapter<Pair<Integer,BasePathCo
             return;
         }
         RecentPositionsAdapter a = new RecentPositionsAdapter(activity, objects);
-        LayoutInflater layoutInflater = (LayoutInflater) activity.getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+        LayoutInflater layoutInflater = (LayoutInflater) activity.getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View popupView = layoutInflater.inflate(R.layout.dircommander_popup_window, null);
         ListView dircommander_positions = popupView.findViewById(R.id.dircommander_positions);
         dircommander_positions.setAdapter(a);
@@ -53,6 +52,7 @@ public class RecentPositionsAdapter extends ArrayAdapter<Pair<Integer,BasePathCo
             window.dismiss();
         });
         window.setFocusable(true); // in order to dismiss when clicked outside
-        window.showAsDropDown(anchor,0 ,0, Gravity.NO_GRAVITY);
+        window.showAtLocation(anchor,Gravity.TOP|(beforeOrAfterCurrentIndex ? Gravity.END : Gravity.START), 0,
+                Resources.getSystem().getDisplayMetrics().heightPixels-anchor.getHeight()-popupView.getHeight());
     }
 }
