@@ -44,6 +44,7 @@ import it.pgp.xfiles.utils.pathcontent.SFTPPathContent;
 import it.pgp.xfiles.utils.pathcontent.SMBPathContent;
 import it.pgp.xfiles.utils.pathcontent.XREPathContent;
 import it.pgp.xfiles.utils.wifi.WifiButtonsLayout;
+import it.pgp.xfiles.viewmodels.PasteableEditText;
 import it.pgp.xfiles.viewmodels.XREDirectoryViewModel;
 
 /**
@@ -99,7 +100,7 @@ public class GenericChangeDirectoryDialog extends Dialog {
     FavoritesList<SmbAuthData>[] smbCredsWithFavs;
 
     // http download params
-    EditText httpUrlToDownload;
+    PasteableEditText httpUrlToDownload;
     EditText httpDestPath; // if empty, take currently shown path in browser view
     EditText httpTargetFilename;
     CheckBox httpForceHttps; // -> httpsOnly

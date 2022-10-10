@@ -1,0 +1,16 @@
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+    <EditText
+        android:id="@+id/pasteable_edittext_et"
+        android:layout_width="0dp"
+        android:layout_weight="8"
+        android:layout_height="match_parent"
+        android:inputType="textUri"
+        android:imeOptions="actionDone"
+        android:layout_toStartOf="@id/pasteable_edittext_ib"/>
+    <ImageButton
+        android:src="@drawable/xfiles_paste"
+        android:id="@+id/pasteable_edittext_ib"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="match_parent" />
+</merge>

@@ -9,10 +9,8 @@
         android:text="URL to download:"
         android:textSize="18sp" />
 
-    <EditText
+    <it.pgp.xfiles.viewmodels.PasteableEditText
         android:id="@+id/httpUrlEditText"
-        android:inputType="textUri"
-        android:imeOptions="actionDone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 

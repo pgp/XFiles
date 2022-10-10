@@ -140,6 +140,7 @@ import it.pgp.xfiles.utils.pathcontent.ArchivePathContent;
 import it.pgp.xfiles.utils.pathcontent.BasePathContent;
 import it.pgp.xfiles.utils.pathcontent.LocalPathContent;
 import it.pgp.xfiles.utils.pathcontent.SFTPPathContent;
+import it.pgp.xfiles.viewmodels.PasteableEditText;
 
 public class MainActivity extends EffectActivity {
 
@@ -857,7 +858,7 @@ public class MainActivity extends EffectActivity {
         cdd.show();
         if(downloadUrlToPopulate.length > 0) {
             cdd.findViewById(R.id.httpUrlDownload).performClick();
-            ((EditText)cdd.findViewById(R.id.httpUrlEditText)).setText(downloadUrlToPopulate[0]);
+            ((PasteableEditText)cdd.findViewById(R.id.httpUrlEditText)).setText(downloadUrlToPopulate[0]);
         }
     }
 
