@@ -20,6 +20,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.StatFs;
 import android.os.StrictMode;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
@@ -73,8 +74,8 @@ import java.util.concurrent.Future;
 
 import it.pgp.xfiles.adapters.BrowserAdapter;
 import it.pgp.xfiles.adapters.BrowserPagerAdapter;
-import it.pgp.xfiles.adapters.QuickPathsAdapter;
 import it.pgp.xfiles.adapters.OperationalPagerAdapter;
+import it.pgp.xfiles.adapters.QuickPathsAdapter;
 import it.pgp.xfiles.adapters.RecentPositionsAdapter;
 import it.pgp.xfiles.dialogs.AboutDialog;
 import it.pgp.xfiles.dialogs.AdvancedSortingDialog;
@@ -429,6 +430,24 @@ public class MainActivity extends EffectActivity {
         navListView.setAdapter(a);
         navListView.setOnItemClickListener((parent,view,position,id)->{
             goDir_async(new LocalPathContent(a.getItem(position)),null);
+        });
+        navListView.setOnItemLongClickListener((parent, view, position, id) -> {
+            StatFs statFs = new StatFs(a.getItem(position));
+            long availableBytes = statFs.getAvailableBytes();
+            long freeBytes = statFs.getFreeBytes();
+            long totalBytes = statFs.getTotalBytes();
+            String s = "Available: "+availableBytes+" bytes ("+Misc.getHumanReadableFileSize(availableBytes)+")\nFree: "+
+                    freeBytes+" bytes ("+Misc.getHumanReadableFileSize(freeBytes)+")\nTotal: "+
+                    totalBytes+" bytes ("+Misc.getHumanReadableFileSize(totalBytes)+")";
+            AlertDialog.Builder bld = new AlertDialog.Builder(MainActivity.this);
+            TextView content = new TextView(MainActivity.this);
+            content.setText(s);
+            content.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
+            bld.setTitle("Disk stats");
+            bld.setView(content);
+            bld.setNeutralButton(android.R.string.ok, null);
+            bld.create().show();
+            return true;
         });
         navLayout.setVisibility(View.VISIBLE);
     }

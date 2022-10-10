@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -417,5 +418,15 @@ public class Misc {
         int w = v.getWidth();
         int h = v.getHeight();
         return xPoint >= x && xPoint <= x + w && yPoint >= y && yPoint <= y + h;
+    }
+
+    public static String getHumanReadableFileSize(long size) {
+        if (size <= 0)
+            return "0";
+
+        String[] units = new String[] { "B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
+        int digitGroups = (int) (Math.log10(size) / Math.log10(1024));
+
+        return new DecimalFormat("#,##0.#").format(size / Math.pow(1024, digitGroups)) + " " + units[digitGroups];
     }
 }
