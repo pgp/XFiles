@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import it.pgp.xfiles.R;
 
@@ -41,6 +42,10 @@ public class PasteableEditText extends LinearLayout {
         pasteButton = findViewById(R.id.pasteable_edittext_ib);
         pasteButton.setOnClickListener(v -> {
             ClipData clipData = clipboard.getPrimaryClip();
+            if(clipData == null) {
+                Toast.makeText(getContext(), "Clipboard is empty", Toast.LENGTH_SHORT).show();
+                return;
+            }
             ClipData.Item item = clipData.getItemAt(0);
             editText.setText(item.getText());
         });
