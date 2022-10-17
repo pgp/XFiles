@@ -872,16 +872,26 @@ public class RootHelperClient implements FileOperationHelper {
 
     @Override
     public void createFileOrDirectory(BasePathContent path, FileMode fileOrDirectory, FileCreationAdvancedOptions... fileOptions) throws IOException {
-        SinglePath_rq req = (fileOrDirectory == FileMode.FILE && fileOptions.length>0) ?
+        SinglePath_rq req = (fileOrDirectory == FileMode.FILE && fileOptions.length > 0) ?
                 new create_rq(path.dir, fileOptions[0]):
                 new create_rq(path.dir, fileOrDirectory);
         int errno;
+        String errMsg;
         StreamsPair rs = getStreams(path,true);
         req.write(rs.o);
         Log.d("roothelperclient","Create request sent");
         errno = Misc.receiveBaseResponse(rs.i);
-        String errMsg;
-        if(errno == 0) return;
+        if(errno == 0 && fileOptions.length > 0) {
+            // receive progress
+            long progress;
+            do {
+                progress = Misc.receiveTotalOrProgress(rs.i);
+                Log.d("rhc", "progress: "+progress);
+            }
+            while(progress != EOF_ind);
+            Log.d("rhc", "end of progress received");
+            return;
+        }
         else if(errno == 17)
             errMsg = ALREADY_EXIST;
         else
