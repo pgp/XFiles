@@ -884,12 +884,12 @@ public class RootHelperClient implements FileOperationHelper {
         if(errno == 0 && fileOptions.length > 0) {
             // receive progress
             long progress;
+            long total = fileOptions[0].size;
             do {
                 progress = Misc.receiveTotalOrProgress(rs.i);
-                Log.d("rhc", "progress: "+progress);
+                task.publishProgressWrapper(new Pair<>(progress, total));
             }
             while(progress != EOF_ind);
-            Log.d("rhc", "end of progress received");
             return;
         }
         else if(errno == 17)

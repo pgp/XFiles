@@ -13,5 +13,6 @@ public enum ForegroundServiceType {
     SFTP_TRANSFER,
     SMB_TRANSFER,
     URL_DOWNLOAD,
-    FIND
+    FIND,
+    CREATE_FILE
 }

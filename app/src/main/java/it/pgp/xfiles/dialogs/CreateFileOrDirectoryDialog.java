@@ -1,5 +1,6 @@
 package it.pgp.xfiles.dialogs;
 
+import android.content.Intent;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,11 +23,14 @@ import it.pgp.xfiles.R;
 import it.pgp.xfiles.adapters.BrowserAdapter;
 import it.pgp.xfiles.enums.FileMode;
 import it.pgp.xfiles.items.FileCreationAdvancedOptions;
+import it.pgp.xfiles.service.BaseBackgroundService;
+import it.pgp.xfiles.service.CreateFileService;
+import it.pgp.xfiles.service.params.CreateFileParams;
 import it.pgp.xfiles.utils.pathcontent.BasePathContent;
 import it.pgp.xfiles.utils.pathcontent.SFTPPathContent;
 import it.pgp.xfiles.utils.popupwindow.PopupWindowUtils;
 
-public class CreateFileOrDirectoryDialog extends BaseDialog implements Runnable {
+public class CreateFileOrDirectoryDialog extends BaseDialog /*implements Runnable*/ {
 
     EditText filename;
     Button ok;
@@ -85,7 +89,56 @@ public class CreateFileOrDirectoryDialog extends BaseDialog implements Runnable 
                 return;
             }
             toggleButtons(true);
-            new Thread(this).start();
+//            new Thread(this).start();
+
+            BasePathContent f = mainActivity.getCurrentDirCommander().getCurrentDirectoryPathname().concat(filename_);
+            // dirty hack to workaround final variable requirements in lambdas and catch-finally data flow dependency
+            // Collection.singletonList or Arrays.asList cannot be used here, in that they create immutables
+            List<String> nameToLocate = new ArrayList<String>(){{add(filename_);}};
+
+            try {
+                int idx = (advancedOptionsCheckbox.isChecked() && type == FileMode.FILE)?
+                        1 + fileCreationStrategy.indexOfChild(
+                                fileCreationStrategy.findViewById(
+                                        fileCreationStrategy.getCheckedRadioButtonId())):
+                        -1;
+                FileCreationAdvancedOptions opts = (idx == -1)?null:
+                        new FileCreationAdvancedOptions(
+                                fileSize.getText().toString().isEmpty() ? 0 : Long.parseLong(fileSize.getText().toString()),
+                                FileCreationAdvancedOptions.CreationStrategy.values()[idx]);
+
+                if (f instanceof SFTPPathContent) {
+                    MainActivity.sftpProvider.createFileOrDirectory(f,type);
+                }
+                else {
+//                    MainActivity.getRootHelperClient().createFileOrDirectory(f,type,opts);
+                    try {
+                        Intent startIntent = new Intent(mainActivity, CreateFileService.class);
+                        startIntent.setAction(BaseBackgroundService.START_ACTION);
+                        startIntent.putExtra("params", new CreateFileParams(f, opts));
+                        mainActivity.startService(startIntent);
+                    }
+                    catch(Exception e) {
+                        e.printStackTrace();
+                    }
+                    dismiss();
+                    return;
+                }
+                MainActivity.showToast(type.name().toLowerCase()+" created");
+            }
+            catch(Exception e) {
+                e.printStackTrace();
+                MainActivity.showToast(e.getMessage());
+                nameToLocate.clear();
+            }
+
+            mainActivity.runOnUiThread(()->{
+                mainActivity.browserPagerAdapter.showDirContent(
+                        mainActivity.getCurrentDirCommander().refresh(),
+                        mainActivity.browserPager.getCurrentItem(),
+                        nameToLocate.isEmpty()?null:nameToLocate.get(0));
+                dismiss();
+            });
         });
 
         if(type==FileMode.FILE && showAdvancedOptions) advancedOptionsCheckbox.performClick();
@@ -97,53 +150,13 @@ public class CreateFileOrDirectoryDialog extends BaseDialog implements Runnable 
         ok.setText(start?"Creating...":"OK");
     }
 
-    @Override
-    public void run() {
-        final String filename_ = filename.getText().toString();
-        BasePathContent f = mainActivity.getCurrentDirCommander().getCurrentDirectoryPathname().concat(filename_);
-
-        // dirty hack to workaround final variable requirements in lambdas and catch-finally data flow dependency
-        // Collection.singletonList or Arrays.asList cannot be used here, in that they create immutables
-        List<String> nameToLocate = new ArrayList<String>(){{add(filename_);}};
-
-        try {
-            int idx = (advancedOptionsCheckbox.isChecked() && type == FileMode.FILE)?
-                    1 + fileCreationStrategy.indexOfChild(
-                            fileCreationStrategy.findViewById(
-                                    fileCreationStrategy.getCheckedRadioButtonId())):
-                    -1;
-            FileCreationAdvancedOptions[] opts = (idx == -1)?new FileCreationAdvancedOptions[]{}:
-                    new FileCreationAdvancedOptions[]{
-                            new FileCreationAdvancedOptions(
-                                    fileSize.getText().toString().isEmpty()?
-                                            0:
-                                            Long.parseLong(fileSize.getText().toString())
-                                    , FileCreationAdvancedOptions.CreationStrategy.values()[idx])
-                    };
-
-            if (f instanceof SFTPPathContent) {
-                MainActivity.sftpProvider.createFileOrDirectory(f,type);
-            }
-            else {
-                MainActivity.getRootHelperClient().createFileOrDirectory(f,type,opts);
-            }
-            MainActivity.showToast(type.name().toLowerCase()+" created");
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-            MainActivity.showToast(e.getMessage());
-            nameToLocate.clear();
-        }
-        finally {
-            mainActivity.runOnUiThread(()->{
-                mainActivity.browserPagerAdapter.showDirContent(
-                        mainActivity.getCurrentDirCommander().refresh(),
-                        mainActivity.browserPager.getCurrentItem(),
-                        nameToLocate.isEmpty()?null:nameToLocate.get(0));
-                dismiss();
-            });
-        }
-    }
+//    @Override
+//    public void run() {
+//        final String filename_ = filename.getText().toString();
+//        BasePathContent f = mainActivity.getCurrentDirCommander().getCurrentDirectoryPathname().concat(filename_);
+//
+//        ///
+//    }
 
     public static boolean doCreate(MainActivity mainActivity, BasePathContent ff, FileMode type) {
         try {

@@ -285,6 +285,10 @@
             android:name=".service.HTTPUploadService"
             android:enabled="true"
             android:exported="true" />
+        <service
+            android:name=".service.CreateFileService"
+            android:enabled="true"
+            android:exported="true" />
 
         <receiver android:name=".XRE_RHSS_Widget">
             <intent-filter>
