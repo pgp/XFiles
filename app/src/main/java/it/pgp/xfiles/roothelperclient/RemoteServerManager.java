@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.Observable;
 import java.util.concurrent.atomic.AtomicReference;
 
+import it.pgp.xfiles.EffectActivity;
 import it.pgp.xfiles.MainActivity;
 import it.pgp.xfiles.R;
 import it.pgp.xfiles.XRE_RHSS_Widget;
@@ -150,7 +151,7 @@ public class RemoteServerManager extends RemoteManager {
             XFilesRemoteSessionsManagementActivity.StoCAdapter.syncFromActivity();
 
         // show the visual hash of the shared TLS master secret
-        if (MainActivity.mainActivity != null) {
+        if (MainActivity.mainActivity != null && EffectActivity.currentlyOnFocus != null) {
             MainActivity.mainActivity.runOnUiThread(()-> {
                 View anchor = (RemoteRHServerManagementDialog.instance!=null)?
                         RemoteRHServerManagementDialog.instance.findViewById(R.id.remote_rh_server_management_dialog):

@@ -29,6 +29,7 @@
 
         <TextView
             android:text="Show full"
+            android:textColor="@color/white"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 

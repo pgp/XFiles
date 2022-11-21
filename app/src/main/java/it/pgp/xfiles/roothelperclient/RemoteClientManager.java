@@ -14,6 +14,7 @@ import it.pgp.Native;
 import it.pgp.xfiles.BrowserItem;
 import it.pgp.xfiles.CopyListUris;
 import it.pgp.xfiles.CopyMoveListPathContent;
+import it.pgp.xfiles.EffectActivity;
 import it.pgp.xfiles.MainActivity;
 import it.pgp.xfiles.R;
 import it.pgp.xfiles.dialogs.XFilesRemoteSessionsManagementActivity;
@@ -94,7 +95,7 @@ public class RemoteClientManager {
 
             // show the visual hash of the shared TLS master secret
             MainActivity.handler.post(()-> PopupWindowUtils.createAndShowHashViewCommon(
-                    MainActivity.mainActivity != null ? MainActivity.mainActivity : MainActivity.context,
+                    MainActivity.mainActivity != null && EffectActivity.currentlyOnFocus != null ? MainActivity.mainActivity : MainActivity.context,
                     client.tlsSessionHash,
                     true,
                     MainActivity.mainActivity != null ?

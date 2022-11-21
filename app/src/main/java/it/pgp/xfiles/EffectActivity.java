@@ -38,6 +38,7 @@ public abstract class EffectActivity extends Activity {
     protected void onPause() {
         super.onPause();
         overridePendingTransition(R.anim.fade_in,R.anim.fade_out);
+        if(this instanceof MainActivity) currentlyOnFocus = null;
     }
 
     public static Serializable serviceParams;
