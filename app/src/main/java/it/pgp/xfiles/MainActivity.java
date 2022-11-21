@@ -929,13 +929,22 @@ public class MainActivity extends EffectActivity {
 
     public void installApk(File file) {
         if(file.exists()) {
-            Intent intent = new Intent(Intent.ACTION_VIEW);
-            intent.setDataAndType(ContentProviderUtils.getUriFromFile(getApplicationContext(), file), "application/vnd.android.package-archive");
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            Intent intent;
+            Uri uri = ContentProviderUtils.getUriFromFile(getApplicationContext(), file);
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                intent = new Intent(Intent.ACTION_INSTALL_PACKAGE);
+                intent.setData(uri);
+            }
+            else {
+                intent = new Intent(Intent.ACTION_VIEW);
+                intent.setDataAndType(uri, "application/vnd.android.package-archive");
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            }
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             try {
                 startActivity(intent);
-            } catch (ActivityNotFoundException e) {
+            }
+            catch(ActivityNotFoundException e) {
                 e.printStackTrace();
                 Toast.makeText(this, "Error in opening the file as APK for installation", Toast.LENGTH_SHORT).show();
             }
