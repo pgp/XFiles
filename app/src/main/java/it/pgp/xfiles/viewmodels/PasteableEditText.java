@@ -35,20 +35,27 @@ public class PasteableEditText extends LinearLayout {
         init(context);
     }
 
+    // click: paste with append
+    // long click: paste with overwrite
+    boolean doPaste(boolean isLongClick) {
+        ClipData clipData = clipboard.getPrimaryClip();
+        if(clipData == null) Toast.makeText(getContext(), "Clipboard is empty", Toast.LENGTH_SHORT).show();
+        else {
+            ClipData.Item item = clipData.getItemAt(0);
+            String s = item.getText().toString();
+            if(!isLongClick) s = editText.getText().toString() + s;
+            editText.setText(s);
+        }
+        return true;
+    }
+
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
         editText = findViewById(R.id.pasteable_edittext_et);
         pasteButton = findViewById(R.id.pasteable_edittext_ib);
-        pasteButton.setOnClickListener(v -> {
-            ClipData clipData = clipboard.getPrimaryClip();
-            if(clipData == null) {
-                Toast.makeText(getContext(), "Clipboard is empty", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            ClipData.Item item = clipData.getItemAt(0);
-            editText.setText(item.getText());
-        });
+        pasteButton.setOnClickListener(v -> doPaste(false));
+        pasteButton.setOnLongClickListener(v -> doPaste(true));
     }
 
     public Editable getText() {
