@@ -33,23 +33,24 @@ Usage demos are available [here](https://github.com/pgp/XFilesDemos).
 ## Building
 ### Prerequisites
 
+0. A computer with at least 16 Gb of RAM
 1. Windows, Linux or MacOS with git preinstalled;
-1. [Android Studio 4.1+](https://developer.android.com/studio/index.html) with CMake and NDK plugins (it is recommended to install them from SDK Manager BEFORE importing the project).
+2. [Android Studio 4.1+](https://developer.android.com/studio/index.html) with CMake and NDK plugins (it is recommended to install them from SDK Manager BEFORE importing the project).
 
 ### Build instructions
 
 #### Roothelper
 0. The build script for RootHelper is invoked automatically as inner task of the Android gradle build script, and the library binaries are put in the lib folder of the project, in order to be packed into the APK. Follow the below steps if you want to perform a manual build instead.
 1. Clone the [Roothelper](https://github.com/pgp/XFilesRootHelper) repository, or change dir into the automatically cloned repo from this project's root.
-1. Botan amalgamated source code files for all needed target platforms are already provided in the botanAm folder, however if you want to regenerate them after having downloaded/cloned the official source from [here](https://github.com/randombit/botan): just run the script **_genBotanAmalgamations.sh_** ( or **_genBotanAmalgamations.bat_** for Windows ) after having set the variables $BOTAN_SRC_DIR to the Botan source dir
-2. Point a terminal to the roothelper source base dir, then run the **_genRootHelpersAndroid.sh_** / **_genRootHelpersAndroid.bat_** script, after having set the $NDKDIR variable to the extracted path (the default should already be fine under Linux), and the $XFILES_ASSET_DIR one to the root path of the XFiles project
-3. If you want instead to build RootHelper for your desktop platform (Windows/Mac/Linux/BSD), just run **_genRootHelperDesktopFull.sh_** / **_genRootHelperDesktopFull.bat_** which starts a CMake configure+build, or **_genRootHelperDesktop.sh_** / **_genRootHelperDesktop.bat_** which rebuilds a preconfigured CMake project
+2. Botan amalgamated source code files for all needed target platforms are already provided in the botanAm folder, however if you want to regenerate them after having downloaded/cloned the official source from [here](https://github.com/randombit/botan): just run the script **_genBotanAmalgamations.sh_** ( or **_genBotanAmalgamations.bat_** for Windows ) after having set the variables $BOTAN_SRC_DIR to the Botan source dir
+3. Point a terminal to the roothelper source base dir, then run the **_genRootHelpersAndroid.sh_** / **_genRootHelpersAndroid.bat_** script, after having set the $NDKDIR variable to the extracted path (the default should already be fine under Linux), and the $XFILES_ASSET_DIR one to the root path of the XFiles project
+4. If you want instead to build RootHelper for your desktop platform (Windows/Mac/Linux/BSD), just run **_genRootHelperDesktopFull.sh_** / **_genRootHelperDesktopFull.bat_** which starts a CMake configure+build, or **_genRootHelperDesktop.sh_** / **_genRootHelperDesktop.bat_** which rebuilds a preconfigured CMake project
 
 #### XFiles
 1. Open Android Studio, and then the SDK Manager
 2. Install latest NDK and CMake
 3. Open the project (the first sync will last a few minutes, due to the native library build step)
-3. Build the project/Build APK from the IDE
+4. Build the project/Build APK from the IDE
 
 
 ## Development tools used
