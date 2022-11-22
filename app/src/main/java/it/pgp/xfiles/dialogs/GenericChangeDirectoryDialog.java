@@ -3,6 +3,7 @@ package it.pgp.xfiles.dialogs;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
@@ -106,6 +107,9 @@ public class GenericChangeDirectoryDialog extends Dialog {
     CheckBox httpForceHttps; // -> httpsOnly
 
     private final AtomicBoolean currentDirAutofillOverride = new AtomicBoolean(true);
+
+    // on Android 11, /data/data is not accessible even with root
+    final String datadataPath = Build.VERSION.SDK_INT >= Build.VERSION_CODES.R ? "/data_mirror/data_ce/null/0" : "/data/data";
 
     private void ok(View unused) {
         okButton.setEnabled(false);
@@ -290,6 +294,7 @@ public class GenericChangeDirectoryDialog extends Dialog {
                         Misc.internalStorageDir.getAbsolutePath(),
                         mainActivity.getFilesDir().getAbsolutePath(), // xfiles app private dir
                         "/data/app",
+                        datadataPath,
                         "/data/local/tmp"));
                 lItems.addAll(dbh.getAllRowsOfLocalFavoritesTable().values());
                 ArrayAdapter<String> lAdapter = new ArrayAdapter<>(
