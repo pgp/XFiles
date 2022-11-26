@@ -12,13 +12,14 @@ import android.widget.Toast;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import it.pgp.xfiles.MainActivity;
 import it.pgp.xfiles.enums.FileOpsErrorCodes;
 import it.pgp.xfiles.enums.ServiceStatus;
 import it.pgp.xfiles.service.params.DownloadParams;
 import it.pgp.xfiles.service.visualization.MovingRibbon;
-import it.pgp.xfiles.service.visualization.ViewType;
 import it.pgp.xfiles.utils.Pair;
 
 public class HTTPUploadTask extends RootHelperClientTask {
@@ -51,9 +52,16 @@ public class HTTPUploadTask extends RootHelperClientTask {
         rh.initProgressSupport(this);
 
         try {
-            generatedLink = rh.uploadHttpsUrl(params.url,params.destPath).trim();
+            generatedLink = rh.uploadHttpsUrl(params.url,params.destPath);
+            // extract only link (needed for x0.at, which sends additional information as well)
+            Matcher matcher = Pattern.compile("^(https?)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]", Pattern.MULTILINE).matcher(generatedLink);
+            if(matcher.find()) {
+                generatedLink = matcher.group(); // group 0, a.k.a. entire occurrence
+                // take first url found
+            }
+            // on no matches, return the text as-is
         }
-        catch (IOException e) {
+        catch(Exception e) {
             e.printStackTrace();
             lastException = e;
             result = FileOpsErrorCodes.TRANSFER_ERROR;
