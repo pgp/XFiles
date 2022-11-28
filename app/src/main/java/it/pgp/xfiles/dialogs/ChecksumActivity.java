@@ -128,7 +128,7 @@ public class ChecksumActivity extends EffectActivity implements FileSaveFragment
             HashRequestCodes h = adapter.getItem(position);
             h.toggleChecked();
             HashAlgorithmsAdapter.ViewHolder viewHolder = (HashAlgorithmsAdapter.ViewHolder) item.getTag();
-            viewHolder.cb.setChecked(h.isChecked());
+            viewHolder.ctv.toggle();
         });
 
         adapter = new HashAlgorithmsAdapter(this);
@@ -137,7 +137,7 @@ public class ChecksumActivity extends EffectActivity implements FileSaveFragment
         computeChecksumsButton = findViewById(R.id.computeChecksumsButton);
 
         // check SHA-256 by default
-        Misc.getViewByPosition(HashRequestCodes.sha256.ordinal(),hashSelectorView).findViewById(R.id.checksum_checkbox).performClick();
+        Misc.getViewByPosition(HashRequestCodes.sha256.ordinal(),hashSelectorView).findViewById(R.id.checksum_ctv).performClick();
 
     }
 

@@ -5,8 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
-import android.widget.TextView;
+import android.widget.CheckedTextView;
 
 import java.util.Arrays;
 import java.util.LinkedHashSet;
@@ -18,12 +17,10 @@ import it.pgp.xfiles.roothelperclient.HashRequestCodes;
 public class HashAlgorithmsAdapter extends ArrayAdapter<HashRequestCodes> {
 
     public static class ViewHolder {
-        public CheckBox cb;
-        public TextView tv;
+        public CheckedTextView ctv;
 
-        ViewHolder(CheckBox cb, TextView tv) {
-            this.cb = cb;
-            this.tv = tv;
+        ViewHolder(CheckedTextView ctv) {
+            this.ctv = ctv;
         }
     }
 
@@ -33,7 +30,7 @@ public class HashAlgorithmsAdapter extends ArrayAdapter<HashRequestCodes> {
     public HashAlgorithmsAdapter(Context context) {
         super(context,
                 R.layout.checksum_label_item,
-                R.id.checksum_textview,
+                R.id.checksum_ctv,
                 Arrays.asList(HashRequestCodes.values()));
         this.context = context;
         inflater = LayoutInflater.from(context);
@@ -42,36 +39,23 @@ public class HashAlgorithmsAdapter extends ArrayAdapter<HashRequestCodes> {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         HashRequestCodes item = getItem(position);
+        CheckedTextView ctv;
 
-        TextView tv;
-        CheckBox cb;
-
-        if(convertView == null){
+        if(convertView == null) {
             convertView = inflater.inflate(R.layout.checksum_label_item, null);
-
-            tv = convertView.findViewById(R.id.checksum_textview);
-            cb = convertView.findViewById(R.id.checksum_checkbox);
-
-            cb.setOnClickListener(v->{
-                CheckBox checkBox = (CheckBox) v;
-                HashRequestCodes h = (HashRequestCodes) checkBox.getTag();
-                h.setChecked(checkBox.isChecked());
-            });
-
-            convertView.setTag(new ViewHolder(cb,tv));
+            ctv = convertView.findViewById(R.id.checksum_ctv);
+            convertView.setTag(new ViewHolder(ctv));
         }
         else {
             ViewHolder viewHolder = (ViewHolder) convertView.getTag();
-            tv = viewHolder.tv;
-            cb = viewHolder.cb;
+            ctv = viewHolder.ctv;
         }
 
-        cb.setTag(item);
+        ctv.setTag(item);
 
-        tv.setText(item.getLabel());
-        cb.setChecked(item.isChecked());
-
-        tv.setTextColor(context.getResources().getColor(item.getLabelColor()));
+        ctv.setText(item.getLabel());
+        ctv.setChecked(item.isChecked());
+        ctv.setTextColor(context.getResources().getColor(item.getLabelColor()));
 
         return convertView;
     }
@@ -83,7 +67,7 @@ public class HashAlgorithmsAdapter extends ArrayAdapter<HashRequestCodes> {
 
     public Set<HashRequestCodes> getSelectedItems() {
         Set<HashRequestCodes> items = new LinkedHashSet<>();
-        for (HashRequestCodes h: HashRequestCodes.values())
+        for(HashRequestCodes h: HashRequestCodes.values())
             if(h.isChecked()) items.add(h);
         return items;
     }
