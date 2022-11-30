@@ -3,7 +3,7 @@ package it.pgp.xfiles.dialogs.compress;
 import android.support.annotation.NonNull;
 import android.text.InputType;
 import android.widget.Button;
-import android.widget.CheckBox;
+import android.widget.CheckedTextView;
 import android.widget.EditText;
 
 import it.pgp.xfiles.MainActivity;
@@ -31,20 +31,19 @@ public class AskPasswordDialogOnListing extends BaseDialog {
         setContentView(R.layout.ask_password_dialog);
         setDialogIcon(R.drawable.xfiles_archive);
 
-        final EditText password = findViewById(R.id.passwordEditText);
-        final CheckBox passwordVisible = findViewById(R.id.passwordVisibleCheckbox);
-        final Button ok = findViewById(R.id.askPasswordOkButton);
+        EditText password = findViewById(R.id.passwordEditText);
+        CheckedTextView passwordVisible = findViewById(R.id.passwordVisibleCheckbox);
+        Button ok = findViewById(R.id.askPasswordOkButton);
 
-        passwordVisible.setChecked(false);
-
-        passwordVisible.setOnCheckedChangeListener((buttonView, isChecked) -> password.setInputType(
-                passwordVisible.isChecked()?
-                        (InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD) :
-                        InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD
-        ));
+        passwordVisible.setOnClickListener(v -> {
+            passwordVisible.toggle();
+            password.setInputType(passwordVisible.isChecked() ?
+                    (InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD) :
+                    InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        });
 
         ok.setOnClickListener(v -> {
-            switch (pendingArchivePath.providerType) {
+            switch(pendingArchivePath.providerType) {
                 case LOCAL:
                     pendingArchivePath_ = new ArchivePathContent(pendingArchivePath.dir,"/");
                     break;
@@ -63,7 +62,7 @@ public class AskPasswordDialogOnListing extends BaseDialog {
 
         // cancel is called before dismiss, anyway don't rely on that order
         setOnDismissListener(dialog -> {
-            if (pendingArchivePath_ != null) activity.goDir_async(pendingArchivePath_,null);
+            if(pendingArchivePath_ != null) activity.goDir_async(pendingArchivePath_,null);
             else activity.toggleGoDirOpsIndeterminateProgress(true); // equivalent to cancel dialog
             // wrong password will trigger a new dialog open
         });

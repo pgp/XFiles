@@ -6,7 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
-import android.widget.CheckBox;
+import android.widget.CheckedTextView;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.RadioGroup;
@@ -55,8 +55,8 @@ public class CompressActivity extends EffectActivity implements FileSaveFragment
 
     SeekBar compressionLevel;
     TextView compressionLevelNum;
-    CheckBox encryptHeaders;
-    CheckBox solidMode;
+    CheckedTextView encryptHeaders;
+    CheckedTextView solidMode;
 
     ImageButton selectOutputArchiveFilePath;
     RadioGroup archiveTypeSelector;
@@ -221,8 +221,9 @@ public class CompressActivity extends EffectActivity implements FileSaveFragment
         });
 
         encryptHeaders = findViewById(R.id.encryptFilenames);
+        encryptHeaders.setOnClickListener(Misc.ctvListener);
         solidMode = findViewById(R.id.solidMode);
-        solidMode.setChecked(true);
+        solidMode.setOnClickListener(Misc.ctvListener);
 
         selectOutputArchiveFilePath = findViewById(R.id.selectOutputArchiveFilePath);
         selectOutputArchiveFilePath.setOnClickListener(this::openDestinationArchiveSelector);

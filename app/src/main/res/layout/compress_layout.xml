@@ -75,21 +75,15 @@
             android:text="XZ" />
     </RadioGroup>
 
-    <LinearLayout
+    <CheckedTextView
+        android:id="@+id/solidMode"
+        android:text="Solid archive"
+        android:checked="true"
+        android:focusable="true"
+        android:clickable="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <CheckBox
-            android:id="@+id/solidMode"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent" />
-
-        <TextView
-            android:text="Solid archive"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent" />
-    </LinearLayout>
+        android:checkMark="?android:attr/listChoiceIndicatorMultiple" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -136,21 +130,14 @@
             android:layout_height="match_parent" />
     </LinearLayout>
 
-    <LinearLayout
+    <CheckedTextView
+        android:id="@+id/encryptFilenames"
+        android:text="Encrypt filenames"
+        android:focusable="true"
+        android:clickable="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <CheckBox
-            android:id="@+id/encryptFilenames"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent" />
-
-        <TextView
-            android:text="Encrypt filenames"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent" />
-    </LinearLayout>
+        android:checkMark="?android:attr/listChoiceIndicatorMultiple" />
 
     <Button
         android:text="OK"

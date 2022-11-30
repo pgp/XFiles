@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.text.InputType;
 import android.widget.Button;
-import android.widget.CheckBox;
+import android.widget.CheckedTextView;
 import android.widget.EditText;
 
 import it.pgp.xfiles.R;
@@ -33,17 +33,16 @@ public class AskPasswordDialogOnExtract extends BaseDialog {
         setContentView(R.layout.ask_password_dialog);
         setDialogIcon(R.drawable.xfiles_extract);
 
-        final EditText password = findViewById(R.id.passwordEditText);
-        final CheckBox passwordVisible = findViewById(R.id.passwordVisibleCheckbox);
-        final Button ok = findViewById(R.id.askPasswordOkButton);
+        EditText password = findViewById(R.id.passwordEditText);
+        CheckedTextView passwordVisible = findViewById(R.id.passwordVisibleCheckbox);
+        Button ok = findViewById(R.id.askPasswordOkButton);
 
-        passwordVisible.setChecked(false);
-
-        passwordVisible.setOnCheckedChangeListener((buttonView, isChecked) -> password.setInputType(
-                passwordVisible.isChecked()?
-                        (InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD) :
-                        InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD
-        ));
+        passwordVisible.setOnClickListener(v -> {
+            passwordVisible.toggle();
+            password.setInputType(passwordVisible.isChecked() ?
+                    (InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD) :
+                    InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        });
 
         ok.setOnClickListener(v -> {
             pendingPassword = password.getText().toString();
@@ -52,7 +51,7 @@ public class AskPasswordDialogOnExtract extends BaseDialog {
 
         // cancel is called before dismiss, anyway don't rely on that order
         setOnDismissListener(dialog -> {
-            if (pendingPassword != null) {
+            if(pendingPassword != null) {
                 // wrong password will trigger a new dialog open
                 // with service & task
                 ////////////////////////
