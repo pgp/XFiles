@@ -1,6 +1,7 @@
 package it.pgp.xfiles.adapters.continuousselection;
 
 import android.view.View;
+import android.widget.CheckedTextView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
@@ -30,10 +31,11 @@ public class ContSelHandlingLayout extends RelativeLayout {
     public final CSCheckboxes csCheckboxes; // to break cyclic dependency
 
     public boolean selStatus;
-    public void toggleSelStatus(View unused) {
+    public void toggleSelStatus(View v) {
+        ((CheckedTextView)v).toggle();
         selStatus = !selStatus;
         padLayout.setVisibility(selStatus?VISIBLE:GONE);
-        if (selStatus) barLayout.bringToFront();
+        if(selStatus) barLayout.bringToFront();
         mainActivity.browserPager.switchNeutralArea();
     }
 

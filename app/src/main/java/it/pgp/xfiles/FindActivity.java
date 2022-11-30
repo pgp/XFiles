@@ -26,6 +26,7 @@ import it.pgp.xfiles.roothelperclient.FindManager;
 import it.pgp.xfiles.roothelperclient.reqs.find_rq;
 import it.pgp.xfiles.utils.ArrayTextView;
 import it.pgp.xfiles.utils.FileSelectFragment;
+import it.pgp.xfiles.utils.Misc;
 import it.pgp.xfiles.utils.pathcontent.ArchivePathContent;
 import it.pgp.xfiles.utils.pathcontent.BasePathContent;
 import it.pgp.xfiles.utils.pathcontent.LocalPathContent;
@@ -48,7 +49,6 @@ public class FindActivity extends EffectActivity implements FileSelectFragment.C
     Button findPathChooseButton;
     EditText namePattern,contentPattern;
     CheckedTextView searchOnlyCurrentFolder, caseInsensitiveSearch;
-    public static final View.OnClickListener ctvListener = v -> ((CheckedTextView)v).toggle();
 
     // TODO add case sensitive,escape,regex options widgets for both name and content pattern fields
 
@@ -183,8 +183,8 @@ public class FindActivity extends EffectActivity implements FileSelectFragment.C
 
         searchOnlyCurrentFolder = findViewById(R.id.find_only_current_folder_checkbox);
         caseInsensitiveSearch = findViewById(R.id.case_insensitive_search_checkbox);
-        searchOnlyCurrentFolder.setOnClickListener(ctvListener);
-        caseInsensitiveSearch.setOnClickListener(ctvListener);
+        searchOnlyCurrentFolder.setOnClickListener(Misc.ctvListener);
+        caseInsensitiveSearch.setOnClickListener(Misc.ctvListener);
 
         startSearch.setOnClickListener(this::startSearchTask);
         stopSearch.setOnClickListener(this::stopSearchTask);
