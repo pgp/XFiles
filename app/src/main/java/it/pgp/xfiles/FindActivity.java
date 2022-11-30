@@ -7,7 +7,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.CheckBox;
+import android.widget.CheckedTextView;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -47,10 +47,10 @@ public class FindActivity extends EffectActivity implements FileSelectFragment.C
 
     Button findPathChooseButton;
     EditText namePattern,contentPattern;
-    CheckBox searchOnlyCurrentFolder, caseInsensitiveSearch;
+    CheckedTextView searchOnlyCurrentFolder, caseInsensitiveSearch;
+    public static final View.OnClickListener ctvListener = v -> ((CheckedTextView)v).toggle();
 
     // TODO add case sensitive,escape,regex options widgets for both name and content pattern fields
-
 
     ListView resultsView;
 
@@ -183,6 +183,8 @@ public class FindActivity extends EffectActivity implements FileSelectFragment.C
 
         searchOnlyCurrentFolder = findViewById(R.id.find_only_current_folder_checkbox);
         caseInsensitiveSearch = findViewById(R.id.case_insensitive_search_checkbox);
+        searchOnlyCurrentFolder.setOnClickListener(ctvListener);
+        caseInsensitiveSearch.setOnClickListener(ctvListener);
 
         startSearch.setOnClickListener(this::startSearchTask);
         stopSearch.setOnClickListener(this::stopSearchTask);

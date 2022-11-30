@@ -8,7 +8,7 @@ android {
         minSdkVersion 19
         targetSdkVersion 30
         multiDexEnabled true
-        versionCode 193221128
+        versionCode 193221130
         versionName "1.9.3"
         externalNativeBuild {
             cmake {
