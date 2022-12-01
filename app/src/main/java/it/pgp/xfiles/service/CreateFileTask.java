@@ -9,6 +9,7 @@ import it.pgp.xfiles.MainActivity;
 import it.pgp.xfiles.enums.FileMode;
 import it.pgp.xfiles.enums.FileOpsErrorCodes;
 import it.pgp.xfiles.enums.ServiceStatus;
+import it.pgp.xfiles.items.FileCreationAdvancedOptions;
 import it.pgp.xfiles.service.params.CreateFileParams;
 import it.pgp.xfiles.service.visualization.MovingRibbon;
 import it.pgp.xfiles.utils.pathcontent.BasePathContent;
@@ -53,7 +54,8 @@ public class CreateFileTask extends RootHelperClientTask {
         }
         try {
             rh.initProgressSupport(this);
-            rh.createFileOrDirectory(params.path, FileMode.FILE, params.opts);
+            FileCreationAdvancedOptions[] fileOpts = params.opts == null ? new FileCreationAdvancedOptions[0] : new FileCreationAdvancedOptions[]{params.opts};
+            rh.createFileOrDirectory(params.path, FileMode.FILE, fileOpts);
         }
         catch(IOException e) {
             e.printStackTrace();

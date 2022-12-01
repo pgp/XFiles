@@ -7,7 +7,7 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AbsListView;
 import android.widget.Button;
-import android.widget.CheckBox;
+import android.widget.CheckedTextView;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -28,15 +28,15 @@ import it.pgp.xfiles.service.CreateFileService;
 import it.pgp.xfiles.service.params.CreateFileParams;
 import it.pgp.xfiles.utils.pathcontent.BasePathContent;
 import it.pgp.xfiles.utils.pathcontent.SFTPPathContent;
+import it.pgp.xfiles.utils.pathcontent.SMBPathContent;
 import it.pgp.xfiles.utils.popupwindow.PopupWindowUtils;
 
-public class CreateFileOrDirectoryDialog extends BaseDialog /*implements Runnable*/ {
+public class CreateFileOrDirectoryDialog extends BaseDialog {
 
     EditText filename;
     Button ok;
 
-    LinearLayout advancedOptionsLayoutToggler; // disabled for folders
-    CheckBox advancedOptionsCheckbox;
+    CheckedTextView advancedOptionsCheckbox; // disabled for folders
 
     LinearLayout advancedOptionsLayout; // disabled for folder, togglable for files
 
@@ -54,7 +54,6 @@ public class CreateFileOrDirectoryDialog extends BaseDialog /*implements Runnabl
                 R.drawable.xf_new_file :
                 R.drawable.xf_new_dir);
 
-        advancedOptionsLayoutToggler = findViewById(R.id.fileDirCreate_advancedOptionsLayoutToggler);
         advancedOptionsCheckbox = findViewById(R.id.fileDirCreate_advancedOptionsCheckbox);
         advancedOptionsLayout = findViewById(R.id.fileDirCreate_advancedOptionsLayout);
         advancedOptionsLayout.setVisibility(View.GONE);
@@ -62,11 +61,14 @@ public class CreateFileOrDirectoryDialog extends BaseDialog /*implements Runnabl
         switch (type) {
             case DIRECTORY:
                 setTitle("Create directory");
-                advancedOptionsLayoutToggler.setVisibility(View.GONE);
+                advancedOptionsCheckbox.setVisibility(View.GONE);
                 break;
             case FILE:
                 setTitle("Create file");
-                advancedOptionsCheckbox.setOnCheckedChangeListener((buttonView, isChecked) -> advancedOptionsLayout.setVisibility(isChecked?View.VISIBLE:View.GONE));
+                advancedOptionsCheckbox.setOnClickListener(v -> {
+                    advancedOptionsCheckbox.toggle();
+                    advancedOptionsLayout.setVisibility(advancedOptionsCheckbox.isChecked() ? View.VISIBLE : View.GONE);
+                });
                 fileSize = findViewById(R.id.fileDirCreate_fileSize);
                 fileCreationStrategy = findViewById(R.id.fileDirCreate_fileCreationStrategy);
                 break;
@@ -89,7 +91,6 @@ public class CreateFileOrDirectoryDialog extends BaseDialog /*implements Runnabl
                 return;
             }
             toggleButtons(true);
-//            new Thread(this).start();
 
             BasePathContent f = mainActivity.getCurrentDirCommander().getCurrentDirectoryPathname().concat(filename_);
             // dirty hack to workaround final variable requirements in lambdas and catch-finally data flow dependency
@@ -107,9 +108,8 @@ public class CreateFileOrDirectoryDialog extends BaseDialog /*implements Runnabl
                                 fileSize.getText().toString().isEmpty() ? 0 : Long.parseLong(fileSize.getText().toString()),
                                 FileCreationAdvancedOptions.CreationStrategy.values()[idx]);
 
-                if (f instanceof SFTPPathContent) {
-                    MainActivity.sftpProvider.createFileOrDirectory(f,type);
-                }
+                if(f instanceof SFTPPathContent) MainActivity.sftpProvider.createFileOrDirectory(f,type);
+                else if(f instanceof SMBPathContent) MainActivity.smbProvider.createFileOrDirectory(f,type);
                 else {
 //                    MainActivity.getRootHelperClient().createFileOrDirectory(f,type,opts);
                     try {
@@ -149,14 +149,6 @@ public class CreateFileOrDirectoryDialog extends BaseDialog /*implements Runnabl
         ok.setEnabled(!start);
         ok.setText(start?"Creating...":"OK");
     }
-
-//    @Override
-//    public void run() {
-//        final String filename_ = filename.getText().toString();
-//        BasePathContent f = mainActivity.getCurrentDirCommander().getCurrentDirectoryPathname().concat(filename_);
-//
-//        ///
-//    }
 
     public static boolean doCreate(MainActivity mainActivity, BasePathContent ff, FileMode type) {
         try {

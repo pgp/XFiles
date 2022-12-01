@@ -872,7 +872,7 @@ public class RootHelperClient implements FileOperationHelper {
 
     @Override
     public void createFileOrDirectory(BasePathContent path, FileMode fileOrDirectory, FileCreationAdvancedOptions... fileOptions) throws IOException {
-        SinglePath_rq req = (fileOrDirectory == FileMode.FILE && fileOptions.length > 0) ?
+        SinglePath_rq req = (fileOrDirectory == FileMode.FILE && fileOptions.length > 0 && fileOptions[0] != null) ?
                 new create_rq(path.dir, fileOptions[0]):
                 new create_rq(path.dir, fileOrDirectory);
         int errno;
