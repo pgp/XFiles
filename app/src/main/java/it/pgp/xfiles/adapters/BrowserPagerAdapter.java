@@ -12,7 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
-import android.widget.CheckBox;
+import android.widget.CheckedTextView;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -369,7 +369,7 @@ public class BrowserPagerAdapter extends PagerAdapter {
     }
 
     private final EditText[] quickFindEditTexts = new EditText[ADAPTER_SIZE];
-    private final CheckBox[] quickFindIgnoreCases = new CheckBox[ADAPTER_SIZE];
+    private final CheckedTextView[] quickFindIgnoreCases = new CheckedTextView[ADAPTER_SIZE];
 
     private void setQuickFindModeLayout(boolean active, int position) {
         final LayoutInflater inflater = LayoutInflater.from(mContext);
@@ -401,10 +401,12 @@ public class BrowserPagerAdapter extends PagerAdapter {
             });
 
             quickFindIgnoreCases[position] = rootLayouts[position].findViewById(R.id.quickFindIgnoreCase);
-
-            quickFindIgnoreCases[position].setOnCheckedChangeListener((buttonView, isChecked) -> browserAdapters[position].filterObjects(
-                    quickFindEditTexts[position].getText(),
-                    quickFindIgnoreCases[position].isChecked()));
+            quickFindIgnoreCases[position].setOnClickListener(v -> {
+                quickFindIgnoreCases[position].toggle();
+                browserAdapters[position].filterObjects(
+                        quickFindEditTexts[position].getText(),
+                        quickFindIgnoreCases[position].isChecked());
+            });
         }
     }
 
