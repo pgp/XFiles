@@ -13,7 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
-import android.widget.CheckBox;
+import android.widget.CheckedTextView;
 import android.widget.GridView;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
@@ -65,10 +65,10 @@ public class ChecksumActivity extends EffectActivity implements FileSaveFragment
 
     // directory hashing layout and checkboxes for options
     private LinearLayout dirHashOptsLayout;
-    private CheckBox dirHashWithNames;
-    private CheckBox dirHashIgnoreThumbsFiles;
-    private CheckBox dirHashIgnoreUnixHiddenFiles;
-    private CheckBox dirHashIgnoreEmptyDirs;
+    private CheckedTextView dirHashWithNames;
+    private CheckedTextView dirHashIgnoreThumbsFiles;
+    private CheckedTextView dirHashIgnoreUnixHiddenFiles;
+    private CheckedTextView dirHashIgnoreEmptyDirs;
 
     private List<List<HashTextView>> hashMatrix = new ArrayList<>();
     private Set<HashRequestCodes> selectedHashAlgorithms; // selected from the last run (not necessarily completed)
@@ -122,6 +122,11 @@ public class ChecksumActivity extends EffectActivity implements FileSaveFragment
         dirHashIgnoreThumbsFiles = findViewById(R.id.checksum_dirHashIgnoreThumbsFiles);
         dirHashIgnoreUnixHiddenFiles = findViewById(R.id.checksum_dirHashIgnoreUnixHiddenFiles);
         dirHashIgnoreEmptyDirs = findViewById(R.id.checksum_dirHashIgnoreEmptyDirs);
+
+        dirHashWithNames.setOnClickListener(Misc.ctvListener);
+        dirHashIgnoreThumbsFiles.setOnClickListener(Misc.ctvListener);
+        dirHashIgnoreUnixHiddenFiles.setOnClickListener(Misc.ctvListener);
+        dirHashIgnoreEmptyDirs.setOnClickListener(Misc.ctvListener);
 
         GridView hashSelectorView = findViewById(R.id.hashSelectorView);
         hashSelectorView.setOnItemClickListener((parent, item, position, id) -> {

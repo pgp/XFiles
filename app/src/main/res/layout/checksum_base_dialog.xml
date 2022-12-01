@@ -28,27 +28,25 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <CheckBox
+            <CheckedTextView
                 android:checked="false"
                 android:id="@+id/checksum_dirHashWithNames"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent" />
-
-            <TextView
                 android:text="Include filenames"
+                android:focusable="true"
+                android:clickable="true"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"
+                android:checkMark="?android:attr/listChoiceIndicatorMultiple" />
 
-            <CheckBox
+            <CheckedTextView
                 android:checked="true"
                 android:id="@+id/checksum_dirHashIgnoreThumbsFiles"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent" />
-
-            <TextView
                 android:text="Ignore thumbs files"
+                android:focusable="true"
+                android:clickable="true"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"
+                android:checkMark="?android:attr/listChoiceIndicatorMultiple" />
 
         </LinearLayout>
 
@@ -57,27 +55,25 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <CheckBox
+            <CheckedTextView
                 android:checked="true"
                 android:id="@+id/checksum_dirHashIgnoreUnixHiddenFiles"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent" />
-
-            <TextView
                 android:text="Ignore Unix hidden files"
+                android:focusable="true"
+                android:clickable="true"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"
+                android:checkMark="?android:attr/listChoiceIndicatorMultiple" />
 
-            <CheckBox
+            <CheckedTextView
                 android:checked="true"
                 android:id="@+id/checksum_dirHashIgnoreEmptyDirs"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent" />
-
-            <TextView
                 android:text="Ignore empty sub-directories"
+                android:focusable="true"
+                android:clickable="true"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"
+                android:checkMark="?android:attr/listChoiceIndicatorMultiple" />
 
         </LinearLayout>
 
