@@ -34,7 +34,7 @@ public class AskPasswordDialogOnExtract extends BaseDialog {
         setDialogIcon(R.drawable.xfiles_extract);
 
         EditText password = findViewById(R.id.passwordEditText);
-        CheckedTextView passwordVisible = findViewById(R.id.passwordVisibleCheckbox);
+        CheckedTextView passwordVisible = findViewById(R.id.passwordVisibleCtv);
         Button ok = findViewById(R.id.askPasswordOkButton);
 
         passwordVisible.setOnClickListener(v -> {

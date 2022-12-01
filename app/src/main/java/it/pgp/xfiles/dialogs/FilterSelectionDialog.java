@@ -19,7 +19,7 @@ public class FilterSelectionDialog extends BaseDialog {
         setContentView(R.layout.filter_selection_dialog);
         setDialogIcon(R.drawable.xfiles_find);
         EditText content = findViewById(R.id.singleFilenameEditText);
-        CheckedTextView ignoreCase = findViewById(R.id.ignoreCaseCheckbox);
+        CheckedTextView ignoreCase = findViewById(R.id.ignoreCaseCtv);
         ignoreCase.setOnClickListener(Misc.ctvListener);
         Button okButton = findViewById(R.id.singleFilenameOkButton);
         okButton.setOnClickListener(v -> {

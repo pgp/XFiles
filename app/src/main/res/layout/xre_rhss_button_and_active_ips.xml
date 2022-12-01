@@ -35,7 +35,7 @@
 
             <CheckedTextView
                 android:checked="true"
-                android:id="@+id/rhssAnnounceOptionCheckBox"
+                android:id="@+id/rhssAnnounceOptionCtv"
                 android:text="@string/send_xre_announce"
                 android:focusable="true"
                 android:clickable="true"

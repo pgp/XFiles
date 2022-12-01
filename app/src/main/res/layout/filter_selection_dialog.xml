@@ -13,7 +13,7 @@
 
     <CheckedTextView
         android:checked="true"
-        android:id="@+id/ignoreCaseCheckbox"
+        android:id="@+id/ignoreCaseCtv"
         android:text="Ignore case"
         android:focusable="true"
         android:clickable="true"

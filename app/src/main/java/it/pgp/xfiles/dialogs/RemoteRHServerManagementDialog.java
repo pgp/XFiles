@@ -271,7 +271,7 @@ public class RemoteRHServerManagementDialog extends Dialog {
         ftpHttpRootPath = findViewById(R.id.ftpHttpRootPath);
         ftpHttpRootPath.setText(Misc.internalStorageDir.getAbsolutePath());
 
-        rhssSendXreAnnounceCtv = findViewById(R.id.rhssAnnounceOptionCheckBox);
+        rhssSendXreAnnounceCtv = findViewById(R.id.rhssAnnounceOptionCtv);
         rhssSendXreAnnounceCtv.setOnClickListener(Misc.ctvListener);
 
         // check rhss manager thread status
