@@ -13,7 +13,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
-import android.widget.CheckBox;
+import android.widget.CheckedTextView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -59,9 +59,11 @@ public class PopupWindowUtils {
 
         TextView htv = popupView.findViewById(R.id.hvTextView);
         TextView tv = popupView.findViewById(R.id.hashview_timeout_alert_textview);
+        CheckedTextView hvShowFull = popupView.findViewById(R.id.hvShowFull);
 
-        ((CheckBox)popupView.findViewById(R.id.hvShowFull)).setOnCheckedChangeListener((buttonView, isChecked) -> {
-            int newIndex = isChecked?1:0;
+        hvShowFull.setOnClickListener(v -> {
+            hvShowFull.toggle();
+            int newIndex = hvShowFull.isChecked()?1:0;
             if(newIndex == 1 && hvs[1] == null)
                 hvs[1] = new HashView(
                         context,

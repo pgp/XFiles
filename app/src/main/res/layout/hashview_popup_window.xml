@@ -22,24 +22,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
-    <LinearLayout
-        android:orientation="horizontal"
+    <CheckedTextView
+        android:checked="false"
+        android:id="@+id/hvShowFull"
+        android:text="Show full"
+        android:focusable="true"
+        android:clickable="true"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" >
-
-        <TextView
-            android:text="Show full"
-            android:textColor="@color/white"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <CheckBox
-            android:checked="false"
-            android:id="@+id/hvShowFull"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-    </LinearLayout>
+        android:layout_height="wrap_content"
+        android:checkMark="?android:attr/listChoiceIndicatorMultiple" />
 
     <Button
         android:id="@+id/hashview_close_button"
