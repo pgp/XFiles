@@ -36,7 +36,7 @@ public class CreateFileOrDirectoryDialog extends BaseDialog {
     EditText filename;
     Button ok;
 
-    CheckedTextView advancedOptionsCheckbox; // disabled for folders
+    CheckedTextView advancedOptionsCtv; // disabled for folders
 
     LinearLayout advancedOptionsLayout; // disabled for folder, togglable for files
 
@@ -54,20 +54,20 @@ public class CreateFileOrDirectoryDialog extends BaseDialog {
                 R.drawable.xf_new_file :
                 R.drawable.xf_new_dir);
 
-        advancedOptionsCheckbox = findViewById(R.id.fileDirCreate_advancedOptionsCheckbox);
+        advancedOptionsCtv = findViewById(R.id.fileDirCreate_advancedOptionsCtv);
         advancedOptionsLayout = findViewById(R.id.fileDirCreate_advancedOptionsLayout);
         advancedOptionsLayout.setVisibility(View.GONE);
 
         switch (type) {
             case DIRECTORY:
                 setTitle("Create directory");
-                advancedOptionsCheckbox.setVisibility(View.GONE);
+                advancedOptionsCtv.setVisibility(View.GONE);
                 break;
             case FILE:
                 setTitle("Create file");
-                advancedOptionsCheckbox.setOnClickListener(v -> {
-                    advancedOptionsCheckbox.toggle();
-                    advancedOptionsLayout.setVisibility(advancedOptionsCheckbox.isChecked() ? View.VISIBLE : View.GONE);
+                advancedOptionsCtv.setOnClickListener(v -> {
+                    advancedOptionsCtv.toggle();
+                    advancedOptionsLayout.setVisibility(advancedOptionsCtv.isChecked() ? View.VISIBLE : View.GONE);
                 });
                 fileSize = findViewById(R.id.fileDirCreate_fileSize);
                 fileCreationStrategy = findViewById(R.id.fileDirCreate_fileCreationStrategy);
@@ -98,7 +98,7 @@ public class CreateFileOrDirectoryDialog extends BaseDialog {
             List<String> nameToLocate = new ArrayList<String>(){{add(filename_);}};
 
             try {
-                int idx = (advancedOptionsCheckbox.isChecked() && type == FileMode.FILE)?
+                int idx = (advancedOptionsCtv.isChecked() && type == FileMode.FILE)?
                         1 + fileCreationStrategy.indexOfChild(
                                 fileCreationStrategy.findViewById(
                                         fileCreationStrategy.getCheckedRadioButtonId())):
@@ -141,7 +141,7 @@ public class CreateFileOrDirectoryDialog extends BaseDialog {
             });
         });
 
-        if(type==FileMode.FILE && showAdvancedOptions) advancedOptionsCheckbox.performClick();
+        if(type==FileMode.FILE && showAdvancedOptions) advancedOptionsCtv.performClick();
     }
 
     private void toggleButtons(boolean start) {

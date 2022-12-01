@@ -16,7 +16,7 @@
         android:layout_height="wrap_content" />
 
     <CheckedTextView
-        android:id="@+id/fileDirCreate_advancedOptionsCheckbox"
+        android:id="@+id/fileDirCreate_advancedOptionsCtv"
         android:text="Advanced file creation options"
         android:focusable="true"
         android:clickable="true"

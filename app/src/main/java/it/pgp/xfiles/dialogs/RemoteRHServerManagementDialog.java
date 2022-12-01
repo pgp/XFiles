@@ -6,7 +6,7 @@ import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
-import android.widget.CheckBox;
+import android.widget.CheckedTextView;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -47,7 +47,7 @@ public class RemoteRHServerManagementDialog extends Dialog {
 
     private EditText ftpHttpRootPath;
 
-    private CheckBox rhssSendXreAnnounceCheckbox;
+    private CheckedTextView rhssSendXreAnnounceCtv;
     public final IfAddrsObserver ifAddrsObserver;
 
     private BasePathContent currentDir;
@@ -135,7 +135,7 @@ public class RemoteRHServerManagementDialog extends Dialog {
     };
 
     private void togglePathsWidgets(boolean status) {
-        rhssSendXreAnnounceCheckbox.setEnabled(status);
+        rhssSendXreAnnounceCtv.setEnabled(status);
         xreHomePath.setEnabled(status);
         xreAnnouncedPath.setEnabled(status);
         xreExposedPath.setEnabled(status);
@@ -146,7 +146,7 @@ public class RemoteRHServerManagementDialog extends Dialog {
             RHSSServerStatus.xreHomePathStr = xreHomePath.getText().toString();
             RHSSServerStatus.xreAnnouncedPathStr = xreAnnouncedPath.getText().toString();
             RHSSServerStatus.xreExposedPathStr = xreExposedPath.getText().toString();
-            RHSSServerStatus.announceEnabled = rhssSendXreAnnounceCheckbox.isChecked();
+            RHSSServerStatus.announceEnabled = rhssSendXreAnnounceCtv.isChecked();
         }
         else {
             RHSSServerStatus.xreHomePathStr = "";
@@ -159,13 +159,13 @@ public class RemoteRHServerManagementDialog extends Dialog {
         xreHomePath.setText(RHSSServerStatus.xreHomePathStr);
         xreAnnouncedPath.setText(RHSSServerStatus.xreAnnouncedPathStr);
         xreExposedPath.setText(RHSSServerStatus.xreExposedPathStr);
-        rhssSendXreAnnounceCheckbox.setChecked(RHSSServerStatus.announceEnabled);
+        rhssSendXreAnnounceCtv.setChecked(RHSSServerStatus.announceEnabled);
     }
 
     private void switch_rhss_status(View unused) {
         if (RemoteServerManager.rhssManagerRef.get()==null) { // OFF -> ON
             RemoteServerManager.RHSS_ACTION targetAction =
-                    (rhssSendXreAnnounceCheckbox!=null && rhssSendXreAnnounceCheckbox.isChecked())?
+                    (rhssSendXreAnnounceCtv !=null && rhssSendXreAnnounceCtv.isChecked())?
                             RemoteServerManager.RHSS_ACTION.START_ANNOUNCE:
                             RemoteServerManager.RHSS_ACTION.START;
 
@@ -271,7 +271,8 @@ public class RemoteRHServerManagementDialog extends Dialog {
         ftpHttpRootPath = findViewById(R.id.ftpHttpRootPath);
         ftpHttpRootPath.setText(Misc.internalStorageDir.getAbsolutePath());
 
-        rhssSendXreAnnounceCheckbox = findViewById(R.id.rhssAnnounceOptionCheckBox);
+        rhssSendXreAnnounceCtv = findViewById(R.id.rhssAnnounceOptionCheckBox);
+        rhssSendXreAnnounceCtv.setOnClickListener(Misc.ctvListener);
 
         // check rhss manager thread status
         if (RemoteServerManager.rhssManagerRef.get() == null) {

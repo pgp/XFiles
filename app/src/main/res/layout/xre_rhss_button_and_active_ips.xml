@@ -33,26 +33,15 @@
 
             </LinearLayout>
 
-            <LinearLayout
-                android:id="@+id/rhssAnnounceOptionLayout"
-                android:orientation="horizontal"
+            <CheckedTextView
+                android:checked="true"
+                android:id="@+id/rhssAnnounceOptionCheckBox"
+                android:text="@string/send_xre_announce"
+                android:focusable="true"
+                android:clickable="true"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <CheckBox
-                    android:id="@+id/rhssAnnounceOptionCheckBox"
-                    android:checked="true"
-                    android:layout_weight="1"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent" />
-
-                <TextView
-                    android:text="@string/send_xre_announce"
-                    android:layout_weight="8"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent" />
-
-            </LinearLayout>
+                android:layout_height="wrap_content"
+                android:checkMark="?android:attr/listChoiceIndicatorMultiple" />
 
             <LinearLayout
                 android:orientation="vertical"
