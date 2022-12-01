@@ -11,7 +11,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.CheckBox;
+import android.widget.CheckedTextView;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
@@ -104,7 +104,7 @@ public class GenericChangeDirectoryDialog extends Dialog {
     PasteableEditText httpUrlToDownload;
     EditText httpDestPath; // if empty, take currently shown path in browser view
     EditText httpTargetFilename;
-    CheckBox httpForceHttps; // -> httpsOnly
+    CheckedTextView httpForceHttps; // -> httpsOnly
 
     private final AtomicBoolean currentDirAutofillOverride = new AtomicBoolean(true);
 
@@ -277,13 +277,11 @@ public class GenericChangeDirectoryDialog extends Dialog {
                 httpTargetFilename = findViewById(R.id.httpTargetFilenameEditText);
                 httpUrlToDownload.setText("https://");
                 httpForceHttps = findViewById(R.id.httpForceHttpsCheckbox);
-                httpForceHttps.setChecked(true);
+                httpForceHttps.setOnClickListener(Misc.ctvListener);
                 break;
             default:
                 throw new RuntimeException("Unknown subtype layout");
         }
-
-
 
         switch(providerType) {
             case LOCAL:

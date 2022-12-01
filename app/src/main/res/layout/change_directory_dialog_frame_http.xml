@@ -40,18 +40,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
-    <LinearLayout
+    <CheckedTextView
+        android:checked="true"
+        android:id="@+id/httpForceHttpsCheckbox"
+        android:text="Force https"
+        android:focusable="true"
+        android:clickable="true"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <CheckBox
-            android:id="@+id/httpForceHttpsCheckbox"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-        <TextView
-            android:text="Force https"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
-
+        android:layout_height="wrap_content"
+        android:checkMark="?android:attr/listChoiceIndicatorMultiple" />
 
 </LinearLayout>
