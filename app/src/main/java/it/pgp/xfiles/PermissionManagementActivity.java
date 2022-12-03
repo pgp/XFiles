@@ -2,6 +2,8 @@ package it.pgp.xfiles;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -17,7 +19,7 @@ import android.widget.Toast;
 
 public class PermissionManagementActivity extends Activity {
 
-    public enum PermReqCodes { STORAGE, SYSTEM_SETTINGS, OVERLAYS, STORAGE_READ /*, EXTERNAL_SD*/, INSTALL_UNKNOWN_APPS }
+    public enum PermReqCodes { STORAGE, SYSTEM_SETTINGS, OVERLAYS, STORAGE_READ /*, EXTERNAL_SD*/, INSTALL_UNKNOWN_APPS, NOTIFS13 }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -83,35 +85,10 @@ public class PermissionManagementActivity extends Activity {
                             (getPackageManager().canRequestPackageInstalls()?"granted":"denied"), Toast.LENGTH_SHORT).show();
                 }
                 break;
-
-//            case EXTERNAL_SD:
-//                if (resultCode != RESULT_OK) {
-//                    Toast.makeText(this, "External SD write permission denied", Toast.LENGTH_SHORT).show();
-//                    return;
-//                }
-//                else {
-//                    try {
-//                        Uri treeUri = data.getData();
-//                        DocumentFile pickedDir = DocumentFile.fromTreeUri(this, treeUri);
-//                        grantUriPermission(getPackageName(), treeUri, Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-//                        getContentResolver().takePersistableUriPermission(treeUri, Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-//                        Toast.makeText(this, "Custom path RW permission granted for path "+pickedDir.getUri(), Toast.LENGTH_SHORT).show();
-////                        pickedDir.createDirectory("prova123"); // this works
-//
-//
-////                        DocumentFile targetDir = DocumentFile.fromSingleUri(this,Uri.fromFile(new File("/storage/1702-3A0E/")));
-////                        targetDir.createDirectory("prova123"); // this doesn't work!
-//
-//                        SharedPreferences.Editor editor = getSharedPreferences(getPackageName(),MODE_PRIVATE).edit();
-//                        editor.putString("EXTSDFILE",treeUri.toString());
-//                        editor.apply();
-//                    }
-//                    catch (Exception e) {
-//                        e.printStackTrace();
-//                        Toast.makeText(this, "Error during external sd permission request", Toast.LENGTH_SHORT).show();
-//                    }
-//                }
-//                break;
+            case NOTIFS13:
+                NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                Toast.makeText(this, "Notification permission "+(nm.areNotificationsEnabled()?"granted":"denied"), Toast.LENGTH_SHORT).show();
+                break;
         }
     }
 
@@ -126,6 +103,14 @@ public class PermissionManagementActivity extends Activity {
             Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION, Uri.parse("package:" + getPackageName()));
             startActivityForResult(intent, PermReqCodes.STORAGE.ordinal());
         }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
+    public void requestNotifs13Permissions(View view) {
+        Intent intent = new Intent();
+        intent.setAction(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
+        intent.putExtra("android.provider.extra.APP_PACKAGE", getPackageName());
+        startActivityForResult(intent, PermReqCodes.NOTIFS13.ordinal());
     }
 
     // for Oreo, that absurdly needs READ external storage permission request AFTER WRITE one has already been granted (and the latter in this case is automatically granted!)
@@ -169,5 +154,9 @@ public class PermissionManagementActivity extends Activity {
         super.onCreate(savedInstanceState);
         setTitle("Permission management");
         setContentView(R.layout.activity_permission_management);
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            findViewById(R.id.notifs13Permissions).setVisibility(View.VISIBLE);
+            findViewById(R.id.notifs13PermissionsExplain).setVisibility(View.VISIBLE);
+        }
     }
 }

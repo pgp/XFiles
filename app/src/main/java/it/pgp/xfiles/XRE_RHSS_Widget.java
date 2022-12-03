@@ -11,6 +11,7 @@ import android.widget.RemoteViews;
 
 import it.pgp.xfiles.dialogs.XFilesRemoteSessionsManagementActivity;
 import it.pgp.xfiles.roothelperclient.RemoteServerManager;
+import it.pgp.xfiles.service.BaseBackgroundService;
 import it.pgp.xfiles.utils.NetworkUtils;
 
 public class XRE_RHSS_Widget extends AppWidgetProvider {
@@ -42,11 +43,11 @@ public class XRE_RHSS_Widget extends AppWidgetProvider {
             forToggleIntentUpdate.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, new int[]{appWidgetId});
             PendingIntent forToggleUpdate = PendingIntent.getBroadcast(
                     context, appWidgetId, forToggleIntentUpdate,
-                    PendingIntent.FLAG_UPDATE_CURRENT);
+                    PendingIntent.FLAG_UPDATE_CURRENT | BaseBackgroundService.pendingIntentFlag);
             remoteViews.setOnClickPendingIntent(R.id.rhss_toggle_rhss_button, forToggleUpdate);
 
             Intent XREActiveClientsActivityLaunchIntent = new Intent(context, XFilesRemoteSessionsManagementActivity.class);
-            PendingIntent XREActiveClientsActivityLaunchPendingIntent = PendingIntent.getActivity(context, 0, XREActiveClientsActivityLaunchIntent, 0);
+            PendingIntent XREActiveClientsActivityLaunchPendingIntent = PendingIntent.getActivity(context, 0, XREActiveClientsActivityLaunchIntent, BaseBackgroundService.pendingIntentFlag);
             remoteViews.setOnClickPendingIntent(R.id.rhss_show_xre_connections, XREActiveClientsActivityLaunchPendingIntent);
 
             widgetManager.updateAppWidget(appWidgetId, remoteViews);

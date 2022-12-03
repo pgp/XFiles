@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.NotificationManager;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -730,6 +731,16 @@ public class MainActivity extends EffectActivity {
                     Toast.LENGTH_SHORT).show();
             startPermissionManagementActivity();
             return;
+        }
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            if(!nm.areNotificationsEnabled()) {
+                Toast.makeText(this, "Notification permissions for Android 13+ not granted, please enable them",
+                        Toast.LENGTH_SHORT).show();
+                startPermissionManagementActivity();
+                return;
+            }
         }
 
         xFilesUtils = new XFilesUtils();

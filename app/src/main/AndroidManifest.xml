@@ -17,6 +17,7 @@
     <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"/>
     <uses-permission android:name="android.permission.WRITE_SETTINGS" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" /> <!-- API 33 -->
 
     <!-- <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /> -->
     <!-- for (local) wifi hotspot toggle from Android O onwards -->
@@ -41,6 +42,7 @@
 
         <activity
             android:name=".MainActivity"
+            android:exported="true"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:launchMode="singleTask"
             android:windowSoftInputMode="stateAlwaysHidden|adjustPan">
@@ -195,6 +197,7 @@
             android:configChanges="orientation|screenSize|keyboardHidden" />
         <activity
             android:name=".XREDirectShareActivity"
+            android:exported="true"
             android:launchMode="singleTask"
             android:configChanges="orientation|screenSize|keyboardHidden">
             <intent-filter
@@ -210,6 +213,7 @@
         </activity>
         <activity
             android:name=".dialogs.compress.CompressActivity"
+            android:exported="true"
             android:configChanges="orientation|screenSize|keyboardHidden">
             <intent-filter
                 android:icon="@drawable/xfiles_archive"
@@ -290,7 +294,7 @@
             android:enabled="true"
             android:exported="true" />
 
-        <receiver android:name=".XRE_RHSS_Widget">
+        <receiver android:name=".XRE_RHSS_Widget" android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
                 <action android:name="it.pgp.xfiles.appwidget.action.STANDARD_UPDATE" />

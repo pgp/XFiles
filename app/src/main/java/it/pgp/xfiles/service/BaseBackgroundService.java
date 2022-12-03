@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Build;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.support.v4.app.NotificationCompat;
@@ -51,6 +52,8 @@ public abstract class BaseBackgroundService extends Service {
     public String foreground_pause_action_label;
     public String foreground_stop_action_label;
 
+    public static final int pendingIntentFlag = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ? PendingIntent.FLAG_IMMUTABLE : 0;
+
     public abstract int getServiceIconRes();
 
     public abstract int getForegroundServiceNotificationId();
@@ -81,17 +84,17 @@ public abstract class BaseBackgroundService extends Service {
                 | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
-                notificationIntent, 0);
+                notificationIntent, pendingIntentFlag);
 
         Intent pauseIntent = new Intent(this, getClass());
         pauseIntent.setAction(PAUSE_ACTION);
         PendingIntent ppauseIntent = PendingIntent.getService(this, 0,
-                pauseIntent, 0);
+                pauseIntent, pendingIntentFlag);
 
         Intent stopIntent = new Intent(this, getClass());
         stopIntent.setAction(CANCEL_ACTION);
         PendingIntent pstopIntent = PendingIntent.getService(this, 0,
-                stopIntent, 0);
+                stopIntent, pendingIntentFlag);
 
         Bitmap icon = Bitmap.createScaledBitmap(
                 BitmapFactory.decodeResource(

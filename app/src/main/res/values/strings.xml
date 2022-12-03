@@ -24,6 +24,7 @@
     <string name="appwidget_text">EXAMPLE</string>
     <string name="add_widget">Add widget</string>
     <string name="permission_storage_explain">XFiles is a file explorer, so it obviously needs permissions to access storage. Without this permission, the app will not start</string>
+    <string name="permission_notifs13_explain">On Android 13+, this permission is required for showing progress in foreground services, and for showing toast messages when no activity is active. Without this permission, the app will not start</string>
     <string name="permission_sysSettings_explain"><![CDATA[Optional permission, on devices < Android Oreo it allows to toggle the hotspot state without having to open the system UI every time]]></string>
     <string name="permission_overlay_explain">Optional permission, on file transfers it allows to show an overlay with progress bars (otherwise you would have to check from the service foreground notification)</string>
     <string name="close">Close</string>

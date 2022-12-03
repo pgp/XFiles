@@ -22,6 +22,24 @@
         android:text="Request Storage permission" />
 
     <TextView
+        android:visibility="gone"
+        android:id="@+id/notifs13PermissionsExplain"
+        android:textSize="15dp"
+        android:gravity="center_horizontal"
+        android:text="@string/permission_notifs13_explain"
+        android:textColor="@color/green"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:visibility="gone"
+        android:onClick="requestNotifs13Permissions"
+        android:id="@+id/notifs13Permissions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Request Notifications permission (Android 13+)" />
+
+    <TextView
         android:textSize="15dp"
         android:gravity="center_horizontal"
         android:text="@string/permission_sysSettings_explain"
