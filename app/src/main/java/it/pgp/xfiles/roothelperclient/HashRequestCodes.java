@@ -1,5 +1,7 @@
 package it.pgp.xfiles.roothelperclient;
 
+import android.widget.Checkable;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -9,7 +11,7 @@ import java.util.Map;
  * corresponding to hashMethods,hashLabels,hashLengths enum and arrays in roothelper c code
  */
 
-public enum HashRequestCodes {
+public enum HashRequestCodes implements Checkable {
 
     crc32((byte)0x00,"CRC32",4,android.R.color.holo_purple),
     md5((byte)0x01,"MD5",16, android.R.color.holo_red_dark),
@@ -76,7 +78,7 @@ public enum HashRequestCodes {
         this.checked = checked;
     }
 
-    public void toggleChecked() {
+    public void toggle() {
         checked = !checked;
     }
 
