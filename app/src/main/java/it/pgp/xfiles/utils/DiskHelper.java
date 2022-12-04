@@ -77,7 +77,7 @@ public class DiskHelper {
     public static Set<String> getExternalMounts(MainActivity activity) {
         FileOperationHelper helper = activity.getFileOpsHelper(ProviderType.LOCAL);
         Set<String> out = new HashSet<>();
-        String reg = "(?i).*vold.*(vfat|ntfs|exfat|sdfat|fat32|ext3|ext4).*(rw,|ro,).*";
+        String reg = "(?i).*vold.*(vfat|ntfs|exfat|sdfat|fat32|ext3|ext4|fuseblk).*(rw,|ro,).*";
         StringBuilder sb = new StringBuilder();
         try {
             // root available, granted and enabled -> su -c mount
@@ -120,7 +120,7 @@ public class DiskHelper {
 
         /*
         check common pathnames for internal storage
-        motivation: on some devices (e.g. some Huawei phones, getExternalStorageDirectory() returns the external memory card, instead of the phone memory
+        motivation: on some devices (e.g. some Huawei phones), getExternalStorageDirectory() returns the external memory card, instead of the phone memory
         - indeed, given the API method name, THIS ONE should be the correct behaviour, but on the overwhelming majority of Android devices,
         that method returns the internal mass storage path instead - so in order to have also a bookmark for internal memory, we check commonly used
         path names as well
