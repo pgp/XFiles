@@ -6,6 +6,8 @@
     android:layout_height="wrap_content">
         <CheckedTextView
             android:id="@+id/checksum_ctv"
+            android:focusable="true"
+            android:clickable="true"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             android:checkMark="?android:attr/listChoiceIndicatorMultiple" />

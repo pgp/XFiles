@@ -129,23 +129,13 @@ public class ChecksumActivity extends EffectActivity implements FileSaveFragment
         dirHashIgnoreEmptyDirs.setOnClickListener(Misc.ctvListener);
 
         GridView hashSelectorView = findViewById(R.id.hashSelectorView);
-        hashSelectorView.setOnItemClickListener((parent, item, position, id) -> {
-            HashRequestCodes h = adapter.getItem(position);
-            h.toggle();
-            HashAlgorithmsAdapter.ViewHolder viewHolder = (HashAlgorithmsAdapter.ViewHolder) item.getTag();
-            viewHolder.ctv.toggle();
-        });
-
         adapter = new HashAlgorithmsAdapter(this);
         hashSelectorView.setAdapter(adapter);
 
         computeChecksumsButton = findViewById(R.id.computeChecksumsButton);
 
         // check SHA-256 by default
-        // not working anymore, now that CheckedTextView is used
-//        Checkable v = Misc.getViewByPosition(HashRequestCodes.sha256.ordinal(),hashSelectorView).findViewById(R.id.checksum_ctv);
-//        v.toggle();
-
+        Misc.getViewByPosition(HashRequestCodes.sha256.ordinal(),hashSelectorView).findViewById(R.id.checksum_ctv).performClick();
     }
 
     HashTextView currentlySelectedTableItem;

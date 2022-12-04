@@ -44,11 +44,14 @@ public class HashAlgorithmsAdapter extends ArrayAdapter<HashRequestCodes> {
         if(convertView == null) {
             convertView = inflater.inflate(R.layout.checksum_label_item, null);
             ctv = convertView.findViewById(R.id.checksum_ctv);
+            ctv.setOnClickListener(v->{
+                ctv.toggle();
+                ((HashRequestCodes)ctv.getTag()).setChecked(ctv.isChecked());
+            });
             convertView.setTag(new ViewHolder(ctv));
         }
         else {
-            ViewHolder viewHolder = (ViewHolder) convertView.getTag();
-            ctv = viewHolder.ctv;
+            ctv = ((ViewHolder)convertView.getTag()).ctv;
         }
 
         ctv.setTag(item);
