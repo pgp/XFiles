@@ -124,10 +124,7 @@ public class PermissionManagementActivity extends Activity {
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     public void openSystemSettingsPermissionsManagement(View unused) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
-            startActivityForResult(new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS, Uri.parse("package:" + getPackageName())), PermReqCodes.SYSTEM_SETTINGS.ordinal());
-        else
-            Toast.makeText(this, "Hotspot toggle feature is not available on Android >= Oreo, so this permission is not needed", Toast.LENGTH_LONG).show();
+        startActivityForResult(new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS, Uri.parse("package:" + getPackageName())), PermReqCodes.SYSTEM_SETTINGS.ordinal());
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)

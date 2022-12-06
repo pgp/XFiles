@@ -51,9 +51,6 @@ public class WifiButtonsLayout extends LinearLayout {
         filter.addAction(ConnectionChangeReceiver.CONN_ACTION);
         filter.addAction(ConnectionChangeReceiver.WIFI_ACTION);
         wifiReceiver = new ConnectionChangeReceiver();
-//        ap = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)?
-//                new OreoWifiAPManager(context,this):
-//                new WifiApManager(context);
         ap = new WifiApManager(context);
         wifiManager = (WifiManager)activity.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
 
@@ -85,30 +82,48 @@ public class WifiButtonsLayout extends LinearLayout {
         return true;
     }
 
+    private boolean switchWifiUsingRoot(boolean stateToSet) {
+        MainActivity.getRootHelperClient();
+        if(RootHandler.isRootAvailableAndGranted) {
+            String cmd = "svc wifi "+(stateToSet?"enable":"disable");
+            try {
+                Process p = RootHandler.executeCommandSimple(cmd,null, true);
+                p.waitFor();
+                MainActivity.showToast("WiFi state switched using root");
+                return true;
+            }
+            catch(Exception e) {
+                e.printStackTrace();
+                MainActivity.showToast("Unable to switch WiFi state using root");
+            }
+        }
+        else {
+            if(Build.VERSION.SDK_INT < Build.VERSION_CODES.Q)
+                MainActivity.showToast("Unable to switch WiFi state, is airplane mode active?");
+        }
+        return false;
+    }
+
     private void switchWifi(View unused) {
         toggleButtons(false);
         boolean stateToSet = !wifiManager.isWifiEnabled();
-        if(!wifiManager.setWifiEnabled(stateToSet)) {
-            // if unprivileged API-based WiFi switching doesn't work (e.g. due to airplane mode being active),
-            // try using root if available
-            MainActivity.getRootHelperClient();
-            if(RootHandler.isRootAvailableAndGranted) {
-                String cmd = "svc wifi "+(stateToSet?"enable":"disable");
-                try {
-                    Process p = RootHandler.executeCommandSimple(cmd,null, true);
-                    p.waitFor();
-                    MainActivity.showToast("WiFi state switched using root");
-                }
-                catch (Exception e) {
-                    e.printStackTrace();
-                    toggleButtons(true);
-                    MainActivity.showToast("Unable to switch WiFi state using root");
-                }
+        boolean success;
+        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            success = wifiManager.setWifiEnabled(stateToSet);
+            if(!success) {
+                // if unprivileged API-based WiFi switching doesn't work (e.g. due to airplane mode being active),
+                // try using root if available
+                success = switchWifiUsingRoot(stateToSet);
             }
-            else {
-                toggleButtons(true);
-                MainActivity.showToast("Unable to switch WiFi state, is airplane mode active?");
-            }
+        }
+        else {
+            // setWifiEnabled is not supported when targeting API >= 29 and running on API >= 29:
+            // try directly with root if available, else open settings activity
+            success = switchWifiUsingRoot(stateToSet);
+        }
+        if(!success) {
+            toggleButtons(true);
+            showWifiNetworkPicker(null);
         }
     }
 
@@ -124,23 +139,17 @@ public class WifiButtonsLayout extends LinearLayout {
 
     private void switchAp(View unused) {
         boolean expectedStateAfterSwitch = !ap.isApOn();
-
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        toggleButtons(false);
+        if (!ap.configApState(expectedStateAfterSwitch)) {
+            MainActivity.showToast(
+                    "Could not change WiFi AP status directly from app," +
+                            "ensure you have granted system settings permissions");
             startWifiAPSystemActivity();
+            return;
         }
-        else {
-            toggleButtons(false);
-            if (!ap.configApState(expectedStateAfterSwitch)) {
-                MainActivity.showToast(
-                        "Could not change WiFi AP status directly from app," +
-                                "ensure you have granted system settings permissions");
-                startWifiAPSystemActivity();
-                return;
-            }
-            // for some reason, ap state change is not detected by broadcast receiver, force query state after a while
+        // for some reason, ap state change is not detected by broadcast receiver, force query state after a while
 
-            new CountDownAPCheck(activity,RECHECK_AP_CHANGED_TIMEOUT_SEC,expectedStateAfterSwitch).run();
-        }
+        new CountDownAPCheck(activity,RECHECK_AP_CHANGED_TIMEOUT_SEC,expectedStateAfterSwitch).run();
     }
 
     private void receiveWifi() {
