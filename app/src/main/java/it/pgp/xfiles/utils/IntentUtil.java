@@ -24,8 +24,8 @@ public class IntentUtil {
         List<Uri> imageUris;
         Uri singleUri;
 
-        singleUri = intent.getParcelableExtra(Intent.EXTRA_STREAM, Uri.class);
-        if(singleUri == null) imageUris = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM, Uri.class);
+        singleUri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
+        if(singleUri == null) imageUris = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
         else imageUris = Collections.singletonList(singleUri);
 
         return imageUris;

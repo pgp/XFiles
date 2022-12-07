@@ -93,7 +93,7 @@ public class ChecksumActivity extends EffectActivity implements FileSaveFragment
         clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
 
         // parent dir passed as BasePathContent, valid for both local and XRE paths
-        BrowserItem singleFile = getIntent().getSerializableExtra("browseritem", BrowserItem.class);
+        BrowserItem singleFile = (BrowserItem)getIntent().getSerializableExtra("browseritem");
         if (singleFile == null)
             files = MainActivity.mainActivity.getCurrentBrowserAdapter().getSelectedItems();
         else

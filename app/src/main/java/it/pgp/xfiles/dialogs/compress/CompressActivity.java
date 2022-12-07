@@ -193,7 +193,7 @@ public class CompressActivity extends EffectActivity implements FileSaveFragment
 
         Intent intent = getIntent();
 
-        filename = intent.getSerializableExtra("filename", BrowserItem.class); // single file to be compressed, if null use adapter selection
+        filename = (BrowserItem)intent.getSerializableExtra("filename"); // single file to be compressed, if null use adapter selection
 
         populateSelectedItems(intent);
 
