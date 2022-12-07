@@ -15,6 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import it.pgp.xfiles.MainActivity;
+import it.pgp.xfiles.PermissionManagementActivity;
 import it.pgp.xfiles.R;
 import it.pgp.xfiles.roothelperclient.RootHandler;
 
@@ -129,26 +130,26 @@ public class WifiButtonsLayout extends LinearLayout {
 
     private static final int RECHECK_AP_CHANGED_TIMEOUT_SEC = 10;
 
-    private void startWifiAPSystemActivity() {
-        Intent intent = new Intent(Intent.ACTION_MAIN, null);
-        intent.addCategory(Intent.CATEGORY_LAUNCHER);
-        intent.setComponent(new ComponentName("com.android.settings", "com.android.settings.TetherSettings"));
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        activity.startActivity(intent);
-    }
+//    private void startWifiAPSystemActivity() {
+//        Intent intent = new Intent(Intent.ACTION_MAIN, null);
+//        intent.addCategory(Intent.CATEGORY_LAUNCHER);
+//        intent.setComponent(new ComponentName("com.android.settings", "com.android.settings.TetherSettings"));
+//        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//        activity.startActivity(intent);
+//    }
 
     private void switchAp(View unused) {
         boolean expectedStateAfterSwitch = !ap.isApOn();
         toggleButtons(false);
-        if (!ap.configApState(expectedStateAfterSwitch)) {
+        if(!ap.configApState(expectedStateAfterSwitch)) {
             MainActivity.showToast(
                     "Could not change WiFi AP status directly from app," +
                             "ensure you have granted system settings permissions");
-            startWifiAPSystemActivity();
+            activity.startActivity(PermissionManagementActivity.getSystemSettingsIntent(activity));
+            toggleButtons(true);
             return;
         }
         // for some reason, ap state change is not detected by broadcast receiver, force query state after a while
-
         new CountDownAPCheck(activity,RECHECK_AP_CHANGED_TIMEOUT_SEC,expectedStateAfterSwitch).run();
     }
 

@@ -122,9 +122,13 @@ public class PermissionManagementActivity extends Activity {
                     PermReqCodes.STORAGE_READ.ordinal());
     }
 
+    public static Intent getSystemSettingsIntent(Context context) {
+        return new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS, Uri.parse("package:" + context.getPackageName()));
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.M)
     public void openSystemSettingsPermissionsManagement(View unused) {
-        startActivityForResult(new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS, Uri.parse("package:" + getPackageName())), PermReqCodes.SYSTEM_SETTINGS.ordinal());
+        startActivityForResult(getSystemSettingsIntent(this), PermReqCodes.SYSTEM_SETTINGS.ordinal());
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
