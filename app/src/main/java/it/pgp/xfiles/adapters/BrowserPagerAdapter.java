@@ -425,6 +425,6 @@ public class BrowserPagerAdapter extends PagerAdapter {
     // use a method here, instead of inserting intermediate class between AbsListView and (ListView and GridView)
     public void setSelectionOnAbsListView(AbsListView absListView, int targetPos, int viewPagerPos) {
         absListView.setSelection(targetPos);
-        mainActivity.handler.postDelayed(()-> Misc.highlightListViewItem(targetPos, mainBrowserViews[viewPagerPos]),250);
+        MainActivity.handler.postDelayed(()-> Misc.highlightListViewItem(targetPos, mainBrowserViews[viewPagerPos]),250);
     }
 }

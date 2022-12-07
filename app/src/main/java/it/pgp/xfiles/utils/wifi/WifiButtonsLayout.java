@@ -2,7 +2,6 @@ package it.pgp.xfiles.utils.wifi;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;

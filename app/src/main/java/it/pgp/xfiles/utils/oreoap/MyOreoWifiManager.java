@@ -62,7 +62,7 @@ public class MyOreoWifiManager {
             if (method == null) {
                 Log.e(TAG, "getTetheredIfaces is null");
             } else {
-                String res[] = (String []) method.invoke(mConnectivityManager, null);
+                String[] res = (String[]) method.invoke(mConnectivityManager, null);
                 Log.d(TAG, "getTetheredIfaces invoked");
                 Log.d(TAG, Arrays.toString(res));
                 if (res.length > 0) {

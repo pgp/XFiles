@@ -57,7 +57,7 @@ public class HorizontalListAdapters extends RecyclerView.Adapter<HorizontalListA
         boolean isValidImage;
         if (new File(o).exists() || Utility.isValidURL(o)) {
             Glide.with(mContext)
-                    .load(String.valueOf(o))
+                    .load(o)
                     .placeholder(placeHolder == -1 ? R.drawable.media_gallery_placeholder : placeHolder)
                     .into(holder.image);
             isValidImage =true;

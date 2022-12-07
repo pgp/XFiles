@@ -113,9 +113,7 @@ public abstract class ProgressIndicator implements View.OnTouchListener {
             moving = true;
         }
         else if (event.getAction() == MotionEvent.ACTION_UP) {
-            if(moving) {
-                return true;
-            }
+            return moving;
         }
 
         return false;

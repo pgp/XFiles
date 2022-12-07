@@ -21,7 +21,7 @@ public class MovingRibbonTwoBars extends ProgressIndicator {
     public TextView pbSpeed;
     public TextView pbDataAmount;
 
-    public long lastProgressTime = 0;
+    public long lastProgressTime;
     public Pair<Long,Long> lastOuterProgress;
 
     public boolean recursive = false;

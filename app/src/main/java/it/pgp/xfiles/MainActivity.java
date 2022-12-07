@@ -430,9 +430,7 @@ public class MainActivity extends EffectActivity {
     public void showNavLayout(View unused) {
         QuickPathsAdapter a = QuickPathsAdapter.create(this);
         navListView.setAdapter(a);
-        navListView.setOnItemClickListener((parent,view,position,id)->{
-            goDir_async(new LocalPathContent(a.getItem(position)),null);
-        });
+        navListView.setOnItemClickListener((parent,view,position,id) -> goDir_async(new LocalPathContent(a.getItem(position)),null));
         navListView.setOnItemLongClickListener((parent, view, position, id) -> {
             StatFs statFs = new StatFs(a.getItem(position));
             long availableBytes = statFs.getAvailableBytes();
