@@ -1,7 +1,6 @@
 package it.pgp.xfiles;
 
 import android.content.Context;
-import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.AttributeSet;
 
@@ -26,6 +25,6 @@ public class SwipeRefreshLayoutChildCanScroll extends SwipeRefreshLayout {
 
     @Override
     public boolean canChildScrollUp() {
-        return ViewCompat.canScrollVertically(mainActivity.getCurrentMainBrowserView(), -1); // FIXME use static everywhere if possible
+        return mainActivity.getCurrentMainBrowserView().canScrollVertically(-1);
     }
 }

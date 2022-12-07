@@ -59,12 +59,12 @@ public class DiskHelper {
 
     public long getTotalMemory() {
         if(statFs == null) return 0;
-        return ((long) statFs.getBlockCount() * (long) statFs.getBlockSize());
+        return statFs.getBlockCountLong() * statFs.getBlockSizeLong();
     }
 
     public long getFreeMemory() {
         if(statFs == null) return 0;
-        return ((long) statFs.getAvailableBlocks() * (long) statFs.getBlockSize());
+        return statFs.getAvailableBlocksLong() * statFs.getBlockSizeLong();
     }
 
     public long getBusyMemory() {

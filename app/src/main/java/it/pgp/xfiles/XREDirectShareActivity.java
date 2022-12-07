@@ -149,7 +149,7 @@ public class XREDirectShareActivity extends EffectActivity {
          * creates a cancelable progressdialog, waits for some xre server to send an announce,
          * then connects to it and sends data
          */
-        if(getIntent().getExtras().getBoolean("unattended", false)) {
+        if(getIntent().getBooleanExtra("unattended", false)) {
 
             ThreadWrapper t = new ThreadWrapper();
 

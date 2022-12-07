@@ -16,7 +16,7 @@ import android.widget.Toast;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
+import com.fasterxml.jackson.databind.util.StdDateFormat;
 
 import java.io.File;
 import java.io.IOException;
@@ -54,7 +54,7 @@ public class UpdateCheckDialog extends Dialog {
 
     final MainActivity activity;
 
-    final ISO8601DateFormat df = new ISO8601DateFormat();
+    final StdDateFormat df = new StdDateFormat();
 
     String currentVersionTagname,latestVersionTagName,latestVersionDownloadUrl;
 

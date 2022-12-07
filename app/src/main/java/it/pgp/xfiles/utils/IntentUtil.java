@@ -24,9 +24,8 @@ public class IntentUtil {
         List<Uri> imageUris;
         Uri singleUri;
 
-        singleUri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
-        if (singleUri == null)
-            imageUris = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
+        singleUri = intent.getParcelableExtra(Intent.EXTRA_STREAM, Uri.class);
+        if(singleUri == null) imageUris = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM, Uri.class);
         else imageUris = Collections.singletonList(singleUri);
 
         return imageUris;
@@ -34,7 +33,7 @@ public class IntentUtil {
 
     public static Map.Entry<BasePathContent,List<String>> getCommonAncestorAndItems(Context context, List<Uri> uris) {
         List<String> selectedItems = new ArrayList<>();
-        for (Uri uri : uris) {
+        for(Uri uri : uris) {
             String tmp = ContentProviderUtils.getPathFromUri(context,uri);
             selectedItems.add(tmp);
             Log.d("getPath",uri.toString()+"\t"+tmp);
@@ -44,7 +43,7 @@ public class IntentUtil {
                 Misc.getLongestCommonPrefix(selectedItems)
         ));
         // trim prefixes from selectedItems once extracted dirPath
-        for (int i=0;i<selectedItems.size();i++)
+        for(int i=0; i<selectedItems.size(); i++)
             selectedItems.set(i,selectedItems.get(i).substring(dirPath.dir.length()+1));
 
         return new AbstractMap.SimpleEntry<>(dirPath,selectedItems);
@@ -70,7 +69,7 @@ public class IntentUtil {
                 Misc.getLongestCommonPrefix(selectedItems)
         ));
         // trim prefixes from selectedItems once extracted dirPath
-        for (int i=0;i<selectedItems.size();i++)
+        for(int i=0; i<selectedItems.size(); i++)
             selectedItems.set(i,selectedItems.get(i).substring(dirPath.dir.length()+1));
 
         return new AbstractMap.SimpleEntry<>(dirPath,selectedItems);
