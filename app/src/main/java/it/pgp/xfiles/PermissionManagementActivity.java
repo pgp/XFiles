@@ -15,11 +15,24 @@ import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 public class PermissionManagementActivity extends Activity {
 
     public enum PermReqCodes { STORAGE, SYSTEM_SETTINGS, OVERLAYS, STORAGE_READ /*, EXTERNAL_SD*/, INSTALL_UNKNOWN_APPS, NOTIFS13 }
+
+    NotificationManager nm;
+
+    public static boolean areStoragePermissionsGranted(Context context) {
+        // EITHER Android < 6
+        // OR storage permissions granted between Android 6 and 10
+        // OR all-files permissions granted on Android 11+
+        return /*Build.VERSION.SDK_INT < Build.VERSION_CODES.M ||*/ // PermissionManagementActivity is not shown on Android < 6, decomment this predicate if this method has to be used elsewhere
+                (Build.VERSION.SDK_INT < Build.VERSION_CODES.R &&
+                        ActivityCompat.checkSelfPermission(context,Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) ||
+                (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && Environment.isExternalStorageManager());
+    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -86,7 +99,6 @@ public class PermissionManagementActivity extends Activity {
                 }
                 break;
             case NOTIFS13:
-                NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
                 Toast.makeText(this, "Notification permission "+(nm.areNotificationsEnabled()?"granted":"denied"), Toast.LENGTH_SHORT).show();
                 break;
         }
@@ -150,14 +162,44 @@ public class PermissionManagementActivity extends Activity {
         startActivity(i);
     }
 
+    static final String alreadyGrantedButtonText = "Permission already granted";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setTitle("Permission management");
         setContentView(R.layout.activity_permission_management);
+        Button b;
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            findViewById(R.id.notifs13Permissions).setVisibility(View.VISIBLE);
+            nm = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+            b = findViewById(R.id.notifs13Permissions);
+            b.setVisibility(View.VISIBLE);
             findViewById(R.id.notifs13PermissionsExplain).setVisibility(View.VISIBLE);
+            if(nm.areNotificationsEnabled()) {
+                b.setEnabled(false);
+                b.setText(alreadyGrantedButtonText);
+            }
+        }
+        // disable buttons for permissions already granted
+        if(areStoragePermissionsGranted(this)) {
+            b = findViewById(R.id.storagePermissions);
+            b.setEnabled(false);
+            b.setText(alreadyGrantedButtonText);
+        }
+        if(Settings.System.canWrite(this)) {
+            b = findViewById(R.id.sysSettingsPermissions);
+            b.setEnabled(false);
+            b.setText(alreadyGrantedButtonText);
+        }
+        if(Settings.canDrawOverlays(this)) {
+            b = findViewById(R.id.overlayPermissions);
+            b.setEnabled(false);
+            b.setText(alreadyGrantedButtonText);
+        }
+        if(getPackageManager().canRequestPackageInstalls()) {
+            b = findViewById(R.id.installUnknownAppsPermissions);
+            b.setEnabled(false);
+            b.setText(alreadyGrantedButtonText);
         }
     }
 }

@@ -81,27 +81,6 @@
         android:layout_height="wrap_content"
         android:text="Request Install Unknown Apps permission" />
 
-    <!--<TextView-->
-        <!--android:textSize="15dp"-->
-        <!--android:gravity="center_horizontal"-->
-        <!--android:text="@string/permission_extsd_explain"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content" />-->
-
-    <!--<Button-->
-        <!--android:onClick="requestExternalSDWritePermissions"-->
-        <!--android:id="@+id/extSdPermissions"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:text="Request external SD permissions" />-->
-
-    <!--<Button-->
-        <!--android:onClick="testExternalSDWritePermissions"-->
-        <!--android:id="@+id/testExtSdPermissions"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:text="Test external SD permissions" />-->
-
     <Button
         android:onClick="completePermissions"
         android:id="@+id/completePermissions"
