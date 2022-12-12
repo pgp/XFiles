@@ -12,14 +12,10 @@ import it.pgp.xfiles.R;
 
 public class AboutDialog extends Dialog {
 
-    private void styleIt() {
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-    }
-
     public AboutDialog(MainActivity activity) {
         super(activity);
-        styleIt();
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         setContentView(R.layout.about_dialog);
         try {
             PackageInfo pInfo = activity.getPackageManager().getPackageInfo(activity.getPackageName(), 0);
