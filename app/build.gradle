@@ -8,12 +8,21 @@ android {
         minSdkVersion 19
         targetSdkVersion 33
         multiDexEnabled true
-        versionCode 194221207
+        versionCode 194221212
         versionName "1.9.4"
         externalNativeBuild {
             cmake {
                 cppFlags "-std=c++11 -pthread -frtti -fexceptions"
             }
+        }
+    }
+    splits {
+        abi {
+            enable true
+            reset()
+            // include "x86", "x86_64", "armeabi-v7a", "arm64-v8a"
+            include "armeabi-v7a", "arm64-v8a"
+            universalApk true
         }
     }
     buildTypes {
