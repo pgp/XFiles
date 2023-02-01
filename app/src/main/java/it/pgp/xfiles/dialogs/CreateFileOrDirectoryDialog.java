@@ -42,6 +42,7 @@ public class CreateFileOrDirectoryDialog extends BaseDialog {
 
     EditText fileSize;
     RadioGroup fileCreationStrategy;
+    EditText prngSeed;
     final MainActivity mainActivity;
     final FileMode type;
 
@@ -71,6 +72,7 @@ public class CreateFileOrDirectoryDialog extends BaseDialog {
                 });
                 fileSize = findViewById(R.id.fileDirCreate_fileSize);
                 fileCreationStrategy = findViewById(R.id.fileDirCreate_fileCreationStrategy);
+                prngSeed = findViewById(R.id.fileCreationStrategy_seed);
                 break;
             default:
                 throw new RuntimeException("Undefined file mode"); // Unreachable statement
@@ -103,10 +105,12 @@ public class CreateFileOrDirectoryDialog extends BaseDialog {
                                 fileCreationStrategy.findViewById(
                                         fileCreationStrategy.getCheckedRadioButtonId())):
                         -1;
-                FileCreationAdvancedOptions opts = (idx == -1)?null:
+                FileCreationAdvancedOptions.CreationStrategy targetStrategy = (idx == -1) ? null : FileCreationAdvancedOptions.CreationStrategy.values()[idx];
+                FileCreationAdvancedOptions opts = (idx == -1) ? null :
                         new FileCreationAdvancedOptions(
                                 fileSize.getText().toString().isEmpty() ? 0 : Long.parseLong(fileSize.getText().toString()),
-                                FileCreationAdvancedOptions.CreationStrategy.values()[idx]);
+                                targetStrategy);
+                if(targetStrategy == FileCreationAdvancedOptions.CreationStrategy.RANDOM_CUSTOM_SEED) opts.seed = prngSeed.getText().toString();
 
                 if(f instanceof SFTPPathContent) MainActivity.sftpProvider.createFileOrDirectory(f,type);
                 else if(f instanceof SMBPathContent) MainActivity.smbProvider.createFileOrDirectory(f,type);
