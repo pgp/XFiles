@@ -40,14 +40,46 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent" />
 
-            <EditText
-                android:id="@+id/fileDirCreate_fileSize"
-                android:inputType="number"
-                android:text="0"
+            <RadioGroup
+                android:id="@+id/sizeUnitRadioGroup"
+                android:orientation="horizontal"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent">
+
+                <RadioButton
+                    android:id="@+id/bRadioButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="b"
+                    android:checked="true"/>
+
+                <RadioButton
+                    android:id="@+id/kbRadioButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="kb" />
+
+                <RadioButton
+                    android:id="@+id/MbRadioButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="Mb" />
+
+                <RadioButton
+                    android:id="@+id/GbRadioButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="Gb" />
+            </RadioGroup>
 
         </LinearLayout>
+
+        <EditText
+            android:id="@+id/fileDirCreate_fileSize"
+            android:inputType="number"
+            android:text="0"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
         <TextView
             android:text="File creation strategy"

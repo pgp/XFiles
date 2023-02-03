@@ -41,10 +41,11 @@ public class CreateFileOrDirectoryDialog extends BaseDialog {
     LinearLayout advancedOptionsLayout; // disabled for folder, togglable for files
 
     EditText fileSize;
-    RadioGroup fileCreationStrategy;
+    RadioGroup fileCreationStrategy, sizeUnit;
     EditText prngSeed;
     final MainActivity mainActivity;
     final FileMode type;
+    long byteMultiplier = 1;
 
     public CreateFileOrDirectoryDialog(final MainActivity mainActivity, final FileMode type, boolean showAdvancedOptions, String currentState) {
         super(mainActivity);
@@ -72,6 +73,7 @@ public class CreateFileOrDirectoryDialog extends BaseDialog {
                 });
                 fileSize = findViewById(R.id.fileDirCreate_fileSize);
                 fileCreationStrategy = findViewById(R.id.fileDirCreate_fileCreationStrategy);
+                sizeUnit = findViewById(R.id.sizeUnitRadioGroup);
                 prngSeed = findViewById(R.id.fileCreationStrategy_seed);
                 break;
             default:
@@ -100,16 +102,35 @@ public class CreateFileOrDirectoryDialog extends BaseDialog {
             List<String> nameToLocate = new ArrayList<String>(){{add(filename_);}};
 
             try {
+                String tmp = fileSize.getText().toString();
+                long fileSizeL = 0;
+                if(!tmp.isEmpty()) {
+                    int idx = sizeUnit.indexOfChild(sizeUnit.findViewById(sizeUnit.getCheckedRadioButtonId()));
+                    switch(idx) {
+                        case 0:
+                            byteMultiplier = 1L;
+                            break;
+                        case 1:
+                            byteMultiplier = 1000L;
+                            break;
+                        case 2:
+                            byteMultiplier = 1000000L;
+                            break;
+                        case 3:
+                            byteMultiplier = 1000000000L;
+                            break;
+                        default:
+                            throw new RuntimeException("Unsupported size unit");
+                    }
+                    fileSizeL = Long.parseLong(tmp)*byteMultiplier;
+                }
                 int idx = (advancedOptionsCtv.isChecked() && type == FileMode.FILE)?
                         1 + fileCreationStrategy.indexOfChild(
                                 fileCreationStrategy.findViewById(
                                         fileCreationStrategy.getCheckedRadioButtonId())):
                         -1;
                 FileCreationAdvancedOptions.CreationStrategy targetStrategy = (idx == -1) ? null : FileCreationAdvancedOptions.CreationStrategy.values()[idx];
-                FileCreationAdvancedOptions opts = (idx == -1) ? null :
-                        new FileCreationAdvancedOptions(
-                                fileSize.getText().toString().isEmpty() ? 0 : Long.parseLong(fileSize.getText().toString()),
-                                targetStrategy);
+                FileCreationAdvancedOptions opts = (idx == -1) ? null : new FileCreationAdvancedOptions(fileSizeL, targetStrategy);
                 if(targetStrategy == FileCreationAdvancedOptions.CreationStrategy.RANDOM_CUSTOM_SEED) opts.seed = prngSeed.getText().toString();
 
                 if(f instanceof SFTPPathContent) MainActivity.sftpProvider.createFileOrDirectory(f,type);
