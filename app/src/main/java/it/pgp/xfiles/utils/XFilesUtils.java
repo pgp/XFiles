@@ -191,7 +191,7 @@ public class XFilesUtils implements FileOperationHelper {
     }
 
     @Override
-    public void createFileOrDirectory(BasePathContent filePath, FileMode fileOrDirectory, FileCreationAdvancedOptions... unused) throws IOException {
+    public String createFileOrDirectory(BasePathContent filePath, FileMode fileOrDirectory, FileCreationAdvancedOptions... unused) throws IOException {
         File f = new File(filePath.dir);
         boolean ok;
         switch (fileOrDirectory) {
@@ -205,6 +205,7 @@ public class XFilesUtils implements FileOperationHelper {
                 throw new RuntimeException("Undefined file mode"); // Unreachable statement
         }
         if(!ok) throw new IOException(ALREADY_EXIST);
+        return null;
     }
 
     @Override

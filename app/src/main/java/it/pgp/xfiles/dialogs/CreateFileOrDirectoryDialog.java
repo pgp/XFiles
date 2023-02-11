@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AbsListView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckedTextView;
 import android.widget.EditText;
@@ -13,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RadioGroup;
+import android.widget.Spinner;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -23,9 +25,11 @@ import it.pgp.xfiles.R;
 import it.pgp.xfiles.adapters.BrowserAdapter;
 import it.pgp.xfiles.enums.FileMode;
 import it.pgp.xfiles.items.FileCreationAdvancedOptions;
+import it.pgp.xfiles.roothelperclient.HashRequestCodes;
 import it.pgp.xfiles.service.BaseBackgroundService;
 import it.pgp.xfiles.service.CreateFileService;
 import it.pgp.xfiles.service.params.CreateFileParams;
+import it.pgp.xfiles.utils.Misc;
 import it.pgp.xfiles.utils.pathcontent.BasePathContent;
 import it.pgp.xfiles.utils.pathcontent.SFTPPathContent;
 import it.pgp.xfiles.utils.pathcontent.SMBPathContent;
@@ -42,7 +46,9 @@ public class CreateFileOrDirectoryDialog extends BaseDialog {
 
     EditText fileSize;
     RadioGroup fileCreationStrategy, sizeUnit;
-    EditText prngSeed;
+    CheckedTextView useCustomSeedCtv, enableOutputHash;
+    EditText prngSeed; // visibility governed by useCustomSeedCtv
+    Spinner outputHashTypes; // visibility governed by enableOutputHash
     final MainActivity mainActivity;
     final FileMode type;
     long byteMultiplier = 1;
@@ -75,6 +81,21 @@ public class CreateFileOrDirectoryDialog extends BaseDialog {
                 fileCreationStrategy = findViewById(R.id.fileDirCreate_fileCreationStrategy);
                 sizeUnit = findViewById(R.id.sizeUnitRadioGroup);
                 prngSeed = findViewById(R.id.fileCreationStrategy_seed);
+                useCustomSeedCtv = findViewById(R.id.fileCreationStrategy_useCustomSeed);
+                useCustomSeedCtv.setOnClickListener(v -> {
+                    boolean status = !useCustomSeedCtv.isChecked();
+                    useCustomSeedCtv.toggle();
+                    prngSeed.setVisibility(status ? View.VISIBLE : View.GONE);
+                });
+                outputHashTypes = findViewById(R.id.fileCreationStrategy_HashTypesSpinner);
+                outputHashTypes.setAdapter(new ArrayAdapter<>(mainActivity, android.R.layout.simple_spinner_dropdown_item, HashRequestCodes.values()));
+                outputHashTypes.setSelection(4); // pre-select SHA256
+                enableOutputHash = findViewById(R.id.fileCreationStrategy_enableOutputHash);
+                enableOutputHash.setOnClickListener(v -> {
+                    boolean status = !enableOutputHash.isChecked();
+                    enableOutputHash.toggle();
+                    outputHashTypes.setVisibility(status ? View.VISIBLE : View.GONE);
+                });
                 break;
             default:
                 throw new RuntimeException("Undefined file mode"); // Unreachable statement
@@ -129,9 +150,15 @@ public class CreateFileOrDirectoryDialog extends BaseDialog {
                                 fileCreationStrategy.findViewById(
                                         fileCreationStrategy.getCheckedRadioButtonId())):
                         -1;
-                FileCreationAdvancedOptions.CreationStrategy targetStrategy = (idx == -1) ? null : FileCreationAdvancedOptions.CreationStrategy.values()[idx];
-                FileCreationAdvancedOptions opts = (idx == -1) ? null : new FileCreationAdvancedOptions(fileSizeL, targetStrategy);
-                if(targetStrategy == FileCreationAdvancedOptions.CreationStrategy.RANDOM_CUSTOM_SEED) opts.seed = prngSeed.getText().toString();
+                FileCreationAdvancedOptions.FileCreationMode mode = (idx == -1) ? null : FileCreationAdvancedOptions.FileCreationMode.values()[idx];
+                FileCreationAdvancedOptions opts = idx == -1 ? null :
+                        new FileCreationAdvancedOptions(fileSizeL,
+                                new FileCreationAdvancedOptions.CreationStrategyAndOptions(
+                                        mode,
+                                        useCustomSeedCtv.isChecked() ? prngSeed.getText().toString() : null,
+                                        enableOutputHash.isChecked() ? outputHashTypes.getSelectedItem().toString() : null
+                                )
+                        );
 
                 if(f instanceof SFTPPathContent) MainActivity.sftpProvider.createFileOrDirectory(f,type);
                 else if(f instanceof SMBPathContent) MainActivity.smbProvider.createFileOrDirectory(f,type);

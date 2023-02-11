@@ -8,7 +8,8 @@ import java.util.Map;
 /**
  * Created by pgp on 03/02/17
  *
- * corresponding to hashMethods,hashLabels,hashLengths enum and arrays in roothelper c code
+ * corresponding to hashMethods,hashLabels,hashLengths enum and arrays in roothelper code
+ * (rh_hasher_botan.h, cli_hashLabels vector)
  */
 
 public enum HashRequestCodes implements Checkable {
@@ -47,7 +48,8 @@ public enum HashRequestCodes implements Checkable {
         return value;
     }
 
-    public String getLabel() {
+    @Override
+    public String toString() {
         return label;
     }
 

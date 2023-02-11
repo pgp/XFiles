@@ -56,7 +56,7 @@ public class HashAlgorithmsAdapter extends ArrayAdapter<HashRequestCodes> {
 
         ctv.setTag(item);
 
-        ctv.setText(item.getLabel());
+        ctv.setText(item.toString());
         ctv.setChecked(item.isChecked());
         ctv.setTextColor(context.getResources().getColor(item.getLabelColor()));
 

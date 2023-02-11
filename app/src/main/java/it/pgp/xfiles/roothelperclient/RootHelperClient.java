@@ -871,7 +871,7 @@ public class RootHelperClient implements FileOperationHelper {
     // TODO Remove find methods from interface, already implemented RH only
 
     @Override
-    public void createFileOrDirectory(BasePathContent path, FileMode fileOrDirectory, FileCreationAdvancedOptions... fileOptions) throws IOException {
+    public String createFileOrDirectory(BasePathContent path, FileMode fileOrDirectory, FileCreationAdvancedOptions... fileOptions) throws IOException {
         SinglePath_rq req = (fileOrDirectory == FileMode.FILE && fileOptions.length > 0 && fileOptions[0] != null) ?
                 new create_rq(path.dir, fileOptions[0]):
                 new create_rq(path.dir, fileOrDirectory);
@@ -883,14 +883,20 @@ public class RootHelperClient implements FileOperationHelper {
         errno = Misc.receiveBaseResponse(rs.i);
         if(errno == 0 && fileOptions.length > 0) {
             // receive progress
+            FileCreationAdvancedOptions fopts = fileOptions[0];
             long progress;
-            long total = fileOptions[0].size;
+            long total = fopts.size;
             do {
                 progress = Misc.receiveTotalOrProgress(rs.i);
                 task.publishProgressWrapper(new Pair<>(progress, total));
             }
             while(progress != EOF_ind);
-            return;
+
+            if(fopts.strategy.mode == FileCreationAdvancedOptions.FileCreationMode.RANDOM &&
+                    fopts.strategy.outputHashType != null) {
+                return Misc.receiveStringWithLen(rs.i); // output hash, to be shown in dialog
+            }
+            return null;
         }
         else if(errno == 17)
             errMsg = ALREADY_EXIST;

@@ -211,8 +211,8 @@ public class SmbProvider implements FileOperationHelper {
     }
 
     @Override
-    public void createFileOrDirectory(BasePathContent filePath, FileMode fileOrDirectory, FileCreationAdvancedOptions... fileOptions) throws IOException {
-
+    public String createFileOrDirectory(BasePathContent filePath, FileMode fileOrDirectory, FileCreationAdvancedOptions... fileOptions) throws IOException {
+        return null;
     }
 
     @Override

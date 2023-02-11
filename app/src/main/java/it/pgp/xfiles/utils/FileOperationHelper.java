@@ -27,7 +27,7 @@ public interface FileOperationHelper {
     String ALREADY_EXIST = "A file or directory with the same name already exists";
 
     // TODO change return value of every method to boolean or int and remove IOException
-    void createFileOrDirectory(BasePathContent filePath, FileMode fileOrDirectory, FileCreationAdvancedOptions... fileOptions) throws IOException;
+    String createFileOrDirectory(BasePathContent filePath, FileMode fileOrDirectory, FileCreationAdvancedOptions... fileOptions) throws IOException;
     void createLink(BasePathContent originPath, BasePathContent linkPath, boolean isHardLink) throws IOException;
     void deleteFilesOrDirectories(List<BasePathContent> files) throws IOException; // files as full pathnames
     void copyMoveFilesToDirectory(CopyMoveListPathContent files, BasePathContent dstFolder) throws IOException;

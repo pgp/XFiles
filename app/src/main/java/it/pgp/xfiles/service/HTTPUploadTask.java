@@ -1,9 +1,6 @@
 package it.pgp.xfiles.service;
 
 import android.app.AlertDialog;
-import android.content.ClipData;
-import android.content.ClipboardManager;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.util.TypedValue;
@@ -19,6 +16,7 @@ import it.pgp.xfiles.enums.FileOpsErrorCodes;
 import it.pgp.xfiles.enums.ServiceStatus;
 import it.pgp.xfiles.service.params.DownloadParams;
 import it.pgp.xfiles.service.visualization.MovingRibbon;
+import it.pgp.xfiles.utils.Misc;
 import it.pgp.xfiles.utils.Pair;
 
 public class HTTPUploadTask extends RootHelperClientTask {
@@ -82,11 +80,7 @@ public class HTTPUploadTask extends RootHelperClientTask {
             title.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
             title.setTypeface(Typeface.MONOSPACE);
             bld.setCustomTitle(title);
-            bld.setNegativeButton("Copy to clipboard", (d,w) -> {
-                ClipboardManager clipboard = (ClipboardManager) service.getSystemService(Context.CLIPBOARD_SERVICE);
-                clipboard.setPrimaryClip(ClipData.newPlainText(label,generatedLink));
-                Toast.makeText(service, "Link copied to clipboard", Toast.LENGTH_SHORT).show();
-            });
+            bld.setNegativeButton("Copy to clipboard", (d,w) -> Misc.copyToClipboard(service, label, generatedLink));
             bld.setPositiveButton("Share", (d,w) -> {
                 Intent intent = new Intent(Intent.ACTION_SEND);
                 intent.setType("text/plain");
@@ -97,11 +91,11 @@ public class HTTPUploadTask extends RootHelperClientTask {
                 service.startActivity(wi);
             });
             bld.setNeutralButton(android.R.string.ok, null);
-            AlertDialog alertDialog = bld.create();
+            AlertDialog d = bld.create();
             // prevent dismiss on unintentional touches once the download link has been generated
-            alertDialog.setCancelable(false);
-            alertDialog.setCanceledOnTouchOutside(false);
-            alertDialog.show();
+            d.setCancelable(false);
+            d.setCanceledOnTouchOutside(false);
+            d.show();
         }
         else {
             Toast.makeText(service, prefix+

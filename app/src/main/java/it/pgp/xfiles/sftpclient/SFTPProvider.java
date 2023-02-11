@@ -390,7 +390,7 @@ public class SFTPProvider implements FileOperationHelper {
     }
 
     @Override
-    public void createFileOrDirectory(BasePathContent filePath, FileMode fileOrDirectory, FileCreationAdvancedOptions... unused) throws IOException {
+    public String createFileOrDirectory(BasePathContent filePath, FileMode fileOrDirectory, FileCreationAdvancedOptions... unused) throws IOException {
         SFTPPathContent g = (SFTPPathContent) filePath;
 
         // try to get channel, using prefix from last GenericRemotePath object
@@ -412,6 +412,7 @@ public class SFTPProvider implements FileOperationHelper {
             default:
                 throw new RuntimeException("Unknown file mode");
         }
+        return null;
     }
 
     @Override

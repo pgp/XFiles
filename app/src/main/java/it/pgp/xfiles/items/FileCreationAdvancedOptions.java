@@ -1,36 +1,52 @@
 package it.pgp.xfiles.items;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.Serializable;
-import java.nio.ByteBuffer;
 
 import it.pgp.xfiles.utils.Misc;
 
 public class FileCreationAdvancedOptions implements Serializable {
 
-    public enum CreationStrategy {
-        FALLOCATE,ZEROS,RANDOM,RANDOM_CUSTOM_SEED // FALLOCATE not used, but don't remove that, needed offset till ZEROS and RANDOM ordinal shifted back at protocol level to 0 and 1 instead of 1 and 2
+    public enum FileCreationMode {
+        FALLOCATE,ZEROS,RANDOM // FALLOCATE not used, but don't remove that, needed offset till ZEROS and RANDOM ordinal shifted back at protocol level to 0 and 1 instead of 1 and 2
     }
 
-    CreationStrategy strategy;
-    public String seed = "";
+    public static class CreationStrategyAndOptions {
+        public final FileCreationMode mode;
+        public String customSeed;
+        public String outputHashType;
+
+        public CreationStrategyAndOptions(FileCreationMode mode, String customSeed, String outputHashType) {
+            this.mode = mode;
+            this.customSeed = customSeed;
+            this.outputHashType = outputHashType;
+        }
+
+        public int getByte() {
+            int ret = mode.ordinal(); // 0,1,2
+            if(customSeed != null) ret |= 4;
+            if(outputHashType != null) ret |= 8;
+            return ret;
+        }
+    }
+
+    public CreationStrategyAndOptions strategy;
     public long size;
 
-    public FileCreationAdvancedOptions(long size, CreationStrategy strategy) {
-        this.strategy = size == 0 ? CreationStrategy.ZEROS : strategy; // fallocate returns errno 22 (invalid argument) if called with zero size
+    public FileCreationAdvancedOptions(long size, CreationStrategyAndOptions strategy) {
+        this.strategy = size == 0 ? new CreationStrategyAndOptions(FileCreationMode.ZEROS,null,null) : strategy; // fallocate returns errno 22 (invalid argument) if called with zero size
         this.size = size;
     }
 
-    public byte[] toRootHelperRequestOptions() {
-        int a = 0;
-        byte[] bs = seed.getBytes();
-        if(strategy == CreationStrategy.RANDOM_CUSTOM_SEED) a = 2 + bs.length;
-        ByteBuffer bb = ByteBuffer.allocate(9+a);
-        bb.put(Misc.castUnsignedNumberToBytes(strategy.ordinal(),1));
-        if(strategy == CreationStrategy.RANDOM_CUSTOM_SEED) {
-            bb.put(Misc.castUnsignedNumberToBytes(bs.length,2));
-            bb.put(bs);
+    public byte[] toRootHelperRequestOptions() throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        baos.write(strategy.getByte());
+        baos.write(Misc.castUnsignedNumberToBytes(size,8));
+        if(strategy.mode == FileCreationMode.RANDOM) {
+            if(strategy.customSeed != null) Misc.sendStringWithLen(baos, strategy.customSeed);
+            if(strategy.outputHashType != null) Misc.sendStringWithLen(baos, strategy.outputHashType);
         }
-        bb.put(Misc.castUnsignedNumberToBytes(size,8));
-        return bb.array();
+        return baos.toByteArray();
     }
 }

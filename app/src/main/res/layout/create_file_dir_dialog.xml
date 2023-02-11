@@ -104,21 +104,39 @@
                 android:layout_height="wrap_content"
                 android:text="random" />
 
-            <RadioButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="random with custom seed" />
         </RadioGroup>
 
-        <TextView
-            android:text="Custom seed"
+        <CheckedTextView
+            android:id="@+id/fileCreationStrategy_useCustomSeed"
+            android:text="Use custom seed"
+            android:focusable="true"
+            android:clickable="true"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:checkMark="?android:attr/listChoiceIndicatorMultiple" />
 
         <EditText
+            android:visibility="gone"
             android:id="@+id/fileCreationStrategy_seed"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
+
+        <CheckedTextView
+            android:id="@+id/fileCreationStrategy_enableOutputHash"
+            android:text="Compute hash while generating file"
+            android:focusable="true"
+            android:clickable="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:checkMark="?android:attr/listChoiceIndicatorMultiple" />
+
+        <Spinner
+            android:visibility="gone"
+            android:id="@+id/fileCreationStrategy_HashTypesSpinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:drawable/btn_dropdown"
+            android:spinnerMode="dropdown" />
 
     </LinearLayout>
 

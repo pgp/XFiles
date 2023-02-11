@@ -227,7 +227,7 @@ public class ChecksumActivity extends EffectActivity implements FileSaveFragment
         }
 
         public CharSequence getHeader() {
-            return filename+", "+code.getLabel();
+            return filename+", "+code.toString();
         }
 
         public CharSequence getContent() {
@@ -390,7 +390,7 @@ public class ChecksumActivity extends EffectActivity implements FileSaveFragment
             // create header
             Misc.csvWriteRow(o,new ArrayList(){{
                 add("filename");
-                for (HashRequestCodes code : selectedHashAlgorithms) add(code.getLabel());
+                for (HashRequestCodes code : selectedHashAlgorithms) add(code.toString());
             }});
 
             for(List<HashTextView> lhtv : hashMatrix) {
@@ -414,7 +414,7 @@ public class ChecksumActivity extends EffectActivity implements FileSaveFragment
             Map m = new HashMap();
             Map n = new HashMap();
             for(HashTextView htv : lhtv) {
-                n.put(htv.code.getLabel(),""+htv.content);
+                n.put(htv.code.toString(),""+htv.content);
             }
             m.put("filename",""+lhtv.get(0).filename);
             m.put("checksums",n);

@@ -2,6 +2,8 @@ package it.pgp.xfiles.utils;
 
 import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -97,7 +99,7 @@ public class Misc {
                 case RESPONSE_ERROR:
                     byte[] errno_ = new byte[4];
                     i.readFully(errno_);
-                    int errno = (int) Misc.castBytesToUnsignedNumber(errno_,4);
+                    int errno = (int) castBytesToUnsignedNumber(errno_,4);
                     Log.e("roothelper", "Error returned from roothelper server: " + errno);
                     return errno;
                 default:
@@ -118,7 +120,7 @@ public class Misc {
     public static String receiveStringWithLen(DataInputStream i) throws IOException {
         byte[] tmp = new byte[2];
         i.readFully(tmp);
-        int len = (int) Misc.castBytesToUnsignedNumber(tmp,2);
+        int len = (int) castBytesToUnsignedNumber(tmp,2);
         tmp = new byte[len];
         i.readFully(tmp);
         return new String(tmp);
@@ -126,7 +128,7 @@ public class Misc {
 
     public static void sendStringWithLen(OutputStream o, String s) throws IOException {
         byte[] b = s.getBytes();
-        byte[] len = Misc.castUnsignedNumberToBytes(b.length,2);
+        byte[] len = castUnsignedNumberToBytes(b.length,2);
         o.write(len);
         o.write(b);
     }
@@ -144,6 +146,13 @@ public class Misc {
             offset += array.length;
         }
         return result;
+    }
+
+    public static String wordWrapEveryNChars(String text, int n) {
+        String[] x = text.split("(?<=\\G.{" + n + "})");
+        StringBuilder sb = new StringBuilder();
+        for(String s : x) sb.append(s).append('\n');
+        return sb.toString();
     }
 
     public static boolean writeStringToFilePath(String s, String path) {
@@ -437,6 +446,12 @@ public class Misc {
     }
 
     public static final View.OnClickListener ctvListener = v -> ((CheckedTextView)v).toggle();
+
+    public static void copyToClipboard(Context context, String label, String content) {
+        ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+        clipboard.setPrimaryClip(ClipData.newPlainText(label, content));
+        Toast.makeText(context, "Copied to clipboard", Toast.LENGTH_SHORT).show();
+    }
 
     public static void launchWriteSettings(Context context) {
         Toast.makeText(context, "Please grant system settings write permission in order to use this toggle", Toast.LENGTH_SHORT).show();

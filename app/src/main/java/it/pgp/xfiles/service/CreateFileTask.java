@@ -1,5 +1,9 @@
 package it.pgp.xfiles.service;
 
+import android.app.AlertDialog;
+import android.graphics.Typeface;
+import android.util.TypedValue;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -12,16 +16,14 @@ import it.pgp.xfiles.enums.ServiceStatus;
 import it.pgp.xfiles.items.FileCreationAdvancedOptions;
 import it.pgp.xfiles.service.params.CreateFileParams;
 import it.pgp.xfiles.service.visualization.MovingRibbon;
+import it.pgp.xfiles.utils.Misc;
 import it.pgp.xfiles.utils.pathcontent.BasePathContent;
 
-/**
- * Created by pgp on 05/06/17
- */
 
 public class CreateFileTask extends RootHelperClientTask {
 
-    // direct input to compressArchive
     public CreateFileParams params;
+    public String outputHash;
 
     private static final FileOpsErrorCodes defaultErrorResult = FileOpsErrorCodes.TRANSFER_ERROR;
 
@@ -55,7 +57,7 @@ public class CreateFileTask extends RootHelperClientTask {
         try {
             rh.initProgressSupport(this);
             FileCreationAdvancedOptions[] fileOpts = params.opts == null ? new FileCreationAdvancedOptions[0] : new FileCreationAdvancedOptions[]{params.opts};
-            rh.createFileOrDirectory(params.path, FileMode.FILE, fileOpts);
+            outputHash = rh.createFileOrDirectory(params.path, FileMode.FILE, fileOpts);
         }
         catch(IOException e) {
             e.printStackTrace();
@@ -74,6 +76,22 @@ public class CreateFileTask extends RootHelperClientTask {
                 BasePathContent cd = activity.getCurrentDirCommander().getCurrentDirectoryPathname();
                 if(cd.equals(currentDir))
                     activity.browserPagerAdapter.showDirContent(activity.getCurrentDirCommander().refresh(),activity.browserPager.getCurrentItem(),params.path.getName());
+                if(outputHash != null) {
+                    AlertDialog.Builder bld = new AlertDialog.Builder(activity);
+                    TextView content = new TextView(MainActivity.mainActivity);
+                    content.setText(outputHash);
+                    content.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
+                    content.setTypeface(Typeface.MONOSPACE);
+                    bld.setTitle(params.opts.strategy.outputHashType+" hash");
+                    bld.setView(content);
+                    bld.setNegativeButton("Copy to clipboard", (d,w) -> Misc.copyToClipboard(service, "Generated file hash", outputHash));
+                    bld.setNeutralButton(android.R.string.ok, null);
+                    AlertDialog d = bld.create();
+                    // prevent dismiss on unintentional touches
+                    d.setCancelable(false);
+                    d.setCanceledOnTouchOutside(false);
+                    d.show();
+                }
             }
             else {
                 // show error message only if task was not interrupted by user
