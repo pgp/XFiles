@@ -5,6 +5,7 @@ import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.NotificationManager;
+import android.app.UiModeManager;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -182,7 +183,7 @@ public class MainActivity extends EffectActivity {
     public void makeImageButtonsStateful(ViewGroup layout, SelectImageButtonListener l) {
         for (int i = 0; i < layout.getChildCount(); i++) {
             View vv = layout.getChildAt(i);
-            if (vv instanceof ImageButton)
+            if(vv instanceof ImageButton && deviceType != DeviceType.TV)
                 vv.setOnTouchListener(l);
             int id = vv.getId();
             if(id == R.id.goBackButton || id == R.id.goAheadButton)
@@ -657,6 +658,12 @@ public class MainActivity extends EffectActivity {
         updateFromSelfIntent(intent);
     }
 
+    enum DeviceType {
+        PHONE, // 0
+        TABLET, // 1
+        TV // 2
+    }
+
     public SharedPreferences sharedPrefs;
     private void firstRunCheck() {
         sharedPrefs = getSharedPreferences(context.getPackageName(), Context.MODE_PRIVATE);
@@ -669,15 +676,18 @@ public class MainActivity extends EffectActivity {
             editor.putBoolean("SOFTKEYS",hasSoftKeys());
             editor.apply();
         }
-
-        int isTablet_ = sharedPrefs.getInt("ISTABLET",-1);
-        if(isTablet_ < 0) {
+        String label = "DEVICETYPE";
+        int deviceTypeOrdinal_ = sharedPrefs.getInt(label,-1);
+        if(deviceTypeOrdinal_ < 0) {
             if(editor == null) editor = sharedPrefs.edit();
-            isTablet_ = getDisplayDiagonalSizeInches()>=6.5?1:0;
-            editor.putInt("ISTABLET",isTablet_);
+            UiModeManager uiModeManager = (UiModeManager) getSystemService(UI_MODE_SERVICE);
+            if(uiModeManager.getCurrentModeType() == Configuration.UI_MODE_TYPE_TELEVISION)
+                deviceTypeOrdinal_ = 2;
+            else deviceTypeOrdinal_ = getDisplayDiagonalSizeInches()>=6.5?1:0;
+            editor.putInt(label,deviceTypeOrdinal_);
             editor.apply();
         }
-        isTablet = isTablet_==1;
+        deviceType = DeviceType.values()[deviceTypeOrdinal_];
         hasPermanentMenuKey = !(sharedPrefs.getBoolean("SOFTKEYS",true));
     }
 
@@ -902,7 +912,7 @@ public class MainActivity extends EffectActivity {
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
         getWindow().getDecorView().setSystemUiVisibility(horizontalVisibility);
-        if(isTablet || hasPermanentMenuKey || getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+        if(deviceType != DeviceType.PHONE || hasPermanentMenuKey || getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             return;
         }
         /**
@@ -1858,7 +1868,7 @@ public class MainActivity extends EffectActivity {
         handler.postDelayed(() -> doubleBackToExitPressedOnce=false, 2000);
     }
 
-    boolean isTablet;
+    DeviceType deviceType;
     public void setOperationButtonsLayout() {
         LinearLayout operationButtonsLayout = findViewById(R.id.operationButtonsLayout);
         operationButtonsLayout.removeAllViews();
@@ -1872,12 +1882,12 @@ public class MainActivity extends EffectActivity {
 
         boolean isHorizontal = getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
 
-        if(isHorizontal || (isTablet && !hasPermanentMenuKey)) {
+        if(isHorizontal || (deviceType == DeviceType.TABLET && !hasPermanentMenuKey)) {
             // no need for switching layouts when one has all the possible buttons available
             targetLayout = l3;
         }
         else { // vertical mode AND (smartphone OR (tablet with physical buttons))
-            if(isTablet) {
+            if(deviceType == DeviceType.TABLET) {
                 // (tablet with physical buttons) in vertical mode, show all buttons except Back and Home
                 targetLayout = l2;
             }
