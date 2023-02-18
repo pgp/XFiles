@@ -13,6 +13,7 @@
         android:scaleType="fitCenter"
         android:adjustViewBounds="true"
         android:background="@null"
+        android:nextFocusLeft="@id/quickFindButton"
         android:src="@drawable/xfiles_system_back"
         android:id="@+id/androidGoBackButton"
         android:layout_weight="1"

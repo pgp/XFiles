@@ -30,7 +30,7 @@
             android:src="@drawable/xfiles_new_app_icon"
             android:scaleType="fitCenter"
             android:adjustViewBounds="true"
-            android:background="@null"
+            android:background="?android:attr/selectableItemBackground"
             android:id="@+id/showNavLayoutBtn"
             android:onClick="showNavLayout"
             android:nextFocusUp="@id/operationButtonsLayout"
@@ -61,7 +61,7 @@
                     android:id="@+id/xre_op_button"
                     android:scaleType="fitCenter"
                     android:adjustViewBounds="true"
-                    android:background="@null"
+                    android:background="?android:attr/selectableItemBackground"
                     android:src="@drawable/xf_share"
                     android:onClick="showStartRHRemoteServerDialog"
                     android:nextFocusLeft="@id/currentDirectoryTextView"
@@ -73,7 +73,7 @@
                 <ImageButton
                     android:scaleType="fitCenter"
                     android:adjustViewBounds="true"
-                    android:background="@null"
+                    android:background="?android:attr/selectableItemBackground"
                     android:src="@drawable/xfiles_favorites"
                     android:id="@+id/openCredsFavsMenu"
                     android:layout_weight="1"
@@ -83,7 +83,7 @@
                 <ImageButton
                     android:scaleType="fitCenter"
                     android:adjustViewBounds="true"
-                    android:background="@null"
+                    android:background="?android:attr/selectableItemBackground"
                     android:src="@drawable/xfiles_root_off"
                     android:id="@+id/toggleRootHelperButton"
                     android:onClick="toggleRootHelper"
@@ -94,7 +94,7 @@
                 <ImageButton
                     android:scaleType="fitCenter"
                     android:adjustViewBounds="true"
-                    android:background="@null"
+                    android:background="?android:attr/selectableItemBackground"
                     android:src="@drawable/xf_view_mode"
                     android:id="@+id/chooseBrowserViewButton"
                     android:onClick="changeBrowserViewMode"
@@ -105,7 +105,7 @@
                 <ImageButton
                     android:scaleType="fitCenter"
                     android:adjustViewBounds="true"
-                    android:background="@null"
+                    android:background="?android:attr/selectableItemBackground"
                     android:src="@drawable/xfiles_sort_icon"
                     android:id="@+id/sortButton"
                     android:layout_weight="1"
@@ -115,7 +115,7 @@
                 <ImageButton
                     android:scaleType="fitCenter"
                     android:adjustViewBounds="true"
-                    android:background="@null"
+                    android:background="?android:attr/selectableItemBackground"
                     android:src="@android:drawable/checkbox_on_background"
                     android:id="@+id/itemSelectionButton"
                     android:layout_weight="1"
@@ -125,7 +125,7 @@
                 <ImageButton
                     android:scaleType="fitCenter"
                     android:adjustViewBounds="true"
-                    android:background="@null"
+                    android:background="?android:attr/selectableItemBackground"
                     android:src="@drawable/xfiles_find"
                     android:id="@+id/quickFindButton"
                     android:nextFocusRight="@id/androidGoBackButton"

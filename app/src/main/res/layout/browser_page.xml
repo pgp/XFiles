@@ -6,8 +6,9 @@
     >
 
     <LinearLayout
-        android:id="@+id/pathViewLayout"
         android:orientation="horizontal"
+        android:nextFocusLeft="@id/showNavLayoutBtn"
+        android:nextFocusRight="@id/xre_op_button"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight=".1">
@@ -25,6 +26,10 @@
 
         <TextView
             android:id="@+id/currentDirectoryTextView"
+            android:background="@null"
+            android:nextFocusLeft="@id/showNavLayoutBtn"
+            android:nextFocusRight="@id/xre_op_button"
+            android:nextFocusDown="@id/mainBrowserViewLayout"
             android:ellipsize="end"
             android:singleLine="false"
             android:maxLines="3"

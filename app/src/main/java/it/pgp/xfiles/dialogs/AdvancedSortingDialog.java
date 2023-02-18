@@ -31,7 +31,7 @@ public class AdvancedSortingDialog extends BaseDialog {
         super(activity);
         setTitle("Advanced sort");
         setContentView(R.layout.advanced_sorting_dialog);
-        setDialogIcon(R.drawable.xfiles_sort_special);
+        setDialogIcon(R.drawable.xfiles_sort_icon);
 
         final ArrayList<SortingItem> content = new ArrayList<>();
         for (ComparatorField c : ComparatorField.values()) {
