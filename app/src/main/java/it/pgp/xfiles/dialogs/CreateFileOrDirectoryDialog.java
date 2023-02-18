@@ -26,10 +26,10 @@ import it.pgp.xfiles.adapters.BrowserAdapter;
 import it.pgp.xfiles.enums.FileMode;
 import it.pgp.xfiles.items.FileCreationAdvancedOptions;
 import it.pgp.xfiles.roothelperclient.HashRequestCodes;
+import it.pgp.xfiles.roothelperclient.StreamCiphers;
 import it.pgp.xfiles.service.BaseBackgroundService;
 import it.pgp.xfiles.service.CreateFileService;
 import it.pgp.xfiles.service.params.CreateFileParams;
-import it.pgp.xfiles.utils.Misc;
 import it.pgp.xfiles.utils.pathcontent.BasePathContent;
 import it.pgp.xfiles.utils.pathcontent.SFTPPathContent;
 import it.pgp.xfiles.utils.pathcontent.SMBPathContent;
@@ -46,9 +46,10 @@ public class CreateFileOrDirectoryDialog extends BaseDialog {
 
     EditText fileSize;
     RadioGroup fileCreationStrategy, sizeUnit;
-    CheckedTextView useCustomSeedCtv, enableOutputHash;
+    CheckedTextView useCustomSeedCtv, enableOutputHash, useCustomBackendCipher;
     EditText prngSeed; // visibility governed by useCustomSeedCtv
     Spinner outputHashTypes; // visibility governed by enableOutputHash
+    Spinner streamCiphers; // visibility governed by useCustomBackendCipher
     final MainActivity mainActivity;
     final FileMode type;
     long byteMultiplier = 1;
@@ -95,6 +96,15 @@ public class CreateFileOrDirectoryDialog extends BaseDialog {
                     boolean status = !enableOutputHash.isChecked();
                     enableOutputHash.toggle();
                     outputHashTypes.setVisibility(status ? View.VISIBLE : View.GONE);
+                });
+                streamCiphers = findViewById(R.id.fileCreationStrategy_StreamCiphersSpinner);
+                streamCiphers.setAdapter(new ArrayAdapter<>(mainActivity, android.R.layout.simple_spinner_dropdown_item, StreamCiphers.values()));
+                streamCiphers.setSelection(0); // preselect ChaCha
+                useCustomBackendCipher = findViewById(R.id.fileCreationStrategy_useCustomBackendCipher);
+                useCustomBackendCipher.setOnClickListener(v -> {
+                    boolean status = !useCustomBackendCipher.isChecked();
+                    useCustomBackendCipher.toggle();
+                    streamCiphers.setVisibility(status ? View.VISIBLE : View.GONE);
                 });
                 break;
             default:
@@ -156,7 +166,8 @@ public class CreateFileOrDirectoryDialog extends BaseDialog {
                                 new FileCreationAdvancedOptions.CreationStrategyAndOptions(
                                         mode,
                                         useCustomSeedCtv.isChecked() ? prngSeed.getText().toString() : null,
-                                        enableOutputHash.isChecked() ? outputHashTypes.getSelectedItem().toString() : null
+                                        enableOutputHash.isChecked() ? outputHashTypes.getSelectedItem().toString() : null,
+                                        useCustomBackendCipher.isChecked() ? streamCiphers.getSelectedItem().toString() : null
                                 )
                         );
 

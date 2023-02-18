@@ -138,6 +138,23 @@
             android:background="@android:drawable/btn_dropdown"
             android:spinnerMode="dropdown" />
 
+        <CheckedTextView
+            android:id="@+id/fileCreationStrategy_useCustomBackendCipher"
+            android:text="Use custom backend cipher"
+            android:focusable="true"
+            android:clickable="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:checkMark="?android:attr/listChoiceIndicatorMultiple" />
+
+        <Spinner
+            android:visibility="gone"
+            android:id="@+id/fileCreationStrategy_StreamCiphersSpinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:drawable/btn_dropdown"
+            android:spinnerMode="dropdown" />
+
     </LinearLayout>
 
     <Button

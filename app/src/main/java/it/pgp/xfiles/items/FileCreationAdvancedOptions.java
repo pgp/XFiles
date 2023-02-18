@@ -16,17 +16,20 @@ public class FileCreationAdvancedOptions implements Serializable {
         public final FileCreationMode mode;
         public String customSeed;
         public String outputHashType;
+        public String backendCipher;
 
-        public CreationStrategyAndOptions(FileCreationMode mode, String customSeed, String outputHashType) {
+        public CreationStrategyAndOptions(FileCreationMode mode, String customSeed, String outputHashType, String backendCipher) {
             this.mode = mode;
             this.customSeed = customSeed;
             this.outputHashType = outputHashType;
+            this.backendCipher = backendCipher;
         }
 
         public int getByte() {
             int ret = mode.ordinal(); // 0,1,2
             if(customSeed != null) ret |= 4;
             if(outputHashType != null) ret |= 8;
+            if(backendCipher != null) ret |= 16;
             return ret;
         }
     }
@@ -35,7 +38,7 @@ public class FileCreationAdvancedOptions implements Serializable {
     public long size;
 
     public FileCreationAdvancedOptions(long size, CreationStrategyAndOptions strategy) {
-        this.strategy = size == 0 ? new CreationStrategyAndOptions(FileCreationMode.ZEROS,null,null) : strategy; // fallocate returns errno 22 (invalid argument) if called with zero size
+        this.strategy = size == 0 ? new CreationStrategyAndOptions(FileCreationMode.ZEROS,null,null, null) : strategy; // fallocate returns errno 22 (invalid argument) if called with zero size
         this.size = size;
     }
 
@@ -46,6 +49,7 @@ public class FileCreationAdvancedOptions implements Serializable {
         if(strategy.mode == FileCreationMode.RANDOM) {
             if(strategy.customSeed != null) Misc.sendStringWithLen(baos, strategy.customSeed);
             if(strategy.outputHashType != null) Misc.sendStringWithLen(baos, strategy.outputHashType);
+            if(strategy.backendCipher != null) Misc.sendStringWithLen(baos, strategy.backendCipher);
         }
         return baos.toByteArray();
     }
