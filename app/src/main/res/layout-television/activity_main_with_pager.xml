@@ -136,7 +136,7 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/nav_layout"
+            android:id="@+id/quickpaths_layout"
             android:orientation="vertical"
             android:visibility="gone"
             android:background="@color/transparentCobaltBlue2"
@@ -144,7 +144,7 @@
             android:layout_height="match_parent" >
 
             <ListView
-                android:id="@+id/nav_listview"
+                android:id="@+id/quickpaths_listview"
                 android:divider="#B6DFE4"
                 android:dividerHeight="1dp"
                 android:layout_width="match_parent"

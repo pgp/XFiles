@@ -276,8 +276,8 @@ public class MainActivity extends EffectActivity {
             credsFavsButton,
             chooseBrowserViewButton;
 
-    public LinearLayout navLayout;
-    ListView navListView;
+    public LinearLayout quickPathsLayout;
+    ListView quickPathsListView;
 
     public AdapterView.OnItemClickListener listViewLevelOICL = new AdapterView.OnItemClickListener() {
         @Override
@@ -430,9 +430,9 @@ public class MainActivity extends EffectActivity {
 
     public void showNavLayout(View unused) {
         QuickPathsAdapter a = QuickPathsAdapter.create(this);
-        navListView.setAdapter(a);
-        navListView.setOnItemClickListener((parent,view,position,id) -> goDir_async(new LocalPathContent(a.getItem(position)),null));
-        navListView.setOnItemLongClickListener((parent, view, position, id) -> {
+        quickPathsListView.setAdapter(a);
+        quickPathsListView.setOnItemClickListener((parent, view, position, id) -> goDir_async(new LocalPathContent(a.getItem(position)),null));
+        quickPathsListView.setOnItemLongClickListener((parent, view, position, id) -> {
             StatFs statFs = new StatFs(a.getItem(position));
             long availableBytes = statFs.getAvailableBytes();
             long freeBytes = statFs.getFreeBytes();
@@ -450,17 +450,18 @@ public class MainActivity extends EffectActivity {
             bld.create().show();
             return true;
         });
-        navLayout.setVisibility(View.VISIBLE);
+        quickPathsLayout.setVisibility(View.VISIBLE);
+        quickPathsListView.requestFocus();
     }
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
-        if(navLayout.getVisibility() == View.VISIBLE) {
-            if(Misc.isWithinViewBounds((int)ev.getRawX(), (int)ev.getRawY(), navLayout)) {
+        if(quickPathsLayout.getVisibility() == View.VISIBLE) {
+            if(Misc.isWithinViewBounds((int)ev.getRawX(), (int)ev.getRawY(), quickPathsLayout)) {
                 return super.dispatchTouchEvent(ev);
             }
             else {
-                navLayout.setVisibility(View.GONE);
+                quickPathsLayout.setVisibility(View.GONE);
                 return true;
             }
         }
@@ -766,8 +767,8 @@ public class MainActivity extends EffectActivity {
 
         progressCircleForGoDirOps = findViewById(R.id.progressCircleForGoDirOps);
         showNavLayoutBtn = findViewById(R.id.showNavLayoutBtn);
-        navLayout = findViewById(R.id.nav_layout);
-        navListView = findViewById(R.id.nav_listview);
+        quickPathsLayout = findViewById(R.id.quickpaths_layout);
+        quickPathsListView = findViewById(R.id.quickpaths_listview);
         fileOperationHelperSwitcher = findViewById(R.id.toggleRootHelperButton);
 
         // conditional inflating
@@ -1823,8 +1824,8 @@ public class MainActivity extends EffectActivity {
         // TODO decide if it is needed to restore original adapter content on quick find mode exit
         int pos = browserPager.getCurrentItem();
 
-        if(navLayout.getVisibility() == View.VISIBLE) {
-            navLayout.setVisibility(View.GONE);
+        if(quickPathsLayout.getVisibility() == View.VISIBLE) {
+            quickPathsLayout.setVisibility(View.GONE);
             return;
         }
 

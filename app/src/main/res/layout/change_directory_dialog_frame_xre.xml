@@ -10,7 +10,7 @@
         <!--android:textSize="18sp" />-->
 
     <Spinner
-        android:id="@+id/xreConnectionStoredDataSpinner"
+        android:id="@+id/storedDataSpinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@android:drawable/btn_dropdown"
@@ -20,7 +20,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Domain:"
-        android:textSize="18sp" />
+        android:textSize="14sp" />
 
     <EditText
         android:id="@+id/xreConnectionDomainEditText"
@@ -48,7 +48,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Remote directory:"
-        android:textSize="18sp" />
+        android:textSize="14sp" />
 
     <!-- auto-complete using remote path favorites for the chosen auth data -->
     <EditText

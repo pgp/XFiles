@@ -75,10 +75,9 @@ public class GenericChangeDirectoryDialog extends Dialog {
 
     // local path common to local and in-archive modes
     AutoCompleteTextView localPath;
-    Spinner localStoredData;
+    Spinner localStoredData; // same resource label for all path types
 
     // sftp remote dir
-    Spinner storedUsers;
     EditText user;
     EditText domain;
     EditText port;
@@ -90,7 +89,6 @@ public class GenericChangeDirectoryDialog extends Dialog {
     final XREDirectoryViewModel xreDirectoryViewModel;
 
     // smb remote dir
-    Spinner smbStoredUsers;
     EditText smbUser;
     EditText smbDomain;
     EditText smbHost;
@@ -232,19 +230,19 @@ public class GenericChangeDirectoryDialog extends Dialog {
                 targetLayout = layoutInflater.inflate(R.layout.change_directory_dialog_frame_local, null);
                 containerLayout.addView(targetLayout);
                 localPath = findViewById(R.id.localDirEditText);
-                localStoredData = findViewById(R.id.localStoredDataSpinner);
+                localStoredData = findViewById(R.id.storedDataSpinner);
                 break;
             case LOCAL_WITHIN_ARCHIVE:
                 targetLayout = layoutInflater.inflate(R.layout.change_directory_dialog_frame_archive, null);
                 containerLayout.addView(targetLayout);
                 localPath = findViewById(R.id.archivePathnameEditText);
-                localStoredData = findViewById(R.id.archivePathnameStoredDataSpinner);
+                localStoredData = findViewById(R.id.storedDataSpinner);
                 inArchivePath = findViewById(R.id.archiveSubDirEditText);
                 break;
             case SFTP:
                 targetLayout = layoutInflater.inflate(R.layout.change_directory_dialog_frame_sftp, null);
                 containerLayout.addView(targetLayout);
-                storedUsers = findViewById(R.id.connectionStoredUsersSpinner);
+                localStoredData = findViewById(R.id.storedDataSpinner);
                 user = findViewById(R.id.connectionUserEditText);
                 password = findViewById(R.id.connectionPasswordEditText);
                 domain = findViewById(R.id.connectionDomainEditText);
@@ -260,7 +258,7 @@ public class GenericChangeDirectoryDialog extends Dialog {
             case SMB:
                 targetLayout = layoutInflater.inflate(R.layout.change_directory_dialog_frame_smb, null);
                 containerLayout.addView(targetLayout);
-                smbStoredUsers = findViewById(R.id.connectionStoredUsersSpinner);
+                localStoredData = findViewById(R.id.storedDataSpinner);
                 smbUser = findViewById(R.id.connectionUserEditText);
                 smbPassword = findViewById(R.id.connectionPasswordEditText);
                 smbDomain = findViewById(R.id.connectionDomainEditText);
@@ -332,9 +330,9 @@ public class GenericChangeDirectoryDialog extends Dialog {
                 items.add("");
                 for (FavoritesList<AuthData> awf : credsWithFavs) items.add(awf.a.toString());
                 ArrayAdapter<String> adapter = new ArrayAdapter<>(mainActivity, android.R.layout.simple_spinner_dropdown_item, items);
-                storedUsers.setAdapter(adapter);
+                localStoredData.setAdapter(adapter);
                 //////////////////////////////
-                storedUsers.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                localStoredData.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                         if (currentDirAutofillOverride.get()) {
@@ -392,9 +390,9 @@ public class GenericChangeDirectoryDialog extends Dialog {
                 items.add("");
                 for (FavoritesList<SmbAuthData> awf : smbCredsWithFavs) items.add(awf.a.toString());
                 adapter = new ArrayAdapter<>(mainActivity, android.R.layout.simple_spinner_dropdown_item, items);
-                smbStoredUsers.setAdapter(adapter);
+                localStoredData.setAdapter(adapter);
                 //////////////////////////////
-                smbStoredUsers.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                localStoredData.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                         if (currentDirAutofillOverride.get()) {

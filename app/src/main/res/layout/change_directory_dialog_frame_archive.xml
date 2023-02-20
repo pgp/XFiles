@@ -10,7 +10,7 @@
         android:textSize="18sp" />
 
     <Spinner
-        android:id="@+id/archivePathnameStoredDataSpinner"
+        android:id="@+id/storedDataSpinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@android:drawable/btn_dropdown"

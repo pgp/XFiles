@@ -106,7 +106,7 @@ public class XREDirectoryViewModel {
     }
 
     public void initViews() {
-        xreStoredData = v.findViewById(R.id.xreConnectionStoredDataSpinner);
+        xreStoredData = v.findViewById(R.id.storedDataSpinner);
         xreServerHost = v.findViewById(R.id.xreConnectionDomainEditText);
 //        xreServerPort = v.findViewById(R.id.xreConnectionPortEditText);
         xreRemotePath = v.findViewById(R.id.xreRemoteDirEditText);
@@ -134,5 +134,7 @@ public class XREDirectoryViewModel {
                 xreItems);
         xreStoredData.setAdapter(xreAdapter);
         xreStoredData.setOnItemSelectedListener(defaultSpinnerItemSelectListener);
+        xreStoredData.setNextFocusDownId(R.id.xreConnectionDomainEditText);
+        xreStoredData.setNextFocusUpId(R.id.httpUrlDownload);
     }
 }
