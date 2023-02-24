@@ -2,6 +2,7 @@ package it.pgp.xfiles.utils.wifi;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -64,6 +65,7 @@ public class WifiButtonsLayout extends LinearLayout {
         wifiBtn.setOnLongClickListener(this::showWifiNetworkPicker);
         wifiBtn.setOnClickListener(this::switchWifi);
         apBtn.setOnClickListener(this::switchAp);
+        apBtn.setOnLongClickListener(this::showHotspotOptions);
         addView(apBtn);
         addView(wifiBtn);
         receiveAp();
@@ -79,6 +81,14 @@ public class WifiButtonsLayout extends LinearLayout {
 
     private boolean showWifiNetworkPicker(View unused) {
         activity.startActivity(new Intent(WifiManager.ACTION_PICK_WIFI_NETWORK));
+        return true;
+    }
+
+    private boolean showHotspotOptions(View unused) {
+        Intent options = new Intent(Intent.ACTION_MAIN, null);
+        options.addCategory(Intent.CATEGORY_LAUNCHER);
+        options.setComponent(new ComponentName("com.android.settings", "com.android.settings.TetherSettings"));
+        activity.startActivity(options);
         return true;
     }
 
