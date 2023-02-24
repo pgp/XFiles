@@ -2,6 +2,7 @@ package it.pgp.xfiles.dialogs.compress;
 
 import android.support.annotation.NonNull;
 import android.text.InputType;
+import android.view.View;
 import android.widget.Button;
 import android.widget.CheckedTextView;
 import android.widget.EditText;
@@ -22,6 +23,16 @@ import it.pgp.xfiles.utils.pathcontent.BasePathContent;
 public class AskPasswordDialogOnListing extends BaseDialog {
     private ArchivePathContent pendingArchivePath_;
 
+    public static View.OnClickListener getPasswordCtvListener(EditText passwordEditText) {
+        return v -> {
+            CheckedTextView ctv = (CheckedTextView) v;
+            ctv.toggle();
+            passwordEditText.setInputType(ctv.isChecked() ?
+                    (InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD) :
+                    InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        };
+    }
+
     // after list attempt
     public AskPasswordDialogOnListing(@NonNull final MainActivity activity,
                                       @NonNull final BasePathContent pendingArchivePath) {
@@ -35,12 +46,7 @@ public class AskPasswordDialogOnListing extends BaseDialog {
         CheckedTextView passwordVisible = findViewById(R.id.passwordVisibleCtv);
         Button ok = findViewById(R.id.askPasswordOkButton);
 
-        passwordVisible.setOnClickListener(v -> {
-            passwordVisible.toggle();
-            password.setInputType(passwordVisible.isChecked() ?
-                    (InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD) :
-                    InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-        });
+        passwordVisible.setOnClickListener(getPasswordCtvListener(password));
 
         ok.setOnClickListener(v -> {
             switch(pendingArchivePath.providerType) {

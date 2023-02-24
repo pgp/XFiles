@@ -1,6 +1,7 @@
 package it.pgp.xfiles.utils.wifi;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -10,6 +11,7 @@ import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -17,7 +19,9 @@ import android.widget.Toast;
 import it.pgp.xfiles.MainActivity;
 import it.pgp.xfiles.PermissionManagementActivity;
 import it.pgp.xfiles.R;
+import it.pgp.xfiles.dialogs.compress.AskPasswordDialogOnListing;
 import it.pgp.xfiles.roothelperclient.RootHandler;
+import it.pgp.xfiles.utils.oreoap.MyOreoWifiManager;
 
 public class WifiButtonsLayout extends LinearLayout {
 
@@ -25,6 +29,7 @@ public class WifiButtonsLayout extends LinearLayout {
 
     private final ImageButton wifiBtn;
     public final ImageButton apBtn;
+    public final ImageButton hotspotPswBtn;
 
     private final BroadcastReceiver wifiReceiver;
     private final WifiApManager ap;
@@ -33,11 +38,13 @@ public class WifiButtonsLayout extends LinearLayout {
 
     private volatile boolean latestApState;
 
-    final LinearLayout.LayoutParams horizontal_equal_weight = new LinearLayout.LayoutParams(
-            0,
-            LayoutParams.MATCH_PARENT,
-            1
-    );
+    private LinearLayout.LayoutParams getLayoutParams(int weight) {
+        return new LinearLayout.LayoutParams(
+                0,
+                LayoutParams.MATCH_PARENT,
+                weight
+        );
+    }
 
     void toggleButtons(boolean on) {
         wifiBtn.setEnabled(on);
@@ -58,14 +65,38 @@ public class WifiButtonsLayout extends LinearLayout {
         setOrientation(HORIZONTAL);
         wifiBtn = new ImageButton(context);
         apBtn = new ImageButton(context);
+        hotspotPswBtn = (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) ? new ImageButton(context) : null;
         wifiBtn.setImageResource(R.drawable.xfiles_wifi_off);
         apBtn.setImageResource(R.drawable.xfiles_hotspot_off);
-        wifiBtn.setLayoutParams(horizontal_equal_weight);
-        apBtn.setLayoutParams(horizontal_equal_weight);
+        wifiBtn.setLayoutParams(getLayoutParams(3));
+        apBtn.setLayoutParams(getLayoutParams((hotspotPswBtn != null) ? 2 : 3));
         wifiBtn.setOnLongClickListener(this::showWifiNetworkPicker);
         wifiBtn.setOnClickListener(this::switchWifi);
         apBtn.setOnClickListener(this::switchAp);
         apBtn.setOnLongClickListener(this::showHotspotOptions);
+        if(hotspotPswBtn != null) {
+            hotspotPswBtn.setImageResource(android.R.drawable.ic_lock_lock);
+            hotspotPswBtn.setLayoutParams(getLayoutParams(1));
+            hotspotPswBtn.setOnClickListener(v -> {
+                Dialog dialog = new Dialog(context);
+                dialog.setContentView(R.layout.ask_password_dialog);
+                dialog.setTitle("Set hotspot password");
+                EditText password = dialog.findViewById(R.id.passwordEditText);
+                dialog.findViewById(R.id.askPasswordOkButton).setOnClickListener(w -> {
+                    MyOreoWifiManager apManager = new MyOreoWifiManager(context);
+                    MainActivity.showToast(
+                            apManager.configureHotspot("Android Hotspot",
+                                    password.getText().toString()) ?
+                                    "Password set successfully" : "Unable to set password"
+                    );
+                    dialog.dismiss();
+                });
+                dialog.findViewById(R.id.passwordVisibleCtv).setOnClickListener(
+                        AskPasswordDialogOnListing.getPasswordCtvListener(password));
+                dialog.show();
+            });
+            addView(hotspotPswBtn);
+        }
         addView(apBtn);
         addView(wifiBtn);
         receiveAp();

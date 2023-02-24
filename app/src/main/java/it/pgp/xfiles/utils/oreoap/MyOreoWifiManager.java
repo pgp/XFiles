@@ -34,7 +34,7 @@ public class MyOreoWifiManager {
      * Call this before {@code startTethering} if app is a system/privileged app
      * Requires: android.permission.TETHER_PRIVILEGED which is only granted to system apps
      */
-    public void configureHotspot(String name, String password) {
+    public boolean configureHotspot(String name, String password) {
         WifiConfiguration apConfig = new WifiConfiguration();
         apConfig.SSID = name;
         apConfig.preSharedKey = password;
@@ -43,9 +43,12 @@ public class MyOreoWifiManager {
             Method setConfigMethod = mWifiManager.getClass().getMethod("setWifiApConfiguration", WifiConfiguration.class);
             boolean status = (boolean) setConfigMethod.invoke(mWifiManager, apConfig);
             Log.d(TAG, "setWifiApConfiguration - success? " + status);
-        } catch (Exception e) {
+            return true;
+        }
+        catch (Exception e) {
             Log.e(TAG, "Error in configureHotspot");
             e.printStackTrace();
+            return false;
         }
     }
 

@@ -37,12 +37,7 @@ public class AskPasswordDialogOnExtract extends BaseDialog {
         CheckedTextView passwordVisible = findViewById(R.id.passwordVisibleCtv);
         Button ok = findViewById(R.id.askPasswordOkButton);
 
-        passwordVisible.setOnClickListener(v -> {
-            passwordVisible.toggle();
-            password.setInputType(passwordVisible.isChecked() ?
-                    (InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD) :
-                    InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-        });
+        passwordVisible.setOnClickListener(AskPasswordDialogOnListing.getPasswordCtvListener(password));
 
         ok.setOnClickListener(v -> {
             pendingPassword = password.getText().toString();
