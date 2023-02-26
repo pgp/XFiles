@@ -19,6 +19,8 @@ import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -199,6 +201,28 @@ public class GenericChangeDirectoryDialog extends Dialog {
             mainActivity.completeGoDir(gdwc,path,targetViewPagerPosition,null);
         }
         else if (idx == 5) {
+            // if we're not trying to download from a local url...
+            boolean isLocalUrl = false;
+            try {
+                URI uri = new URI(httpUrlToDownload.getText().toString());
+                String s = uri.getHost();
+                isLocalUrl = s.startsWith("127.0.0.1") || s.startsWith("localhost");
+            }
+            catch (URISyntaxException e) {
+                e.printStackTrace();
+            }
+            // ...check whether there's some connection enabled first
+            if(!isLocalUrl && !(Misc.isDataConnectionEnabled(mainActivity) ||
+                    Misc.isWifiEnabled(mainActivity) ||
+                    Misc.isHotspotEnabled(mainActivity))) {
+                mainActivity.runOnUiThread(() -> {
+                    okButton.setEnabled(true);
+                    okButton.setText(android.R.string.ok);
+                    Toast.makeText(mainActivity, "Please enable some data connection in order to download", Toast.LENGTH_SHORT).show();
+                });
+                return 0;
+            }
+
             // start download service
             Intent startIntent = new Intent(mainActivity,HTTPDownloadService.class);
             startIntent.setAction(BaseBackgroundService.START_ACTION);

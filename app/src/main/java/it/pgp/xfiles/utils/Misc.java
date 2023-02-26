@@ -9,9 +9,13 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
 import android.net.Uri;
+import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.os.Environment;
 import android.provider.Settings;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.AbsListView;
@@ -25,6 +29,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.lang.reflect.Method;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
@@ -458,5 +463,51 @@ public class Misc {
         Intent i = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS, Uri.parse("package:" + context.getPackageName()));
         i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(i);
+    }
+
+    public static boolean isHotspotEnabled(Context context) {
+        /*
+        public static int AP_STATE_DISABLING = 10;
+        public static int AP_STATE_DISABLED = 11;
+        public static int AP_STATE_ENABLING = 12;
+        public static int AP_STATE_ENABLED = 13;
+        public static int AP_STATE_FAILED = 14;
+        */
+        try {
+            WifiManager manager = (WifiManager)context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+            Method method = manager.getClass().getDeclaredMethod("getWifiApState");
+            method.setAccessible(true);
+            return (Integer) method.invoke(manager, (Object[]) null) == 13;
+        }
+        catch(Exception e) {
+            return false;
+        }
+    }
+
+    // methods copied from CurrentToggles
+    public static boolean isDataConnectionEnabled(Context context) {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            TelephonyManager tm = (TelephonyManager)context.getSystemService(Context.TELEPHONY_SERVICE);
+            return tm.isDataEnabled();
+        }
+        else {
+            ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            try {
+                Class<?> cmClass = Class.forName(cm.getClass().getName());
+                Method method = cmClass.getDeclaredMethod("getMobileDataEnabled");
+                method.setAccessible(true);
+                return (Boolean)method.invoke(cm);
+            }
+            catch(Exception e) {
+                e.printStackTrace();
+            }
+            return false;
+        }
+    }
+
+    public static boolean isWifiEnabled(Context context) {
+        WifiManager wifimanager = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+        if(wifimanager == null) return false; // WIFI_STATE.NO_ADAPTER_FOUND;
+        return wifimanager.isWifiEnabled();
     }
 }
