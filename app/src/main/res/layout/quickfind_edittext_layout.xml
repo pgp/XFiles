@@ -6,6 +6,7 @@
 
     <EditText
         android:id="@+id/quickFindEditText"
+        android:nextFocusDown="@id/quickFindIgnoreCase"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="text" />
@@ -13,6 +14,7 @@
     <CheckedTextView
         android:checked="false"
         android:id="@+id/quickFindIgnoreCase"
+        android:nextFocusUp="@id/quickFindEditText"
         android:text="Ignore case"
         android:focusable="true"
         android:clickable="true"

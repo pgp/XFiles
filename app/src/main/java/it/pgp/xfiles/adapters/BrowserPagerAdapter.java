@@ -407,6 +407,8 @@ public class BrowserPagerAdapter extends PagerAdapter {
                         quickFindEditTexts[position].getText(),
                         quickFindIgnoreCases[position].isChecked());
             });
+
+            quickFindEditTexts[position].requestFocus();
         }
     }
 

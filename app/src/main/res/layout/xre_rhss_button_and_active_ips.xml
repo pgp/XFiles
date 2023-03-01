@@ -19,6 +19,7 @@
 
                 <ImageButton
                     android:id="@+id/rhss_toggle_rhss_button"
+                    android:nextFocusDown="@id/rhssAnnounceOptionCtv"
                     android:src="@drawable/xf_share"
                     android:layout_weight="4"
                     android:layout_width="0dp"
@@ -26,6 +27,7 @@
 
                 <ImageButton
                     android:id="@+id/rhss_show_xre_connections"
+                    android:nextFocusDown="@id/rhssAnnounceOptionCtv"
                     android:src="@android:drawable/ic_dialog_info"
                     android:layout_weight="1"
                     android:layout_width="0dp"
@@ -36,6 +38,7 @@
             <CheckedTextView
                 android:checked="true"
                 android:id="@+id/rhssAnnounceOptionCtv"
+                android:nextFocusDown="@id/setXreHomePathToCurrent"
                 android:text="@string/send_xre_announce"
                 android:focusable="true"
                 android:clickable="true"
@@ -67,8 +70,10 @@
 
                     <ImageButton
                         android:id="@+id/setXreHomePathToCurrent"
+                        android:nextFocusDown="@id/setXreAnnouncedPathToCurrent"
+                        android:nextFocusUp="@id/rhssAnnounceOptionCtv"
                         android:src="@drawable/xf_dir_blu"
-                        android:background="@null"
+                        android:background="?android:attr/selectableItemBackground"
                         android:layout_weight="1"
                         android:layout_width="0dp"
                         android:layout_height="match_parent" />
@@ -93,8 +98,10 @@
 
                     <ImageButton
                         android:id="@+id/setXreAnnouncedPathToCurrent"
+                        android:nextFocusDown="@id/setXreExposedPathToCurrent"
+                        android:nextFocusUp="@id/setXreHomePathToCurrent"
                         android:src="@drawable/xf_dir_blu"
-                        android:background="@null"
+                        android:background="?android:attr/selectableItemBackground"
                         android:layout_weight="1"
                         android:layout_width="0dp"
                         android:layout_height="match_parent" />
@@ -119,8 +126,9 @@
 
                     <ImageButton
                         android:id="@+id/setXreExposedPathToCurrent"
+                        android:nextFocusUp="@id/setXreAnnouncedPathToCurrent"
                         android:src="@drawable/xf_dir_blu"
-                        android:background="@null"
+                        android:background="?android:attr/selectableItemBackground"
                         android:layout_weight="1"
                         android:layout_width="0dp"
                         android:layout_height="match_parent" />

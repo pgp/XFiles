@@ -58,6 +58,7 @@
     <Button
         android:text="Add XFiles remote favorite"
         android:id="@+id/favorites_xre_add_button"
+        android:nextFocusUp="@id/favorites_xre_list_item_edit"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1" />

@@ -15,6 +15,7 @@
     <ImageButton
         android:contentDescription="Edit item"
         android:id="@+id/favorites_local_list_item_edit"
+        android:nextFocusRight="@id/favorites_local_list_item_delete"
         android:layout_width="0dp"
         android:layout_weight=".1"
         android:layout_height="wrap_content"
@@ -22,6 +23,7 @@
     <ImageButton
         android:contentDescription="Delete item"
         android:id="@+id/favorites_local_list_item_delete"
+        android:nextFocusLeft="@id/favorites_local_list_item_edit"
         android:layout_width="0dp"
         android:layout_weight=".1"
         android:layout_height="wrap_content"
