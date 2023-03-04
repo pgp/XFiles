@@ -1,5 +1,7 @@
 package it.pgp.xfiles.service;
 
+import android.app.Dialog;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -7,8 +9,9 @@ import java.io.Serializable;
 import java.util.List;
 
 import it.pgp.xfiles.MainActivity;
+import it.pgp.xfiles.R;
+import it.pgp.xfiles.adapters.ExtractResultsAdapter;
 import it.pgp.xfiles.dialogs.compress.AskPasswordDialogOnExtract;
-import it.pgp.xfiles.dialogs.compress.ExtractResultsDialog;
 import it.pgp.xfiles.enums.FileOpsErrorCodes;
 import it.pgp.xfiles.enums.ServiceStatus;
 import it.pgp.xfiles.service.params.ExtractParams;
@@ -122,7 +125,15 @@ public class ExtractTask extends RootHelperClientTask {
             }
         }
         else { // there were errors when extracting from multiple archives, show results dialog
-            if(activity != null) new ExtractResultsDialog(activity, srcArchives, results, params instanceof TestParams).show();
+            if(activity != null) {
+                Dialog d = new Dialog(activity);
+                d.setTitle((params instanceof TestParams ? "Test":"Extract")+" results");
+                d.setContentView(R.layout.extract_results_dialog);
+                ExtractResultsAdapter a = new ExtractResultsAdapter(activity, srcArchives, results);
+                ListView lv = d.findViewById(R.id.extract_results_view);
+                lv.setAdapter(a);
+                d.show();
+            }
             else Toast.makeText(activity, "There were extraction/test errors, unable to display them without an active activity", Toast.LENGTH_SHORT).show();
         }
 

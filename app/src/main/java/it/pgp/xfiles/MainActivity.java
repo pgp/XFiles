@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Point;
@@ -79,7 +80,6 @@ import it.pgp.xfiles.adapters.BrowserPagerAdapter;
 import it.pgp.xfiles.adapters.OperationalPagerAdapter;
 import it.pgp.xfiles.adapters.QuickPathsAdapter;
 import it.pgp.xfiles.adapters.RecentPositionsAdapter;
-import it.pgp.xfiles.dialogs.AboutDialog;
 import it.pgp.xfiles.dialogs.AdvancedSortingDialog;
 import it.pgp.xfiles.dialogs.BulkRenameDialog;
 import it.pgp.xfiles.dialogs.ChecksumActivity;
@@ -94,6 +94,7 @@ import it.pgp.xfiles.dialogs.RemoteRHServerManagementDialog;
 import it.pgp.xfiles.dialogs.RenameDialog;
 import it.pgp.xfiles.dialogs.SSHAlreadyInKnownHostsDialog;
 import it.pgp.xfiles.dialogs.SSHNotInKnownHostsDialog;
+import it.pgp.xfiles.dialogs.UpdateCheckDialog;
 import it.pgp.xfiles.dialogs.XFilesRemoteSessionsManagementActivity;
 import it.pgp.xfiles.dialogs.compress.AskPasswordDialogOnListing;
 import it.pgp.xfiles.dialogs.compress.CompressActivity;
@@ -859,7 +860,22 @@ public class MainActivity extends EffectActivity {
     }
 
     public void openAboutDialog() {
-        new AboutDialog(this).show();
+        Dialog d = new Dialog(this);
+        d.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        d.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        d.setContentView(R.layout.about_dialog);
+        try {
+            PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+            ((TextView)(d.findViewById(R.id.aboutAppVersionName))).setText(pInfo.versionName);
+            ((TextView)(d.findViewById(R.id.aboutAppVersionCode))).setText(""+pInfo.versionCode);
+            d.findViewById(R.id.updateCheckButton).setOnClickListener(v -> {
+                d.dismiss();
+                new UpdateCheckDialog(this).show();
+            });
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        d.show();
     }
 
     public void showAdvancedSortingDialogOrMenu(View v) {
