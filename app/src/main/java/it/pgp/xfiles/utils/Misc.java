@@ -53,6 +53,12 @@ public class Misc {
     public static File internalStorageDir = Environment.getExternalStorageDirectory();
     public static final byte[] EOL = new byte[2]; // end-of-list indication in RH protocol
 
+    // do not confuse with remainder (% operator); mod always returns a non-negative integer
+    public static int mod(int dividend, int divisor) {
+        int result = dividend % divisor;
+        return result < 0 ? result + divisor : result;
+    }
+
     public static String toHexString(byte[] bytes) {
         char[] hexChars = new char[bytes.length * 2];
         for ( int j = 0; j < bytes.length; j++ ) {
