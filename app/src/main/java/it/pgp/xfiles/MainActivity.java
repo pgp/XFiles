@@ -1836,6 +1836,13 @@ public class MainActivity extends EffectActivity {
     boolean doubleBackToExitPressedOnce = false;
     @Override
     public void onBackPressed() {
+        if(deviceType == DeviceType.TV) {
+            if(getCurrentDirCommander().currentIndex > 0) {
+                goDir_async(-1, null);
+                return;
+            }
+        }
+
         // TODO maybe should handle mode exit differently (not both at once)
         // TODO decide if it is needed to restore original adapter content on quick find mode exit
         int pos = browserPager.getCurrentItem();
