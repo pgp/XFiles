@@ -7,27 +7,23 @@
 
     <LinearLayout
         android:orientation="horizontal"
-        android:nextFocusLeft="@id/showNavLayoutBtn"
-        android:nextFocusRight="@id/xre_op_button"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight=".1">
 
         <!--empty padder originally left for operationButtonsLayoutSwitcher, now for progressCircle -->
         <View
-            android:scaleType="fitCenter"
-            android:adjustViewBounds="true"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
             android:background="@null"
             android:layout_weight="1"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            >
-        </View>
+            android:layout_height="wrap_content" />
 
         <TextView
             android:id="@+id/currentDirectoryTextView"
-            android:background="@null"
-            android:nextFocusLeft="@id/showNavLayoutBtn"
+            android:background="?android:attr/selectableItemBackground"
+            android:nextFocusUp="@id/showNavLayoutBtn"
             android:nextFocusRight="@id/xre_op_button"
             android:nextFocusDown="@id/mainBrowserViewLayout"
             android:ellipsize="end"
