@@ -28,9 +28,11 @@ import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.math.BigInteger;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -515,5 +517,24 @@ public class Misc {
         WifiManager wifimanager = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         if(wifimanager == null) return false; // WIFI_STATE.NO_ADAPTER_FOUND;
         return wifimanager.isWifiEnabled();
+    }
+
+    public static void pipe(InputStream is, OutputStream os) throws IOException {
+        int n;
+        byte[] buffer = new byte[4096];
+        while((n = is.read(buffer)) > -1) {
+            os.write(buffer, 0, n);   // Don't allow any extra bytes to creep in, final write
+        }
+        os.close();
+    }
+
+    public static boolean isValidURL(String urlString) {
+        try {
+            URL url = new URL(urlString);
+            url.toURI();
+            return true;
+        } catch (Exception exception) {
+            return false;
+        }
     }
 }

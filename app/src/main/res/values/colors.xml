@@ -12,6 +12,7 @@
     <color name="transparentCobaltBlue2">#D90B3752</color>
     <color name="black">#000000</color>
     <color name="white">#FFFFFF</color>
+    <color name="grey">#888888</color>
     <color name="green">#00FF00</color>
     <color name="red">#FF0000</color>
     <color name="imagebuttonselect">#8800BCD4</color>

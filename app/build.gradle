@@ -8,8 +8,8 @@ android {
         minSdkVersion 19
         targetSdkVersion 33
         multiDexEnabled true
-        versionCode 195230505
-        versionName "1.9.5"
+        versionCode 196230615
+        versionName "1.9.6"
         externalNativeBuild {
             cmake {
                 cppFlags "-std=c++11 -pthread -frtti -fexceptions"
@@ -33,6 +33,8 @@ android {
 
             packagingOptions {
                 doNotStrip '**/libdummy*.so'
+                exclude 'META-INF/DEPENDENCIES'
+                exclude 'mozilla/public-suffix-list.txt'
             }
         }
 
@@ -41,6 +43,8 @@ android {
 
             packagingOptions {
                 doNotStrip '**/libdummy*.so'
+                exclude 'META-INF/DEPENDENCIES'
+                exclude 'mozilla/public-suffix-list.txt'
             }
         }
     }
@@ -87,8 +91,11 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'com.android.support:appcompat-v7:28.0.0'
     implementation 'com.android.support:recyclerview-v7:28.0.0'
+    implementation 'com.android.support:swiperefreshlayout:28.0.0'
+    implementation 'com.android.support:support-annotations:28.0.0'
+    implementation 'com.android.support:viewpager:28.0.0'
+    implementation 'com.github.solkin:disk-lru-cache:1.5'
     implementation 'com.android.support:multidex:1.0.3'
     implementation group: 'org.bouncycastle', name: 'bcprov-jdk15on', version: '1.65'
     implementation group: 'org.slf4j', name: 'slf4j-android', version: '1.7.30'
@@ -96,8 +103,6 @@ dependencies {
     implementation group: 'org.apache.ftpserver', name: 'ftpserver-core', version: '1.1.0'
     // newest version of ftpserver.core causes manifest merge error
     implementation group: 'eu.agno3.jcifs', name: 'jcifs-ng', version: '2.1.1'
-    implementation 'com.github.bumptech.glide:glide:3.7.0'
-    implementation 'com.github.chrisbanes:PhotoView:1.3.1'
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.11.1'
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.11.1'
     implementation 'com.linkedin.dexmaker:dexmaker:2.28.3'

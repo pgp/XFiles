@@ -196,6 +196,9 @@
         <activity
             android:name=".FavoritesActivity"
             android:configChanges="orientation|screenSize|keyboardHidden" />
+<!--        <activity-->
+<!--            android:name="com.tomclaw.imageloader.demo.DemoActivity"-->
+<!--            android:configChanges="orientation|screenSize|keyboardHidden" />-->
         <activity
             android:name=".XREDirectShareActivity"
             android:exported="true"
@@ -243,7 +246,7 @@
             android:name=".PermissionManagementActivity"
             android:configChanges="orientation|screenSize|keyboardHidden" />
         <activity
-            android:name="net.alhazmy13.mediagallery.library.activity.MediaGalleryActivity"
+            android:name=".MediaGalleryActivity"
             android:launchMode="singleTask"
             android:configChanges="orientation|screenSize|keyboardHidden" />
 

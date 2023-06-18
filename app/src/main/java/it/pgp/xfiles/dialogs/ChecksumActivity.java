@@ -18,6 +18,7 @@ import android.widget.GridView;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -209,7 +210,7 @@ public class ChecksumActivity extends EffectActivity implements FileSaveFragment
         }
     }
 
-    private static class HashTextView extends android.support.v7.widget.AppCompatTextView {
+    private static class HashTextView extends TextView {
 
         private HashRequestCodes code;
         private CharSequence filename;

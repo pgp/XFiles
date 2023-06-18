@@ -13,8 +13,8 @@
     </style>
 
     <style name="ProgressBarStyle" parent="@android:style/Widget.Holo.ProgressBar.Horizontal">
-        <item name="colorAccent">#3FCCFF</item>
-        <item name="backgroundTint">#3FCCFF</item>
+        <item name="colorAccent" type="attr">#3FCCFF</item>
+        <item name="backgroundTint" type="attr">#3FCCFF</item>
     </style>
 
 </resources>

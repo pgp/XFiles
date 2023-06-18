@@ -1,6 +1,5 @@
-package net.alhazmy13.mediagallery.library.activity.adapter;
+package it.pgp.xfiles.adapters;
 
-import android.content.Context;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.support.v7.widget.RecyclerView;
@@ -10,40 +9,24 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
+import com.tomclaw.imageloader.util.ImageViewHandlers;
+import com.tomclaw.imageloader.util.ImageViews;
 
-import net.alhazmy13.mediagallery.library.Utility;
-
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.ArrayList;
 
 import it.pgp.xfiles.R;
+import it.pgp.xfiles.utils.Misc;
 
 
-/**
- * The type Horizontal list adapters.
- */
-public class HorizontalListAdapters extends RecyclerView.Adapter<HorizontalListAdapters.ViewHolder> {
-    private final int placeHolder;
+public class HorizontalListAdapter extends RecyclerView.Adapter<HorizontalListAdapter.ViewHolder> {
     private final ArrayList<String> mDataset;
-    private final Context mContext;
     private int mSelectedItem = -1;
     private final OnImgClick mClickListner;
 
-    /**
-     * Instantiates a new Horizontal list adapters.
-     *
-     * @param activity    the activity
-     * @param images      the images
-     * @param imgClick    the img click
-     * @param placeHolder the place holder
-     */
-    public HorizontalListAdapters(Context activity, ArrayList<String> images, OnImgClick imgClick, int placeHolder) {
-        this.mContext = activity;
+    public HorizontalListAdapter(ArrayList<String> images, OnImgClick imgClick) {
         this.mDataset = images;
         this.mClickListner = imgClick;
-        this.placeHolder = placeHolder;
     }
 
     @Override
@@ -53,36 +36,19 @@ public class HorizontalListAdapters extends RecyclerView.Adapter<HorizontalListA
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
+        int blue = holder.image.getContext().getResources().getColor(R.color.transparentCobaltBlue);
         String o = mDataset.get(holder.getAdapterPosition());
-        boolean isValidImage;
-        if (new File(o).exists() || Utility.isValidURL(o)) {
-            Glide.with(mContext)
-                    .load(o)
-                    .placeholder(placeHolder == -1 ? R.drawable.media_gallery_placeholder : placeHolder)
-                    .into(holder.image);
-            isValidImage =true;
-        } else {
-
-            ByteArrayOutputStream stream = Utility.toByteArrayOutputStream(o);
-            if (stream != null) {
-                Glide.with(mContext)
-                        .load(stream.toByteArray())
-                        .asBitmap()
-                        .placeholder(placeHolder == -1 ? R.drawable.media_gallery_placeholder : placeHolder)
-                        .into(holder.image);
-                isValidImage = true;
-            } else {
-                throw new RuntimeException("Image at position: " + position + " it's not valid image");
-
-            }
+        if(new File(o).exists() || Misc.isValidURL(o)) {
+            ImageViews.fetch(holder.image, "file://"+o, handlers -> {
+                ImageViewHandlers.centerCrop(handlers);
+                ImageViewHandlers.withPlaceholder(handlers, R.drawable.ic_image);
+                ImageViewHandlers.whenError(handlers, R.drawable.ic_image_remove, blue);
+            });
         }
-        if(!isValidImage){
-            throw new RuntimeException("Value at position: " + position + " Should be as url string or bitmap object");
-        }
+        else throw new RuntimeException("Not implemented");
         ColorMatrix matrix = new ColorMatrix();
         if (mSelectedItem != holder.getAdapterPosition()) {
             matrix.setSaturation(0);
-
             ColorMatrixColorFilter filter = new ColorMatrixColorFilter(matrix);
             holder.image.setColorFilter(filter);
             holder.image.setAlpha(0.5f);
@@ -93,7 +59,6 @@ public class HorizontalListAdapters extends RecyclerView.Adapter<HorizontalListA
             holder.image.setColorFilter(filter);
             holder.image.setAlpha(1f);
         }
-
         holder.image.setOnClickListener(v->mClickListner.onClick(holder.getAdapterPosition()));
     }
 
@@ -102,32 +67,16 @@ public class HorizontalListAdapters extends RecyclerView.Adapter<HorizontalListA
         return mDataset.size();
     }
 
-    /**
-     * Sets selected item.
-     *
-     * @param position the position
-     */
     public void setSelectedItem(int position) {
         if (position >= mDataset.size()) return;
         mSelectedItem = position;
         notifyDataSetChanged();
     }
 
-    /**
-     * The type View holder.
-     */
     static class ViewHolder extends RecyclerView.ViewHolder {
-        /**
-         * The Image.
-         */
         public ImageView image;
         public TextView filename;
 
-        /**
-         * Instantiates a new View holder.
-         *
-         * @param itemView the item view
-         */
         ViewHolder(View itemView) {
             super(itemView);
             image = itemView.findViewById(R.id.iv);
@@ -135,9 +84,7 @@ public class HorizontalListAdapters extends RecyclerView.Adapter<HorizontalListA
         }
     }
 
-
     public interface OnImgClick {
         void onClick(int pos);
     }
-
 }

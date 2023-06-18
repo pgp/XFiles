@@ -3,13 +3,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#000000"
-    android:id="@+id/mainLayout"
+    android:id="@+id/rl_parent_main"
     android:orientation="vertical">
-    <android.support.v7.widget.Toolbar
+    <HorizontalScrollView
         android:id="@+id/toolbar_media_gallery"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
-    <net.alhazmy13.mediagallery.library.activity.adapter.CustomViewPager
+    <it.pgp.xfiles.GalleryViewPager
         android:id="@+id/pager"
         android:fitsSystemWindows="true"
         android:layout_width="match_parent"

@@ -10,4 +10,19 @@
         <attr name="image_width" format="dimension"/>
         <attr name="image_height" format="dimension"/>
     </declare-styleable>
+
+    <declare-styleable name="StandardThemeAttrs">
+        <attr name="colorPrimary" format="color|reference" />
+        <attr name="colorAccent" format="color|reference" />
+        <attr name="backgroundTint" format="color|reference" />
+    </declare-styleable>
+
+    <declare-styleable name="SubsamplingScaleImageView">
+        <attr name="src" format="reference"/>
+        <attr name="assetName" format="string"/>
+        <attr name="panEnabled" format="boolean"/>
+        <attr name="zoomEnabled" format="boolean"/>
+        <attr name="quickScaleEnabled" format="boolean"/>
+        <attr name="tileBackgroundColor" format="color"/>
+    </declare-styleable>
 </resources>

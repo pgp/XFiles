@@ -29,7 +29,6 @@ import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.ViewPager;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -58,9 +57,6 @@ import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import net.alhazmy13.mediagallery.library.activity.MediaGallery;
-import net.alhazmy13.mediagallery.library.activity.MediaGalleryActivity;
 
 import java.io.File;
 import java.io.IOException;
@@ -576,10 +572,11 @@ public class MainActivity extends EffectActivity {
         startActivity(i);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     public boolean checkDangerousPermissions() {
         EnumSet<Permissions> nonGrantedPerms = EnumSet.noneOf(Permissions.class);
         for (Permissions p : Permissions.values()) {
-            if (ActivityCompat.checkSelfPermission(context,p.value()) != PackageManager.PERMISSION_GRANTED) {
+            if(checkSelfPermission(p.value()) != PackageManager.PERMISSION_GRANTED) {
                 nonGrantedPerms.add(p);
             }
         }
@@ -871,8 +868,10 @@ public class MainActivity extends EffectActivity {
             d.findViewById(R.id.updateCheckButton).setOnClickListener(v -> {
                 d.dismiss();
                 new UpdateCheckDialog(this).show();
+//                startActivity(new Intent(MainActivity.this, com.tomclaw.imageloader.demo.DemoActivity.class));
             });
-        } catch (PackageManager.NameNotFoundException e) {
+        }
+        catch(PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
         d.show();

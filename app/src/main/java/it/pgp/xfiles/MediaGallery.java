@@ -1,12 +1,10 @@
-package net.alhazmy13.mediagallery.library.activity;
+package it.pgp.xfiles;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
-
-import net.alhazmy13.mediagallery.library.Constants;
 
 import java.util.ArrayList;
 
@@ -21,19 +19,23 @@ public class MediaGallery {
     @DrawableRes
     private int mPlaceHolder;
 
+    public enum Constants {
+        IMAGES,
+        TITLE,
+        SELECTED_IMG_POS,
+        BACKGROUND_COLOR,
+        PLACE_HOLDER,
+        SELECTED_IMAGE_POSITION
+    }
+
     public static MediaGallery Builder(Activity activity, ArrayList<String> imagesURLs) {
         return new MediaGallery(activity, imagesURLs);
     }
-
-
-
 
     private MediaGallery(Activity activity, ArrayList<String> imagesList) {
         this.mDataset = imagesList;
         this.mActivity = activity;
     }
-
-
 
     public MediaGallery title(String title) {
         this.mTitle = title;

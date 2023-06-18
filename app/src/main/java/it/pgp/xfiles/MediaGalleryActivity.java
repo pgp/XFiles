@@ -1,10 +1,11 @@
-package net.alhazmy13.mediagallery.library.activity;
+package it.pgp.xfiles;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.ColorRes;
 import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -12,12 +13,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.HorizontalScrollView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
-
-import net.alhazmy13.mediagallery.library.activity.adapter.CustomViewPager;
-import net.alhazmy13.mediagallery.library.activity.adapter.HorizontalListAdapters;
-import net.alhazmy13.mediagallery.library.activity.adapter.ViewPagerAdapter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,20 +25,27 @@ import java.util.List;
 import java.util.Set;
 
 import it.pgp.xfiles.BrowserItem;
+import it.pgp.xfiles.GalleryViewPager;
 import it.pgp.xfiles.MainActivity;
 import it.pgp.xfiles.R;
+import it.pgp.xfiles.adapters.GalleryPagerAdapter;
+import it.pgp.xfiles.adapters.HorizontalListAdapter;
 import it.pgp.xfiles.service.visualization.ViewType;
 import it.pgp.xfiles.utils.pathcontent.BasePathContent;
 
 
-/**
- * The type Media gallery activity.
- */
-public class MediaGalleryActivity extends BaseActivity implements ViewPager.OnPageChangeListener, HorizontalListAdapters.OnImgClick {
-    private CustomViewPager mViewPager;
+public class MediaGalleryActivity extends Activity implements ViewPager.OnPageChangeListener, HorizontalListAdapter.OnImgClick {
+    protected HorizontalScrollView mToolbar;
+    protected ArrayList<String> dataSet;
+    protected String title;
+    @ColorRes
+    protected int backgroundColor;
+    protected int selectedImagePosition;
+
+    private GalleryViewPager mViewPager;
     private RecyclerView imagesHorizontalList;
-    private HorizontalListAdapters hAdapter;
-    private RelativeLayout mMainLayout;
+    private HorizontalListAdapter hAdapter;
+    private RelativeLayout rlParentMain;
 
     public static final Set<String> allowedImageExtensions = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(".bmp",".gif",".jpg",".png")));
 
@@ -84,42 +89,44 @@ public class MediaGalleryActivity extends BaseActivity implements ViewPager.OnPa
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         if(getIntent().getBooleanExtra("setShowOnLockScreenFlags",false))
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON|
                     WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD|
                     WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED|
                     WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
-        super.onCreate(savedInstanceState);
-    }
 
-    @Override
-    protected int getResourceLayoutId() {
-        return R.layout.activity_gallery;
-    }
+        setContentView(R.layout.activity_gallery);
 
-    @Override
-    protected void onCreateActivity() {
+        Intent intent = getIntent();
+        if(intent == null || intent.getExtras() == null) return;
+        Bundle bundle = intent.getExtras();
+        dataSet = bundle.getStringArrayList(MediaGallery.Constants.IMAGES.name());
+        title = bundle.getString(MediaGallery.Constants.TITLE.name());
+        backgroundColor = bundle.getInt(MediaGallery.Constants.BACKGROUND_COLOR.name(),-1);
+        selectedImagePosition = bundle.getInt(MediaGallery.Constants.SELECTED_IMAGE_POSITION.name(),0);
+
+        mToolbar = findViewById(R.id.toolbar_media_gallery);
+
         // init layouts
-        initViews();
+        mViewPager = findViewById(R.id.pager);
+        imagesHorizontalList = findViewById(R.id.imagesHorizontalList);
+        rlParentMain = findViewById(R.id.rl_parent_main);
+        if(backgroundColor != -1)
+            rlParentMain.setBackgroundColor(getResources().getColor(backgroundColor));
 
-        mViewPager.setAdapter(new ViewPagerAdapter(this, dataSet, mToolbar, imagesHorizontalList));
-        hAdapter = new HorizontalListAdapters(this, dataSet, this,placeHolder);
+        GalleryPagerAdapter adapter = new GalleryPagerAdapter(this, dataSet, mToolbar, imagesHorizontalList);
+        mViewPager.addOnPageChangeListener(this);
+        mViewPager.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
+        hAdapter = new HorizontalListAdapter(dataSet, this);
         imagesHorizontalList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         imagesHorizontalList.setAdapter(hAdapter);
         hAdapter.notifyDataSetChanged();
-        mViewPager.addOnPageChangeListener(this);
         hAdapter.setSelectedItem(selectedImagePosition);
         mViewPager.setCurrentItem(selectedImagePosition);
-    }
-
-    private void initViews() {
-        mViewPager = findViewById(R.id.pager);
-        imagesHorizontalList = findViewById(R.id.imagesHorizontalList);
-        mMainLayout = findViewById(R.id.mainLayout);
-        if (backgroundColor != -1){
-            mMainLayout.setBackgroundColor(ContextCompat.getColor(this,backgroundColor));
-        }
     }
 
     public void setShowImageOnLockScreen(View unused) {

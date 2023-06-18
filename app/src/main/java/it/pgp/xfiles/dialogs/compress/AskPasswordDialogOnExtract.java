@@ -3,7 +3,6 @@ package it.pgp.xfiles.dialogs.compress;
 import android.app.Activity;
 import android.content.Intent;
 import android.support.annotation.NonNull;
-import android.text.InputType;
 import android.widget.Button;
 import android.widget.CheckedTextView;
 import android.widget.EditText;
