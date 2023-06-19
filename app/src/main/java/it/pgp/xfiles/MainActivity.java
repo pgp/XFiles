@@ -534,6 +534,9 @@ public class MainActivity extends EffectActivity {
             case R.id.openAboutDialog:
                 openAboutDialog();
                 return true;
+            case R.id.openPermissionActivity:
+                startPermissionManagementActivity();
+                return true;
 
             // fast menu for change directory
             case R.id.localFolder:
