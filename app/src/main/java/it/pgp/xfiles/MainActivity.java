@@ -685,10 +685,13 @@ public class MainActivity extends EffectActivity {
     static int permMask = 0; // 0: nothing enabled, 1: dang enabled, 2: sign enabled, 3: both
 
     void startPermissionManagementActivity() {
-        Intent i = new Intent(this,PermissionManagementActivity.class);
-        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        startActivity(i);
-        finish();
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            Intent i = new Intent(this, PermissionManagementActivity.class);
+            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(i);
+            finish();
+        }
+        else Toast.makeText(mainActivity, "Runtime permission management does not exist on Android < 6", Toast.LENGTH_SHORT).show();
     }
 
     boolean hasPermanentMenuKey;
