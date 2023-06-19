@@ -13,7 +13,6 @@ import android.os.Environment;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
-import android.support.v4.app.ActivityCompat;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -24,13 +23,13 @@ public class PermissionManagementActivity extends Activity {
 
     NotificationManager nm;
 
-    public static boolean areStoragePermissionsGranted(Context context) {
+    public boolean areStoragePermissionsGranted() {
         // EITHER Android < 6
         // OR storage permissions granted between Android 6 and 10
         // OR all-files permissions granted on Android 11+
         return /*Build.VERSION.SDK_INT < Build.VERSION_CODES.M ||*/ // PermissionManagementActivity is not shown on Android < 6, decomment this predicate if this method has to be used elsewhere
                 (Build.VERSION.SDK_INT < Build.VERSION_CODES.R &&
-                        ActivityCompat.checkSelfPermission(context,Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) ||
+                        checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) ||
                 (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && Environment.isExternalStorageManager());
     }
 
@@ -106,10 +105,7 @@ public class PermissionManagementActivity extends Activity {
 
     public void requestStoragePermissions(View unused) {
         if(Build.VERSION.SDK_INT < Build.VERSION_CODES.R)
-            ActivityCompat.requestPermissions(
-                    this,
-                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                    PermReqCodes.STORAGE.ordinal());
+            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PermReqCodes.STORAGE.ordinal());
         else {
             // with Android >= 11, by having this signature permission granted by user, we can access all files (both read and write, even external sd and usb drives)
             Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION, Uri.parse("package:" + getPackageName()));
@@ -128,10 +124,7 @@ public class PermissionManagementActivity extends Activity {
     // for Oreo, that absurdly needs READ external storage permission request AFTER WRITE one has already been granted (and the latter in this case is automatically granted!)
     protected void requestStorageReadPermissions() {
         if(Build.VERSION.SDK_INT < Build.VERSION_CODES.R)
-            ActivityCompat.requestPermissions(
-                    this,
-                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                    PermReqCodes.STORAGE_READ.ordinal());
+            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, PermReqCodes.STORAGE_READ.ordinal());
     }
 
     public static Intent getSystemSettingsIntent(Context context) {
@@ -181,7 +174,7 @@ public class PermissionManagementActivity extends Activity {
             }
         }
         // disable buttons for permissions already granted
-        if(areStoragePermissionsGranted(this)) {
+        if(areStoragePermissionsGranted()) {
             b = findViewById(R.id.storagePermissions);
             b.setEnabled(false);
             b.setText(alreadyGrantedButtonText);
