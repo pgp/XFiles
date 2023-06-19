@@ -1,5 +1,6 @@
 package it.pgp.xfiles;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.AlertDialog;
@@ -102,7 +103,6 @@ import it.pgp.xfiles.enums.CopyMoveMode;
 import it.pgp.xfiles.enums.FileMode;
 import it.pgp.xfiles.enums.FileOpsErrorCodes;
 import it.pgp.xfiles.enums.ForegroundServiceType;
-import it.pgp.xfiles.enums.Permissions;
 import it.pgp.xfiles.enums.ProviderType;
 import it.pgp.xfiles.fileservers.FileServer;
 import it.pgp.xfiles.roothelperclient.RemoteClientManager;
@@ -573,18 +573,6 @@ public class MainActivity extends EffectActivity {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
-    public boolean checkDangerousPermissions() {
-        EnumSet<Permissions> nonGrantedPerms = EnumSet.noneOf(Permissions.class);
-        for (Permissions p : Permissions.values()) {
-            if(checkSelfPermission(p.value()) != PackageManager.PERMISSION_GRANTED) {
-                nonGrantedPerms.add(p);
-            }
-        }
-
-        return nonGrantedPerms.isEmpty();
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (grantResults.length == 0) { // request cancelled
@@ -733,7 +721,7 @@ public class MainActivity extends EffectActivity {
         if((Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && !Environment.isExternalStorageManager()) ||
                 (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
                  Build.VERSION.SDK_INT < Build.VERSION_CODES.R &&
-                 !checkDangerousPermissions())) {
+                 checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)) {
             Toast.makeText(this, "Storage permissions not granted, please enable them",
                     Toast.LENGTH_SHORT).show();
             startPermissionManagementActivity();
