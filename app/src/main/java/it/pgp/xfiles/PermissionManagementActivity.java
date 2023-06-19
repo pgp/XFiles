@@ -162,9 +162,15 @@ public class PermissionManagementActivity extends Activity {
         super.onCreate(savedInstanceState);
         setTitle("Permission management");
         setContentView(R.layout.activity_permission_management);
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+            nm = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         Button b;
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            nm = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
             b = findViewById(R.id.notifs13Permissions);
             b.setVisibility(View.VISIBLE);
             findViewById(R.id.notifs13PermissionsExplain).setVisibility(View.VISIBLE);
