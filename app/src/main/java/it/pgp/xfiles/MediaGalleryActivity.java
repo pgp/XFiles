@@ -3,7 +3,9 @@ package it.pgp.xfiles;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.annotation.ColorRes;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
@@ -130,6 +132,10 @@ public class MediaGalleryActivity extends Activity implements ViewPager.OnPageCh
     }
 
     public void setShowImageOnLockScreen(View unused) {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
+            Toast.makeText(this, "Please grant overlay permission in order to show gallery over lock screen", Toast.LENGTH_SHORT).show();
+            return;
+        }
         AlertDialog.Builder bld = new AlertDialog.Builder(this);
         bld.setTitle("Show this gallery on lock screen, if any?");
         bld.setNegativeButton(android.R.string.cancel, null);
