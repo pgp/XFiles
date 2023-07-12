@@ -881,20 +881,22 @@ public class RootHelperClient implements FileOperationHelper {
         req.write(rs.o);
         Log.d("roothelperclient","Create request sent");
         errno = Misc.receiveBaseResponse(rs.i);
-        if(errno == 0 && fileOptions.length > 0) {
-            // receive progress
-            FileCreationAdvancedOptions fopts = fileOptions[0];
-            long progress;
-            long total = fopts.size;
-            do {
-                progress = Misc.receiveTotalOrProgress(rs.i);
-                task.publishProgressWrapper(new Pair<>(progress, total));
-            }
-            while(progress != EOF_ind);
+        if(errno == 0) {
+            if(fileOptions.length > 0) { // if a non-empty regular file is being created
+                // receive progress
+                FileCreationAdvancedOptions fopts = fileOptions[0];
+                long progress;
+                long total = fopts.size;
+                do {
+                    progress = Misc.receiveTotalOrProgress(rs.i);
+                    task.publishProgressWrapper(new Pair<>(progress, total));
+                }
+                while(progress != EOF_ind);
 
-            if(fopts.strategy.mode == FileCreationAdvancedOptions.FileCreationMode.RANDOM &&
-                    fopts.strategy.outputHashType != null) {
-                return Misc.receiveStringWithLen(rs.i); // output hash, to be shown in dialog
+                if(fopts.strategy.mode == FileCreationAdvancedOptions.FileCreationMode.RANDOM &&
+                        fopts.strategy.outputHashType != null) {
+                    return Misc.receiveStringWithLen(rs.i); // output hash, to be shown in dialog
+                }
             }
             return null;
         }
