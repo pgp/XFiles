@@ -1677,7 +1677,18 @@ public class MainActivity extends EffectActivity {
                     AlertDialog.Builder bld = new AlertDialog.Builder(MainActivity.this);
                     bld.setMessage("You are about to upload this file:\n"+b.filename+"\nto a public internet service");
                     DialogInterface.OnClickListener l = (d,w) -> {
-                        String domain = w==Dialog.BUTTON_POSITIVE ? "x0.at" : "0x0.st";
+                        String domain = null;
+                        switch(w) {
+                            case Dialog.BUTTON_NEGATIVE:
+                                domain = "0x0.st";
+                                break;
+                            case Dialog.BUTTON_NEUTRAL:
+                                domain = "file.io";
+                                break;
+                            case DialogInterface.BUTTON_POSITIVE:
+                                domain = "x0.at";
+                                break;
+                        }
                         Intent uploadIntent = new Intent(MainActivity.this, HTTPUploadService.class);
                         uploadIntent.setAction(BaseBackgroundService.START_ACTION);
                         uploadIntent.putExtra("params",new DownloadParams(domain, srcPath, null, true));
@@ -1685,8 +1696,8 @@ public class MainActivity extends EffectActivity {
                     };
                     String up = "Upload to ";
                     bld.setNegativeButton(up+"0x0.st", l);
+                    bld.setNeutralButton(up+"file.io", l);
                     bld.setPositiveButton(up+"x0.at", l);
-                    bld.setNeutralButton(android.R.string.cancel, null);
                     bld.create().show();
                     return true;
                 case R.id.itemShowInGallery:
