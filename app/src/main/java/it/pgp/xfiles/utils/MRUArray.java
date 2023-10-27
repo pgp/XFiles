@@ -1,23 +1,32 @@
 package it.pgp.xfiles.utils;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 public class MRUArray<T> implements Iterable<T> {
     final Object[] items;
-    final int size;
+    final int capacity;
+    int size = 0;
     int currentPos = 0; // currentPos: most recently added, older positions: currentPos-1 % size, currentPos-2 % size, ...
 
+    boolean iterationDirection = false; // false: from oldest to current, true: from current to oldest
+
     private MRUArray(T[] items) {
-        this.size = items.length;
+        this.capacity = this.size = items.length;
         this.items = items;
-        currentPos = size-1;
+        currentPos = capacity -1;
     }
 
-    public MRUArray(int size) {
-        this.size = size;
-        items = new Object[size];
+    public MRUArray(int capacity) {
+        this.capacity = capacity;
+        items = new Object[capacity];
+    }
+
+    public MRUArray<T> withReverseIteration() {
+        this.iterationDirection = true;
+        return this;
     }
 
     // last collection item is treated as newest, first one as oldest
@@ -25,7 +34,8 @@ public class MRUArray<T> implements Iterable<T> {
         MRUArray<T> m = new MRUArray<>(c.size());
         int i=0;
         for(T item: c) m.items[i++] = item;
-        m.currentPos = m.size-1;
+        m.currentPos = m.capacity -1;
+        m.size = m.capacity;
         return m;
     }
 
@@ -34,7 +44,8 @@ public class MRUArray<T> implements Iterable<T> {
         MRUArray<T> m = new MRUArray<>(a.length);
         int i=0;
         for(T item: a) m.items[i++] = item;
-        m.currentPos = m.size-1;
+        m.currentPos = m.capacity -1;
+        m.size = m.capacity;
         return m;
     }
 
@@ -43,17 +54,24 @@ public class MRUArray<T> implements Iterable<T> {
         return new MRUArray<>(a);
     }
 
+    public List<T> toList() {
+        List<T> l = new ArrayList<>();
+        for(T i: this) l.add(i);
+        return l;
+    }
+
     // sets the newest, and returns the oldest, which gets removed (reference overwritten) from the array
     public T setCurrent(T item) {
-        int pos = Misc.mod(currentPos+1, size);
+        int pos = Misc.mod(currentPos+1, capacity);
         T oldest = (T) items[pos]; // TODO this will return null as oldest item, until the array is full
         currentPos = pos; // increment current position
         items[currentPos] = item;
+        size = Math.min(capacity, size+1);
         return oldest;
     }
 
     public T get(int relativePos) { // relativePos: 0 to -size+1 (anyway any value is allowed, since we are using unsigned remainder)
-        return (T)items[Misc.mod(currentPos+relativePos, size)];
+        return (T)items[Misc.mod(currentPos+relativePos, capacity)];
     }
 
     public T getCurrent() {
@@ -62,7 +80,7 @@ public class MRUArray<T> implements Iterable<T> {
 
     private Iterator<T> getIterator(boolean reverse) {
         return new Iterator<T>() {
-            int pos = reverse ? currentPos : Misc.mod(currentPos-size+1, size); // currently oldest (or newest in reverse mode) item position
+            int pos = reverse ? currentPos : Misc.mod(currentPos-size+1, capacity); // currently oldest (or newest in reverse mode) item position
             int iterations = 0;
             final int incr = reverse ? -1 : +1;
 
@@ -74,7 +92,7 @@ public class MRUArray<T> implements Iterable<T> {
             @Override
             public T next() {
                 T ret = (T)items[pos];
-                pos = Misc.mod(pos+incr,size);
+                pos = Misc.mod(pos+incr, capacity);
                 iterations++;
                 return ret;
             }
@@ -89,14 +107,16 @@ public class MRUArray<T> implements Iterable<T> {
         return () -> getIterator(true);
     }
 
-    // default iteration order: from oldest to newest
     @Override
     public Iterator<T> iterator() {
-        return getIterator(false);
+        return getIterator(iterationDirection);
     }
 
     @Override
     public String toString() {
-        return Arrays.toString(items);
+        StringBuilder sb = new StringBuilder();
+        int idx=0;
+        for(T i: this) sb.append(idx++==0 ? i.toString() : ","+i.toString());
+        return "[" + sb.toString() + "]";
     }
 }
