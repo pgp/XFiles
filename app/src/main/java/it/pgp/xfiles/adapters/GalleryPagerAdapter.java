@@ -18,26 +18,26 @@ import android.widget.TextView;
 import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 
-import java.io.File;
 import java.util.ArrayList;
 
 import it.pgp.xfiles.R;
-import it.pgp.xfiles.viewmodels.TouchImageView;
 
 
 public class GalleryPagerAdapter extends PagerAdapter {
 
+    private final boolean showOnlyCurrentImage;
     private Activity activity;
     private boolean isShowing = true;
     private HorizontalScrollView toolbar;
     private RecyclerView imagesHorizontalList;
     private ArrayList<String> imageList;
 
-    public GalleryPagerAdapter(Activity activity, ArrayList<String> dataSet, HorizontalScrollView toolbar, RecyclerView imagesHorizontalList) {
+    public GalleryPagerAdapter(Activity activity, ArrayList<String> dataSet, HorizontalScrollView toolbar, RecyclerView imagesHorizontalList, boolean showOnlyCurrentImage) {
         this.activity = activity;
         this.imageList = dataSet;
         this.toolbar = toolbar;
         this.imagesHorizontalList = imagesHorizontalList;
+        this.showOnlyCurrentImage = showOnlyCurrentImage;
     }
 
     @Override
@@ -58,24 +58,25 @@ public class GalleryPagerAdapter extends PagerAdapter {
         TextView filename = itemView.findViewById(R.id.pager_item_filename);
         filename.setText(imageList.get(position));
 
-        GestureDetector gestureDetector = new GestureDetector(activity, new GestureDetector.SimpleOnGestureListener() {
-            @Override
-            public boolean onSingleTapConfirmed(@NonNull MotionEvent e) {
-                if(isShowing) {
-                    toolbar.animate().translationY(-toolbar.getBottom()).setInterpolator(new AccelerateInterpolator()).start();
-                    imagesHorizontalList.animate().translationY(imagesHorizontalList.getBottom()).setInterpolator(new AccelerateInterpolator()).start();
-                    filename.setVisibility(View.GONE);
+        if(!showOnlyCurrentImage) {
+            GestureDetector gestureDetector = new GestureDetector(activity, new GestureDetector.SimpleOnGestureListener() {
+                @Override
+                public boolean onSingleTapConfirmed(@NonNull MotionEvent e) {
+                    if (isShowing) {
+                        toolbar.animate().translationY(-toolbar.getBottom()).setInterpolator(new AccelerateInterpolator()).start();
+                        imagesHorizontalList.animate().translationY(imagesHorizontalList.getBottom()).setInterpolator(new AccelerateInterpolator()).start();
+                        filename.setVisibility(View.GONE);
+                    } else {
+                        toolbar.animate().translationY(0).setInterpolator(new DecelerateInterpolator()).start();
+                        imagesHorizontalList.animate().translationY(0).setInterpolator(new DecelerateInterpolator()).start();
+                        filename.setVisibility(View.VISIBLE);
+                    }
+                    isShowing = !isShowing;
+                    return false;
                 }
-                else {
-                    toolbar.animate().translationY(0).setInterpolator(new DecelerateInterpolator()).start();
-                    imagesHorizontalList.animate().translationY(0).setInterpolator(new DecelerateInterpolator()).start();
-                    filename.setVisibility(View.VISIBLE);
-                }
-                isShowing = !isShowing;
-                return false;
-            }
-        });
-        imageView.setOnTouchListener((view, motionEvent) -> gestureDetector.onTouchEvent(motionEvent));
+            });
+            imageView.setOnTouchListener((view, motionEvent) -> gestureDetector.onTouchEvent(motionEvent));
+        }
 
         container.addView(itemView);
         return itemView;

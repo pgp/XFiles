@@ -2,6 +2,7 @@ package it.pgp.xfiles;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -26,10 +27,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import it.pgp.xfiles.BrowserItem;
-import it.pgp.xfiles.GalleryViewPager;
-import it.pgp.xfiles.MainActivity;
-import it.pgp.xfiles.R;
 import it.pgp.xfiles.adapters.GalleryPagerAdapter;
 import it.pgp.xfiles.adapters.HorizontalListAdapter;
 import it.pgp.xfiles.service.visualization.ViewType;
@@ -92,15 +89,22 @@ public class MediaGalleryActivity extends Activity implements ViewPager.OnPageCh
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        if(getIntent().getBooleanExtra("setShowOnLockScreenFlags",false))
+
+        // setShowOnLockScreenFlags:
+        // -1 -> show only current image in lockscreen mode (i.e. swipe and horizontal viewpager are disabled)
+        //  0 (not present) -> no lockscreen mode
+        //  1 -> allow browsing current folder in lockscreen mode (i.e. swipe and horizontal viewpager are enabled)
+
+        int lockScreenMode = getIntent().getIntExtra("setShowOnLockScreenFlags",0);
+        if(lockScreenMode != 0)
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON|
                     WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD|
                     WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED|
                     WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
 
         setContentView(R.layout.activity_gallery);
+        if(lockScreenMode != 0) findViewById(R.id.showImageOnLockScreen).setVisibility(View.GONE); // no need to show the related button again when we already are in lockscreen mode
 
         Intent intent = getIntent();
         if(intent == null || intent.getExtras() == null) return;
@@ -119,16 +123,30 @@ public class MediaGalleryActivity extends Activity implements ViewPager.OnPageCh
         if(backgroundColor != -1)
             rlParentMain.setBackgroundColor(getResources().getColor(backgroundColor));
 
-        GalleryPagerAdapter adapter = new GalleryPagerAdapter(this, dataSet, mToolbar, imagesHorizontalList);
+        GalleryPagerAdapter adapter = new GalleryPagerAdapter(this, dataSet, mToolbar, imagesHorizontalList, lockScreenMode == -1);
+        if(lockScreenMode == -1) mViewPager.enabled = false;
         mViewPager.addOnPageChangeListener(this);
         mViewPager.setAdapter(adapter);
         adapter.notifyDataSetChanged();
         hAdapter = new HorizontalListAdapter(dataSet, this);
         imagesHorizontalList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         imagesHorizontalList.setAdapter(hAdapter);
+        if(lockScreenMode == -1) imagesHorizontalList.setVisibility(View.GONE);
         hAdapter.notifyDataSetChanged();
         hAdapter.setSelectedItem(selectedImagePosition);
         mViewPager.setCurrentItem(selectedImagePosition);
+    }
+
+    public DialogInterface.OnClickListener getListener(int lockscreenMode) {
+        return (dialog, which) -> {
+            Intent i = new Intent(this, MediaGalleryActivity.class);
+            i.putExtras(getIntent().getExtras());
+            i.putExtra("setShowOnLockScreenFlags", lockscreenMode);
+            i.putExtra(MediaGallery.Constants.SELECTED_IMAGE_POSITION.name(), mViewPager.getCurrentItem());
+            Toast.makeText(this, "Gallery is being shown on lock screen now", Toast.LENGTH_SHORT).show();
+            finish();
+            startActivity(i);
+        };
     }
 
     public void setShowImageOnLockScreen(View unused) {
@@ -139,14 +157,8 @@ public class MediaGalleryActivity extends Activity implements ViewPager.OnPageCh
         AlertDialog.Builder bld = new AlertDialog.Builder(this);
         bld.setTitle("Show this gallery on lock screen, if any?");
         bld.setNegativeButton(android.R.string.cancel, null);
-        bld.setPositiveButton(android.R.string.ok, (dialog, which) -> {
-            Intent i = new Intent(this, MediaGalleryActivity.class);
-            i.putExtras(getIntent().getExtras());
-            i.putExtra("setShowOnLockScreenFlags",true);
-            Toast.makeText(this, "Gallery is being shown on lock screen now", Toast.LENGTH_SHORT).show();
-            finish();
-            startActivity(i);
-        });
+        bld.setNeutralButton("This folder", getListener(1));
+        bld.setPositiveButton("This image only", getListener(-1));
         AlertDialog alertDialog = bld.create();
         alertDialog.getWindow().setType(ViewType.OVERLAY_WINDOW_TYPE);
         alertDialog.show();
