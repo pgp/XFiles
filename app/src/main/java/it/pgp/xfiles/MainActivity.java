@@ -1838,15 +1838,8 @@ public class MainActivity extends EffectActivity {
     }
 
     boolean doubleBackToExitPressedOnce = false;
-    @Override
-    public void onBackPressed() {
-        if(deviceType == DeviceType.TV) {
-            if(getCurrentDirCommander().currentIndex > 0) {
-                goDir_async(-1, null);
-                return;
-            }
-        }
 
+    private void guiBackButton() {
         // TODO maybe should handle mode exit differently (not both at once)
         // TODO decide if it is needed to restore original adapter content on quick find mode exit
         int pos = browserPager.getCurrentItem();
@@ -1894,6 +1887,17 @@ public class MainActivity extends EffectActivity {
         Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show();
 
         handler.postDelayed(() -> doubleBackToExitPressedOnce=false, 2000);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(deviceType == DeviceType.TV) {
+            if(getCurrentDirCommander().currentIndex > 0) {
+                goDir_async(-1, null);
+                return;
+            }
+        }
+        guiBackButton();
     }
 
     DeviceType deviceType;
@@ -1964,7 +1968,7 @@ public class MainActivity extends EffectActivity {
     public void operationBarOnClick(View v) {
         switch (v.getId()) {
             case R.id.androidGoBackButton:
-                onBackPressed();break;
+                guiBackButton();break;
             case R.id.androidGoHomeButton:
                 simulateHomePress(this);break;
 
