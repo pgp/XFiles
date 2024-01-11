@@ -3,6 +3,7 @@ package it.pgp.xfiles.viewmodels;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.os.Build;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -39,6 +40,8 @@ public class XREDirectoryViewModel {
     final GenericDBHelper dbh;
 
     final AtomicBoolean currentDirAutofillOverride;
+
+    public static final boolean isRunningOnEmulator = Build.HARDWARE.contains("goldfish") || Build.HARDWARE.contains("ranchu");
 
     public interface fvbiInterface {
         <T extends View> T findViewById(int id);
@@ -125,6 +128,7 @@ public class XREDirectoryViewModel {
         ArrayList<Map.Entry<String,String>> xreitems_ = new ArrayList<>();
         xreitems_.add(new AbstractMap.SimpleEntry<>("","")); // empty item for no selection
         xreitems_.add(new AbstractMap.SimpleEntry<>("192.168.43.1","")); // default remote server and default offered home path when server provides network access with its WiFi hotspot
+        if(isRunningOnEmulator) xreitems_.add(new AbstractMap.SimpleEntry<>("10.0.2.2", "")); // for being more comfortable if you want to connect to a XRE instance on your PC host while working on the Android Emulator
         xreitems_.addAll(dbh.getAllRowsOfXreFavoritesTable().values());
         xreItems = xreitems_.toArray(new Map.Entry[0]);
 
