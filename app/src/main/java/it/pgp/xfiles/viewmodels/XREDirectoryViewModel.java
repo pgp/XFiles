@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Build;
+import android.text.InputType;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -108,9 +109,19 @@ public class XREDirectoryViewModel {
         this.v = getFvbiInterface(dialog);
     }
 
+    boolean currentNumPadStatus = true;
+    public void toggleNumPad(View unused) {
+        currentNumPadStatus = !currentNumPadStatus;
+        String xreServerHostText = xreServerHost.getText().toString();
+        xreServerHost.setRawInputType(currentNumPadStatus ? InputType.TYPE_CLASS_NUMBER : InputType.TYPE_CLASS_TEXT);
+        xreServerHost.setText(xreServerHostText);
+    }
+
     public void initViews() {
         xreStoredData = v.findViewById(R.id.storedDataSpinner);
         xreServerHost = v.findViewById(R.id.xreConnectionDomainEditText);
+        v.findViewById(R.id.xreConnectionDomainToggleNumPad).setOnClickListener(this::toggleNumPad);
+        xreServerHost.setRawInputType(currentNumPadStatus ? InputType.TYPE_CLASS_NUMBER : InputType.TYPE_CLASS_TEXT);
 //        xreServerPort = v.findViewById(R.id.xreConnectionPortEditText);
         xreRemotePath = v.findViewById(R.id.xreRemoteDirEditText);
 
