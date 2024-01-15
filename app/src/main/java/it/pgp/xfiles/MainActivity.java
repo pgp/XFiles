@@ -1457,15 +1457,22 @@ public class MainActivity extends EffectActivity {
         Menu menu = mypopupmenu.getMenu();
 
         int mainId = v.getId();
-        if(mainId == R.id.itemShare2ndLevel) inflater.inflate(R.menu.menu_2ndlevel_share, menu);
+        BrowserItem bi = getCurrentBrowserAdapter().getItem(position1);
+
+        if(mainId == R.id.itemShare2ndLevel) {
+            inflater.inflate(R.menu.menu_2ndlevel_share, menu);
+            if(bi.isDirectory) menu.removeItem(R.id.itemHttpUpload);
+        }
         else if(mainId == R.id.itemShareFolder2ndLevel) inflater.inflate(R.menu.menu_2ndlevel_share_local_folder, menu);
         else if(mainId == R.id.newFileButton) inflater.inflate(R.menu.menu_new, menu);
         else if(getCurrentBrowserAdapter().getSelectedCount() == 0) { // long-click on single file, without active selection
-            BrowserItem b = getCurrentBrowserAdapter().getItem(position1);
             switch(getCurrentDirCommander().getCurrentDirectoryPathname().providerType) {
                 case LOCAL:
                     inflater.inflate(R.menu.menu_single, menu);
-                    if(b.isDirectory) inflater.inflate(R.menu.menu_single_local_folder,menu);
+                    if(bi.isDirectory) {
+                        menu.removeItem(R.id.itemTest);
+                        inflater.inflate(R.menu.menu_single_local_folder, menu);
+                    }
                     break;
                 case LOCAL_WITHIN_ARCHIVE:
                     // allowed operations: extract, properties (click only if folder, extract on click)
@@ -1476,7 +1483,7 @@ public class MainActivity extends EffectActivity {
                 case SMB:
                     // allowed operations: copy, move, delete, rename, properties
                     inflater.inflate(R.menu.menu_single_remote, menu);
-                    if(b.isDirectory) inflater.inflate(R.menu.menu_single_remote_folder,menu);
+                    if(bi.isDirectory) inflater.inflate(R.menu.menu_single_remote_folder,menu);
                     break;
             }
         }
