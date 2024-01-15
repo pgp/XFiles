@@ -41,17 +41,10 @@
         android:icon="@drawable/xfiles_root_off"
         android:title="Checksum" />
 
-    <item android:id="@+id/itemShare"
+    <item android:id="@+id/itemShare2ndLevel"
+        android:actionViewClass="android.widget.ImageButton"
         android:icon="@drawable/xf_share"
-        android:title="Share" />
-
-    <item android:id="@+id/itemXreShareUnattended"
-        android:icon="@drawable/xf_share"
-        android:title="XRE Share (unattended)" />
-
-    <item android:id="@+id/itemHttpUpload"
-        android:icon="@drawable/xf_share"
-        android:title="HTTP upload" />
+        android:title="Share >" />
 
     <item android:id="@+id/itemShowInGallery"
         android:icon="@drawable/xfiles_image"

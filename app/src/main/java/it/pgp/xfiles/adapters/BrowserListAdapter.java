@@ -82,7 +82,7 @@ public class BrowserListAdapter extends BrowserAdapter {
                 mainActivity.getCurrentBrowserAdapter().toggleSelectOne(item);
             }
             else if(!inFind)
-                mainActivity.showPopup(null,v,position,v.getId());
+                mainActivity.showPopup(null,v,position,null);
         });
 
         return convertView;

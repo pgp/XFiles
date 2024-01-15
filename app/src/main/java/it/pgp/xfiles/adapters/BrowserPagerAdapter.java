@@ -248,7 +248,7 @@ public class BrowserPagerAdapter extends PagerAdapter {
     public void setLongClickListener(int position) {
         mainBrowserViews[position].setOnItemLongClickListener((parent, view, position1, id) -> {
             if(fastRenameModeViews[position]==null) {
-                mainActivity.showPopup(parent, view, position1, id);
+                mainActivity.showPopup(parent, view, position1, null);
                 return true;
             }
             else return false; // fast rename mode for the current browser page, allow clipboard context menu to popup

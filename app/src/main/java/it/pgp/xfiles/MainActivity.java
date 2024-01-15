@@ -68,7 +68,6 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.concurrent.Future;
 
@@ -1449,18 +1448,19 @@ public class MainActivity extends EffectActivity {
         });
     }
 
-    public void showPopup(AdapterView<?> parent, View v, int position1, long id) {
+    public void showPopup(AdapterView<?> parent, View v, int position1, View rootAnchorFor2ndLevel) {
         Context wrapper = new ContextThemeWrapper(this, R.style.popupMenuStyle);
-        PopupMenu mypopupmenu = new PopupMenu(wrapper, v);
+        PopupMenu mypopupmenu = new PopupMenu(wrapper, rootAnchorFor2ndLevel != null ? rootAnchorFor2ndLevel : v);
         setForceShowIcon(mypopupmenu);
 
         MenuInflater inflater = mypopupmenu.getMenuInflater();
         Menu menu = mypopupmenu.getMenu();
 
-        if(v.getId()==R.id.newFileButton) {
-            inflater.inflate(R.menu.menu_new, menu);
-        }
-        else if (getCurrentBrowserAdapter().getSelectedCount() == 0) { // long-click on single file, without active selection
+        int mainId = v.getId();
+        if(mainId == R.id.itemShare2ndLevel) inflater.inflate(R.menu.menu_2ndlevel_share, menu);
+        else if(mainId == R.id.itemShareFolder2ndLevel) inflater.inflate(R.menu.menu_2ndlevel_share_local_folder, menu);
+        else if(mainId == R.id.newFileButton) inflater.inflate(R.menu.menu_new, menu);
+        else if(getCurrentBrowserAdapter().getSelectedCount() == 0) { // long-click on single file, without active selection
             BrowserItem b = getCurrentBrowserAdapter().getItem(position1);
             switch(getCurrentDirCommander().getCurrentDirectoryPathname().providerType) {
                 case LOCAL:
@@ -1665,6 +1665,10 @@ public class MainActivity extends EffectActivity {
                     sharingIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                     sharingIntent.putExtra("unattended",unattended);
                     startActivity(unattended?sharingIntent:Intent.createChooser(sharingIntent, "Share file using"));
+                    return true;
+                case R.id.itemShare2ndLevel:
+                case R.id.itemShareFolder2ndLevel:
+                    showPopup(null, item.getActionView(), position1, v);
                     return true;
                 case R.id.itemHttpUpload:
                     b = getCurrentBrowserAdapter().getItem(position1);
@@ -1983,7 +1987,7 @@ public class MainActivity extends EffectActivity {
                 goDir_async(1,null);break;
 
             case R.id.newFileButton: // context menu with both file and dir options
-                showPopup(null,v,0,v.getId());
+                showPopup(null,v,0,null);
                 break;
 
             case R.id.cutButton:

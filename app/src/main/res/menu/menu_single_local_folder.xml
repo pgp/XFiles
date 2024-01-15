@@ -9,16 +9,9 @@
         android:icon="@drawable/xfiles_find"
         android:title="Find in folder" />
 
-    <item android:id="@+id/itemShareOverHTTP"
+    <item android:id="@+id/itemShareFolder2ndLevel"
+        android:actionViewClass="android.widget.ImageButton"
         android:icon="@drawable/xf_share"
-        android:title="Share over HTTP" />
-
-    <item android:id="@+id/itemShareOverFTP"
-        android:icon="@drawable/xf_share"
-        android:title="Share over FTP" />
-
-    <item android:id="@+id/itemShareOverXRE"
-        android:icon="@drawable/xf_share"
-        android:title="Share over XRE" />
+        android:title="Share folder >" />
 
 </menu>

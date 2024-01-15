@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:id="@+id/itemShare"
+        android:icon="@drawable/xf_share"
+        android:title="Share to another app" />
+
+    <item android:id="@+id/itemXreShareUnattended"
+        android:icon="@drawable/xf_share"
+        android:title="XRE Share (unattended)" />
+
+    <item android:id="@+id/itemHttpUpload"
+        android:icon="@drawable/xf_share"
+        android:title="HTTP upload" />
+
+</menu>
