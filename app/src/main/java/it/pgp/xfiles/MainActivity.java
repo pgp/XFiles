@@ -1456,50 +1456,52 @@ public class MainActivity extends EffectActivity {
         MenuInflater inflater = mypopupmenu.getMenuInflater();
         Menu menu = mypopupmenu.getMenu();
 
+        BrowserAdapter ba = getCurrentBrowserAdapter();
         int mainId = v.getId();
-        BrowserItem bi = getCurrentBrowserAdapter().getItem(position1);
-
-        if(mainId == R.id.itemShare2ndLevel) {
-            inflater.inflate(R.menu.menu_2ndlevel_share, menu);
-            if(bi.isDirectory) menu.removeItem(R.id.itemHttpUpload);
-        }
-        else if(mainId == R.id.itemShareFolder2ndLevel) inflater.inflate(R.menu.menu_2ndlevel_share_local_folder, menu);
-        else if(mainId == R.id.newFileButton) inflater.inflate(R.menu.menu_new, menu);
-        else if(getCurrentBrowserAdapter().getSelectedCount() == 0) { // long-click on single file, without active selection
-            switch(getCurrentDirCommander().getCurrentDirectoryPathname().providerType) {
-                case LOCAL:
-                    inflater.inflate(R.menu.menu_single, menu);
-                    if(bi.isDirectory) {
-                        menu.removeItem(R.id.itemTest);
-                        inflater.inflate(R.menu.menu_single_local_folder, menu);
-                    }
-                    break;
-                case LOCAL_WITHIN_ARCHIVE:
-                    // allowed operations: extract, properties (click only if folder, extract on click)
-                    inflater.inflate(R.menu.menu_single_within_archive, menu);
-                    break;
-                case SFTP:
-                case XFILES_REMOTE:
-                case SMB:
-                    // allowed operations: copy, move, delete, rename, properties
-                    inflater.inflate(R.menu.menu_single_remote, menu);
-                    if(bi.isDirectory) inflater.inflate(R.menu.menu_single_remote_folder,menu);
-                    break;
-            }
-        }
+        if(mainId == R.id.newFileButton) inflater.inflate(R.menu.menu_new, menu);
         else {
-            switch(getCurrentDirCommander().getCurrentDirectoryPathname().providerType) {
-                case LOCAL:
-                    inflater.inflate(R.menu.menu_multi, menu);
-                    break;
-                case LOCAL_WITHIN_ARCHIVE:
-                    inflater.inflate(R.menu.menu_multi_within_archive, menu);
-                    break;
-                case SFTP:
-                case XFILES_REMOTE:
-                case SMB:
-                    inflater.inflate(R.menu.menu_multi_remote, menu);
-                    break;
+            BrowserItem bi = ba.getItem(position1);
+            if(mainId == R.id.itemShare2ndLevel) {
+                inflater.inflate(R.menu.menu_2ndlevel_share, menu);
+                if(bi.isDirectory) menu.removeItem(R.id.itemHttpUpload);
+            }
+            else if(mainId == R.id.itemShareFolder2ndLevel) inflater.inflate(R.menu.menu_2ndlevel_share_local_folder, menu);
+            else if(ba.getSelectedCount() == 0) { // long-click on single file, without active selection
+                switch(getCurrentDirCommander().getCurrentDirectoryPathname().providerType) {
+                    case LOCAL:
+                        inflater.inflate(R.menu.menu_single, menu);
+                        if(bi.isDirectory) {
+                            menu.removeItem(R.id.itemTest);
+                            inflater.inflate(R.menu.menu_single_local_folder, menu);
+                        }
+                        break;
+                    case LOCAL_WITHIN_ARCHIVE:
+                        // allowed operations: extract, properties (click only if folder, extract on click)
+                        inflater.inflate(R.menu.menu_single_within_archive, menu);
+                        break;
+                    case SFTP:
+                    case XFILES_REMOTE:
+                    case SMB:
+                        // allowed operations: copy, move, delete, rename, properties
+                        inflater.inflate(R.menu.menu_single_remote, menu);
+                        if(bi.isDirectory) inflater.inflate(R.menu.menu_single_remote_folder,menu);
+                        break;
+                }
+            }
+            else {
+                switch(getCurrentDirCommander().getCurrentDirectoryPathname().providerType) {
+                    case LOCAL:
+                        inflater.inflate(R.menu.menu_multi, menu);
+                        break;
+                    case LOCAL_WITHIN_ARCHIVE:
+                        inflater.inflate(R.menu.menu_multi_within_archive, menu);
+                        break;
+                    case SFTP:
+                    case XFILES_REMOTE:
+                    case SMB:
+                        inflater.inflate(R.menu.menu_multi_remote, menu);
+                        break;
+                }
             }
         }
 
@@ -1564,7 +1566,7 @@ public class MainActivity extends EffectActivity {
                 case R.id.itemsShowInGallery:
                     // TODO consider also the case when image viewer is invoked by third party app - use MainActivity.mainActivity
                     BasePathContent currentDir = getCurrentDirCommander().getCurrentDirectoryPathname();
-                    ArrayList<String> imageList = MediaGalleryActivity.filterByImageExtensionsOnSelection(currentDir,getCurrentBrowserAdapter().getSelectedItems());
+                    ArrayList<String> imageList = MediaGalleryActivity.filterByImageExtensionsOnSelection(currentDir,ba.getSelectedItems());
                     MediaGallery.Builder(MainActivity.this,imageList)
                             .title("Media Gallery")
                             .backgroundColor(R.color.white)
@@ -1578,7 +1580,7 @@ public class MainActivity extends EffectActivity {
 
                 // single-selection menu
                 case R.id.itemOpenAs:
-                    b = getCurrentBrowserAdapter().getItem(position1);
+                    b = ba.getItem(position1);
                     if (path.providerType != ProviderType.LOCAL) {
                         Toast.makeText(MainActivity.this,"Open not implemented for non-local or within-archive paths",Toast.LENGTH_LONG).show();
                         return true;
@@ -1588,36 +1590,36 @@ public class MainActivity extends EffectActivity {
                     showOpenAsList(currentFile);
                     return true;
                 case R.id.itemCopy:
-                    b = getCurrentBrowserAdapter().getItem(position1);
+                    b = ba.getItem(position1);
                     copyMoveList = new CopyMoveListPathContent(b, CopyMoveMode.COPY, path);
                     Toast.makeText(MainActivity.this, "Copy item " + b.filename, Toast.LENGTH_LONG).show();
                     return true;
                 case R.id.itemMove:
-                    b = getCurrentBrowserAdapter().getItem(position1);
+                    b = ba.getItem(position1);
                     copyMoveList = new CopyMoveListPathContent(b, CopyMoveMode.MOVE, path);
                     Toast.makeText(MainActivity.this, "Move item " + b.filename, Toast.LENGTH_LONG).show();
                     return true;
                 case R.id.itemPasteIntoFolder:
-                    b = getCurrentBrowserAdapter().getItem(position1);
+                    b = ba.getItem(position1);
                     paste(path.concat(b.filename));
                     return true;
                 case R.id.itemFind:
-                    b = getCurrentBrowserAdapter().getItem(position1);
+                    b = ba.getItem(position1);
                     findInFolders(path.concat(b.filename), true);
                     return true;
                 case R.id.itemCreateLink:
-                    b = getCurrentBrowserAdapter().getItem(position1);
+                    b = ba.getItem(position1);
                     new CreateLinkDialog(MainActivity.this, path.concat(b.filename), b.isDirectory?FileMode.DIRECTORY:FileMode.FILE).show();
                     return true;
                 case R.id.itemCompress:
-                    b = getCurrentBrowserAdapter().getItem(position1);
+                    b = ba.getItem(position1);
                     Intent i = new Intent(MainActivity.this,CompressActivity.class);
                     i.putExtra("filename", b);
                     startActivity(i);
                     return true;
                 case R.id.itemExtract:
                 case R.id.itemTest:
-                    b = getCurrentBrowserAdapter().getItem(position1);
+                    b = ba.getItem(position1);
                     if(b.isDirectory && path.providerType != ProviderType.LOCAL_WITHIN_ARCHIVE) {
                         Toast.makeText(MainActivity.this, "Cannot extract/test files from a directory, please select a compressed archive", Toast.LENGTH_LONG).show();
                         return true;
@@ -1633,12 +1635,12 @@ public class MainActivity extends EffectActivity {
                     else extractItem(b);
                     return true;
                 case R.id.itemDelete:
-                    b = getCurrentBrowserAdapter().getItem(position1);
+                    b = ba.getItem(position1);
                     selection = Collections.singletonList(path.concat(b.filename));
                     showDeleteDialog(selection);
                     return true;
                 case R.id.itemRename:
-                    b = getCurrentBrowserAdapter().getItem(position1);
+                    b = ba.getItem(position1);
                     AbsListView lv = getCurrentMainBrowserView();
                     if(lv instanceof ListView)
                         RenameDialog.toggleFastRename(this, position1,
@@ -1653,14 +1655,14 @@ public class MainActivity extends EffectActivity {
                         return true;
                     }
                     Intent intent = new Intent(MainActivity.this, ChecksumActivity.class);
-                    intent.putExtra("browseritem", getCurrentBrowserAdapter().getItem(position1));
+                    intent.putExtra("browseritem", ba.getItem(position1));
 
                     startActivity(intent);
                     return true;
                 case R.id.itemShare:
                 case R.id.itemXreShareUnattended:
                     boolean unattended = itemId == R.id.itemXreShareUnattended;
-                    b = getCurrentBrowserAdapter().getItem(position1);
+                    b = ba.getItem(position1);
                     Intent sharingIntent = unattended?new Intent(this,XREDirectShareActivity.class):new Intent();
                     sharingIntent.setAction(Intent.ACTION_SEND);
                     Uri sharingUri = Uri.fromFile(new File(path.dir, b.filename));
@@ -1678,7 +1680,7 @@ public class MainActivity extends EffectActivity {
                     showPopup(null, item.getActionView(), position1, v);
                     return true;
                 case R.id.itemHttpUpload:
-                    b = getCurrentBrowserAdapter().getItem(position1);
+                    b = ba.getItem(position1);
                     if(b.isDirectory) {
                         Toast.makeText(MainActivity.this, "Selected file is a directory", Toast.LENGTH_SHORT).show();
                         return true;
@@ -1719,7 +1721,7 @@ public class MainActivity extends EffectActivity {
                         return true;
                     }
 
-                    b = getCurrentBrowserAdapter().getItem(position1);
+                    b = ba.getItem(position1);
                     if(b.filename.length()>=4 &&
                             MediaGalleryActivity.allowedImageExtensions.contains(b.filename.substring(b.filename.length()-4).toLowerCase())) {
                         imageList = MediaGalleryActivity.filterByImageExtensionsAndSaveTargetIdx(currentDir,b.filename);
@@ -1735,7 +1737,7 @@ public class MainActivity extends EffectActivity {
                 case R.id.itemShareOverHTTP:
                 case R.id.itemShareOverFTP:
                 case R.id.itemShareOverXRE:
-                    b = getCurrentBrowserAdapter().getItem(position1);
+                    b = ba.getItem(position1);
                     path = path.concat(b.filename);
                     new RemoteRHServerManagementDialog(MainActivity.this);
 
@@ -1761,7 +1763,7 @@ public class MainActivity extends EffectActivity {
                     }
                     return true;
                 case R.id.itemProperties:
-                    b = getCurrentBrowserAdapter().getItem(position1);
+                    b = ba.getItem(position1);
                     getStats(b);
                     return true;
                 case R.id.createNewFile:
