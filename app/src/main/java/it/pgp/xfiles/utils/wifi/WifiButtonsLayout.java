@@ -128,7 +128,7 @@ public class WifiButtonsLayout extends LinearLayout {
         if(RootHandler.isRootAvailableAndGranted) {
             String cmd = "svc wifi "+(stateToSet?"enable":"disable");
             try {
-                Process p = RootHandler.executeCommandSimple(cmd,null, true);
+                Process p = RootHandler.executeCommandSimple(cmd,null, true, false);
                 p.waitFor();
                 MainActivity.showToast("WiFi state switched using root");
                 return true;

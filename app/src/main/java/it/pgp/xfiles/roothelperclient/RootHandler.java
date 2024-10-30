@@ -3,6 +3,7 @@ package it.pgp.xfiles.roothelperclient;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Binder;
+import android.os.Build;
 import android.util.Log;
 
 import java.io.DataOutputStream;
@@ -61,23 +62,25 @@ public class RootHandler {
         return found;
     }
 
-    public static Process executeCommandSimple(String command, File workingDir, boolean runAsSuperUser, String... args) throws IOException {
+    public static Process executeCommandSimple(String command, File workingDir, boolean runAsSuperUser, boolean disableEnforcingSELinux, String... args) throws IOException {
         String s = "";
         s += command;
-        if (args != null) for (String arg : args) s += " " + arg;
+        if(args != null) for(String arg : args) s += " " + arg;
 
         Process p;
-        if (runAsSuperUser) {
+        if(runAsSuperUser) {
             p = Runtime.getRuntime().exec("su");
             DataOutputStream dos = new DataOutputStream(p.getOutputStream());
-            if (workingDir != null) {
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && disableEnforcingSELinux)
+                dos.writeBytes("setenforce 0\n");
+            if(workingDir != null)
                 dos.writeBytes("cd " + workingDir +"\n");
-            }
             dos.writeBytes(s + "\n");
             dos.writeBytes("exit\n");
             dos.flush();
             dos.close();
-        } else {
+        }
+        else {
             p = (workingDir==null)?
                     Runtime.getRuntime().exec(s):
                     Runtime.getRuntime().exec(s,null,workingDir);
@@ -114,9 +117,9 @@ public class RootHandler {
 
         File rootHelperExecutable = new File(workingDir,rootHelperInstallName);
         if (socketName == null)
-            return executeCommandSimple(rootHelperExecutable.getAbsolutePath(),workingDir,runAsSu,Binder.getCallingUid()+"");
+            return executeCommandSimple(rootHelperExecutable.getAbsolutePath(),workingDir,runAsSu,true,Binder.getCallingUid()+"");
         else
-            return executeCommandSimple(rootHelperExecutable.getAbsolutePath(),workingDir,runAsSu,Binder.getCallingUid()+"",socketName.name());
+            return executeCommandSimple(rootHelperExecutable.getAbsolutePath(),workingDir,runAsSu,true,Binder.getCallingUid()+"",socketName.name());
     }
 
     public static Process runRootHelper(SocketNames socketName) throws IOException {

@@ -86,6 +86,7 @@ import it.pgp.xfiles.dialogs.FilterSelectionDialog;
 import it.pgp.xfiles.dialogs.GenericChangeDirectoryDialog;
 import it.pgp.xfiles.dialogs.OpenAsDialog;
 import it.pgp.xfiles.dialogs.PropertiesDialog;
+import it.pgp.xfiles.dialogs.RamdiskDialog;
 import it.pgp.xfiles.dialogs.RemoteRHServerManagementDialog;
 import it.pgp.xfiles.dialogs.RenameDialog;
 import it.pgp.xfiles.dialogs.SSHAlreadyInKnownHostsDialog;
@@ -528,6 +529,10 @@ public class MainActivity extends EffectActivity {
             case R.id.openSmbCredManager:
             case R.id.openFavsManager:
                 openCredOrFavsManager(itemId);
+                return true;
+
+            case R.id.openRamdiskManager:
+                new RamdiskDialog(this).show();
                 return true;
 
             case R.id.openAboutDialog:
