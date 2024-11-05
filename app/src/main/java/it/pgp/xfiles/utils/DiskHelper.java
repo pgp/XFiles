@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import it.pgp.xfiles.MainActivity;
+import it.pgp.xfiles.dialogs.RamdiskDialog;
 import it.pgp.xfiles.enums.ProviderType;
 import it.pgp.xfiles.roothelperclient.RootHandler;
 import it.pgp.xfiles.roothelperclient.RootHelperClient;
@@ -126,12 +127,15 @@ public class DiskHelper {
         path names as well
         */
         for(String mnt : commonInternalStoragePaths) {
-            LocalPathContent lmnt = new LocalPathContent(mnt);
-            if(helper.isDir(lmnt)) {
+            if(helper.isDir(new LocalPathContent(mnt))) {
                 out1.add(mnt);
                 break; // assume all the commonly used names represent the same partition, even if more than one is available
             }
         }
+
+        /* if RAM disk is mounted, show it as well */
+        if(helper.isDir(new LocalPathContent(RamdiskDialog.mountpath)))
+            out1.add(RamdiskDialog.mountpath);
         return out1;
     }
 

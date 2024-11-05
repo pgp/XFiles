@@ -12,6 +12,8 @@ import it.pgp.xfiles.R;
 import it.pgp.xfiles.roothelperclient.RootHandler;
 
 public class RamdiskDialog extends ImmersiveModeDialog {
+    public static final String mountpath = "/data/local/tmp/devshm";
+
     public RamdiskDialog(MainActivity mainActivity) {
         super(mainActivity);
         setContentView(R.layout.single_filename_dialog);
@@ -20,7 +22,6 @@ public class RamdiskDialog extends ImmersiveModeDialog {
         Button ok = findViewById(R.id.singleFilenameOkButton);
         size_.setRawInputType(InputType.TYPE_CLASS_NUMBER);
         size_.setText("500");
-        String mountpath = "/data/local/tmp/devshm";
 
         ok.setOnClickListener(v -> {
             int sz;
