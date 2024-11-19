@@ -303,17 +303,6 @@ public class BrowserPagerAdapter extends PagerAdapter {
         mainActivity.quickPathsLayout.setVisibility(View.GONE); // close quick paths menu if open, once a showDirContent is complete
     }
 
-    public void showSortedDirContent(GenericDirWithContent dirWithContent, Pair<ComparatorField,Boolean> whichAttribute_reverse, int position) {
-        Collections.sort(dirWithContent.content,
-                new AdvancedComparator(new SortingItem(whichAttribute_reverse.i, true, whichAttribute_reverse.j)));
-
-        currentDirectoryTextViews[position].setText(
-                dirCommanders[position].getCurrentDirectoryPathname().toString());
-
-        recreateAdapterAndSelectMode(browserViewModes[position],position,dirWithContent);
-        mainBrowserViews[position].setAdapter(browserAdapters[position]);
-    }
-
     private final LinearLayout.LayoutParams onParams = new LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT,
             LinearLayout.LayoutParams.WRAP_CONTENT);

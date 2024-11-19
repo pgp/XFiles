@@ -76,6 +76,7 @@ import it.pgp.xfiles.adapters.BrowserPagerAdapter;
 import it.pgp.xfiles.adapters.OperationalPagerAdapter;
 import it.pgp.xfiles.adapters.QuickPathsAdapter;
 import it.pgp.xfiles.adapters.RecentPositionsAdapter;
+import it.pgp.xfiles.comparators.AdvancedComparator;
 import it.pgp.xfiles.dialogs.AdvancedSortingDialog;
 import it.pgp.xfiles.dialogs.BulkRenameDialog;
 import it.pgp.xfiles.dialogs.ChecksumActivity;
@@ -131,6 +132,7 @@ import it.pgp.xfiles.utils.ContentProviderUtils;
 import it.pgp.xfiles.utils.DirCommander;
 import it.pgp.xfiles.utils.FileOperationHelper;
 import it.pgp.xfiles.utils.Misc;
+import it.pgp.xfiles.utils.Pair;
 import it.pgp.xfiles.utils.SelectImageButtonListener;
 import it.pgp.xfiles.utils.XFilesUtils;
 import it.pgp.xfiles.utils.dircontent.GenericDirWithContent;
@@ -515,8 +517,8 @@ public class MainActivity extends EffectActivity {
             case R.id.sortBySizeDesc:
             case R.id.sortByType:
             case R.id.sortByTypeDesc:
-                browserPagerAdapter.showSortedDirContent(getCurrentDirCommander().refresh(),
-                        ComparatorField.fromResMap.get(itemId),browserPager.getCurrentItem());
+                Pair<ComparatorField, Boolean> whichAttribute_reverse = ComparatorField.fromResMap.get(itemId);
+                browserPagerAdapter.browserAdapters[browserPager.getCurrentItem()].sort(new AdvancedComparator(new SortingItem(whichAttribute_reverse.i, true, whichAttribute_reverse.j)));
                 return true;
             // browser view
             case R.id.listBrowserViewMode:
