@@ -326,8 +326,6 @@ public class RootHelperClient implements FileOperationHelper {
                     rs.i.readFully(errno_);
                     int errno = (int) Misc.castBytesToUnsignedNumber(errno_,4);
                     Log.e("roothelper","Error returned from roothelper server: "+errno);
-                    if(dirPath.equals(XFilesUtils.dataApp))
-                        return XFilesUtils.listDataAppWithoutRoot();
                     return new LocalDirWithContent(FileOpsErrorCodes.COMMANDER_CANNOT_ACCESS); // TODO errno constants in enum
                 default:
                     throw new RuntimeException("Unexpected response code from roothelper server: "+(int)responseByte);

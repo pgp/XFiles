@@ -1,6 +1,10 @@
 package com.tomclaw.imageloader.util;
 
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
 import android.widget.ImageView;
 
 import com.tomclaw.imageloader.core.Handlers;
@@ -86,5 +90,24 @@ public class ImageViewHandlers {
     public static void tint(ViewHolder<ImageView> viewHolder, int tintColor) {
         ImageView imgView = viewHolder.get();
         imgView.setColorFilter(tintColor, PorterDuff.Mode.MULTIPLY);
+    }
+
+    ///////////////////////////////////////////
+
+    public static Bitmap tintBitmap(Bitmap originalBitmap, int tintColor) {
+        // Create a mutable bitmap to draw on
+        Bitmap tintedBitmap = Bitmap.createBitmap(originalBitmap.getWidth(), originalBitmap.getHeight(), originalBitmap.getConfig());
+
+        // Create a canvas to draw on the new bitmap
+        Canvas canvas = new Canvas(tintedBitmap);
+
+        // Create a paint object and set the color filter
+        Paint paint = new Paint();
+        paint.setColorFilter(new PorterDuffColorFilter(tintColor, PorterDuff.Mode.MULTIPLY));
+
+        // Draw the original bitmap onto the canvas with the paint
+        canvas.drawBitmap(originalBitmap, 0, 0, paint);
+
+        return tintedBitmap;
     }
 }

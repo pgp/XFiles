@@ -9,6 +9,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
 
+import com.tomclaw.imageloader.util.ImageViewHandlers;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,7 +28,7 @@ import it.pgp.xfiles.utils.pathcontent.BasePathContent;
 
 public abstract class BrowserAdapter extends ArrayAdapter<BrowserItem> {
 
-    public static Bitmap dirIV,fileIV,linkIV;
+    public static Bitmap dirIV,nestedDirIv,fileIV,linkIV;
     public static final Map<String,Bitmap> archiveIcons = new HashMap<>();
 
     public static Bitmap overlay(Bitmap bmp1, Bitmap bmp2) {
@@ -48,8 +50,8 @@ public abstract class BrowserAdapter extends ArrayAdapter<BrowserItem> {
 
     public static Bitmap getBitmapByExtension(BrowserItem item) {
         Bitmap target;
-        if (item.isDirectory)
-            target = dirIV;
+        if(item.isNestedDir) target = nestedDirIv;
+        else if(item.isDirectory) target = dirIV;
         else {
             String ext = item.getFileExt().toLowerCase();
             if (ArchiveType.formats.contains(ext)) target = archiveIcons.get(ext);
@@ -77,6 +79,7 @@ public abstract class BrowserAdapter extends ArrayAdapter<BrowserItem> {
         inflater = LayoutInflater.from(mainActivity);
 
         if (dirIV == null) dirIV = BitmapFactory.decodeResource(mainActivity.getResources(), R.drawable.xf_dir_blu);
+        if (nestedDirIv == null) nestedDirIv = ImageViewHandlers.tintBitmap(dirIV, 0xFF00FF00); // green
         if (fileIV == null) fileIV = BitmapFactory.decodeResource(mainActivity.getResources(), R.drawable.xfiles_file_icon);
         if (linkIV == null) linkIV = BitmapFactory.decodeResource(mainActivity.getResources(), R.drawable.xfiles_link_icon);
         loadArchiveIcons(mainActivity);

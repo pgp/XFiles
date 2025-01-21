@@ -313,11 +313,10 @@ public class XFilesUtils implements FileOperationHelper {
     public static final LocalPathContent dataApp = new LocalPathContent("/data/app");
     public static final String dataAppSlash = "/data/app/";
 
-    private static String firstAvailableName(String apkPath) {
-        String afterPrefix = apkPath.substring(dataAppSlash.length());
-        String[] paths = afterPrefix.split("/");
-        if(paths.length >= 1) afterPrefix = paths[0];
-        return afterPrefix;
+    private static String dataAppPackageSubPath(String apkPath) {
+        int firstIdx = dataAppSlash.length() - 1;
+        int lastIdx = apkPath.lastIndexOf('/');
+        return firstIdx != lastIdx ? apkPath.substring(firstIdx + 1, lastIdx) : apkPath.substring(firstIdx + 1);
     }
 
     // web source:
@@ -331,9 +330,11 @@ public class XFilesUtils implements FileOperationHelper {
             for(ApplicationInfo packageInfo : packages) {
                 String apkPath = packageInfo.sourceDir;
                 if(packageInfo.sourceDir.startsWith(dataAppSlash)) {
-                    String fn = firstAvailableName(apkPath);
+                    String fn = dataAppPackageSubPath(apkPath);
                     File f = new File(dataAppSlash, fn);
-                    dirContent.add(new BrowserItem(fn, f.length(), new Date(f.lastModified()), f.isDirectory(), Native.isSymLink(f.getAbsolutePath())>0));
+                    BrowserItem bi = new BrowserItem(fn, f.length(), new Date(f.lastModified()), f.isDirectory(), Native.isSymLink(f.getAbsolutePath())>0);
+                    if(f.isDirectory() && fn.indexOf('/') >= 0) bi.isNestedDir = true;
+                    dirContent.add(bi);
                 }
 //                Log.e("XF_APPDATA", "Installed package :" + packageInfo.packageName + "\tSource dir : " + packageInfo.sourceDir);
             }
@@ -347,16 +348,15 @@ public class XFilesUtils implements FileOperationHelper {
 
     @Override
     public GenericDirWithContent listDirectory(BasePathContent directory) {
+        if(directory.equals(dataApp)) return listDataAppWithoutRoot();
         if(directory instanceof XREPathContent) {
             try {refreshRHClient();}
             catch(IOException e) {return new GenericDirWithContent(FileOpsErrorCodes.ROOTHELPER_INIT_ERROR);}
             return rhc.listDirectory(directory);
         }
         File[] content = new File(directory.dir).listFiles();
-        if(content == null) {
-            if(directory.equals(dataApp)) return listDataAppWithoutRoot();
+        if(content == null)
             return new LocalDirWithContent(FileOpsErrorCodes.COMMANDER_CANNOT_ACCESS); // TODO specialize error code (enum to be created) in callers from dir commander
-        }
         ArrayList<BrowserItem> l = new ArrayList<>();
         for(File f : content) {
             l.add(new BrowserItem(f.getName(),f.length(),new Date(f.lastModified()),f.isDirectory(), Native.isSymLink(f.getAbsolutePath())>0)); // getCanonicalPath not enough to fully determine symlink attribute (files in symlinked folders), and Files.isSymbolicLink is available only with minAPI >= 26

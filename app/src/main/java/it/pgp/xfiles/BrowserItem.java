@@ -19,6 +19,7 @@ public class BrowserItem implements Serializable, Checkable, Comparable<BrowserI
     public Long size;
     public Date date;
     private boolean checked = false;
+    public boolean isNestedDir = false;
 
     public BrowserItem(String filename, long size, Date date, Boolean isDirectory, Boolean isLink) {
         this.filename = filename;
