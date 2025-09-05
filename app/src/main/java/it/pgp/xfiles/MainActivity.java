@@ -37,6 +37,7 @@ import android.util.TypedValue;
 import android.view.ContextMenu;
 import android.view.ContextThemeWrapper;
 import android.view.Display;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -1918,6 +1919,15 @@ public class MainActivity extends EffectActivity {
             }
         }
         guiBackButton();
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if(keyCode == KeyEvent.KEYCODE_MENU) {
+            credsFavsButton.performClick();
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
     DeviceType deviceType;
