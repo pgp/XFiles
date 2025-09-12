@@ -55,7 +55,7 @@ public class BrowserGridAdapter extends BrowserAdapter {
 
         name.setText(item.getFilename());
 
-        imageView.setImageBitmap(getBitmapByExtension(item));
+        imageView.setImageBitmap(getBitmapByExtension(item, mainActivity));
         return convertView;
     }
 }

@@ -1,10 +1,15 @@
 package it.pgp.xfiles.adapters;
 
 import android.content.Context;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -20,6 +25,7 @@ import it.pgp.xfiles.BrowserItem;
 import it.pgp.xfiles.MainActivity;
 import it.pgp.xfiles.R;
 import it.pgp.xfiles.enums.ArchiveType;
+import it.pgp.xfiles.enums.ProviderType;
 import it.pgp.xfiles.utils.pathcontent.BasePathContent;
 
 /**
@@ -48,12 +54,43 @@ public abstract class BrowserAdapter extends ArrayAdapter<BrowserItem> {
         }
     }
 
-    public static Bitmap getBitmapByExtension(BrowserItem item) {
+    public static final Map<String,Bitmap> apkIconCache = new HashMap<>();
+
+    public static Bitmap loadApkIconAsBitmap(String apkFilePath, Context context) {
+        Bitmap bitmap = apkIconCache.get(apkFilePath);
+        if(bitmap != null) return bitmap;
+        PackageManager pm = context.getPackageManager();
+        PackageInfo packageInfo = pm.getPackageArchiveInfo(apkFilePath, PackageManager.GET_META_DATA);
+        if(packageInfo != null) {
+            ApplicationInfo appInfo = packageInfo.applicationInfo;
+            appInfo.sourceDir = apkFilePath;
+            appInfo.publicSourceDir = apkFilePath;
+
+            Drawable iconDrawable = appInfo.loadIcon(pm);
+            if(iconDrawable instanceof BitmapDrawable) bitmap = ((BitmapDrawable)iconDrawable).getBitmap();
+            else {
+                // Convert other drawable types to Bitmap if necessary
+                bitmap = Bitmap.createBitmap(iconDrawable.getIntrinsicWidth(), iconDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+                Canvas canvas = new Canvas(bitmap);
+                iconDrawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+                iconDrawable.draw(canvas);
+            }
+        }
+        else bitmap = null;
+        apkIconCache.put(apkFilePath, bitmap);
+        return bitmap;
+    }
+
+    public static Bitmap getBitmapByExtension(BrowserItem item, MainActivity context) {
         Bitmap target;
         if(item.isNestedDir) target = nestedDirIv;
         else if(item.isDirectory) target = dirIV;
         else {
             String ext = item.getFileExt().toLowerCase();
+            if(ext.equals(ArchiveType.APK.s)) {
+                BasePathContent bpc = context.getCurrentDirCommander().getCurrentDirectoryPathname();
+                if(bpc.providerType == ProviderType.LOCAL) return loadApkIconAsBitmap(bpc.concat(item.getFilename()).dir, context);
+            }
             if (ArchiveType.formats.contains(ext)) target = archiveIcons.get(ext);
             else target = fileIV;
         }

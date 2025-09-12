@@ -69,9 +69,9 @@ public class BrowserListAdapter extends BrowserAdapter {
         size.setText(""+item.size);
         date.setText(formatter.format(item.date));
 
-        imageView.setImageBitmap(getBitmapByExtension(item));
+        imageView.setImageBitmap(getBitmapByExtension(item, mainActivity));
 
-        imageView.setOnClickListener(v-> {
+        imageView.setOnClickListener(v -> {
             boolean multiselect = mainActivity.browserPagerAdapter.multiSelectModes[mainActivity.browserPager.getCurrentItem()];
             boolean inFind = BrowserListAdapter.this instanceof FindResultsAdapter;
 
